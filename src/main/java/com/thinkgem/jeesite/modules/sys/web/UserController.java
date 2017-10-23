@@ -29,6 +29,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,12 +62,14 @@ public class UserController extends BaseController {
         }
     }
 
+    @ApiIgnore
     @RequiresPermissions("sys:user:view")
     @RequestMapping(value = {"index"},method = RequestMethod.GET)
     public String index(User user, Model model) {
         return "modules/sys/userIndex";
     }
 
+    @ApiIgnore
     @RequiresPermissions("sys:user:view")
     @RequestMapping(value = {"list", ""},method = RequestMethod.GET)
     public String list(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -77,12 +80,14 @@ public class UserController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:user:view")
+    @ApiOperation(notes = "返回用户列表",value = "获取用户列表")
     @RequestMapping(value = {"listData"},method = RequestMethod.GET)
     public Page<User> listData(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<User> page = systemService.findUser(new Page<User>(request, response), user);
         return page;
     }
 
+    @ApiIgnore
     @RequiresPermissions("sys:user:view")
     @RequestMapping(value = "form",method = RequestMethod.GET)
     public String form(User user, Model model) {
@@ -96,6 +101,7 @@ public class UserController extends BaseController {
         model.addAttribute("allRoles", systemService.findAllRole());
         return "modules/sys/userForm";
     }
+
 
     @RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "save",method = RequestMethod.POST)
