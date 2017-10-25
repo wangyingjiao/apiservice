@@ -18,6 +18,7 @@ public class SpringTransactionalContextTests extends AbstractTransactionalJUnit4
 
 	protected DataSource dataSource;
 
+	@Override
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		super.setDataSource(dataSource);

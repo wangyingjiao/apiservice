@@ -11,12 +11,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.thinkgem.jeesite.common.web.BaseController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * 标签Controller
  * @author ThinkGem
  * @version 2013-3-23
  */
+@ApiIgnore
 @Controller
 @RequestMapping(value = "${adminPath}/tag")
 public class TagController extends BaseController {

@@ -26,12 +26,14 @@ public class AreaService extends TreeService<AreaDao, Area> {
 		return UserUtils.getAreaList();
 	}
 
+	@Override
 	@Transactional(readOnly = false)
 	public void save(Area area) {
 		super.save(area);
 		UserUtils.removeCache(UserUtils.CACHE_AREA_LIST);
 	}
 	
+	@Override
 	@Transactional(readOnly = false)
 	public void delete(Area area) {
 		super.delete(area);

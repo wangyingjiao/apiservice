@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.common.persistence;
 
 import java.util.Date;
 
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * 数据Entity类
@@ -24,10 +27,16 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 	private static final long serialVersionUID = 1L;
 	
 	protected String remarks;	// 备注
-	protected User createBy;	// 创建者
+	// 创建者
+	@ApiModelProperty(hidden = true)
+	protected User createBy;
+	@ApiModelProperty(hidden = true)
 	protected Date createDate;	// 创建日期
+	@ApiModelProperty(hidden = true)
 	protected User updateBy;	// 更新者
+	@ApiModelProperty(hidden = true)
 	protected Date updateDate;	// 更新日期
+	@ApiModelProperty(hidden = true)
 	protected String delFlag; 	// 删除标记（0：正常；1：删除；2：审核）
 	
 	public DataEntity() {
@@ -86,6 +95,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 	public void setCreateBy(User createBy) {
 		this.createBy = createBy;
 	}
+
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getCreateDate() {

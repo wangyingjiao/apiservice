@@ -21,12 +21,14 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.test.entity.TestData;
 import com.thinkgem.jeesite.test.service.TestDataService;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * 单表生成Controller
  * @author ThinkGem
  * @version 2015-04-06
  */
+@ApiIgnore
 @Controller
 @RequestMapping(value = "${adminPath}/test/testData")
 public class TestDataController extends BaseController {
