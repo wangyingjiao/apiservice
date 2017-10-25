@@ -3,41 +3,31 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.Result;
-import com.thinkgem.jeesite.common.swagger.UserLogin;
+import com.thinkgem.jeesite.common.security.shiro.session.SessionDAO;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
+import com.thinkgem.jeesite.common.utils.CookieUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
-import com.thinkgem.jeesite.modules.sys.entity.User;
-import io.swagger.annotations.*;
-import org.apache.shiro.authz.UnauthorizedException;
+import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm.Principal;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.google.common.collect.Maps;
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.security.shiro.session.SessionDAO;
-import com.thinkgem.jeesite.common.servlet.ValidateCodeServlet;
-import com.thinkgem.jeesite.common.utils.CacheUtils;
-import com.thinkgem.jeesite.common.utils.CookieUtils;
-import com.thinkgem.jeesite.common.utils.IdGen;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.sys.security.FormAuthenticationFilter;
-import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm.Principal;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 登录Controller
@@ -46,7 +36,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * @version 2013-5-31
  */
 @Controller
-@Api(tags = "登录模块")
+@Api( tags = "登录类",description = "登录相关接口")
 public class LoginController extends BaseController {
 
     @Autowired
@@ -55,15 +45,10 @@ public class LoginController extends BaseController {
     /**
      * 管理登录
      */
+    @ApiIgnore
     @RequestMapping(value = "${adminPath}/login", method = RequestMethod.GET)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model) {
         Principal principal = UserUtils.getPrincipal();
-
-//		// 默认页签模式
-//		String tabmode = CookieUtils.getCookie(request, "tabmode");
-//		if (tabmode == null){
-//			CookieUtils.setCookie(response, "tabmode", "1");
-//		}
 
         if (logger.isDebugEnabled()) {
             logger.debug("login, active session size: {}", sessionDAO.getActiveSessions(false).size());
@@ -78,12 +63,7 @@ public class LoginController extends BaseController {
         if (principal != null && !principal.isMobileLogin()) {
             return "redirect:" + adminPath;
         }
-//		String view;
-//		view = "/WEB-INF/views/modules/sys/sysLogin.jsp";
-//		view = "classpath:";
-//		view += "jar:file:/D:/GitHub/jeesite/src/main/webapp/WEB-INF/lib/jeesite.jar!";
-//		view += "/"+getClass().getName().replaceAll("\\.", "/").replace(getClass().getSimpleName(), "")+"view/sysLogin";
-//		view += ".jsp";
+
         model.addAttribute("code", 0);
         model.addAttribute("data", "需要登录，请登录系统！");
 
@@ -97,26 +77,26 @@ public class LoginController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "${adminPath}/login", method = RequestMethod.POST)
-    public Object loginFail(LoginUser user) {
+    @ApiOperation(value = "登入系统", notes = "用户登录")
+    public Object login(@RequestBody LoginUser user) {
         Principal principal = UserUtils.getPrincipal();
+        Subject subject = UserUtils.getSubject();
+
         // 如果已经登录，则跳转到管理首页
         if (principal != null) {
             UserUtils.getSubject().logout();
             return new Result<String>(1, "您已经成功退出！");
         } else {
-//            String exception = (String) request.getAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME);
-//            String username = WebUtils.getCleanParam(request, FormAuthenticationFilter.DEFAULT_USERNAME_PARAM);
-//            String message = (String) request.getAttribute(FormAuthenticationFilter.DEFAULT_MESSAGE_PARAM);
-//            request.getSession().setAttribute(ValidateCodeServlet.VALIDATE_CODE, IdGen.uuid());
-//            if (StringUtils.isBlank(message) || StringUtils.equals(message, "null")) {
-//                message = "用户或密码错误, 请重试.";
-//            }
-//            if (logger.isDebugEnabled()) {
-//                logger.debug("login fail, active session size: {}, message: {}, exception: {}",
-//                        sessionDAO.getActiveSessions(false).size(), message, exception);
-//            }
             return new Result<String>(0, "用户或密码错误, 请重试!");
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "${adminPath}/logout", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation(value = "退出系统", notes = "用户退出")
+    public Object logout() {
+        UserUtils.getSubject().logout();
+        return new Result<String>(1, "您已经成功退出！");
     }
 
     /**

@@ -57,7 +57,7 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
         String password = "";
         logger.info(request.getContentType());
         //如果用户提交使用的json body post 方式登录
-        if (null != request.getContentType() && request.getContentType().indexOf(FastJsonJsonView.DEFAULT_CONTENT_TYPE) > 0) {
+        if (request.getContentType().indexOf(FastJsonJsonView.DEFAULT_CONTENT_TYPE) != -1) {
             try {
                 BufferedReader reader = request.getReader();
                 while ((temp = reader.readLine()) != null) {

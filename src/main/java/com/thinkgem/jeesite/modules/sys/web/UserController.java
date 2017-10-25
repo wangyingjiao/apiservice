@@ -8,7 +8,9 @@ import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
+import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
@@ -34,10 +36,13 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.http.MediaType;
 
 /**
  * 用户Controller
@@ -47,7 +52,7 @@ import java.util.Set;
  */
 @Controller
 @RequestMapping(value = "${adminPath}/sys/user")
-@Api(value = "/sys/user",description = "用户模块",tags = "用户控制器")
+@Api(tags = "用户类", description = "用户操作相关接口", value = "这是value的位置！")
 public class UserController extends BaseController {
 
     @Autowired
@@ -64,14 +69,14 @@ public class UserController extends BaseController {
 
     @ApiIgnore
     @RequiresPermissions("sys:user:view")
-    @RequestMapping(value = {"index"},method = RequestMethod.GET)
+    @RequestMapping(value = {"index"}, method = RequestMethod.GET)
     public String index(User user, Model model) {
         return "modules/sys/userIndex";
     }
 
     @ApiIgnore
     @RequiresPermissions("sys:user:view")
-    @RequestMapping(value = {"list", ""},method = RequestMethod.GET)
+    @RequestMapping(value = {"list", ""}, method = RequestMethod.GET)
     public String list(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<User> page = systemService.findUser(new Page<User>(request, response), user);
         model.addAttribute("page", page);
@@ -80,16 +85,29 @@ public class UserController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:user:view")
-    @ApiOperation(notes = "返回用户列表",value = "获取用户列表")
-    @RequestMapping(value = {"listData"},method = RequestMethod.GET)
+    @ApiOperation(notes = "返回用户列表", value = "获取用户列表")
+    @RequestMapping(value = {"listData"}, method = RequestMethod.GET)
     public Page<User> listData(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<User> page = systemService.findUser(new Page<User>(request, response), user);
         return page;
     }
 
+    @ResponseBody
+    @RequiresPermissions("sys:user:view")
+    @ApiOperation(notes = "返回用户详情", value = "获取用户详情")
+    @RequestMapping(value = {"getUserById"}, method = RequestMethod.GET)
+    public Result getUserById(@RequestParam String id) {
+        User u = systemService.getUser(id);
+        if (null == u) {
+            return new FailResult<>("未找到用户！");
+        }
+        return new SuccResult(u);
+    }
+
+
     @ApiIgnore
     @RequiresPermissions("sys:user:view")
-    @RequestMapping(value = "form",method = RequestMethod.GET)
+    @RequestMapping(value = "form", method = RequestMethod.GET)
     public String form(User user, Model model) {
         if (user.getCompany() == null || user.getCompany().getId() == null) {
             user.setCompany(UserUtils.getUser().getCompany());
@@ -103,8 +121,9 @@ public class UserController extends BaseController {
     }
 
 
+    @ApiIgnore
     @RequiresPermissions("sys:user:edit")
-    @RequestMapping(value = "save",method = RequestMethod.POST)
+    @RequestMapping(value = "save", method = RequestMethod.POST)
     public String save(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
         if (Global.isDemoMode()) {
             addMessage(redirectAttributes, "演示模式，不允许操作！");
@@ -144,8 +163,9 @@ public class UserController extends BaseController {
         return "redirect:" + adminPath + "/sys/user/list?repage";
     }
 
+    @ApiIgnore
     @RequiresPermissions("sys:user:edit")
-    @RequestMapping(value = "delete",method = RequestMethod.POST)
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
     public String delete(User user, RedirectAttributes redirectAttributes) {
         if (Global.isDemoMode()) {
             addMessage(redirectAttributes, "演示模式，不允许操作！");
@@ -171,6 +191,7 @@ public class UserController extends BaseController {
      * @param redirectAttributes
      * @return
      */
+    @ApiIgnore
     @RequiresPermissions("sys:user:view")
     @RequestMapping(value = "export", method = RequestMethod.POST)
     public String exportFile(User user, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
@@ -192,6 +213,7 @@ public class UserController extends BaseController {
      * @param redirectAttributes
      * @return
      */
+    @ApiIgnore
     @RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "import", method = RequestMethod.POST)
     public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
@@ -244,8 +266,9 @@ public class UserController extends BaseController {
      * @param redirectAttributes
      * @return
      */
+    @ApiIgnore
     @RequiresPermissions("sys:user:view")
-    @RequestMapping(value = "import/template",method = RequestMethod.GET)
+    @RequestMapping(value = "import/template", method = RequestMethod.GET)
     public String importFileTemplate(HttpServletResponse response, RedirectAttributes redirectAttributes) {
         try {
             String fileName = "用户数据导入模板.xlsx";
@@ -266,9 +289,10 @@ public class UserController extends BaseController {
      * @param loginName
      * @return
      */
+    @ApiIgnore
     @ResponseBody
     @RequiresPermissions("sys:user:edit")
-    @RequestMapping(value = "checkLoginName",method = RequestMethod.POST)
+    @RequestMapping(value = "checkLoginName", method = RequestMethod.POST)
     public String checkLoginName(String oldLoginName, String loginName) {
         if (loginName != null && loginName.equals(oldLoginName)) {
             return "true";
@@ -278,6 +302,21 @@ public class UserController extends BaseController {
         return "false";
     }
 
+    @ResponseBody
+    @RequiresPermissions("sys:user:edit")
+    @ApiOperation(notes = "查询用户名是否有重复",
+            value = "重名检查", nickname = "这里是nickName的值")
+    @RequestMapping(value = "isDUPofName", method = {RequestMethod.POST, RequestMethod.GET})
+    public Result isDUPName(@RequestParam(required = false) String oldLoginName, @RequestParam String loginName) {
+        if (loginName != null && loginName.equals(oldLoginName)) {
+            return new SuccResult("名称可用！");
+        } else if (loginName != null && systemService.getUserByLoginName(loginName) == null) {
+            return new SuccResult("名称可用！");
+        }
+        return new FailResult("名称不可用");
+    }
+
+
     /**
      * 用户信息显示及保存
      *
@@ -286,7 +325,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequiresPermissions("user")
-    @RequestMapping(value = "info",method = RequestMethod.GET)
+    @RequestMapping(value = "info", method = RequestMethod.GET)
     public String info(User user, HttpServletResponse response, Model model) {
         User currentUser = UserUtils.getUser();
         if (StringUtils.isNotBlank(user.getName())) {
@@ -314,7 +353,7 @@ public class UserController extends BaseController {
      */
     @RequiresPermissions("user")
     @ResponseBody
-    @RequestMapping(value = "infoData",method = RequestMethod.GET)
+    @RequestMapping(value = "infoData", method = RequestMethod.GET)
     public User infoData() {
         return UserUtils.getUser();
     }
@@ -322,7 +361,7 @@ public class UserController extends BaseController {
 
     @RequiresPermissions("user")
     @ResponseBody
-    @RequestMapping(value = "roleData",method = RequestMethod.GET)
+    @RequestMapping(value = "roleData", method = RequestMethod.GET)
     public List<Role> roleData() {
         return UserUtils.getUser().getRoleList();
     }
@@ -330,7 +369,7 @@ public class UserController extends BaseController {
 
     @RequiresPermissions("user")
     @ResponseBody
-    @RequestMapping(value = "menuData",method = RequestMethod.GET)
+    @RequestMapping(value = "menuData", method = RequestMethod.GET)
     @ApiOperation(value = "获得用户的菜单列表")
     public Result<List<Menu>> menuData() {
         List<Menu> menuList = UserUtils.getMenuList();
@@ -346,7 +385,8 @@ public class UserController extends BaseController {
      * @return
      */
     @RequiresPermissions("user")
-    @RequestMapping(value = "modifyPwd",method = RequestMethod.POST)
+    @RequestMapping(value = "modifyPwd", method = RequestMethod.POST)
+    @ApiOperation(value = "这里是value标签", notes = "这是notes点", nickname = "这里是nickName")
     public String modifyPwd(String oldPassword, String newPassword, Model model) {
         User user = UserUtils.getUser();
         if (StringUtils.isNotBlank(oldPassword) && StringUtils.isNotBlank(newPassword)) {
@@ -365,9 +405,10 @@ public class UserController extends BaseController {
         return "modules/sys/userModifyPwd";
     }
 
-    @RequiresPermissions("user")
     @ResponseBody
-    @RequestMapping(value = "treeData",method = RequestMethod.GET)
+    @RequiresPermissions("user")
+    @RequestMapping(value = "treeData", method = RequestMethod.GET)
+    @ApiOperation(value = "生成树数据")
     public List<Map<String, Object>> treeData(@RequestParam(required = false) String officeId, HttpServletResponse response) {
         List<Map<String, Object>> mapList = Lists.newArrayList();
         List<User> list = systemService.findUserByOfficeId(officeId);

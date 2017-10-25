@@ -18,7 +18,7 @@
 				/userfiles/** = anon
 				${adminPath}/cas = cas
 				${adminPath}/login = authc
-				${adminPath}/logout = logout
+				${adminPath}/logout = anon
 				${adminPath}/** = authc
 				/act/editor/** = authc
 				/ReportServer/** = authc
