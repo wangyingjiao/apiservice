@@ -67,19 +67,6 @@ public class AreaController extends BaseController {
             area.setParent(UserUtils.getUser().getOffice().getArea());
         }
         area.setParent(areaService.get(area.getParent().getId()));
-//		// 自动获取排序号
-//		if (StringUtils.isBlank(area.getId())){
-//			int size = 0;
-//			List<Area> list = areaService.findAll();
-//			for (int i=0; i<list.size(); i++){
-//				Area e = list.get(i);
-//				if (e.getParent()!=null && e.getParent().getId()!=null
-//						&& e.getParent().getId().equals(area.getParent().getId())){
-//					size++;
-//				}
-//			}
-//			area.setCode(area.getParent().getCode() + StringUtils.leftPad(String.valueOf(size > 0 ? size : 1), 4, "0"));
-//		}
         model.addAttribute("area", area);
         return "modules/sys/areaForm";
     }
@@ -126,7 +113,7 @@ public class AreaController extends BaseController {
         List<Area> list = areaService.findAll();
         for (int i = 0; i < list.size(); i++) {
             Area e = list.get(i);
-            if (StringUtils.isBlank(extId) || (extId != null && !extId.equals(e.getId()) && e.getParentIds().indexOf("," + extId + ",") == -1)) {
+            if (isaBoolean(extId, e)) {
                 Map<String, Object> map = Maps.newHashMap();
                 map.put("id", e.getId());
                 map.put("pId", e.getParentId());
@@ -135,6 +122,13 @@ public class AreaController extends BaseController {
             }
         }
         return mapList;
+    }
+
+    private boolean isaBoolean(String extId, Area e) {
+        return StringUtils.isBlank(extId) ||
+                (extId != null &&
+                        !extId.equals(e.getId()) &&
+                        e.getParentIds().indexOf("," + extId + ",") == -1);
     }
 
     /**
@@ -156,7 +150,7 @@ public class AreaController extends BaseController {
 //    @RequiresPermissions("sys:area:edit")
     @RequestMapping(value = "saveArea", method = RequestMethod.POST)
     @ApiOperation(value = "保存区哉", notes = "新建区域，保存区域，更新区域均使用此接口<hr>" +
-            "新增区属性：<br>" +
+            "新增区属性：>" +
             "必填属性：区域名称<br>" +
             "选填属性：上级区域，区域编码，区域类型，备注")
     public Result saveArea(@RequestBody Area area) {
