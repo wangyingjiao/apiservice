@@ -25,7 +25,7 @@ public class DefaultServletRequestFilter implements Filter {
                 request.getContentType().toLowerCase().indexOf(MediaType.APPLICATION_JSON_VALUE) != -1) {
             if (request instanceof HttpServletRequest) {
                 HttpServletRequest req = (HttpServletRequest) request;
-                if (req.getMethod().toLowerCase().equals(RequestMethod.POST)) {
+                if (req.getMethod().toUpperCase().equals(RequestMethod.POST + "")) {
                     requestWrapper = new DefaultHttpServletRequestWrapper(req);
                 }
             }

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.station.dao.TServiceStationDao">
+    
+	<sql id="tServiceStationColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.service_station_type AS "serviceStationType",
+		a.area_id AS "area.id",
+		a.address AS "address",
+		a.user_id AS "user.id",
+		a.phone AS "phone",
+		a.employees AS "employees",
+		a.aunts AS "aunts",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.area_name AS "areaName",
+		a4.name AS "area.name",
+		u6.name AS "user.name"
+	</sql>
+	
+	<sql id="tServiceStationJoins">
+		LEFT JOIN sys_area a4 ON a4.id = a.area_id
+		LEFT JOIN sys_user u6 ON u6.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="TServiceStation">
+		SELECT 
+			<include refid="tServiceStationColumns"/>
+		FROM t_service_station a
+		<include refid="tServiceStationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TServiceStation">
+		SELECT 
+			<include refid="tServiceStationColumns"/>
+		FROM t_service_station a
+		<include refid="tServiceStationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TServiceStation">
+		SELECT 
+			<include refid="tServiceStationColumns"/>
+		FROM t_service_station a
+		<include refid="tServiceStationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_service_station(
+			id,
+			name,
+			service_station_type,
+			area_id,
+			address,
+			user_id,
+			phone,
+			employees,
+			aunts,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			area_name
+		) VALUES (
+			#{id},
+			#{name},
+			#{serviceStationType},
+			#{area.id},
+			#{address},
+			#{user.id},
+			#{phone},
+			#{employees},
+			#{aunts},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{areaName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_service_station SET 	
+			name = #{name},
+			service_station_type = #{serviceStationType},
+			area_id = #{area.id},
+			address = #{address},
+			user_id = #{user.id},
+			phone = #{phone},
+			employees = #{employees},
+			aunts = #{aunts},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			area_name = #{areaName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_service_station SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

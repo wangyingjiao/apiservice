@@ -1,6 +1,9 @@
 package com.thinkgem.jeesite.common.filter;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +19,8 @@ import java.io.InputStreamReader;
 public class DefaultHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     private String body;
+    private Log logger = LogFactory.getLog(getClass());
+
     /**
      * Constructs a request object wrapping the given request.
      *
@@ -26,37 +31,31 @@ public class DefaultHttpServletRequestWrapper extends HttpServletRequestWrapper 
         super(request);
 
         StringBuffer jsonStr = new StringBuffer();
-        try (BufferedReader bufferedReader = request.getReader())
-        {
+        try (BufferedReader bufferedReader = request.getReader()) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 jsonStr.append(line);
             }
-        }catch (Exception ex){
-
+        } catch (Exception ex) {
+            logger.debug("异常信息：" + ex.getMessage());
         }
-        //获取到提交测json，将密码解密后重新复制给requestBody
         JSONObject json = JSONObject.parseObject(jsonStr.toString());
         body = json.toJSONString();
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException
-    {
+    public ServletInputStream getInputStream() throws IOException {
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
-        return new ServletInputStream()
-        {
+        return new ServletInputStream() {
             @Override
-            public int read() throws IOException
-            {
+            public int read() throws IOException {
                 return byteArrayInputStream.read();
             }
         };
     }
 
     @Override
-    public BufferedReader getReader() throws IOException
-    {
+    public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(this.getInputStream()));
     }
 

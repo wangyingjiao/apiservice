@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import sun.font.TrueTypeFont;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -121,10 +122,20 @@ public abstract class BaseController {
         BeanValidators.validateWithException(validator, object, groups);
     }
 
+    protected boolean beanValidator(Object object) {
+        try {
+            BeanValidators.validateWithException(validator, object);
+        } catch (ConstraintViolationException ex) {
+            List<String> list = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
+
+            logger.debug("数据验证失败:" + list);
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 添加Model消息
-     *
-     * @param message
      */
     protected void addMessage(Model model, String... messages) {
         StringBuilder sb = new StringBuilder();
@@ -137,7 +148,7 @@ public abstract class BaseController {
     /**
      * 添加Flash消息
      *
-     * @param message
+     * @param redirectAttributes
      */
     protected void addMessage(RedirectAttributes redirectAttributes, String... messages) {
         StringBuilder sb = new StringBuilder();
@@ -197,6 +208,7 @@ public abstract class BaseController {
 
     /**
      * 操作权限异常！
+     *
      * @param request
      * @param response
      * @return
