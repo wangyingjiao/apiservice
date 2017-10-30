@@ -148,7 +148,7 @@ public class OfficeController extends BaseController {
         return "redirect:" + adminPath + "/sys/office/list?id=" + office.getParentId() + "&parentIds=" + office.getParentIds();
     }
 
-    /**
+    /**ø
      * 获取机构JSON数据。
      *
      * @param extId    排除的ID
@@ -189,7 +189,7 @@ public class OfficeController extends BaseController {
     @ResponseBody
     @RequiresPermissions("sys:office:view")
     @RequestMapping(value = "/listData", method = {RequestMethod.POST, RequestMethod.GET})
-    @ApiOperation(value = "取出机构列表")
+    @ApiOperation(value = "获得机构列表")
     public Result listData(Office office) {
         if (null == office) {
             office = UserUtils.getUser().getOffice();
@@ -223,6 +223,45 @@ public class OfficeController extends BaseController {
         }
 
         return new SuccResult<String>("保存机构'" + office.getName() + "'成功");
+    }
+
+    @ResponseBody
+    @RequiresPermissions("sys:office:edit")
+    @RequestMapping(value = "deleteOffice",method = {RequestMethod.POST,RequestMethod.GET})
+    @ApiOperation(value = "删除机构及子机构")
+    public Result deleteOffice(Office office) {
+        officeService.delete(office);
+        return new SuccResult("删除机构成功");
+    }
+
+    @ResponseBody
+    @RequiresPermissions("sys:office:view")
+    @RequestMapping(value = "formData",method = {RequestMethod.POST,RequestMethod.GET})
+    @ApiOperation(value = "机构详情!")
+    public Result formData(@RequestBody Office office) {
+        office = officeService.get(office);
+        User user = UserUtils.getUser();
+        if (office.getParent() == null || office.getParent().getId() == null) {
+            office.setParent(user.getOffice());
+        }
+        office.setParent(officeService.get(office.getParent().getId()));
+        if (office.getArea() == null) {
+            office.setArea(user.getOffice().getArea());
+        }
+        // 自动获取排序号
+        if (StringUtils.isBlank(office.getId()) && office.getParent() != null) {
+            int size = 0;
+            List<Office> list = officeService.findAll();
+            for (int i = 0; i < list.size(); i++) {
+                Office e = list.get(i);
+                if (e.getParent() != null && e.getParent().getId() != null
+                        && e.getParent().getId().equals(office.getParent().getId())) {
+                    size++;
+                }
+            }
+            office.setCode(office.getParent().getCode() + StringUtils.leftPad(String.valueOf(size > 0 ? size + 1 : 1), 3, "0"));
+        }
+        return new SuccResult<>(office);
     }
 
 }

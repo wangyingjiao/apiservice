@@ -324,6 +324,7 @@ public class UserController extends BaseController {
      * @param model
      * @return
      */
+    @ApiIgnore
     @RequiresPermissions("user")
     @RequestMapping(value = "info", method = RequestMethod.GET)
     public String info(User user, HttpServletResponse response, Model model) {
@@ -354,6 +355,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("user")
     @ResponseBody
     @RequestMapping(value = "infoData", method = RequestMethod.GET)
+    @ApiOperation(value = "获得用户信息")
     public User infoData() {
         return UserUtils.getUser();
     }
@@ -362,6 +364,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("user")
     @ResponseBody
     @RequestMapping(value = "roleData", method = RequestMethod.GET)
+    @ApiOperation(value = "获得用户的角色列表")
     public List<Role> roleData() {
         return UserUtils.getUser().getRoleList();
     }
@@ -384,9 +387,10 @@ public class UserController extends BaseController {
      * @param model
      * @return
      */
+    @ApiIgnore
     @RequiresPermissions("user")
     @RequestMapping(value = "modifyPwd", method = RequestMethod.POST)
-    @ApiOperation(value = "这里是value标签", notes = "这是notes点", nickname = "这里是nickName")
+    //@ApiOperation(value = "这里是value标签", notes = "这是notes点", nickname = "这里是nickName")
     public String modifyPwd(String oldPassword, String newPassword, Model model) {
         User user = UserUtils.getUser();
         if (StringUtils.isNotBlank(oldPassword) && StringUtils.isNotBlank(newPassword)) {
@@ -422,6 +426,105 @@ public class UserController extends BaseController {
         }
         return mapList;
     }
+
+    @RequiresPermissions("user")
+    @RequestMapping(value = "modifyPwdData", method = RequestMethod.POST)
+    @ApiOperation(value = "修改用户密码", notes = "修改当前用户的密码", nickname = "nick_修改用户密码")
+    public Result modifyPwdData(@RequestParam String oldPassword, @RequestParam String newPassword) {
+        User user = UserUtils.getUser();
+        if (StringUtils.isNotBlank(oldPassword) && StringUtils.isNotBlank(newPassword)) {
+            if (SystemService.validatePassword(oldPassword, user.getPassword())) {
+                systemService.updatePasswordById(user.getId(), user.getLoginName(), newPassword);
+                //model.addAttribute("message", "修改密码成功");
+                return new SuccResult("修改密码成功");
+            } else {
+                return new FailResult("修改密码失败，旧密码错误");
+            }
+        }
+        return new FailResult("参数错误，检查参数");
+    }
+
+
+    /**
+     * 用户信息显示及保存
+     *
+     * @param user
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "updateInfo", method = RequestMethod.GET)
+    @ApiOperation(value = "用户信息显示及保存")
+    public Result updateInfo(User user) {
+        User currentUser = UserUtils.getUser();
+        if (StringUtils.isNotBlank(user.getName())) {
+            currentUser.setEmail(user.getEmail());
+            currentUser.setPhone(user.getPhone());
+            currentUser.setMobile(user.getMobile());
+            currentUser.setRemarks(user.getRemarks());
+            currentUser.setPhoto(user.getPhoto());
+            systemService.updateUserInfo(currentUser);
+            return new SuccResult<User>(currentUser);
+        }
+        return new FailResult("保存用户信息失败");
+    }
+
+    @ResponseBody
+    @ApiOperation(value = "删除用户！")
+    @RequiresPermissions("sys:user:edit")
+    @RequestMapping(value = "deleteUser", method = RequestMethod.POST)
+    public Result deleteUser(User user) {
+
+        if (UserUtils.getUser().getId().equals(user.getId())) {
+            return new FailResult("删除用户失败, 不允许删除当前用户");
+        } else if (User.isAdmin(user.getId())) {
+            return new FailResult("删除用户失败, 不允许删除超级管理员用户");
+        } else {
+            systemService.deleteUser(user);
+            return new SuccResult("删除用户成功");
+        }
+    }
+
+    @ResponseBody
+    @RequiresPermissions("sys:user:edit")
+    @RequestMapping(value = "saveData", method = RequestMethod.POST)
+    @ApiOperation(value = "保存用户！")
+    public Result saveData(User user) {
+
+        // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
+        //user.setCompany(new Office(request.getParameter("company.id")));
+        //user.setOffice(new Office(request.getParameter("office.id")));
+        // 如果新密码为空，则不更换密码
+        if (StringUtils.isNotBlank(user.getNewPassword())) {
+            user.setPassword(SystemService.entryptPassword(user.getNewPassword()));
+        }
+        if (!beanValidator(user)) {
+            return new FailResult("参数有误！");
+        }
+        if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))) {
+            return new FailResult("保存用户'" + user.getLoginName() + "'失败，登录名已存在");
+
+        }
+        // 角色数据有效性验证，过滤不在授权内的角色
+        List<Role> roleList = Lists.newArrayList();
+        List<String> roleIdList = user.getRoleIdList();
+        for (Role r : systemService.findAllRole()) {
+            if (roleIdList.contains(r.getId())) {
+                roleList.add(r);
+            }
+        }
+        user.setRoleList(roleList);
+        // 保存用户信息
+        systemService.saveUser(user);
+        // 清除当前用户缓存
+        if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
+            UserUtils.clearCache();
+        }
+        return new SuccResult("保存用户'" + user.getLoginName() + "'成功");
+
+    }
+
 
 //	@InitBinder
 //	public void initBinder(WebDataBinder b) {

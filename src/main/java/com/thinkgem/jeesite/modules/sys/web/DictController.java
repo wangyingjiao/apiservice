@@ -9,9 +9,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.common.result.Result;
+import com.thinkgem.jeesite.common.result.SuccResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.junit.internal.runners.statements.Fail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +40,7 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Controller
 @RequestMapping(value = "${adminPath}/sys/dict")
-@Api( tags = "字典类",description = "字典相关接口", value = "字典相关接口")
+@Api(tags = "字典类", description = "字典相关接口", value = "字典相关接口")
 public class DictController extends BaseController {
 
     @Autowired
@@ -135,4 +139,24 @@ public class DictController extends BaseController {
         return dictService.findTypeList();
     }
 
+    @ResponseBody
+    @RequiresPermissions("sys:dict:edit")
+    @RequestMapping(value = "saveData", method = {RequestMethod.POST, RequestMethod.GET})//@Valid
+    @ApiOperation(value = "新建字典")
+    public Result save(@RequestBody Dict dict) {
+        if (!beanValidator(dict)) {
+            return new FailResult("参数错误！");
+        }
+        dictService.save(dict);
+        return new SuccResult<String>("保存字典'" + dict.getLabel() + "'成功");
+    }
+
+    @ResponseBody
+    @RequiresPermissions("sys:dict:edit")
+    @RequestMapping(value = "deleteDict", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation(value = "删除字典")
+    public Result deleteDict(Dict dict) {
+        dictService.delete(dict);
+        return new SuccResult("删除字典成功");
+    }
 }

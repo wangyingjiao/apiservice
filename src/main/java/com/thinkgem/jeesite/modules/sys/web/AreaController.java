@@ -171,5 +171,21 @@ public class AreaController extends BaseController {
         return new FailResult("区域id不存在！");
     }
 
+    @ResponseBody
+    @RequiresPermissions("sys:area:edit")
+    @RequestMapping(value = "deleteArea",method = {RequestMethod.POST,RequestMethod.GET})
+    @ApiOperation(value = "删除区域")
+    public Result deleteArea(Area area) {
+
+//		if (Area.isRoot(id)){
+//			addMessage(redirectAttributes, "删除区域失败, 不允许删除顶级区域或编号为空");
+//		}else{
+        areaService.delete(area);
+        //addMessage("删除区域成功");
+//		}
+        return new SuccResult("删除区域成功");
+    }
+
+
 
 }
