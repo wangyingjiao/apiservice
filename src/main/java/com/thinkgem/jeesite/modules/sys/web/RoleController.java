@@ -305,7 +305,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions("sys:role:edit")
     @RequestMapping(value = "saveData",method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新岗位")
-    public Result saveData(Role role) {
+    public Result saveData(@RequestBody Role role) {
         //if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
         //    addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
         //    return new FailResult("权限不足");
