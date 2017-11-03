@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -264,16 +265,20 @@ public class RoleController extends BaseController {
      * @param name
      * @return
      */
-    @RequiresPermissions("user")
     @ResponseBody
+    @RequiresPermissions("user")
     @RequestMapping(value = "checkName",method = {RequestMethod.POST,RequestMethod.GET})
-    public Result checkName(@RequestParam(required = false) String oldName, @RequestParam String name) {
+    @ApiOperation(value = "验证角色名是否有效")
+    public String checkName(@RequestParam(required = false) String oldName, @RequestParam String name) {
         if (name != null && name.equals(oldName)) {
-            return new SuccResult("名称可用");
+            return "true";
+            //return new SuccResult("名称可用");
         } else if (name != null && systemService.getRoleByName(name) == null) {
-            return new SuccResult("名称可用");
+            //return new SuccResult("名称可用");
+            return "true";
         }
-        return new FailResult("名称不可用");
+        //return new FailResult("名称不可用");
+        return "false";
     }
 
     /**
@@ -286,7 +291,8 @@ public class RoleController extends BaseController {
     @RequiresPermissions("user")
     @ResponseBody
     @RequestMapping(value = "checkEnname",method = {RequestMethod.POST,RequestMethod.GET})
-    public String checkEnname(String oldEnname, String enname) {
+    @ApiOperation(value = "验证角色英文名是否有效")
+    public String checkEnname(@RequestParam(required = false) String oldEnname, @RequestParam String enname) {
         if (enname != null && enname.equals(oldEnname)) {
             return "true";
         } else if (enname != null && systemService.getRoleByEnname(enname) == null) {
@@ -294,5 +300,52 @@ public class RoleController extends BaseController {
         }
         return "false";
     }
+
+    @ResponseBody
+    @RequiresPermissions("sys:role:edit")
+    @RequestMapping(value = "saveData",method = RequestMethod.POST)
+    @ApiOperation(value = "新建，更新岗位")
+    public Result saveData(Role role) {
+        //if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
+        //    addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
+        //    return new FailResult("权限不足");
+        //}
+        if (!beanValidator(role)) {
+            return new FailResult("参数错误");
+        }
+        if (!"true".equals(checkName(role.getOldName(), role.getName()))) {
+           return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+        }
+        if (!"true".equals(checkEnname(role.getOldEnname(), role.getEnname()))) {
+           return new FailResult("保存角色'" + role.getName() + "'失败, 英文名已存在");
+        }
+        systemService.saveRole(role);
+        return new SuccResult("保存角色'" + role.getName() + "'成功");
+
+    }
+
+    @ResponseBody
+    @RequiresPermissions("sys:role:edit")
+    @RequestMapping(value = "deleteRole" ,method = RequestMethod.POST)
+    @ApiOperation(value = "删除角色（岗位）")
+    public Result deleteRole(Role role, RedirectAttributes redirectAttributes) {
+//        if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
+//            addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
+//            return "redirect:" + adminPath + "/sys/role/?repage";
+//        }
+//        if (Global.isDemoMode()) {
+//            addMessage(redirectAttributes, "演示模式，不允许操作！");
+//            return "redirect:" + adminPath + "/sys/role/?repage";
+//        }
+//		if (Role.isAdmin(id)){
+//			addMessage(redirectAttributes, "删除角色失败, 不允许内置角色或编号空");
+////		}else if (UserUtils.getUser().getRoleIdList().contains(id)){
+////			addMessage(redirectAttributes, "删除角色失败, 不能删除当前用户所在角色");
+//		}else{
+        systemService.deleteRole(role);
+        return new SuccResult("删除角色成功");
+
+    }
+
 
 }

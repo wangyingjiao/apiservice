@@ -36,13 +36,9 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
-import java.awt.*;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.springframework.http.MediaType;
 
 /**
  * 用户Controller
@@ -165,7 +161,7 @@ public class UserController extends BaseController {
 
     @ApiIgnore
     @RequiresPermissions("sys:user:edit")
-    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @RequestMapping(value = "delete", method = RequestMethod.GET)
     public String delete(User user, RedirectAttributes redirectAttributes) {
         if (Global.isDemoMode()) {
             addMessage(redirectAttributes, "演示模式，不允许操作！");
@@ -292,7 +288,7 @@ public class UserController extends BaseController {
     @ApiIgnore
     @ResponseBody
     @RequiresPermissions("sys:user:edit")
-    @RequestMapping(value = "checkLoginName", method = RequestMethod.POST)
+    @RequestMapping(value = "checkLoginName", method = {RequestMethod.POST,RequestMethod.GET})
     public String checkLoginName(String oldLoginName, String loginName) {
         if (loginName != null && loginName.equals(oldLoginName)) {
             return "true";
@@ -487,14 +483,14 @@ public class UserController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:user:edit")
+    //@RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "保存用户！")
-    public Result saveData(User user) {
+    public Result saveData(@RequestBody User user) {
 
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
-        //user.setCompany(new Office(request.getParameter("company.id")));
-        //user.setOffice(new Office(request.getParameter("office.id")));
+        user.setCompany(new Office(user.getCompanyId()));
+        user.setOffice(new Office(user.getOfficeId()));
         // 如果新密码为空，则不更换密码
         if (StringUtils.isNotBlank(user.getNewPassword())) {
             user.setPassword(SystemService.entryptPassword(user.getNewPassword()));
@@ -508,7 +504,8 @@ public class UserController extends BaseController {
         }
         // 角色数据有效性验证，过滤不在授权内的角色
         List<Role> roleList = Lists.newArrayList();
-        List<String> roleIdList = user.getRoleIdList();
+        String [] roles = user.getRoles();
+        List<String> roleIdList = Lists.newArrayList(roles);
         for (Role r : systemService.findAllRole()) {
             if (roleIdList.contains(r.getId())) {
                 roleList.add(r);

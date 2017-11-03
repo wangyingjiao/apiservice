@@ -53,8 +53,8 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
         String json = new String();
         String temp;
-        String username = "";
-        String password = "";
+        String username;
+        String password;
         logger.info(request.getContentType());
         //如果用户提交使用的json body post 方式登录
         if (request.getContentType().indexOf(FastJsonJsonView.DEFAULT_CONTENT_TYPE) != -1) {

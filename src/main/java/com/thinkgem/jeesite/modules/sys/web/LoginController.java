@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.sys.web;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.Result;
+import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.security.shiro.session.SessionDAO;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.CookieUtils;
@@ -36,7 +37,7 @@ import java.util.Map;
  * @version 2013-5-31
  */
 @Controller
-@Api( tags = "登录类",description = "登录相关接口")
+@Api(tags = "登录类", description = "登录相关接口")
 public class LoginController extends BaseController {
 
     @Autowired
@@ -80,15 +81,14 @@ public class LoginController extends BaseController {
     @ApiOperation(value = "登入系统", notes = "用户登录")
     public Object login(@RequestBody LoginUser user) {
         Principal principal = UserUtils.getPrincipal();
-        Subject subject = UserUtils.getSubject();
-
+        return new SuccResult<>(principal);
         // 如果已经登录，则跳转到管理首页
-        if (principal != null) {
-            UserUtils.getSubject().logout();
-            return new Result<String>(1, "您已经成功退出！");
-        } else {
-            return new Result<String>(0, "用户或密码错误, 请重试!");
-        }
+//        if (principal != null) {
+//            UserUtils.getSubject().logout();
+//            return new Result<String>(1, "您已经成功退出！");
+//        } else {
+//            return new Result<String>(0, "用户或密码错误, 请重试!");
+//        }
     }
 
     @ResponseBody
@@ -96,7 +96,7 @@ public class LoginController extends BaseController {
     @ApiOperation(value = "退出系统", notes = "用户退出")
     public Object logout() {
         UserUtils.getSubject().logout();
-        return new Result<String>(1, "您已经成功退出！");
+        return new Result<>(1, "您已经成功退出！");
     }
 
     /**

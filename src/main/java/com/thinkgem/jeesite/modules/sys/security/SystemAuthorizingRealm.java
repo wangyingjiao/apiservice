@@ -53,7 +53,7 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 	private SystemService systemService;
 	
 	public SystemAuthorizingRealm() {
-		this.setCachingEnabled(false);
+		//this.setCachingEnabled(false);
 	}
 
 	/**
