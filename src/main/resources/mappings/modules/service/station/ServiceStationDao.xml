@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao">
+    
+	<sql id="serviceStationColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.type AS "type",
+		a.area AS "area",
+		a.address AS "address",
+		a.user_id AS "user.id",
+		a.phone AS "phone",
+		a.employees AS "employees",
+		a.aunts AS "aunts",
+		a.service_point AS "servicePoint",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u6.name AS "user.name"
+	</sql>
+	
+	<sql id="serviceStationJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="ServiceStation">
+		SELECT 
+			<include refid="serviceStationColumns"/>
+		FROM service_station a
+		<include refid="serviceStationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ServiceStation">
+		SELECT 
+			<include refid="serviceStationColumns"/>
+		FROM service_station a
+		<include refid="serviceStationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ServiceStation">
+		SELECT 
+			<include refid="serviceStationColumns"/>
+		FROM service_station a
+		<include refid="serviceStationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO service_station(
+			id,
+			name,
+			type,
+			area,
+			address,
+			user_id,
+			phone,
+			employees,
+			aunts,
+			service_point,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{type},
+			#{area},
+			#{address},
+			#{user.id},
+			#{phone},
+			#{employees},
+			#{aunts},
+			#{servicePoint},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE service_station SET 	
+			name = #{name},
+			type = #{type},
+			area = #{area},
+			address = #{address},
+			user_id = #{user.id},
+			phone = #{phone},
+			employees = #{employees},
+			aunts = #{aunts},
+			service_point = #{servicePoint},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE service_station SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
