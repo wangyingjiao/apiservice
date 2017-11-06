@@ -173,7 +173,7 @@ public class AreaController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:area:edit")
-    @RequestMapping(value = "deleteArea",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "deleteArea", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "删除区域")
     public Result deleteArea(Area area) {
 
@@ -187,5 +187,23 @@ public class AreaController extends BaseController {
     }
 
 
-
+    @ResponseBody
+    //@RequiresPermissions("sys:area:view")
+    @RequestMapping(value = {"getchildArea"}, method = {RequestMethod.POST, RequestMethod.GET})
+    public Result getchildArea(@RequestBody Area area) {
+        if (null == area || StringUtils.isBlank(area.getId())) {
+            area = new Area("1");
+            area.setParentIds("0,1,");
+        } else {
+            area = areaService.get(area.getId());
+            area.setParentIds(area.getParentIds()+area.getId()+",");
+        }
+        List<Area> areas = areaService.findchildArea(area);
+        if (areas.size() < 1){
+            return new FailResult(
+                    "失败，没有子级区域了。"
+            );
+        }
+        return new SuccResult(areas);
+    }
 }

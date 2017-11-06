@@ -20,6 +20,18 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 public class Role extends DataEntity<Role> {
 	
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	private String id;
 	private Office office;	// 归属机构
 	private String name; 	// 角色名称
 	private String enname;	// 英文名称

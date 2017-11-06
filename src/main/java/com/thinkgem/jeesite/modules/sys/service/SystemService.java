@@ -245,6 +245,13 @@ public class SystemService extends BaseService implements InitializingBean {
 		r.setName(name);
 		return roleDao.getByName(r);
 	}
+
+	public List<Role> searchRoleByName(String name){
+
+		Role role = new Role();
+		role.setName(name);
+		return roleDao.searchRoleByName(role);
+	}
 	
 	public Role getRoleByEnname(String enname) {
 		Role r = new Role();

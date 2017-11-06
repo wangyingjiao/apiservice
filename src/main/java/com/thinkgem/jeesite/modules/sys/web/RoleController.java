@@ -113,8 +113,14 @@ public class RoleController extends BaseController {
 
     @ApiIgnore
     @RequiresPermissions("sys:role:edit")
-    @RequestMapping(value = "delete")
-    public String delete(Role role, RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = "delete", method = RequestMethod.GET)
+    public String delete(String id, RedirectAttributes redirectAttributes) {
+
+        Role role = systemService.getRole(id);
+        if (null == role) {
+            addMessage(redirectAttributes, "岗位已经不存在！");
+            return "redirect:" + adminPath + "/sys/role/?repage";
+        }
         if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
             addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
             return "redirect:" + adminPath + "/sys/role/?repage";
@@ -178,7 +184,7 @@ public class RoleController extends BaseController {
      */
     @RequiresPermissions("sys:role:view")
     @ResponseBody
-    @RequestMapping(value = "users",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "users", method = {RequestMethod.POST, RequestMethod.GET})
     public List<Map<String, Object>> users(String officeId, HttpServletResponse response) {
         List<Map<String, Object>> mapList = Lists.newArrayList();
         User user = new User();
@@ -267,7 +273,7 @@ public class RoleController extends BaseController {
      */
     @ResponseBody
     @RequiresPermissions("user")
-    @RequestMapping(value = "checkName",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "checkName", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "验证角色名是否有效")
     public String checkName(@RequestParam(required = false) String oldName, @RequestParam String name) {
         if (name != null && name.equals(oldName)) {
@@ -290,7 +296,7 @@ public class RoleController extends BaseController {
      */
     @RequiresPermissions("user")
     @ResponseBody
-    @RequestMapping(value = "checkEnname",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "checkEnname", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "验证角色英文名是否有效")
     public String checkEnname(@RequestParam(required = false) String oldEnname, @RequestParam String enname) {
         if (enname != null && enname.equals(oldEnname)) {
@@ -303,7 +309,7 @@ public class RoleController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:role:edit")
-    @RequestMapping(value = "saveData",method = RequestMethod.POST)
+    @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
         //if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
@@ -314,10 +320,10 @@ public class RoleController extends BaseController {
             return new FailResult("参数错误");
         }
         if (!"true".equals(checkName(role.getOldName(), role.getName()))) {
-           return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+            return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
         }
         if (!"true".equals(checkEnname(role.getOldEnname(), role.getEnname()))) {
-           return new FailResult("保存角色'" + role.getName() + "'失败, 英文名已存在");
+            return new FailResult("保存角色'" + role.getName() + "'失败, 英文名已存在");
         }
         systemService.saveRole(role);
         return new SuccResult("保存角色'" + role.getName() + "'成功");
@@ -326,7 +332,7 @@ public class RoleController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:role:edit")
-    @RequestMapping(value = "deleteRole" ,method = RequestMethod.POST)
+    @RequestMapping(value = "deleteRole", method = RequestMethod.POST)
     @ApiOperation(value = "删除角色（岗位）")
     public Result deleteRole(Role role, RedirectAttributes redirectAttributes) {
 //        if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
@@ -347,5 +353,25 @@ public class RoleController extends BaseController {
 
     }
 
+    @ResponseBody
+    @RequiresPermissions("sys:role:view")
+    @RequestMapping(value = "listData", method = RequestMethod.GET)
+    @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
+    public Result listData(Role role) {
+        List<Role> list = systemService.findAllRole();
+        return new SuccResult(list);
+    }
+
+    @ResponseBody
+    @RequiresPermissions("sys:role:view")
+    @RequestMapping(value = "search",method = RequestMethod.GET)
+    @ApiOperation("岗位搜索")
+    public Result search(@RequestParam String name) {
+        if (StringUtils.isNotBlank(name)) {
+            List<Role> roles = systemService.searchRoleByName(name);
+            return new SuccResult(roles);
+        }
+        return new FailResult("未传值");
+    }
 
 }

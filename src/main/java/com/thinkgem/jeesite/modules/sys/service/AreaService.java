@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.sys.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ public class AreaService extends TreeService<AreaDao, Area> {
 		return UserUtils.getAreaList();
 	}
 
+	@Autowired
+	AreaDao areaDao;
+
 	@Override
 	@Transactional(readOnly = false)
 	public void save(Area area) {
@@ -39,5 +43,8 @@ public class AreaService extends TreeService<AreaDao, Area> {
 		super.delete(area);
 		UserUtils.removeCache(UserUtils.CACHE_AREA_LIST);
 	}
-	
+
+	public List<Area> findchildArea(Area area) {
+		return areaDao.findchildArea(area);
+	}
 }

@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.persistence.TreeDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 
+import java.util.List;
+
 /**
  * 区域DAO接口
  * @author ThinkGem
@@ -14,5 +16,6 @@ import com.thinkgem.jeesite.modules.sys.entity.Area;
  */
 @MyBatisDao
 public interface AreaDao extends TreeDao<Area> {
-	
+
+    List<Area> findchildArea(Area area);
 }

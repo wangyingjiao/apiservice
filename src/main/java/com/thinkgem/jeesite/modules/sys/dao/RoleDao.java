@@ -6,6 +6,9 @@ package com.thinkgem.jeesite.modules.sys.dao;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 角色DAO接口
@@ -37,4 +40,5 @@ public interface RoleDao extends CrudDao<Role> {
 
 	public int insertRoleOffice(Role role);
 
+	List<Role> searchRoleByName(Role role);
 }
