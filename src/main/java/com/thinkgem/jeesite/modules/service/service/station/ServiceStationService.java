@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.station;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +44,8 @@ public class ServiceStationService extends CrudService<ServiceStationDao, Servic
 	public void delete(ServiceStation serviceStation) {
 		super.delete(serviceStation);
 	}
-	
+
+	public Page<User> findUserData(String id) {
+		return null;
+	}
 }
