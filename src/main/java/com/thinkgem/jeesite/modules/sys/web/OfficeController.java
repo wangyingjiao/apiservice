@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
@@ -148,7 +149,8 @@ public class OfficeController extends BaseController {
         return "redirect:" + adminPath + "/sys/office/list?id=" + office.getParentId() + "&parentIds=" + office.getParentIds();
     }
 
-    /**ø
+    /**
+     * ø
      * 获取机构JSON数据。
      *
      * @param extId    排除的ID
@@ -168,7 +170,8 @@ public class OfficeController extends BaseController {
         List<Office> list = officeService.findList(isAll);
         for (int i = 0; i < list.size(); i++) {
             Office e = list.get(i);
-            if ((StringUtils.isBlank(extId) || (extId != null && !extId.equals(e.getId()) && e.getParentIds().indexOf("," + extId + ",") == -1))
+            if ((StringUtils.isBlank(extId) ||
+                    (extId != null && !extId.equals(e.getId()) && e.getParentIds().indexOf("," + extId + ",") == -1))
                     && (type == null || (type != null && (type.equals("1") ? type.equals(e.getType()) : true)))
                     && (grade == null || (grade != null && Integer.parseInt(e.getGrade()) <= grade.intValue()))
                     && Global.YES.equals(e.getUseable())) {
@@ -199,35 +202,52 @@ public class OfficeController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:office:edit")
-    @RequestMapping(value = "saveData", method = {RequestMethod.POST, RequestMethod.GET})
+    //@RequiresPermissions("sys:office:edit")
+    @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新机构")
     public Result saveData(@RequestBody Office office) {
-        if (!beanValidator(office)) {
-            return new FailResult("参数有误，请检查！");
+
+        if (null == office.getParent()) {
+            office.setParent(new Office("1"));
         }
+        //设置area
+        office.setArea(new Area(office.getAreaId()));
+        //默认为1级
+        office.setGrade("1");
+        //默认可用
+        office.setUseable("1");
+
+
+        if (!beanValidator(office)) {
+            return new FailResult("参数有误:");
+        }
+        //检查重名
+        if (officeService.getByName(office.getName())) {
+            return new FailResult("机构名称重复");
+        }
+
         officeService.save(office);
 
-        if (office.getChildDeptList() != null) {
-            Office childOffice = null;
-            for (String id : office.getChildDeptList()) {
-                childOffice = new Office();
-                childOffice.setName(DictUtils.getDictLabel(id, "sys_office_common", "未知"));
-                childOffice.setParent(office);
-                childOffice.setArea(office.getArea());
-                childOffice.setType("2");
-                childOffice.setGrade(String.valueOf(Integer.valueOf(office.getGrade()) + 1));
-                childOffice.setUseable(Global.YES);
-                officeService.save(childOffice);
-            }
-        }
+//        if (office.getChildDeptList() != null) {
+//            Office childOffice = null;
+//            for (String id : office.getChildDeptList()) {
+//                childOffice = new Office();
+//                childOffice.setName(DictUtils.getDictLabel(id, "sys_office_common", "未知"));
+//                childOffice.setParent(office);
+//                childOffice.setArea(office.getArea());
+//                childOffice.setType("2");
+//                childOffice.setGrade(String.valueOf(Integer.valueOf(office.getGrade()) + 1));
+//                childOffice.setUseable(Global.YES);
+//                officeService.save(childOffice);
+//            }
+//        }
 
         return new SuccResult<String>("保存机构'" + office.getName() + "'成功");
     }
 
     @ResponseBody
     @RequiresPermissions("sys:office:edit")
-    @RequestMapping(value = "deleteOffice",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "deleteOffice", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "删除机构及子机构")
     public Result deleteOffice(Office office) {
         officeService.delete(office);
@@ -236,7 +256,7 @@ public class OfficeController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:office:view")
-    @RequestMapping(value = "formData",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "formData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "机构详情!")
     public Result formData(@RequestBody Office office) {
         office = officeService.get(office);

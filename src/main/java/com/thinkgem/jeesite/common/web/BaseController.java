@@ -127,7 +127,6 @@ public abstract class BaseController {
             BeanValidators.validateWithException(validator, object);
         } catch (ConstraintViolationException ex) {
             List<String> list = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
-
             logger.debug("数据验证失败:" + list);
             return false;
         }

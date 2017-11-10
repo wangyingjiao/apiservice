@@ -14,5 +14,6 @@ import com.thinkgem.jeesite.modules.sys.entity.Office;
  */
 @MyBatisDao
 public interface OfficeDao extends TreeDao<Office> {
-	
+
+    Office getByName(String name);
 }

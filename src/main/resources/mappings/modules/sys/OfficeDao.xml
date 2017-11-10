@@ -82,7 +82,10 @@
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
 		ORDER BY a.code
 	</select>
-	
+	<select id="getByName" resultType="com.thinkgem.jeesite.modules.sys.entity.Office">
+		select * from sys_office WHERE 1=1 AND name = #{name};
+	</select>
+
 	<insert id="insert">
 		INSERT INTO sys_office(
 			id, 

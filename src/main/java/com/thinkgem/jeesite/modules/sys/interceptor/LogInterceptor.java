@@ -43,7 +43,7 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
         if (null != request.getContentType()
                 && request.getContentType().toLowerCase().indexOf(MediaType.APPLICATION_JSON_VALUE) != -1) {
             String json = "";
-            logger.info("==============JSON请求===========");
+            logger.info("==============JSON请求===========>"+request.getRequestURI());
             Map parameterMap = request.getParameterMap();
             JSON.toJSONString(parameterMap);
             String line;

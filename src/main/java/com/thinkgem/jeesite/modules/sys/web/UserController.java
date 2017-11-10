@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
@@ -288,7 +289,7 @@ public class UserController extends BaseController {
     @ApiIgnore
     @ResponseBody
     @RequiresPermissions("sys:user:edit")
-    @RequestMapping(value = "checkLoginName", method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "checkLoginName", method = {RequestMethod.POST, RequestMethod.GET})
     public String checkLoginName(String oldLoginName, String loginName) {
         if (loginName != null && loginName.equals(oldLoginName)) {
             return "true";
@@ -372,10 +373,26 @@ public class UserController extends BaseController {
     @ApiOperation(value = "获得用户的菜单列表")
     public Result<List<Menu>> menuData() {
         List<Menu> menuList = UserUtils.getMenuList();
-        return new Result<>(1, menuList);
+        List<Menu> menus = genTreeMenu("1", menuList);
+        logger.info(JSON.toJSONString(menus));
+        return new SuccResult(menus);
+    }
+
+    private List<Menu> genTreeMenu(String id, List<Menu> menus) {
+        ArrayList<Menu> list = new ArrayList<>();
+        for (Menu menu : menus) {
+            //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
+            if (menu.getParentId().equals(id)) {
+                List<Menu> menus1 = genTreeMenu(menu.getId(), menus);
+                menu.setSubMenus(menus1);
+                list.add(menu);
+            }
+        }
+        return list;
     }
 
     /**
+     * genTreeMenu(menus.get(i).getId(),menus);
      * 修改个人用户密码
      *
      * @param oldPassword
@@ -504,7 +521,7 @@ public class UserController extends BaseController {
         }
         // 角色数据有效性验证，过滤不在授权内的角色
         List<Role> roleList = Lists.newArrayList();
-        String [] roles = user.getRoles();
+        String[] roles = user.getRoles();
         List<String> roleIdList = Lists.newArrayList(roles);
         for (Role r : systemService.findAllRole()) {
             if (roleIdList.contains(r.getId())) {

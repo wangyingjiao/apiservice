@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.service.station;
 import java.util.List;
 
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,8 @@ import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
 @Service
 @Transactional(readOnly = true)
 public class ServiceStationService extends CrudService<ServiceStationDao, ServiceStation> {
+	@Autowired
+	ServiceStationDao stationDao;
 
 	public ServiceStation get(String id) {
 		return super.get(id);
@@ -46,6 +49,6 @@ public class ServiceStationService extends CrudService<ServiceStationDao, Servic
 	}
 
 	public Page<User> findUserData(String id) {
-		return null;
+		return stationDao.findUserData(id);
 	}
 }

@@ -153,6 +153,7 @@ public class ServiceStationController extends BaseController {
     @ResponseBody
     @RequiresPermissions("service:station:serviceStation:edit")
     @RequestMapping(value = "deleteStation")
+    @ApiOperation("删除服务站")
     public Result deleteStation(@RequestBody ServiceStation serviceStation) {
         serviceStationService.delete(serviceStation);
         return new SuccResult("删除服务站成功");

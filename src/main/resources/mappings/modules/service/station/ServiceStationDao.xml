@@ -76,7 +76,11 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+	<!--返回当前服务站下的员工列表-->
+	<select id="findUserData" resultType="com.thinkgem.jeesite.modules.sys.entity.User">
+		SELECT * FROM sys_user WHERE office_id = #{id}
+	</select>
+
 	<insert id="insert">
 		INSERT INTO service_station(
 			id,

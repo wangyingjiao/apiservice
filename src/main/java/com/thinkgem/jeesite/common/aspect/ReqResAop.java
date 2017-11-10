@@ -1,7 +1,7 @@
 package com.thinkgem.jeesite.common.aspect;
 
-import com.alibaba.fastjson.JSON;
-import com.sun.org.apache.regexp.internal.RE;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -21,18 +21,12 @@ public class ReqResAop {
 
     @Before("point()")
     public void before(JoinPoint jp) throws Exception {
-
-        logger.info(jp.getSourceLocation());
-        logger.info(jp.getTarget());
-        logger.info(jp.getKind());
-        logger.info(jp.getStaticPart());
-        logger.info(jp.getArgs());
     }
 
     @Around("point()")
     public Object around(ProceedingJoinPoint jp) throws Throwable {
         Object proceed = jp.proceed();
-        logger.info("返回值："+ JSON.toJSONString(proceed));
+        logger.info("返回值：" + JsonMapper.toJsonString(proceed));
         return proceed;
     }
 
