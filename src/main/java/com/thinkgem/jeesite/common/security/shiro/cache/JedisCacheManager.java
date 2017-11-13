@@ -20,6 +20,7 @@ import redis.clients.jedis.Jedis;
 import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.utils.JedisUtils;
 import com.thinkgem.jeesite.common.web.Servlets;
+import redis.clients.jedis.JedisCluster;
 
 /**
  * 自定义授权缓存管理类
@@ -80,7 +81,7 @@ public class JedisCacheManager implements CacheManager {
 			}
 			
 			V value = null;
-			Jedis jedis = null;
+			JedisCluster jedis = null;
 			try {
 				jedis = JedisUtils.getResource();
 				value = (V)JedisUtils.toObject(jedis.hget(JedisUtils.getBytesKey(cacheKeyName), JedisUtils.getBytesKey(key)));
@@ -104,7 +105,7 @@ public class JedisCacheManager implements CacheManager {
 				return null;
 			}
 			
-			Jedis jedis = null;
+			JedisCluster jedis = null;
 			try {
 				jedis = JedisUtils.getResource();
 				jedis.hset(JedisUtils.getBytesKey(cacheKeyName), JedisUtils.getBytesKey(key), JedisUtils.toBytes(value));
@@ -121,7 +122,7 @@ public class JedisCacheManager implements CacheManager {
 		@Override
 		public V remove(K key) throws CacheException {
 			V value = null;
-			Jedis jedis = null;
+			JedisCluster jedis = null;
 			try {
 				jedis = JedisUtils.getResource();
 				value = (V)JedisUtils.toObject(jedis.hget(JedisUtils.getBytesKey(cacheKeyName), JedisUtils.getBytesKey(key)));
@@ -137,7 +138,7 @@ public class JedisCacheManager implements CacheManager {
 
 		@Override
 		public void clear() throws CacheException {
-			Jedis jedis = null;
+			JedisCluster jedis = null;
 			try {
 				jedis = JedisUtils.getResource();
 				jedis.hdel(JedisUtils.getBytesKey(cacheKeyName));
@@ -152,7 +153,7 @@ public class JedisCacheManager implements CacheManager {
 		@Override
 		public int size() {
 			int size = 0;
-			Jedis jedis = null;
+			JedisCluster jedis = null;
 			try {
 				jedis = JedisUtils.getResource();
 				size = jedis.hlen(JedisUtils.getBytesKey(cacheKeyName)).intValue();
@@ -170,11 +171,11 @@ public class JedisCacheManager implements CacheManager {
 		@Override
 		public Set<K> keys() {
 			Set<K> keys = Sets.newHashSet();
-			Jedis jedis = null;
+			JedisCluster jedis = null;
 			try {
 				jedis = JedisUtils.getResource();
-				Set<byte[]> set = jedis.hkeys(JedisUtils.getBytesKey(cacheKeyName));
-				for(byte[] key : set){
+				Set<String> set = jedis.hkeys(JedisUtils.getBytesKey(cacheKeyName));
+				for(String key : set){
 					Object obj = (K)JedisUtils.getObjectKey(key);
 					if (obj != null){
 						keys.add((K) obj);
@@ -194,11 +195,11 @@ public class JedisCacheManager implements CacheManager {
 		@Override
 		public Collection<V> values() {
 			Collection<V> vals = Collections.emptyList();;
-			Jedis jedis = null;
+			JedisCluster jedis = null;
 			try {
 				jedis = JedisUtils.getResource();
-				Collection<byte[]> col = jedis.hvals(JedisUtils.getBytesKey(cacheKeyName));
-				for(byte[] val : col){
+				Collection<String> col = jedis.hvals(JedisUtils.getBytesKey(cacheKeyName));
+				for(String val : col){
 					Object obj = JedisUtils.toObject(val);
 					if (obj != null){
 						vals.add((V) obj);

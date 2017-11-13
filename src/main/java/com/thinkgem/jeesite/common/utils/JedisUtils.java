@@ -3,10 +3,13 @@
  */
 package com.thinkgem.jeesite.common.utils;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,13 +17,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.config.Global;
-
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisException;
+import redis.clients.jedis.JedisCluster;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 
 /**
- * Jedis Cache 工具类
+ * cluster Cache 工具类
  * 
  * @author ThinkGem
  * @version 2014-6-29
@@ -29,7 +33,7 @@ public class JedisUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
 	
-	private static JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
+	private static JedisCluster  cluster = SpringContextHolder.getBean(JedisCluster.class);
 
 	public static final String KEY_PREFIX = Global.getConfig("redis.keyPrefix");
 	
@@ -40,19 +44,17 @@ public class JedisUtils {
 	 */
 	public static String get(String key) {
 		String value = null;
-		Jedis jedis = null;
+		
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)) {
-				value = jedis.get(key);
+			
+			if (cluster.exists(key)) {
+				value = cluster.get(key);
 				value = StringUtils.isNotBlank(value) && !"nil".equalsIgnoreCase(value) ? value : null;
 				logger.debug("get {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("get {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
+		} 
 		return value;
 	}
 	
@@ -63,18 +65,16 @@ public class JedisUtils {
 	 */
 	public static Object getObject(String key) {
 		Object value = null;
-		Jedis jedis = null;
+		
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))) {
-				value = toObject(jedis.get(getBytesKey(key)));
+			
+			if (cluster.exists(getBytesKey(key))) {
+				value = toObject(cluster.get(getBytesKey(key)));
 				logger.debug("getObject {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("getObject {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
+		} 
 		return value;
 	}
 	
@@ -87,18 +87,16 @@ public class JedisUtils {
 	 */
 	public static String set(String key, String value, int cacheSeconds) {
 		String result = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.set(key, value);
+			
+			result = cluster.set(key, value);
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("set {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("set {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -112,18 +110,16 @@ public class JedisUtils {
 	 */
 	public static String setObject(String key, Object value, int cacheSeconds) {
 		String result = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.set(getBytesKey(key), toBytes(value));
+			
+			result = cluster.set(getBytesKey(key), toBytes(value));
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("setObject {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setObject {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -135,17 +131,15 @@ public class JedisUtils {
 	 */
 	public static List<String> getList(String key) {
 		List<String> value = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)) {
-				value = jedis.lrange(key, 0, -1);
+			
+			if (cluster.exists(key)) {
+				value = cluster.lrange(key, 0, -1);
 				logger.debug("getList {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("getList {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return value;
 	}
@@ -157,21 +151,19 @@ public class JedisUtils {
 	 */
 	public static List<Object> getObjectList(String key) {
 		List<Object> value = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))) {
-				List<byte[]> list = jedis.lrange(getBytesKey(key), 0, -1);
+			
+			if (cluster.exists(getBytesKey(key))) {
+				List<String> list = cluster.lrange(getBytesKey(key), 0, -1);
 				value = Lists.newArrayList();
-				for (byte[] bs : list){
+				for (String bs : list){
 					value.add(toObject(bs));
 				}
 				logger.debug("getObjectList {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("getObjectList {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return value;
 	}
@@ -185,21 +177,19 @@ public class JedisUtils {
 	 */
 	public static long setList(String key, List<String> value, int cacheSeconds) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)) {
-				jedis.del(key);
+			
+			if (cluster.exists(key)) {
+				cluster.del(key);
 			}
-			result = jedis.rpush(key, (String[])value.toArray());
+			result = cluster.rpush(key, (String[])value.toArray());
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("setList {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setList {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -213,25 +203,23 @@ public class JedisUtils {
 	 */
 	public static long setObjectList(String key, List<Object> value, int cacheSeconds) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))) {
-				jedis.del(key);
+			
+			if (cluster.exists(getBytesKey(key))) {
+				cluster.del(key);
 			}
-			List<byte[]> list = Lists.newArrayList();
+			List<Object> list = Lists.newArrayList();
 			for (Object o : value){
 				list.add(toBytes(o));
 			}
-			result = jedis.rpush(getBytesKey(key), (byte[][])list.toArray());
+			result = cluster.rpush(getBytesKey(key), (String [])list.toArray());
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("setObjectList {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setObjectList {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -244,15 +232,13 @@ public class JedisUtils {
 	 */
 	public static long listAdd(String key, String... value) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.rpush(key, value);
+			
+			result = cluster.rpush(key, value);
 			logger.debug("listAdd {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("listAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -265,19 +251,17 @@ public class JedisUtils {
 	 */
 	public static long listObjectAdd(String key, Object... value) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			List<byte[]> list = Lists.newArrayList();
+			
+			List<Object> list = Lists.newArrayList();
 			for (Object o : value){
 				list.add(toBytes(o));
 			}
-			result = jedis.rpush(getBytesKey(key), (byte[][])list.toArray());
+			result = cluster.rpush(getBytesKey(key), (String[]) list.toArray());
 			logger.debug("listObjectAdd {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("listObjectAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -289,17 +273,15 @@ public class JedisUtils {
 	 */
 	public static Set<String> getSet(String key) {
 		Set<String> value = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)) {
-				value = jedis.smembers(key);
+			
+			if (cluster.exists(key)) {
+				value = cluster.smembers(key);
 				logger.debug("getSet {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("getSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return value;
 	}
@@ -311,21 +293,19 @@ public class JedisUtils {
 	 */
 	public static Set<Object> getObjectSet(String key) {
 		Set<Object> value = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))) {
+			
+			if (cluster.exists(getBytesKey(key))) {
 				value = Sets.newHashSet();
-				Set<byte[]> set = jedis.smembers(getBytesKey(key));
-				for (byte[] bs : set){
+				Set<String> set = cluster.smembers(getBytesKey(key));
+				for (String bs : set){
 					value.add(toObject(bs));
 				}
 				logger.debug("getObjectSet {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("getObjectSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return value;
 	}
@@ -339,21 +319,19 @@ public class JedisUtils {
 	 */
 	public static long setSet(String key, Set<String> value, int cacheSeconds) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)) {
-				jedis.del(key);
+			
+			if (cluster.exists(key)) {
+				cluster.del(key);
 			}
-			result = jedis.sadd(key, (String[])value.toArray());
+			result = cluster.sadd(key, (String[])value.toArray());
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("setSet {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -367,25 +345,23 @@ public class JedisUtils {
 	 */
 	public static long setObjectSet(String key, Set<Object> value, int cacheSeconds) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))) {
-				jedis.del(key);
+			
+			if (cluster.exists(getBytesKey(key))) {
+				cluster.del(key);
 			}
-			Set<byte[]> set = Sets.newHashSet();
+			Set<String> set = Sets.newHashSet();
 			for (Object o : value){
 				set.add(toBytes(o));
 			}
-			result = jedis.sadd(getBytesKey(key), (byte[][])set.toArray());
+			result = cluster.sadd(getBytesKey(key), (String[])set.toArray());
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("setObjectSet {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setObjectSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -398,15 +374,13 @@ public class JedisUtils {
 	 */
 	public static long setSetAdd(String key, String... value) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.sadd(key, value);
+			
+			result = cluster.sadd(key, value);
 			logger.debug("setSetAdd {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setSetAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -419,19 +393,17 @@ public class JedisUtils {
 	 */
 	public static long setSetObjectAdd(String key, Object... value) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			Set<byte[]> set = Sets.newHashSet();
+			
+			Set<String> set = Sets.newHashSet();
 			for (Object o : value){
 				set.add(toBytes(o));
 			}
-			result = jedis.rpush(getBytesKey(key), (byte[][])set.toArray());
+			result = cluster.rpush(getBytesKey(key), (String[])set.toArray());
 			logger.debug("setSetObjectAdd {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setSetObjectAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -443,17 +415,15 @@ public class JedisUtils {
 	 */
 	public static Map<String, String> getMap(String key) {
 		Map<String, String> value = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)) {
-				value = jedis.hgetAll(key);
+			
+			if (cluster.exists(key)) {
+				value = cluster.hgetAll(key);
 				logger.debug("getMap {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("getMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return value;
 	}
@@ -465,21 +435,19 @@ public class JedisUtils {
 	 */
 	public static Map<String, Object> getObjectMap(String key) {
 		Map<String, Object> value = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))) {
+			
+			if (cluster.exists(getBytesKey(key))) {
 				value = Maps.newHashMap();
-				Map<byte[], byte[]> map = jedis.hgetAll(getBytesKey(key));
-				for (Map.Entry<byte[], byte[]> e : map.entrySet()){
-					value.put(StringUtils.toString(e.getKey()), toObject(e.getValue()));
+				Map<String, String> map = cluster.hgetAll(getBytesKey(key));
+				for (Map.Entry<String, String> e : map.entrySet()){
+					value.put(e.getKey(), toObject(e.getValue()));
 				}
 				logger.debug("getObjectMap {} = {}", key, value);
 			}
 		} catch (Exception e) {
 			logger.warn("getObjectMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return value;
 	}
@@ -493,21 +461,19 @@ public class JedisUtils {
 	 */
 	public static String setMap(String key, Map<String, String> value, int cacheSeconds) {
 		String result = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)) {
-				jedis.del(key);
+			
+			if (cluster.exists(key)) {
+				cluster.del(key);
 			}
-			result = jedis.hmset(key, value);
+			result = cluster.hmset(key, value);
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("setMap {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -521,25 +487,23 @@ public class JedisUtils {
 	 */
 	public static String setObjectMap(String key, Map<String, Object> value, int cacheSeconds) {
 		String result = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))) {
-				jedis.del(key);
+			
+			if (cluster.exists(getBytesKey(key))) {
+				cluster.del(key);
 			}
-			Map<byte[], byte[]> map = Maps.newHashMap();
+			Map<String, String> map = Maps.newHashMap();
 			for (Map.Entry<String, Object> e : value.entrySet()){
 				map.put(getBytesKey(e.getKey()), toBytes(e.getValue()));
 			}
-			result = jedis.hmset(getBytesKey(key), (Map<byte[], byte[]>)map);
+			result = cluster.hmset(getBytesKey(key), (Map<String, String>)map);
 			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
+				cluster.expire(key, cacheSeconds);
 			}
 			logger.debug("setObjectMap {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("setObjectMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -552,15 +516,13 @@ public class JedisUtils {
 	 */
 	public static String mapPut(String key, Map<String, String> value) {
 		String result = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.hmset(key, value);
+			
+			result = cluster.hmset(key, value);
 			logger.debug("mapPut {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("mapPut {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -573,19 +535,17 @@ public class JedisUtils {
 	 */
 	public static String mapObjectPut(String key, Map<String, Object> value) {
 		String result = null;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			Map<byte[], byte[]> map = Maps.newHashMap();
+			
+			Map<String, String> map = Maps.newHashMap();
 			for (Map.Entry<String, Object> e : value.entrySet()){
 				map.put(getBytesKey(e.getKey()), toBytes(e.getValue()));
 			}
-			result = jedis.hmset(getBytesKey(key), (Map<byte[], byte[]>)map);
+			result = cluster.hmset(getBytesKey(key), (Map<String, String>)map);
 			logger.debug("mapObjectPut {} = {}", key, value);
 		} catch (Exception e) {
 			logger.warn("mapObjectPut {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -598,15 +558,13 @@ public class JedisUtils {
 	 */
 	public static long mapRemove(String key, String mapKey) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.hdel(key, mapKey);
+			
+			result = cluster.hdel(key, mapKey);
 			logger.debug("mapRemove {}  {}", key, mapKey);
 		} catch (Exception e) {
 			logger.warn("mapRemove {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -619,15 +577,13 @@ public class JedisUtils {
 	 */
 	public static long mapObjectRemove(String key, String mapKey) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.hdel(getBytesKey(key), getBytesKey(mapKey));
+			
+			result = cluster.hdel(getBytesKey(key), getBytesKey(mapKey));
 			logger.debug("mapObjectRemove {}  {}", key, mapKey);
 		} catch (Exception e) {
 			logger.warn("mapObjectRemove {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -640,15 +596,13 @@ public class JedisUtils {
 	 */
 	public static boolean mapExists(String key, String mapKey) {
 		boolean result = false;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.hexists(key, mapKey);
+			
+			result = cluster.hexists(key, mapKey);
 			logger.debug("mapExists {}  {}", key, mapKey);
 		} catch (Exception e) {
 			logger.warn("mapExists {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -661,15 +615,13 @@ public class JedisUtils {
 	 */
 	public static boolean mapObjectExists(String key, String mapKey) {
 		boolean result = false;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.hexists(getBytesKey(key), getBytesKey(mapKey));
+			
+			result = cluster.hexists(getBytesKey(key), getBytesKey(mapKey));
 			logger.debug("mapObjectExists {}  {}", key, mapKey);
 		} catch (Exception e) {
 			logger.warn("mapObjectExists {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -681,19 +633,17 @@ public class JedisUtils {
 	 */
 	public static long del(String key) {
 		long result = 0;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			if (jedis.exists(key)){
-				result = jedis.del(key);
+			
+			if (cluster.exists(key)){
+				result = cluster.del(key);
 				logger.debug("del {}", key);
 			}else{
 				logger.debug("del {} not exists", key);
 			}
 		} catch (Exception e) {
 			logger.warn("del {}", key, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -705,19 +655,16 @@ public class JedisUtils {
 	 */
 	public static long delObject(String key) {
 		long result = 0;
-		Jedis jedis = null;
 		try {
-			jedis = getResource();
-			if (jedis.exists(getBytesKey(key))){
-				result = jedis.del(getBytesKey(key));
+			
+			if (cluster.exists(getBytesKey(key))){
+				result = cluster.del(getBytesKey(key));
 				logger.debug("delObject {}", key);
 			}else{
 				logger.debug("delObject {} not exists", key);
 			}
 		} catch (Exception e) {
 			logger.warn("delObject {}", key, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -729,15 +676,13 @@ public class JedisUtils {
 	 */
 	public static boolean exists(String key) {
 		boolean result = false;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.exists(key);
+			
+			result = cluster.exists(key);
 			logger.debug("exists {}", key);
 		} catch (Exception e) {
 			logger.warn("exists {}", key, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -749,15 +694,13 @@ public class JedisUtils {
 	 */
 	public static boolean existsObject(String key) {
 		boolean result = false;
-		Jedis jedis = null;
+
 		try {
-			jedis = getResource();
-			result = jedis.exists(getBytesKey(key));
+			
+			result = cluster.exists(getBytesKey(key));
 			logger.debug("existsObject {}", key);
 		} catch (Exception e) {
 			logger.warn("existsObject {}", key, e);
-		} finally {
-			returnResource(jedis);
 		}
 		return result;
 	}
@@ -765,53 +708,56 @@ public class JedisUtils {
 	/**
 	 * 获取资源
 	 * @return
-	 * @throws JedisException
+	 * @throws clusterException
 	 */
-	public static Jedis getResource() throws JedisException {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-//			logger.debug("getResource.", jedis);
-		} catch (JedisException e) {
-			logger.warn("getResource.", e);
-			returnBrokenResource(jedis);
-			throw e;
-		}
-		return jedis;
-	}
+//	public static cluster getResource() throws clusterException {
+//		cluster cluster = null;
+//		try {
+//			cluster = clusterPool.;
+////			logger.debug("getResource.", cluster);
+//		} catch (clusterException e) {
+//			logger.warn("getResource.", e);
+//			returnBrokenResource(cluster);
+//			throw e;
+//		}
+//		return cluster;
+//	}
 
 	/**
 	 * 归还资源
-	 * @param jedis
+	 * @param cluster
 	 * @param isBroken
 	 */
-	public static void returnBrokenResource(Jedis jedis) {
-		if (jedis != null) {
-			jedisPool.returnBrokenResource(jedis);
-		}
-	}
+//	public static void returnBrokenResource(cluster cluster) {
+//		if (cluster != null) {
+//			clusterPool.returnBrokenResource(cluster);
+//		}
+//	}
 	
 	/**
 	 * 释放资源
-	 * @param jedis
+	 * @param cluster
 	 * @param isBroken
 	 */
-	public static void returnResource(Jedis jedis) {
-		if (jedis != null) {
-			jedisPool.returnResource(jedis);
-		}
-	}
+//	public static void returnResource(cluster cluster) {
+//		if (cluster != null) {
+//			clusterPool.returnResource(cluster);
+//		}
+//	}
 
 	/**
 	 * 获取byte[]类型Key
 	 * @param key
 	 * @return
 	 */
-	public static byte[] getBytesKey(Object object){
+	public static String getBytesKey(Object object){
 		if(object instanceof String){
-    		return StringUtils.getBytes((String)object);
+    		return (String)object;
     	}else{
-    		return ObjectUtils.serialize(object);
+			byte[] bytes = ObjectUtils.serialize(object);
+			BASE64Encoder encoder = new BASE64Encoder();
+			String encode = encoder.encode(bytes);
+			return encode;
     	}
 	}
 	
@@ -820,9 +766,9 @@ public class JedisUtils {
 	 * @param key
 	 * @return
 	 */
-	public static Object getObjectKey(byte[] key){
+	public static Object getObjectKey(String key){
 		try{
-			return StringUtils.toString(key);
+			return key;
 		}catch(UnsupportedOperationException uoe){
 			try{
 				return JedisUtils.toObject(key);
@@ -838,8 +784,11 @@ public class JedisUtils {
 	 * @param key
 	 * @return
 	 */
-	public static byte[] toBytes(Object object){
-    	return ObjectUtils.serialize(object);
+	public static String toBytes(Object object){
+		byte[] bytes = ObjectUtils.serialize(object);
+		BASE64Encoder encoder = new BASE64Encoder();
+		String encode = encoder.encode(bytes);
+		return encode;
 	}
 
 	/**
@@ -847,8 +796,22 @@ public class JedisUtils {
 	 * @param key
 	 * @return
 	 */
-	public static Object toObject(byte[] bytes){
-		return ObjectUtils.unserialize(bytes);
+	public static Object toObject(String string){
+		BASE64Decoder decoder = new BASE64Decoder();
+		byte[] bytes = new byte[0];
+		try {
+			bytes = decoder.decodeBuffer(string);
+			return ObjectUtils.unserialize(bytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
+	public static JedisCluster getResource() {
+		return cluster;
+	}
+
+	public static void returnResource(JedisCluster jedis) {
+	}
 }

@@ -28,6 +28,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.JedisUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.Servlets;
+import redis.clients.jedis.JedisCluster;
 
 /**
  * 自定义授权会话管理类
@@ -64,7 +65,7 @@ public class JedisSessionDAO extends AbstractSessionDAO implements SessionDAO {
 			}
 		}
 		
-		Jedis jedis = null;
+		JedisCluster jedis = null;
 		try {
 			
 			jedis = JedisUtils.getResource();
@@ -83,8 +84,6 @@ public class JedisSessionDAO extends AbstractSessionDAO implements SessionDAO {
 			logger.debug("update {} {}", session.getId(), request != null ? request.getRequestURI() : "");
 		} catch (Exception e) {
 			logger.error("update {} {}", session.getId(), request != null ? request.getRequestURI() : "", e);
-		} finally {
-			JedisUtils.returnResource(jedis);
 		}
 	}
 
@@ -94,7 +93,7 @@ public class JedisSessionDAO extends AbstractSessionDAO implements SessionDAO {
 			return;
 		}
 		
-		Jedis jedis = null;
+		JedisCluster jedis = null;
 		try {
 			jedis = JedisUtils.getResource();
 			
@@ -135,7 +134,7 @@ public class JedisSessionDAO extends AbstractSessionDAO implements SessionDAO {
 	public Collection<Session> getActiveSessions(boolean includeLeave, Object principal, Session filterSession){
 		Set<Session> sessions = Sets.newHashSet();
 		
-		Jedis jedis = null;
+		JedisCluster jedis = null;
 		try {
 			jedis = JedisUtils.getResource();
 			Map<String, String> map = jedis.hgetAll(sessionKeyPrefix);
@@ -233,7 +232,7 @@ public class JedisSessionDAO extends AbstractSessionDAO implements SessionDAO {
 		}
 
 		Session session = null;
-		Jedis jedis = null;
+		JedisCluster jedis = null;
 		try {
 			jedis = JedisUtils.getResource();
 //			if (jedis.exists(sessionKeyPrefix + sessionId)){
@@ -243,8 +242,6 @@ public class JedisSessionDAO extends AbstractSessionDAO implements SessionDAO {
 			logger.debug("doReadSession {} {}", sessionId, request != null ? request.getRequestURI() : "");
 		} catch (Exception e) {
 			logger.error("doReadSession {} {}", sessionId, request != null ? request.getRequestURI() : "", e);
-		} finally {
-			JedisUtils.returnResource(jedis);
 		}
 		
 		if (request != null && session != null){
