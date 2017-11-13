@@ -195,7 +195,7 @@
 						</c:forEach><%--
 						<shiro:hasPermission name="cms:site:select">
 						<li class="dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" href="#">${fnc:getSite(fnc:getCurrentSiteId()).name}<b class="caret"></b></a>
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#"><b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<c:forEach items="${fnc:getSiteList()}" var="site"><li><a href="${ctx}/cms/site/select?id=${site.id}&flag=1">${site.name}</a></li></c:forEach>
 							</ul>
