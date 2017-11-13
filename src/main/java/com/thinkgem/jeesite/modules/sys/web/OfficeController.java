@@ -162,7 +162,7 @@ public class OfficeController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("user")
-    @RequestMapping(value = "treeData", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "treeData", method = RequestMethod.GET)
     @ApiOperation(value = "获得机构组织树形结构")
     public List<Map<String, Object>> treeData(@RequestParam(required = false) String extId, @RequestParam(required = false) String type,
                                               @RequestParam(required = false) Long grade, @RequestParam(required = false) Boolean isAll, HttpServletResponse response) {
@@ -197,8 +197,8 @@ public class OfficeController extends BaseController {
         if (null == office) {
             office = UserUtils.getUser().getOffice();
         }
-        List<Office> list = officeService.findList(office);
-        return new SuccResult(list);
+        List<Office> all = officeService.findAll();
+        return new SuccResult(all);
     }
 
     @ResponseBody
@@ -206,7 +206,6 @@ public class OfficeController extends BaseController {
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新机构")
     public Result saveData(@RequestBody Office office) {
-
         if (null == office.getParent()) {
             office.setParent(new Office("1"));
         }
