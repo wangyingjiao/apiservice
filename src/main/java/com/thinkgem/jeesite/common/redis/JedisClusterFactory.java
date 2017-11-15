@@ -46,7 +46,7 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
             Properties prop = new Properties();
             prop.load(this.addressConfig.getInputStream());  
 
-            Set<HostAndPort> haps = new HashSet<HostAndPort>();
+            Set<HostAndPort> haps = new HashSet<>();
             for (Object key : prop.keySet()) {  
 
                 if (!((String) key).startsWith(addressKeyPrefix)) {  
