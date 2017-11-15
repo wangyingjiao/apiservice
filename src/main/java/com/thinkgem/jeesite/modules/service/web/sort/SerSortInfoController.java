@@ -48,7 +48,7 @@ public class SerSortInfoController extends BaseController {
 	
 	@RequiresPermissions("service:sort:serSortInfo:view")
 	@RequestMapping(value = {"list", ""})
-	public String list(SerSortInfo serSortInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String listData(SerSortInfo serSortInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<SerSortInfo> page = serSortInfoService.findPage(new Page<SerSortInfo>(request, response), serSortInfo); 
 		model.addAttribute("page", page);
 		return "modules/service/sort/serSortInfoList";
