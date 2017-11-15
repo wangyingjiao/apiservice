@@ -30,7 +30,7 @@ public class DefaultExceptionHandler implements HandlerExceptionResolver {
         ModelAndView mv = new ModelAndView();
          //使用FastJson提供的FastJsonJsonView视图返回，不需要捕获异常
         FastJsonJsonView view = new FastJsonJsonView();
-        FailResult<String> failResult = new FailResult<>(ex.getMessage());
+        FailResult<String> failResult = new FailResult<>(ex.getClass()+":"+ex.getMessage());
         JSONObject viewMap = JSONObject.parseObject(JSON.toJSONString(failResult));
         view.setAttributesMap(viewMap);
         mv.setView(view);
