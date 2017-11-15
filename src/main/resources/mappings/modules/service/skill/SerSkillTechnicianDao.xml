@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao">
+    
+	<sql id="serSkillTechnicianColumns">
+		a.id AS "id",
+		a.skill_id AS "skillId",
+		a.technician_id AS "technicianId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="serSkillTechnicianJoins">
+	</sql>
+    
+	<select id="get" resultType="SerSkillTechnician">
+		SELECT 
+			<include refid="serSkillTechnicianColumns"/>
+		FROM ser_skill_technician a
+		<include refid="serSkillTechnicianJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SerSkillTechnician">
+		SELECT 
+			<include refid="serSkillTechnicianColumns"/>
+		FROM ser_skill_technician a
+		<include refid="serSkillTechnicianJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SerSkillTechnician">
+		SELECT 
+			<include refid="serSkillTechnicianColumns"/>
+		FROM ser_skill_technician a
+		<include refid="serSkillTechnicianJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ser_skill_technician(
+			id,
+			skill_id,
+			technician_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{skillId},
+			#{technicianId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ser_skill_technician SET 	
+			skill_id = #{skillId},
+			technician_id = #{technicianId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE ser_skill_technician SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

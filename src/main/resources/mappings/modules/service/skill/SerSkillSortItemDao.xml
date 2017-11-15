@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortItemDao">
+    
+	<sql id="serSkillSortItemColumns">
+		a.id AS "id",
+		a.skill_id AS "skillId",
+		a.sort_id AS "sortId",
+		a.sort_name AS "sortName",
+		a.item_id AS "itemId",
+		a.item_name AS "itemName",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="serSkillSortItemJoins">
+	</sql>
+    
+	<select id="get" resultType="SerSkillSortItem">
+		SELECT 
+			<include refid="serSkillSortItemColumns"/>
+		FROM ser_skill_sort_item a
+		<include refid="serSkillSortItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SerSkillSortItem">
+		SELECT 
+			<include refid="serSkillSortItemColumns"/>
+		FROM ser_skill_sort_item a
+		<include refid="serSkillSortItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SerSkillSortItem">
+		SELECT 
+			<include refid="serSkillSortItemColumns"/>
+		FROM ser_skill_sort_item a
+		<include refid="serSkillSortItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ser_skill_sort_item(
+			id,
+			skill_id,
+			sort_id,
+			sort_name,
+			item_id,
+			item_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{skillId},
+			#{sortId},
+			#{sortName},
+			#{itemId},
+			#{itemName},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ser_skill_sort_item SET 	
+			skill_id = #{skillId},
+			sort_id = #{sortId},
+			sort_name = #{sortName},
+			item_id = #{itemId},
+			item_name = #{itemName},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE ser_skill_sort_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
