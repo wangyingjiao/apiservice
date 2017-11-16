@@ -61,7 +61,17 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
+	<select id="getCitys" resultType="SerSortCity">
+		SELECT
+		<include refid="serSortCityColumns"/>
+		FROM ser_sort_city a
+		<where>
+			a.sort_id = #{id}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
 	<insert id="insert">
 		INSERT INTO ser_sort_city(
 			id,
