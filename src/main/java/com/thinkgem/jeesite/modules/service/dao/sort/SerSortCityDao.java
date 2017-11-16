@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortCity;
 
+import java.util.List;
+
 /**
  * 服务分类对应的定向城市DAO接口
  * @author a
@@ -14,5 +16,5 @@ import com.thinkgem.jeesite.modules.service.entity.sort.SerSortCity;
  */
 @MyBatisDao
 public interface SerSortCityDao extends CrudDao<SerSortCity> {
-	
+    List<SerSortCity> getCitys(String id);
 }

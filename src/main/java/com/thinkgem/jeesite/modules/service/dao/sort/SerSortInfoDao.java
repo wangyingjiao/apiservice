@@ -5,7 +5,10 @@ package com.thinkgem.jeesite.modules.service.dao.sort;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerSortCity;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
+
+import java.util.List;
 
 /**
  * 服务分类DAO接口
@@ -14,5 +17,12 @@ import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
  */
 @MyBatisDao
 public interface SerSortInfoDao extends CrudDao<SerSortInfo> {
-	
+
+    int checkDataName(SerSortInfo serSortInfo);
+
+    int checkedSortItem(SerSortInfo serSortInfo);
+
+    List<SerSortCity> getOfficeCitys(String officeId);
+
+    int checkCityItem(SerSortInfo serSortInfo);
 }

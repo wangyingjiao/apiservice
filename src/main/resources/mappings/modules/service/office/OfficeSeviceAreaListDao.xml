@@ -116,5 +116,15 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<!-- 获取机构下的所有区域 -->
+	<select id="getOfficeCitys" resultType="OfficeSeviceAreaList">
+		SELECT
+		<include refid="officeSeviceAreaListColumns"/>
+		FROM office_sevice_area_list a
+		<where>
+			a.office_id = #{id}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
 </mapper>

@@ -4,6 +4,8 @@
     
 	<sql id="serSortInfoColumns">
 		a.id AS "id",
+		a.station_id AS "stationId",
+		a.office_id AS "officeId",
 		a.major_sort AS "majorSort",
 		a.name AS "name",
 		a.create_by AS "createBy.id",
@@ -12,6 +14,21 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
+	</sql>
+	<sql id="serSortCityColumns">
+		a.id AS "id",
+		a.station_id AS "stationId",
+		a.office_id AS "officeId",
+		a.major_sort AS "majorSort",
+		a.name AS "name",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.city_id AS "cityId",
+		b.city_name AS "cityName"
 	</sql>
 	
 	<sql id="serSortInfoJoins">
@@ -26,9 +43,10 @@
 	</select>
 	
 	<select id="findList" resultType="SerSortInfo">
-		SELECT 
-			<include refid="serSortInfoColumns"/>
+		SELECT
+			<include refid="serSortCityColumns"/>
 		FROM ser_sort_info a
+		LEFT JOIN ser_sort_city b ON a.id = b.sort_id
 		<include refid="serSortInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -37,6 +55,15 @@
 					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="majorSort != null and majorSort !=''">
+				AND a.major_sort= #{majorSort}
+			</if>
+			<if test="city != null and city !=''">
+				AND b.city_name LIKE
+					<if test="dbName == 'oracle'">'%'||#{city}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{city}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{city},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -48,7 +75,30 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+	<!-- 验证服务分类名称是否重复 -->
+	<select id="checkDataName" resultType="int">
+		SELECT COUNT(*) FROM ser_sort_info
+		WHERE name = #{name}
+		AND  office_id = #{officeId}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<!-- 验证此分类下是否有服务项目 -->
+	<select id="checkedSortItem" resultType="int">
+		SELECT COUNT(*) FROM ser_sort_info s
+		INNER JOIN ser_item_info i on s.id=i.soit_id
+		WHERE s.id = #{id}
+		AND i.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<!-- 检查定向城市是否设置服务项目 -->
+	<select id="checkCityItem" resultType="int">
+		SELECT COUNT(*) FROM ser_sort_info s
+		INNER JOIN ser_item_info i on s.id=i.sort_id
+		INNER JOIN ser_item_city ic on i.id=ic.item_id
+		WHERE s.id = #{id}
+		AND ic.city_name = #{city}
+		AND i.del_flag = #{DEL_FLAG_NORMAL}
+		AND ic.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 	<select id="findAllList" resultType="SerSortInfo">
 		SELECT 
 			<include refid="serSortInfoColumns"/>
@@ -70,6 +120,8 @@
 	<insert id="insert">
 		INSERT INTO ser_sort_info(
 			id,
+			station_id,
+			office_id,
 			major_sort,
 			name,
 			create_by,
@@ -80,6 +132,8 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{stationId},
+			#{officeId},
 			#{majorSort},
 			#{name},
 			#{createBy.id},
@@ -92,7 +146,9 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE ser_sort_info SET 	
+		UPDATE ser_sort_info SET
+			station_id = #{stationId},
+			office_id = #{officeId},
 			major_sort = #{majorSort},
 			name = #{name},
 			update_by = #{updateBy.id},
