@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianFamilyMembersDao">
+    
+	<sql id="serviceTechnicianFamilyMembersColumns">
+		a.id AS "id",
+		a.tech_id AS "techId",
+		a.tech_name AS "techName",
+		a.relation AS "relation",
+		a.member_name AS "memberName",
+		a.member_phone AS "memberPhone",
+		a.member_unit AS "memberUnit",
+		a.member_job AS "memberJob",
+		a.sort AS "sort",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="serviceTechnicianFamilyMembersJoins">
+	</sql>
+    
+	<select id="get" resultType="ServiceTechnicianFamilyMembers">
+		SELECT 
+			<include refid="serviceTechnicianFamilyMembersColumns"/>
+		FROM service_technician_family_members a
+		<include refid="serviceTechnicianFamilyMembersJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ServiceTechnicianFamilyMembers">
+		SELECT 
+			<include refid="serviceTechnicianFamilyMembersColumns"/>
+		FROM service_technician_family_members a
+		<include refid="serviceTechnicianFamilyMembersJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ServiceTechnicianFamilyMembers">
+		SELECT 
+			<include refid="serviceTechnicianFamilyMembersColumns"/>
+		FROM service_technician_family_members a
+		<include refid="serviceTechnicianFamilyMembersJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO service_technician_family_members(
+			id,
+			tech_id,
+			tech_name,
+			relation,
+			member_name,
+			member_phone,
+			member_unit,
+			member_job,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{techId},
+			#{techName},
+			#{relation},
+			#{memberName},
+			#{memberPhone},
+			#{memberUnit},
+			#{memberJob},
+			#{sort},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE service_technician_family_members SET 	
+			tech_id = #{techId},
+			tech_name = #{techName},
+			relation = #{relation},
+			member_name = #{memberName},
+			member_phone = #{memberPhone},
+			member_unit = #{memberUnit},
+			member_job = #{memberJob},
+			sort = #{sort},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE service_technician_family_members SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

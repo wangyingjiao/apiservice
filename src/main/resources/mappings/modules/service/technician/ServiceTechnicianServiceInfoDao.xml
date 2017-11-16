@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianServiceInfoDao">
+    
+	<sql id="serviceTechnicianServiceInfoColumns">
+		a.id AS "id",
+		a.tech_id AS "techId",
+		a.tech_name AS "techName",
+		a.service_city_id AS "serviceCityId",
+		a.service_city_name AS "serviceCityName",
+		a.job_natrue AS "jobNatrue",
+		a.station_id AS "stationId",
+		a.station_name AS "stationName",
+		a.job_status AS "jobStatus",
+		a.work_time AS "workTime",
+		a.in_job_time AS "inJobTime",
+		a.assess_grade AS "assessGrade",
+		a.exper_desc AS "experDesc",
+		a.sort AS "sort",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="serviceTechnicianServiceInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="ServiceTechnicianServiceInfo">
+		SELECT 
+			<include refid="serviceTechnicianServiceInfoColumns"/>
+		FROM service_technician_service_info a
+		<include refid="serviceTechnicianServiceInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ServiceTechnicianServiceInfo">
+		SELECT 
+			<include refid="serviceTechnicianServiceInfoColumns"/>
+		FROM service_technician_service_info a
+		<include refid="serviceTechnicianServiceInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ServiceTechnicianServiceInfo">
+		SELECT 
+			<include refid="serviceTechnicianServiceInfoColumns"/>
+		FROM service_technician_service_info a
+		<include refid="serviceTechnicianServiceInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO service_technician_service_info(
+			id,
+			tech_id,
+			tech_name,
+			service_city_id,
+			service_city_name,
+			job_natrue,
+			station_id,
+			station_name,
+			job_status,
+			work_time,
+			in_job_time,
+			assess_grade,
+			exper_desc,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{techId},
+			#{techName},
+			#{serviceCityId},
+			#{serviceCityName},
+			#{jobNatrue},
+			#{stationId},
+			#{stationName},
+			#{jobStatus},
+			#{workTime},
+			#{inJobTime},
+			#{assessGrade},
+			#{experDesc},
+			#{sort},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE service_technician_service_info SET 	
+			tech_id = #{techId},
+			tech_name = #{techName},
+			service_city_id = #{serviceCityId},
+			service_city_name = #{serviceCityName},
+			job_natrue = #{jobNatrue},
+			station_id = #{stationId},
+			station_name = #{stationName},
+			job_status = #{jobStatus},
+			work_time = #{workTime},
+			in_job_time = #{inJobTime},
+			assess_grade = #{assessGrade},
+			exper_desc = #{experDesc},
+			sort = #{sort},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE service_technician_service_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

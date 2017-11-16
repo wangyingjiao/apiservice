@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao">
+    
+	<sql id="serviceTechnicianInfoColumns">
+		a.id AS "id",
+		a.tech_office_id AS "techOfficeId",
+		a.tech_office_name AS "techOfficeName",
+		a.tech_station_id AS "techStationId",
+		a.tech_station_name AS "techStationName",
+		a.tech_name AS "techName",
+		a.tech_id_card AS "techIdCard",
+		a.tech_phone AS "techPhone",
+		a.app_login_password AS "appLoginPassword",
+		a.bank_type AS "bankType",
+		a.bank_card_no AS "bankCardNo",
+		a.addr_province_id AS "addrProvinceId",
+		a.addr_city_id AS "addrCityId",
+		a.addr_district_id AS "addrDistrictId",
+		a.addr_province_name AS "addrProvinceName",
+		a.addr_city_name AS "addrCityName",
+		a.addr_district_name AS "addrDistrictName",
+		a.addr_detail_info AS "addrDetailInfo",
+		a.tech_sex AS "techSex",
+		a.tech_nation AS "techNation",
+		a.tech_birth_date AS "techBirthDate",
+		a.tech_email AS "techEmail",
+		a.tech_education AS "techEducation",
+		a.tech_height AS "techHeight",
+		a.tech_weight AS "techWeight",
+		a.tech_matrimony AS "techMatrimony",
+		a.tech_native_place AS "techNativePlace",
+		a.sort AS "sort",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.column_31 AS "column31"
+	</sql>
+	
+	<sql id="serviceTechnicianInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="ServiceTechnicianInfo">
+		SELECT 
+			<include refid="serviceTechnicianInfoColumns"/>
+		FROM service_technician_info a
+		<include refid="serviceTechnicianInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ServiceTechnicianInfo">
+		SELECT 
+			<include refid="serviceTechnicianInfoColumns"/>
+		FROM service_technician_info a
+		<include refid="serviceTechnicianInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ServiceTechnicianInfo">
+		SELECT 
+			<include refid="serviceTechnicianInfoColumns"/>
+		FROM service_technician_info a
+		<include refid="serviceTechnicianInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO service_technician_info(
+			id,
+			tech_office_id,
+			tech_office_name,
+			tech_station_id,
+			tech_station_name,
+			tech_name,
+			tech_id_card,
+			tech_phone,
+			app_login_password,
+			bank_type,
+			bank_card_no,
+			addr_province_id,
+			addr_city_id,
+			addr_district_id,
+			addr_province_name,
+			addr_city_name,
+			addr_district_name,
+			addr_detail_info,
+			tech_sex,
+			tech_nation,
+			tech_birth_date,
+			tech_email,
+			tech_education,
+			tech_height,
+			tech_weight,
+			tech_matrimony,
+			tech_native_place,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			column_31
+		) VALUES (
+			#{id},
+			#{techOfficeId},
+			#{techOfficeName},
+			#{techStationId},
+			#{techStationName},
+			#{techName},
+			#{techIdCard},
+			#{techPhone},
+			#{appLoginPassword},
+			#{bankType},
+			#{bankCardNo},
+			#{addrProvinceId},
+			#{addrCityId},
+			#{addrDistrictId},
+			#{addrProvinceName},
+			#{addrCityName},
+			#{addrDistrictName},
+			#{addrDetailInfo},
+			#{techSex},
+			#{techNation},
+			#{techBirthDate},
+			#{techEmail},
+			#{techEducation},
+			#{techHeight},
+			#{techWeight},
+			#{techMatrimony},
+			#{techNativePlace},
+			#{sort},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{column31}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE service_technician_info SET 	
+			tech_office_id = #{techOfficeId},
+			tech_office_name = #{techOfficeName},
+			tech_station_id = #{techStationId},
+			tech_station_name = #{techStationName},
+			tech_name = #{techName},
+			tech_id_card = #{techIdCard},
+			tech_phone = #{techPhone},
+			app_login_password = #{appLoginPassword},
+			bank_type = #{bankType},
+			bank_card_no = #{bankCardNo},
+			addr_province_id = #{addrProvinceId},
+			addr_city_id = #{addrCityId},
+			addr_district_id = #{addrDistrictId},
+			addr_province_name = #{addrProvinceName},
+			addr_city_name = #{addrCityName},
+			addr_district_name = #{addrDistrictName},
+			addr_detail_info = #{addrDetailInfo},
+			tech_sex = #{techSex},
+			tech_nation = #{techNation},
+			tech_birth_date = #{techBirthDate},
+			tech_email = #{techEmail},
+			tech_education = #{techEducation},
+			tech_height = #{techHeight},
+			tech_weight = #{techWeight},
+			tech_matrimony = #{techMatrimony},
+			tech_native_place = #{techNativePlace},
+			sort = #{sort},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			column_31 = #{column31}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE service_technician_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
