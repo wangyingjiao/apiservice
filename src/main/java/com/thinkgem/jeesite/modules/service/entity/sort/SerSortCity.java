@@ -18,7 +18,44 @@ public class SerSortCity extends DataEntity<SerSortCity> {
 	private String sortId;		// 服务分类编号
 	private String cityId;		// 城市编号
 	private String cityName;		// 城市名称
-	
+
+	private String stationId;//机构ID
+	private String officeId;//服务站ID
+	private String stationName;//机构名称
+	private String officeName;//服务站名称
+
+	public String getStationName() {
+		return stationName;
+	}
+
+	public void setStationName(String stationName) {
+		this.stationName = stationName;
+	}
+
+	public String getOfficeName() {
+		return officeName;
+	}
+
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
+	}
+
+
+	public String getStationId() {
+		return stationId;
+	}
+
+	public void setStationId(String stationId) {
+		this.stationId = stationId;
+	}
+
+	public String getOfficeId() {
+		return officeId;
+	}
+
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
+	}
 	public SerSortCity() {
 		super();
 	}
