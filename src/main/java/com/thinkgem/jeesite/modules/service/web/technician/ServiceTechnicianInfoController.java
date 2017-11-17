@@ -27,8 +27,6 @@ public class ServiceTechnicianInfoController extends BaseController {
     @Autowired
     private ServiceTechnicianInfoService serviceTechnicianInfoService;
 
-    @Autowired
-    private ServiceTechnicianFamilyMembers familyMembers;
 
     @ModelAttribute
     public ServiceTechnicianInfo get(@RequestParam(required = false) String id) {
