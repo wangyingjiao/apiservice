@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.modules.service.entity.technician;
 
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -45,6 +47,18 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 	private String techNativePlace;		// 籍贯
 	private String sort;		// 排序
 	private String column31;		// column_31
+
+	//技师服务信息
+	private ServiceTechnicianServiceInfo serviceInfo;
+	//技师图片信息
+	private List<ServiceTechnicianImages> images;
+
+	//技师工作时间
+	private List<ServiceTechnicianWorkTime> workTime;
+
+	//技师家庭成员信息
+	private List<ServiceTechnicianFamilyMembers> familyMembers;
+
 	
 	public ServiceTechnicianInfo() {
 		super();
@@ -302,5 +316,36 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 	public void setColumn31(String column31) {
 		this.column31 = column31;
 	}
-	
+
+	public ServiceTechnicianServiceInfo getServiceInfo() {
+		return serviceInfo;
+	}
+
+	public void setServiceInfo(ServiceTechnicianServiceInfo serviceInfo) {
+		this.serviceInfo = serviceInfo;
+	}
+
+	public List<ServiceTechnicianImages> getImages() {
+		return images;
+	}
+
+	public void setImages(List<ServiceTechnicianImages> images) {
+		this.images = images;
+	}
+
+	public List<ServiceTechnicianWorkTime> getWorkTime() {
+		return workTime;
+	}
+
+	public void setWorkTime(List<ServiceTechnicianWorkTime> workTime) {
+		this.workTime = workTime;
+	}
+
+	public List<ServiceTechnicianFamilyMembers> getFamilyMembers() {
+		return familyMembers;
+	}
+
+	public void setFamilyMembers(List<ServiceTechnicianFamilyMembers> familyMembers) {
+		this.familyMembers = familyMembers;
+	}
 }

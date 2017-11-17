@@ -22,6 +22,8 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
     private Integer maxRedirections;  
     private GenericObjectPoolConfig genericObjectPoolConfig;
 
+    private String password;
+
     private Pattern p = Pattern.compile("^.+[:]\\d{1,5}\\s*$");
 
     @Override  
@@ -44,7 +46,10 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
     private Set<HostAndPort> parseHostAndPort() throws Exception {
         try {  
             Properties prop = new Properties();
-            prop.load(this.addressConfig.getInputStream());  
+            prop.load(this.addressConfig.getInputStream());
+
+            String password = prop.getProperty("redis.password", "");
+            this.setPassword(password);
 
             Set<HostAndPort> haps = new HashSet<>();
             for (Object key : prop.keySet()) {  
@@ -78,7 +83,7 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
     public void afterPropertiesSet() throws Exception {  
         Set<HostAndPort> haps = this.parseHostAndPort();  
 
-        jedisCluster = new JedisCluster(haps, timeout, maxRedirections);
+        jedisCluster = new JedisCluster(haps, timeout,timeout, maxRedirections,password,genericObjectPoolConfig);
 
     }  
     public void setAddressConfig(Resource addressConfig) {  
@@ -99,6 +104,13 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
 
     public void setGenericObjectPoolConfig(GenericObjectPoolConfig genericObjectPoolConfig) {  
         this.genericObjectPoolConfig = genericObjectPoolConfig;  
-    }  
+    }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
