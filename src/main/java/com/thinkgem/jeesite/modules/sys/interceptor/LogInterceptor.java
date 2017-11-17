@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -51,8 +52,10 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
             while ((line = buf.readLine()) != null) {
                 json += line;
             }
-            JSONObject jsonObject = JSONObject.parseObject(json);
-            logger.info(jsonObject.toJSONString());
+            if (StringUtils.isNotBlank(json)) {
+                JSONObject jsonObject = JSONObject.parseObject(json);
+                logger.info(jsonObject.toJSONString());
+            }
         } else {
             logger.info("==============普通请求===========");
             Map requestParameterMap = request.getParameterMap();

@@ -241,7 +241,7 @@ public class JedisSessionDAO extends AbstractSessionDAO implements SessionDAO {
 //			}
 			logger.debug("doReadSession {} {}", sessionId, request != null ? request.getRequestURI() : "");
 		} catch (Exception e) {
-			logger.error("doReadSession {} {}", sessionId, request != null ? request.getRequestURI() : "", e);
+			logger.debug("doReadSession {} {}", sessionId, request != null ? request.getRequestURI() : "", e);
 		}
 		
 		if (request != null && session != null){

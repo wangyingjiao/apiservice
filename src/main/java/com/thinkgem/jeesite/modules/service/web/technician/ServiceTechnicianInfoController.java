@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianFamilyMembers;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class ServiceTechnicianInfoController extends BaseController {
 
     @Autowired
     private ServiceTechnicianInfoService serviceTechnicianInfoService;
+
+    @Autowired
+    private ServiceTechnicianFamilyMembers familyMembers;
 
     @ModelAttribute
     public ServiceTechnicianInfo get(@RequestParam(required = false) String id) {
@@ -78,7 +82,10 @@ public class ServiceTechnicianInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "save")
     public Result saveData(@RequestBody ServiceTechnicianInfo info) {
-        serviceTechnicianInfoService.save(info);
+        if (StringUtils.isBlank(info.getSort())) {
+            info.setSort("0");
+        }
+        serviceTechnicianInfoService.save(info);  //更新或修改主信息
 
 
         return new SuccResult("保存：" + info.getTechName() + " 成功。");
