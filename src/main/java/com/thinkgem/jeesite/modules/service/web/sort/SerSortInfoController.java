@@ -84,7 +84,7 @@ public class SerSortInfoController extends BaseController {
 
     @ResponseBody
     //@RequiresPermissions("service:station:serSortInfo:edit")
-    @RequestMapping(value = "deleteSortInfo")
+    @RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("删除服务分类")
     public Result deleteSortInfo(@RequestBody SerSortInfo serSortInfo) {
         if (0 != serSortInfoService.checkedSortItem(serSortInfo)) {
@@ -109,46 +109,9 @@ public class SerSortInfoController extends BaseController {
     @ApiOperation("验证定向城市是否设置服务项目")
     public Result checkCityItem(@RequestBody SerSortInfo serSortInfo) {
         if (0 != serSortInfoService.checkCityItem(serSortInfo)) {
-            return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
+            return new FailResult("该城市已关联服务项目，不可移除其选中状态");
         }
-        return new SuccResult("服务分类名称" + serSortInfo.getName() + "可用");
+        return new SuccResult("success");
     }
-
-
-    /*
-	@RequiresPermissions("service:sort:serSortInfo:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(SerSortInfo serSortInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<SerSortInfo> page = serSortInfoService.findPage(new Page<SerSortInfo>(request, response), serSortInfo);
-		model.addAttribute("page", page);
-		return "modules/service/sort/serSortInfoList";
-	}
-*/
-
-/*	@RequiresPermissions("service:sort:serSortInfo:view")
-	@RequestMapping(value = "form")
-	public String form(SerSortInfo serSortInfo, Model model) {
-		model.addAttribute("serSortInfo", serSortInfo);
-		return "modules/service/sort/serSortInfoForm";
-	}*/
-
-/*	@RequiresPermissions("service:sort:serSortInfo:edit")
-	@RequestMapping(value = "save")
-	public String save(SerSortInfo serSortInfo, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, serSortInfo)){
-			return form(serSortInfo, model);
-		}
-		serSortInfoService.save(serSortInfo);
-		addMessage(redirectAttributes, "保存服务分类成功");
-		return "redirect:"+Global.getAdminPath()+"/service/sort/serSortInfo/?repage";
-	}*/
-	
-/*	@RequiresPermissions("service:sort:serSortInfo:edit")
-	@RequestMapping(value = "delete")
-	public String delete(SerSortInfo serSortInfo, RedirectAttributes redirectAttributes) {
-		serSortInfoService.delete(serSortInfo);
-		addMessage(redirectAttributes, "删除服务分类成功");
-		return "redirect:"+Global.getAdminPath()+"/service/sort/serSortInfo/?repage";
-	}*/
 
 }

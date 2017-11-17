@@ -126,5 +126,13 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<!-- 检查服务项目名是否重复 -->
+	<select id="checkDataName" resultType="int">
+		SELECT COUNT(*) FROM ser_item_info
+		WHERE name = #{name}
+		AND sort_id = #{sortId}
+		AND office_id = #{officeId}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 </mapper>

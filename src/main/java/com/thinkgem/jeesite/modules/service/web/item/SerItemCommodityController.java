@@ -27,8 +27,8 @@ import com.thinkgem.jeesite.modules.service.service.item.SerItemCommodityService
  * @author a
  * @version 2017-11-15
  */
-@Controller
-@RequestMapping(value = "${adminPath}/service/item/serItemCommodity")
+//@Controller
+//@RequestMapping(value = "${adminPath}/service/item/serItemCommodity")
 public class SerItemCommodityController extends BaseController {
 
 	@Autowired
