@@ -14,5 +14,6 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
  */
 @MyBatisDao
 public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
-	
+
+    int checkDataName(SerItemInfo serItemInfo);
 }

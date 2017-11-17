@@ -27,8 +27,8 @@ import com.thinkgem.jeesite.modules.service.service.sort.SerSortCityService;
  * @author a
  * @version 2017-11-15
  */
-@Controller
-@RequestMapping(value = "${adminPath}/service/sort/serSortCity")
+//@Controller
+//@RequestMapping(value = "${adminPath}/service/sort/serSortCity")
 public class SerSortCityController extends BaseController {
 
 	@Autowired
