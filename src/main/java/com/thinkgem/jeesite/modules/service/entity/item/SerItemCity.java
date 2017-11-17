@@ -16,6 +16,10 @@ public class SerItemCity extends DataEntity<SerItemCity> {
 	
 	private static final long serialVersionUID = 1L;
 	private String itemId;		// 服务项目编号
+	private String itemName;		// 服务项目名称
+	public String getItemName() {return itemName;}
+	public void setItemName(String itemName) {this.itemName = itemName;}
+
 	private String cityId;		// 城市编号
 	private String cityName;		// 城市名称
 	

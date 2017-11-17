@@ -79,8 +79,8 @@ public class SerSortInfoController extends BaseController {
         if(serSortInfo == null){
             serSortInfo = new SerSortInfo();
         }
-        Page<SerSortInfo> stationPage = new Page<>(request, response);
-        Page<SerSortInfo> page = serSortInfoService.findPage(stationPage, serSortInfo);
+        Page<SerSortInfo> serSortInfoPage = new Page<>(request, response);
+        Page<SerSortInfo> page = serSortInfoService.findPage(serSortInfoPage, serSortInfo);
         return new SuccResult(page);
     }
 
@@ -111,7 +111,7 @@ public class SerSortInfoController extends BaseController {
         return new SuccResult("删除服务分类成功");
     }
 
-    @ResponseBody
+/*    @ResponseBody
     @RequestMapping(value = "checkDataName", method = {RequestMethod.POST})
     @ApiOperation("验证服务分类名称是否重复")
     public Result checkDataName(@RequestBody SerSortInfo serSortInfo) {
@@ -119,7 +119,7 @@ public class SerSortInfoController extends BaseController {
             return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
         }
         return new SuccResult("服务分类名称" + serSortInfo.getName() + "可用");
-    }
+    }*/
 
     @ResponseBody
     @RequestMapping(value = "checkCityItem", method = {RequestMethod.POST})

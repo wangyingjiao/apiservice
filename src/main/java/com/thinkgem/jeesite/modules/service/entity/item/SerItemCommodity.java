@@ -7,6 +7,8 @@ import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
  * 服务项目商品信息Entity
  * @author a
@@ -16,13 +18,19 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	
 	private static final long serialVersionUID = 1L;
 	private String itemId;		// 服务项目编号
+	private String itemName;		// 服务项目名称
+	public String getItemName() {return itemName;}
+	public void setItemName(String itemName) {this.itemName = itemName;}
 	private String name;		// 商品名称
 	private String unit;		// 商品单位
 	private String meterage;		// 计量方式
 	private String price;		// 价格
 	private String convertTime;		// 折算时长
 	private Long minimum;		// 起购数量
-	
+	private List<SerItemCommodityPersons> persons;//派人数量
+	public List<SerItemCommodityPersons> getPersons() {return persons;}
+	public void setPersons(List<SerItemCommodityPersons> persons) {this.persons = persons;}
+
 	public SerItemCommodity() {
 		super();
 	}

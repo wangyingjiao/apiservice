@@ -11,6 +11,8 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.service.item.SerItemInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,14 @@ public class SerItemInfoController extends BaseController {
         if (!beanValidator(serItemInfo)) {
             return new FailResult("保存服务项目" + serItemInfo.getName() + "失败");
         }
+        User user = UserUtils.getUser();
+        serItemInfo.setOfficeId(user.getOfficeId());
+        serItemInfo.setOfficeName(user.getOfficeName());
+//        serItemInfo.setStationId(user.getStationId());
+//        serItemInfo.setStationName(user.getStationName());
+        if (0 != serItemInfoService.checkDataName(serItemInfo)) {
+            return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
+        }
         serItemInfoService.save(serItemInfo);
         return new SuccResult("保存服务项目" + serItemInfo.getName() + "成功");
     }
@@ -61,9 +71,12 @@ public class SerItemInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务项目列表")
-    public Result listData(@RequestBody SerItemInfo serItemInfo, HttpServletRequest request, HttpServletResponse response) {
-        Page<SerItemInfo> stationPage = new Page<>(request, response);
-        Page<SerItemInfo> page = serItemInfoService.findPage(stationPage, serItemInfo);
+    public Result listData(@RequestBody(required = false) SerItemInfo serItemInfo, HttpServletRequest request, HttpServletResponse response) {
+        if(null == serItemInfo){
+            serItemInfo = new SerItemInfo();
+        }
+        Page<SerItemInfo> serItemInfoPage = new Page<>(request, response);
+        Page<SerItemInfo> page = serItemInfoService.findPage(serItemInfoPage, serItemInfo);
         return new SuccResult(page);
     }
 
@@ -91,7 +104,7 @@ public class SerItemInfoController extends BaseController {
         return new SuccResult("删除服务项目成功");
     }
 
-    @ResponseBody
+/*    @ResponseBody
     @RequestMapping(value = "checkDataName", method = {RequestMethod.POST})
     @ApiOperation("验证服务项目名称是否重复")
     public Result checkDataName(@RequestBody SerItemInfo serItemInfo) {
@@ -99,6 +112,6 @@ public class SerItemInfoController extends BaseController {
             return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
         }
         return new SuccResult("服务项目名称" + serItemInfo.getName() + "可用");
-    }
+    }*/
 
 }

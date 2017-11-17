@@ -16,6 +16,10 @@ public class SerItemCommodityPersons extends DataEntity<SerItemCommodityPersons>
 	
 	private static final long serialVersionUID = 1L;
 	private String commodityId;		// 服务商品编号
+	private String commodityName;		// 服务商品名称
+	public String getCommodityName() {return commodityName;}
+	public void setCommodityName(String commodityName) {this.commodityName = commodityName;}
+
 	private String critical;		// 临界值
 	private Long quantity;		// 人数
 	

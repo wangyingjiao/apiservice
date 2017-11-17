@@ -7,6 +7,8 @@ import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
  * 服务项目Entity
  * @author a
@@ -17,6 +19,8 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private static final long serialVersionUID = 1L;
 	private String majorSort;		// 分类：保洁、家修
 	private String sortId;		// 所属分类编号
+
+	private String sortName;		// 所属分类名称
 	private String name;		// 服务项目名称
 	private String picture;		// 服务图片
 	private String description;		// 服务描述
@@ -60,6 +64,15 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setOfficeId(String officeId) {
 		this.officeId = officeId;
 	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
+	}
+
 	public SerItemInfo() {
 		super();
 	}
@@ -129,5 +142,47 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setSortNum(Long sortNum) {
 		this.sortNum = sortNum;
 	}
-	
+
+
+
+
+	private String city;//城市
+	private String cityId;        // 城市编号
+	private String cityName;        // 城市名称
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(String cityId) {
+		this.cityId = cityId;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	private List<SerItemCity> citys;
+	public List<SerItemCity> getCitys() {
+		return citys;
+	}
+	public void setCitys(List<SerItemCity> citys) {
+		this.citys = citys;
+	}
+
+	private List<SerItemCommodity> commoditys;
+	public List<SerItemCommodity> getCommoditys() {return commoditys;}
+	public void setCommoditys(List<SerItemCommodity> commoditys) {this.commoditys = commoditys;}
 }
