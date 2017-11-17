@@ -17,4 +17,12 @@ import java.util.List;
 @MyBatisDao
 public interface SerSortCityDao extends CrudDao<SerSortCity> {
     List<SerSortCity> getCitys(String id);
+
+    void addSerSortCityBatch(List<SerSortCity> citys);
+
+    void delSerSortCityBySort(String id);
+
+    List<SerSortCity> getOfficeCitys(String officeId);
+
+    void save(SerSortCity city);
 }

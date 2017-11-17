@@ -114,5 +114,53 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+
+	<insert id="addSerSortCityBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		<selectKey resultType="long" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into ser_sort_city (
+		sort_id,
+		city_id,
+		city_name,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.sortId},
+			#{item.cityId},
+			#{item.cityName},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+			)
+		</foreach>
+	</insert>
+
+	<update id="delSerSortCityBySort">
+		UPDATE ser_sort_city SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE sort_id = #{id}
+	</update>
+	<!-- 获取机构下的所有区域 -->
+	<select id="getOfficeCitys" resultType="SerSortCity">
+		SELECT
+		a.area_id AS "cityId",
+		a.area_name AS "cityName"
+		FROM office_sevice_area_list a
+		<where>
+			a.office_id = #{id}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
 </mapper>

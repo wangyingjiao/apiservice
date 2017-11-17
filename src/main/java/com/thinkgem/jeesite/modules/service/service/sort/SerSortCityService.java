@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.sort;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,6 @@ import com.thinkgem.jeesite.modules.service.dao.sort.SerSortCityDao;
 @Service
 @Transactional(readOnly = true)
 public class SerSortCityService extends CrudService<SerSortCityDao, SerSortCity> {
-
 	public SerSortCity get(String id) {
 		return super.get(id);
 	}
@@ -43,5 +43,4 @@ public class SerSortCityService extends CrudService<SerSortCityDao, SerSortCity>
 	public void delete(SerSortCity serSortCity) {
 		super.delete(serSortCity);
 	}
-	
 }

@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.sort;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.office.OfficeSeviceAreaListDao;
 import com.thinkgem.jeesite.modules.service.dao.sort.SerSortCityDao;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
@@ -35,6 +36,8 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
     SerSortCityDao serSortCityDao;
     @Autowired
     OfficeSeviceAreaListDao officeSeviceAreaListDao;
+    @Autowired
+    private SerSortCityService serSortCityService;
 
     public SerSortInfo get(String id) {
         return super.get(id);
@@ -47,7 +50,24 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      */
     @Transactional(readOnly = false)
     public void save(SerSortInfo serSortInfo) {
+        if (StringUtils.isNotBlank(serSortInfo.getId())) {
+            //更新时，先删除以保存的定向城市
+            serSortCityDao.delSerSortCityBySort(serSortInfo.getId());
+        }
+        List<SerSortCity> citys = serSortInfo.getCitys();
+        if(0 == citys.size()){
+            //获取机构下所有定向城市
+            User user = UserUtils.getUser();
+            if (null != user) {
+                citys = serSortCityDao.getOfficeCitys(user.getOfficeId());
+            }
+        }
         super.save(serSortInfo);
+        //批量插入定向城市
+        for(SerSortCity city:citys){
+            city.setSortId(serSortInfo.getId());
+            serSortCityService.save(city);
+        }
     }
 
     public List<SerSortInfo> findList(SerSortInfo serSortInfo) {
