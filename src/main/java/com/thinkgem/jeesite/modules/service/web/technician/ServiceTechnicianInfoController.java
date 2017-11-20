@@ -83,8 +83,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (StringUtils.isBlank(info.getSort())) {
             info.setSort("0");
         }
-        serviceTechnicianInfoService.save(info);  //更新或修改主信息
 
+        serviceTechnicianInfoService.save(info);  //更新或修改主信息
 
         return new SuccResult("保存：" + info.getTechName() + " 成功。");
     }

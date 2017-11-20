@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.modules.sys.utils;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.session.InvalidSessionException;
@@ -38,6 +40,7 @@ public class UserUtils {
 	private static MenuDao menuDao = SpringContextHolder.getBean(MenuDao.class);
 	private static AreaDao areaDao = SpringContextHolder.getBean(AreaDao.class);
 	private static OfficeDao officeDao = SpringContextHolder.getBean(OfficeDao.class);
+	private static ServiceStationDao stationDao = SpringContextHolder.getBean(ServiceStationDao.class);
 
 	public static final String USER_CACHE = "userCache";
 	public static final String USER_CACHE_ID_ = "id_";
@@ -50,6 +53,7 @@ public class UserUtils {
 	public static final String CACHE_AREA_LIST = "areaList";
 	public static final String CACHE_OFFICE_LIST = "officeList";
 	public static final String CACHE_OFFICE_ALL_LIST = "officeAllList";
+	public static final String CACHE_STATION_INFO = "stationInfo";
 	
 	/**
 	 * 根据ID获取用户
@@ -294,5 +298,13 @@ public class UserUtils {
 //		}
 //		return new HashMap<String, Object>();
 //	}
-	
+
+	/**
+	 * 获取当前用户的所属服务站信息
+	 */
+	public static ServiceStation getStationInfo(){
+		User user = getUser();
+		return stationDao.findStationByUser(user);
+	}
+//
 }

@@ -80,8 +80,13 @@
 	<select id="findUserData" resultType="com.thinkgem.jeesite.modules.sys.entity.User">
 		SELECT * FROM sys_user WHERE office_id = #{id}
 	</select>
+    <select id="findStationByUser"
+            resultType="com.thinkgem.jeesite.modules.service.entity.station.ServiceStation">
+		SELECT * FROM service_station WHERE user_id = #{id}
 
-	<insert id="insert">
+	</select>
+
+    <insert id="insert">
 		INSERT INTO service_station(
 			id,
 			name,
