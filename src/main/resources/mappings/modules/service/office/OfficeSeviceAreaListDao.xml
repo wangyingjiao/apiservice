@@ -118,9 +118,23 @@
 	</update>
 
 	<!-- 获取机构下的所有区域 -->
+	<sql id="officeCityListColumns">
+		a.id AS "id",
+		a.office_id AS "office.id",
+		a.office_name AS "officeName",
+		a.area_id AS "area.id",
+		a.area_name AS "areaName",
+		a.sort AS "sort",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
 	<select id="getOfficeCitys" resultType="OfficeSeviceAreaList">
 		SELECT
-		<include refid="officeSeviceAreaListColumns"/>
+		<include refid="officeCityListColumns"/>
 		FROM office_sevice_area_list a
 		<where>
 			a.office_id = #{id}
