@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianWorkTimeDao">
-    
-	<sql id="serviceTechnicianWorkTimeColumns">
+
+    <sql id="serviceTechnicianWorkTimeColumns">
 		a.id AS "id",
 		a.tech_id AS "techId",
 		a.tech_name AS "techName",
@@ -17,55 +17,88 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
-	
-	<sql id="serviceTechnicianWorkTimeJoins">
-	</sql>
-    
-	<select id="get" resultType="ServiceTechnicianWorkTime">
-		SELECT 
-			<include refid="serviceTechnicianWorkTimeColumns"/>
-		FROM service_technician_work_time a
-		<include refid="serviceTechnicianWorkTimeJoins"/>
-		WHERE a.id = #{id}
-	</select>
-	
-	<select id="findList" resultType="ServiceTechnicianWorkTime">
-		SELECT 
-			<include refid="serviceTechnicianWorkTimeColumns"/>
-		FROM service_technician_work_time a
-		<include refid="serviceTechnicianWorkTimeJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="ServiceTechnicianWorkTime">
-		SELECT 
-			<include refid="serviceTechnicianWorkTimeColumns"/>
-		FROM service_technician_work_time a
-		<include refid="serviceTechnicianWorkTimeJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<insert id="insert">
+
+    <sql id="serviceTechnicianWorkTimeJoins">
+    </sql>
+
+    <select id="get" resultType="ServiceTechnicianWorkTime">
+        SELECT
+        <include refid="serviceTechnicianWorkTimeColumns"/>
+        FROM service_technician_work_time a
+        <include refid="serviceTechnicianWorkTimeJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="ServiceTechnicianWorkTime">
+        SELECT
+        <include refid="serviceTechnicianWorkTimeColumns"/>
+        FROM service_technician_work_time a
+        <include refid="serviceTechnicianWorkTimeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!--<select id="findListByTech" resultType="ServiceTechnicianWorkTime">-->
+    <!--SELECT-->
+    <!--<include refid="serviceTechnicianWorkTimeColumns"/>-->
+    <!--FROM service_technician_work_time a-->
+    <!--<include refid="serviceTechnicianWorkTimeJoins"/>-->
+    <!--<where>-->
+    <!--a.del_flag = #{DEL_FLAG_NORMAL}-->
+    <!--</where>-->
+
+    <!--<choose>-->
+    <!--<when test="page !=null and page.orderBy != null and page.orderBy != ''">-->
+    <!--ORDER BY ${page.orderBy}-->
+    <!--</when>-->
+    <!--<otherwise>-->
+    <!--ORDER BY a.update_date DESC-->
+    <!--</otherwise>-->
+    <!--</choose>-->
+    <!--</select>-->
+
+
+    <select id="findAllList" resultType="ServiceTechnicianWorkTime">
+        SELECT
+        <include refid="serviceTechnicianWorkTimeColumns"/>
+        FROM service_technician_work_time a
+        <include refid="serviceTechnicianWorkTimeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findListByTech"
+            resultType="com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime">
+        SELECT
+        <include refid="serviceTechnicianWorkTimeColumns"/>
+        FROM service_technician_work_time a
+        <include refid="serviceTechnicianWorkTimeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="techId != null">
+                and a.tech_id = #{techId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert">
 		INSERT INTO service_technician_work_time(
 			id,
 			tech_id,
@@ -96,8 +129,8 @@
 			#{delFlag}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE service_technician_work_time SET 	
 			tech_id = #{techId},
 			tech_name = #{techName},
@@ -110,11 +143,11 @@
 			remarks = #{remarks}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE service_technician_work_time SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
 </mapper>

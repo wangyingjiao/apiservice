@@ -4,8 +4,11 @@
 package com.thinkgem.jeesite.modules.service.dao.technician;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+
+import java.util.List;
 
 /**
  * 服务技师工作时间DAO接口
@@ -14,5 +17,6 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianW
  */
 @MyBatisDao
 public interface ServiceTechnicianWorkTimeDao extends CrudDao<ServiceTechnicianWorkTime> {
-	
+
+    List<ServiceTechnicianWorkTime> findListByTech(ServiceTechnicianWorkTime time);
 }

@@ -6,6 +6,9 @@ package com.thinkgem.jeesite.modules.service.dao.technician;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianFamilyMembers;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+
+import java.util.List;
 
 /**
  * 服务技师家庭成员DAO接口
@@ -14,5 +17,6 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianF
  */
 @MyBatisDao
 public interface ServiceTechnicianFamilyMembersDao extends CrudDao<ServiceTechnicianFamilyMembers> {
-	
+
+    List<ServiceTechnicianFamilyMembers> findListByTech(ServiceTechnicianInfo info);
 }
