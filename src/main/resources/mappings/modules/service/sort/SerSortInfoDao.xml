@@ -98,7 +98,7 @@
 		INNER JOIN ser_item_info i on s.id=i.sort_id
 		INNER JOIN ser_item_city ic on i.id=ic.item_id
 		WHERE s.id = #{id}
-		AND ic.city_name = #{city}
+		AND ic.city_id = #{cityId}
 		AND i.del_flag = #{DEL_FLAG_NORMAL}
 		AND ic.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
