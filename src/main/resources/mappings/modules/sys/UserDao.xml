@@ -90,6 +90,8 @@
     	o.name AS "office.name",
     	o.parent_id AS "office.parent.id",
     	o.parent_ids AS "office.parentIds",
+		ss.id AS "station.id",
+		ss.name AS "station.name",
     	oa.id AS "office.area.id",
     	oa.name AS "office.area.name",
     	oa.parent_id AS "office.area.parent.id",
@@ -112,6 +114,7 @@
     
     <sql id="userJoins">
 		LEFT JOIN sys_office c ON c.id = a.company_id
+		LEFT JOIN service_station ss ON ss.id = a.station_id
 		LEFT JOIN sys_area ca ON ca.id = c.area_id
 		LEFT JOIN sys_office o ON o.id = a.office_id
 		LEFT JOIN sys_area oa ON oa.id = o.area_id
@@ -228,7 +231,8 @@
 		INSERT INTO sys_user(
 			id, 
 			company_id, 
-			office_id, 
+			office_id,
+			station_id,
 			login_name, 
 			password, 
 			no, 
@@ -248,7 +252,8 @@
 		) VALUES (
 			#{id}, 
 			#{company.id}, 
-			#{office.id}, 
+			#{office.id},
+			#{station.id},
 			#{loginName}, 
 			#{password}, 
 			#{no}, 
@@ -272,7 +277,8 @@
 	<update id="update">
 		UPDATE sys_user SET 
 			company_id = #{company.id}, 
-			office_id = #{office.id}, 
+			office_id = #{office.id},
+			station_id = #{station.id},
 			login_name = #{loginName}, 
 			password = #{password}, 
 			no = #{no}, 

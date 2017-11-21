@@ -137,7 +137,7 @@
 		<include refid="officeCityListColumns"/>
 		FROM office_sevice_area_list a
 		<where>
-			a.office_id = #{id}
+			a.office_id = #{officeId}
 			AND a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
 	</select>

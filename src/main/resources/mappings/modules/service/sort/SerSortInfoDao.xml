@@ -5,7 +5,9 @@
 	<sql id="serSortInfoColumns">
 		a.id AS "id",
 		a.station_id AS "stationId",
+		a.station_name AS "stationName",
 		a.office_id AS "officeId",
+		a.office_name AS "officeName",
 		a.major_sort AS "majorSort",
 		a.name AS "name",
 		a.create_by AS "createBy.id",
@@ -18,7 +20,9 @@
 	<sql id="serSortCityColumns">
 		a.id AS "id",
 		a.station_id AS "stationId",
+		a.station_name AS "stationName",
 		a.office_id AS "officeId",
+		a.office_name AS "officeName",
 		a.major_sort AS "majorSort",
 		a.name AS "name",
 		a.create_by AS "createBy.id",
@@ -84,10 +88,9 @@
 	</select>
 	<!-- 验证此分类下是否有服务项目 -->
 	<select id="checkedSortItem" resultType="int">
-		SELECT COUNT(*) FROM ser_sort_info s
-		INNER JOIN ser_item_info i on s.id=i.soit_id
-		WHERE s.id = #{id}
-		AND i.del_flag = #{DEL_FLAG_NORMAL}
+		SELECT COUNT(*) FROM ser_item_info s
+		WHERE s.sort_id = #{id}
+		AND s.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	<!-- 检查定向城市是否设置服务项目 -->
 	<select id="checkCityItem" resultType="int">
@@ -121,7 +124,9 @@
 		INSERT INTO ser_sort_info(
 			id,
 			station_id,
+			station_name,
 			office_id,
+			office_name,
 			major_sort,
 			name,
 			create_by,
@@ -133,7 +138,9 @@
 		) VALUES (
 			#{id},
 			#{stationId},
+			#{stationName},
 			#{officeId},
+			#{officeName},
 			#{majorSort},
 			#{name},
 			#{createBy.id},
@@ -148,7 +155,9 @@
 	<update id="update">
 		UPDATE ser_sort_info SET
 			station_id = #{stationId},
+			station_name = #{stationName},
 			office_id = #{officeId},
+			office_name = #{officeName},
 			major_sort = #{majorSort},
 			name = #{name},
 			update_by = #{updateBy.id},

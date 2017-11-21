@@ -51,8 +51,8 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
     @Transactional(readOnly = false)
     public void save(SerSortInfo serSortInfo) {
         if (StringUtils.isNotBlank(serSortInfo.getId())) {
-            //更新时，先删除以保存的定向城市
-            serSortCityDao.delSerSortCityBySort(serSortInfo.getId());
+            //更新时，删除定向城市
+            serSortCityDao.delSerSortCityBySort(serSortInfo);
         }
         List<SerSortCity> citys = serSortInfo.getCitys();
         if(0 == citys.size()){
@@ -66,6 +66,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         //批量插入定向城市
         for(SerSortCity city:citys){
             city.setSortId(serSortInfo.getId());
+            city.setSortName(serSortInfo.getName());
             serSortCityService.save(city);
         }
     }
@@ -84,22 +85,18 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      * @param id
      * @return
      */
-    public SerSortInfo getData(String id) {
-        SerSortInfo sortInfo = super.get(id);
-        //获取机构下所有定向城市
-        User user = UserUtils.getUser();
-        if (null != user) {
-            List<OfficeSeviceAreaList> officeCitys = officeSeviceAreaListDao.getOfficeCitys(user.getOfficeId());
-            sortInfo.setOfficeCitys(officeCitys);
-        }
+    public SerSortInfo getData(SerSortInfo serSortInfo) {
+        SerSortInfo sortInfo = super.get(serSortInfo.getId());
         //获取分类的定向城市
-        List<SerSortCity> citys = serSortCityDao.getCitys(id);
+        List<SerSortCity> citys = serSortCityDao.getCitys(serSortInfo);
         sortInfo.setCitys(citys);
         return sortInfo;
     }
 
     @Transactional(readOnly = false)
     public void delete(SerSortInfo serSortInfo) {
+        //删除定向城市
+        serSortCityDao.delSerSortCityBySort(serSortInfo);
         super.delete(serSortInfo);
     }
 
@@ -110,10 +107,6 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      * @return
      */
     public int checkedSortItem(SerSortInfo serSortInfo) {
-        User user = UserUtils.getUser();
-        if (null != user) {
-            serSortInfo.setOfficeId(user.getOfficeId());
-        }
         // 此分类下是否有服务项目
         return serSortInfoDao.checkedSortItem(serSortInfo);
     }
@@ -125,10 +118,6 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      * @return
      */
     public int checkDataName(SerSortInfo serSortInfo) {
-        User user = UserUtils.getUser();
-        if (null != user) {
-            serSortInfo.setOfficeId(user.getOfficeId());
-        }
         return serSortInfoDao.checkDataName(serSortInfo);
     }
 
@@ -139,10 +128,10 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      * @return
      */
     public int checkCityItem(SerSortInfo serSortInfo) {
-        User user = UserUtils.getUser();
-        if (null != user) {
-            serSortInfo.setOfficeId(user.getOfficeId());
-        }
         return serSortInfoDao.checkCityItem(serSortInfo);
+    }
+
+    public List<OfficeSeviceAreaList> getOfficeCitylist(SerSortInfo serSortInfo) {
+        return officeSeviceAreaListDao.getOfficeCitys(serSortInfo);
     }
 }

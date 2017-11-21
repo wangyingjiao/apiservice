@@ -16,6 +16,8 @@ public class SerSortCity extends DataEntity<SerSortCity> {
 	
 	private static final long serialVersionUID = 1L;
 	private String sortId;		// 服务分类编号
+	private String sortName;		// 服务分类名称
+
 	private String cityId;		// 城市编号
 	private String cityName;		// 城市名称
 
@@ -35,7 +37,15 @@ public class SerSortCity extends DataEntity<SerSortCity> {
 	public void setSortId(String sortId) {
 		this.sortId = sortId;
 	}
-	
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
+	}
+
 	@Length(min=0, max=64, message="城市编号长度必须介于 0 和 64 之间")
 	public String getCityId() {
 		return cityId;

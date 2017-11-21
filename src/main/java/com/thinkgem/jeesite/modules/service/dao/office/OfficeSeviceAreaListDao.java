@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.office;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ import java.util.List;
 @MyBatisDao
 public interface OfficeSeviceAreaListDao extends CrudDao<OfficeSeviceAreaList> {
 
-    List<OfficeSeviceAreaList> getOfficeCitys(String officeId);
+    List<OfficeSeviceAreaList> getOfficeCitys(SerSortInfo serSortInfo);
 }

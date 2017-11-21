@@ -5,6 +5,7 @@
 	<sql id="serSortCityColumns">
 		a.id AS "id",
 		a.sort_id AS "sortId",
+		a.sort_name AS "sortName",
 		a.city_id AS "cityId",
 		a.city_name AS "cityName",
 		a.create_by AS "createBy.id",
@@ -76,6 +77,7 @@
 		INSERT INTO ser_sort_city(
 			id,
 			sort_id,
+			sort_name,
 			city_id,
 			city_name,
 			create_by,
@@ -87,6 +89,7 @@
 		) VALUES (
 			#{id},
 			#{sortId},
+			#{sortName},
 			#{cityId},
 			#{cityName},
 			#{createBy.id},
@@ -101,6 +104,7 @@
 	<update id="update">
 		UPDATE ser_sort_city SET 	
 			sort_id = #{sortId},
+			sort_name = #{sortName},
 			city_id = #{cityId},
 			city_name = #{cityName},
 			update_by = #{updateBy.id},
@@ -123,6 +127,7 @@
 		</selectKey>
 		insert into ser_sort_city (
 		sort_id,
+		sort_name,
 		city_id,
 		city_name,
 		create_by,
@@ -135,6 +140,7 @@
 		<foreach collection="list" item="item" index="index" separator="," >
 			(
 			#{item.sortId},
+			#{item.sortName},
 			#{item.cityId},
 			#{item.cityName},
 			#{item.createBy.id},
@@ -151,6 +157,7 @@
 		UPDATE ser_sort_city SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE sort_id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 	<!-- 获取机构下的所有区域 -->
 	<select id="getOfficeCitys" resultType="SerSortCity">

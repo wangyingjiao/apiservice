@@ -115,7 +115,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     }
 
     private List<SerSortCity> citys;
-    private List<OfficeSeviceAreaList> officeCitys;
+    /*private List<OfficeSeviceAreaList> officeCitys;
 
     public List<OfficeSeviceAreaList> getOfficeCitys() {
         return officeCitys;
@@ -123,7 +123,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     public void setOfficeCitys(List<OfficeSeviceAreaList> officeCitys) {
         this.officeCitys = officeCitys;
-    }
+    }*/
 
     public List<SerSortCity> getCitys() {
         return citys;

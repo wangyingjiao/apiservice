@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
@@ -36,6 +37,7 @@ public class User extends DataEntity<User> {
     private Office office;    // 归属部门
     private String officeId; //机构id
     private String officeName; //机构名称
+    private ServiceStation station;//服务站
     private String stationId; //服务站id
     private String stationName; //服务站名称
     private String loginName;// 登录名
@@ -181,6 +183,17 @@ public class User extends DataEntity<User> {
 
     public void setOffice(Office office) {
         this.office = office;
+    }
+
+    @JsonIgnore
+    @NotNull(message = "归属服务站不能为空")
+    @ExcelField(title = "归属服务站", align = 2, sort = 25)
+    public ServiceStation getStation() {
+        return station;
+    }
+
+    public void setStation(ServiceStation station) {
+        this.station = station;
     }
 
     @Length(min = 1, max = 100, message = "登录名长度必须介于 1 和 100 之间")
