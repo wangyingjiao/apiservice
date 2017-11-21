@@ -63,11 +63,11 @@
 			<if test="majorSort != null and majorSort !=''">
 				AND a.major_sort= #{majorSort}
 			</if>
-			<if test="city != null and city !=''">
+			<if test="cityName != null and cityName !=''">
 				AND b.city_name LIKE
-					<if test="dbName == 'oracle'">'%'||#{city}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{city}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{city},'%')</if>
+					<if test="dbName == 'oracle'">'%'||#{cityName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cityName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cityName},'%')</if>
 			</if>
 		</where>
 		<choose>
