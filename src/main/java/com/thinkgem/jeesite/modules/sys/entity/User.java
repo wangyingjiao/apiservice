@@ -36,6 +36,8 @@ public class User extends DataEntity<User> {
     private Office office;    // 归属部门
     private String officeId; //机构id
     private String officeName; //机构名称
+    private String stationId; //服务站id
+    private String stationName; //服务站名称
     private String loginName;// 登录名
     private String password;// 密码
     private String no;        // 工号
@@ -119,6 +121,22 @@ public class User extends DataEntity<User> {
 
     public void setOfficeName(String officeName) {
         this.officeName = officeName;
+    }
+
+    public String getStationId() {
+        return stationId;
+    }
+
+    public void setStationId(String stationId) {
+        this.stationId = stationId;
+    }
+
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
     public String getPhoto() {
