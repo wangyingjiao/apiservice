@@ -27,10 +27,10 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String sale;		// 是否上架
 	private Long sortNum;		// 排序号
 
-	private String stationId;//机构ID
-	private String officeId;//服务站ID
-	private String stationName;//机构名称
-	private String officeName;//服务站名称
+	private String stationId;//服务站ID
+	private String officeId;//机构ID
+	private String stationName;//服务站名称
+	private String officeName;//机构名称
 
 	public String getStationName() {
 		return stationName;

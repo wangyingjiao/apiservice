@@ -17,7 +17,12 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	private static final long serialVersionUID = 1L;
 	private String name;		// 技能名称
 	private String code;		// 技能编码
-	
+	private String stationId;//服务站ID
+	private String officeId;//机构ID
+	private String stationName;//服务站名称
+	private String officeName;//机构名称
+
+
 	public SerSkillInfo() {
 		super();
 	}
@@ -43,5 +48,36 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
+
+	public String getStationId() {
+		return stationId;
+	}
+
+	public void setStationId(String stationId) {
+		this.stationId = stationId;
+	}
+
+	public String getOfficeId() {
+		return officeId;
+	}
+
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
+	}
+
+	public String getStationName() {
+		return stationName;
+	}
+
+	public void setStationName(String stationName) {
+		this.stationName = stationName;
+	}
+
+	public String getOfficeName() {
+		return officeName;
+	}
+
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
+	}
 }

@@ -16,6 +16,7 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	
 	private static final long serialVersionUID = 1L;
 	private String skillId;		// 技能编号
+	private String skillName;   //技能
 	private String sortId;		// 分类编号
 	private String sortName;		// 分类名称
 	private String itemId;		// 项目编号
@@ -37,7 +38,15 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	public void setSkillId(String skillId) {
 		this.skillId = skillId;
 	}
-	
+
+	public String getSkillName() {
+		return skillName;
+	}
+
+	public void setSkillName(String skillName) {
+		this.skillName = skillName;
+	}
+
 	@Length(min=0, max=64, message="分类编号长度必须介于 0 和 64 之间")
 	public String getSortId() {
 		return sortId;

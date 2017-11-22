@@ -21,10 +21,10 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     private static final long serialVersionUID = 1L;
     private String majorSort;        // 分类：保洁、家修
     private String name;        // 服务分类名称
-    private String stationId;//机构ID
-    private String officeId;//服务站ID
-    private String stationName;//机构名称
-    private String officeName;//服务站名称
+    private String stationId;//服务站ID
+    private String officeId;//机构ID
+    private String stationName;//服务站名称
+    private String officeName;//机构名称
 
     public String getStationName() {
         return stationName;
