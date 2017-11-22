@@ -4,6 +4,10 @@
     
 	<sql id="serItemInfoColumns">
 		a.id AS "id",
+		a.station_id AS "stationId",
+		a.station_name AS "stationName",
+		a.office_id AS "officeId",
+		a.office_name AS "officeName",
 		a.major_sort AS "majorSort",
 		a.sort_id AS "sortId",
 		a.name AS "name",
@@ -70,6 +74,10 @@
 
 	<sql id="serItemCommodityColumns">
 		a.id AS "id",
+		a.station_id AS "stationId",
+		a.station_name AS "stationName",
+		a.office_id AS "officeId",
+		a.office_name AS "officeName",
 		a.major_sort AS "majorSort",
 		a.sort_id AS "sortId",
 		a.name AS "name",
@@ -128,6 +136,10 @@
 	<insert id="insert">
 		INSERT INTO ser_item_info(
 			id,
+			station_id,
+			station_name,
+			office_id,
+			office_name,
 			major_sort,
 			sort_id,
 			name,
@@ -143,6 +155,10 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{stationId},
+			#{stationName},
+			#{officeId},
+			#{officeName},
 			#{majorSort},
 			#{sortId},
 			#{name},
@@ -160,7 +176,11 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE ser_item_info SET 	
+		UPDATE ser_item_info SET
+			station_id = #{stationId},
+			station_name = #{stationName},
+			office_id = #{officeId},
+			office_name = #{officeName},
 			major_sort = #{majorSort},
 			sort_id = #{sortId},
 			name = #{name},
@@ -184,7 +204,9 @@
 	<select id="checkDataName" resultType="int">
 		SELECT COUNT(*) FROM ser_item_info
 		WHERE name = #{name}
-		AND sort_id = #{sortId}
+		<if test="sortId != null and sortId != ''">
+			AND sort_id = #{sortId}
+		</if>
 		AND office_id = #{officeId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>

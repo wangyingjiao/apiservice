@@ -57,12 +57,14 @@ public class SerItemInfoController extends BaseController {
             return new FailResult("保存服务项目" + serItemInfo.getName() + "失败");
         }
         User user = UserUtils.getUser();
-        serItemInfo.setOfficeId(user.getOfficeId());
-        serItemInfo.setOfficeName(user.getOfficeName());
-//        serItemInfo.setStationId(user.getStationId());
-//        serItemInfo.setStationName(user.getStationName());
-        if (0 != serItemInfoService.checkDataName(serItemInfo)) {
-            return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
+        serItemInfo.setOfficeId(user.getOffice().getId());//机构ID
+        serItemInfo.setOfficeName(user.getOffice().getName());//机构名称
+        serItemInfo.setStationId(user.getStation().getId());//服务站ID
+        serItemInfo.setStationName(user.getStation().getName());//服务站名称
+        if (!StringUtils.isNotBlank(serItemInfo.getId())) {//新增时验证重复
+            if (0 != serItemInfoService.checkDataName(serItemInfo)) {
+                return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
+            }
         }
         serItemInfoService.save(serItemInfo);
         return new SuccResult("保存服务项目" + serItemInfo.getName() + "成功");

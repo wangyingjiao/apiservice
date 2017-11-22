@@ -5,6 +5,7 @@
 	<sql id="serItemCommodityPersonsColumns">
 		a.id AS "id",
 		a.commodity_id AS "commodityId",
+		a.commodity_name AS "commodityName",
 		a.critical AS "critical",
 		a.quantity AS "quantity",
 		a.create_by AS "createBy.id",
@@ -66,6 +67,7 @@
 		INSERT INTO ser_item_commodity_persons(
 			id,
 			commodity_id,
+			commodity_name,
 			critical,
 			quantity,
 			create_by,
@@ -77,6 +79,7 @@
 		) VALUES (
 			#{id},
 			#{commodityId},
+			#{commodityName},
 			#{critical},
 			#{quantity},
 			#{createBy.id},
@@ -91,6 +94,7 @@
 	<update id="update">
 		UPDATE ser_item_commodity_persons SET 	
 			commodity_id = #{commodityId},
+			commodity_name = #{commodityName},
 			critical = #{critical},
 			quantity = #{quantity},
 			update_by = #{updateBy.id},

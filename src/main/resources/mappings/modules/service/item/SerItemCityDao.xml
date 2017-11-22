@@ -5,6 +5,7 @@
 	<sql id="serItemCityColumns">
 		a.id AS "id",
 		a.item_id AS "itemId",
+		a.item_name AS "itemName",
 		a.city_id AS "cityId",
 		a.city_name AS "cityName",
 		a.create_by AS "createBy.id",
@@ -66,6 +67,7 @@
 		INSERT INTO ser_item_city(
 			id,
 			item_id,
+			item_name,
 			city_id,
 			city_name,
 			create_by,
@@ -77,6 +79,7 @@
 		) VALUES (
 			#{id},
 			#{itemId},
+			#{itemName},
 			#{cityId},
 			#{cityName},
 			#{createBy.id},
@@ -91,6 +94,7 @@
 	<update id="update">
 		UPDATE ser_item_city SET 	
 			item_id = #{itemId},
+			item_name = #{itemName},
 			city_id = #{cityId},
 			city_name = #{cityName},
 			update_by = #{updateBy.id},
@@ -104,5 +108,33 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<update id="delSerItemCityByItem">
+		UPDATE ser_item_city SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE item_id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+	<!-- 获取机构下的所有区域 -->
+	<select id="getOfficeCitys" resultType="SerItemCity">
+		SELECT
+		a.area_id AS "cityId",
+		a.area_name AS "cityName"
+		FROM office_sevice_area_list a
+		<where>
+			a.office_id = #{officeId}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	<!-- 获取分类下的所有区域 -->
+	<select id="getSortCitys" resultType="SerItemCity">
+		SELECT
+		a.city_id AS "cityId",
+		a.city_name AS "cityName"
+		FROM ser_sort_city a
+		<where>
+			a.sort_id = #{sortId}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
 </mapper>

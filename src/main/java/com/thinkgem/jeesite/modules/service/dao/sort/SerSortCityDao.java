@@ -23,7 +23,7 @@ public interface SerSortCityDao extends CrudDao<SerSortCity> {
 
     void delSerSortCityBySort(SerSortInfo serSortInfo);
 
-    List<SerSortCity> getOfficeCitys(String officeId);
+    List<SerSortCity> getOfficeCitys(SerSortInfo serSortInfo);
 
     void save(SerSortCity city);
 }

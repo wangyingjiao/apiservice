@@ -5,6 +5,11 @@ package com.thinkgem.jeesite.modules.service.service.item;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.item.SerItemCityDao;
+import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,15 @@ import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
 public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo> {
 	@Autowired
 	SerItemInfoDao serItemInfoDao;
+	@Autowired
+	SerItemCityDao serItemCityDao;
+	@Autowired
+	SerItemCommodityDao serItemCommodityDao;
+
+	@Autowired
+	SerItemCityService serItemCityService;
+	@Autowired
+	SerItemCommodityService serItemCommodityService;
 
 	public SerItemInfo get(String id) {
 		return super.get(id);
@@ -37,7 +51,41 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 */
 	@Transactional(readOnly = false)
 	public void save(SerItemInfo serItemInfo) {
+		if (StringUtils.isNotBlank(serItemInfo.getId())) {
+			//更新时，删除定向城市
+			serItemCityDao.delSerItemCityByItem(serItemInfo);
+			//删除商品信息
+			serItemCommodityDao.delSerItemCommodity(serItemInfo);
+		}
+
+		List<SerItemCity> citys = serItemInfo.getCitys();
+		if(0 == citys.size()){
+			if(StringUtils.isNotBlank(serItemInfo.getSortId())){
+				//若选择了分类，则展示当前分类指定的城市列表
+				//获取分类下所有定向城市
+				citys = serItemCityDao.getSortCitys(serItemInfo);
+			}else{
+				//若未选择分类，则展示当前机构的所有城市列表
+				//获取机构下所有定向城市
+				citys = serItemCityDao.getOfficeCitys(serItemInfo);
+			}
+		}
+
+		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
+
 		super.save(serItemInfo);
+		//批量插入定向城市
+		for(SerItemCity city:citys){
+			city.setItemId(serItemInfo.getId());
+			city.setItemName(serItemInfo.getName());
+			serItemCityService.save(city);
+		}
+		//批量插入商品信息
+		for(SerItemCommodity commodity : commoditys){
+			commodity.setItemId(serItemInfo.getId());
+			commodity.setItemName(serItemInfo.getName());
+			serItemCommodityService.save(commodity);
+		}
 	}
 
 	public List<SerItemInfo> findList(SerItemInfo serItemInfo) {
@@ -69,10 +117,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 * @return
 	 */
 	public int checkDataName(SerItemInfo serItemInfo) {
-		User user = UserUtils.getUser();
-		if (null != user) {
-			serItemInfo.setOfficeId(user.getOfficeId());
-		}
 		return serItemInfoDao.checkDataName(serItemInfo);
 	}
 }

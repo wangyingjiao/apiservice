@@ -5,6 +5,9 @@ package com.thinkgem.jeesite.modules.service.service.item;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityPersons;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,10 @@ import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 @Service
 @Transactional(readOnly = true)
 public class SerItemCommodityService extends CrudService<SerItemCommodityDao, SerItemCommodity> {
+	@Autowired
+	SerItemCommodityDao serItemCommodityDao;
+	@Autowired
+	SerItemCommodityPersonsService serItemCommodityPersonsService;
 
 	public SerItemCommodity get(String id) {
 		return super.get(id);
@@ -36,12 +43,27 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	
 	@Transactional(readOnly = false)
 	public void save(SerItemCommodity serItemCommodity) {
+		//删除商品信息派人数量
+		serItemCommodityDao.delSerItemCommodityPersons(serItemCommodity);
 		super.save(serItemCommodity);
+		List<SerItemCommodityPersons> persons = serItemCommodity.getPersons();
+		//批量插入派人数量
+		for(SerItemCommodityPersons person : persons){
+			person.setCommodityId(serItemCommodity.getId());
+			person.setCommodityName(serItemCommodity.getName());
+			serItemCommodityPersonsService.save(person);
+		}
 	}
 	
 	@Transactional(readOnly = false)
 	public void delete(SerItemCommodity serItemCommodity) {
 		super.delete(serItemCommodity);
 	}
-	
+
+    public void delSerItemCommodityPersons(SerItemInfo serItemInfo) {
+		List<SerItemCommodity> list = serItemCommodityDao.getSerItemCommodityByItem(serItemInfo);
+		for(SerItemCommodity info : list){
+			serItemCommodityDao.delSerItemCommodityPersons(info);
+		}
+    }
 }

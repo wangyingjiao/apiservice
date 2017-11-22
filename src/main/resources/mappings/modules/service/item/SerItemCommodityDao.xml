@@ -5,6 +5,7 @@
 	<sql id="serItemCommodityColumns">
 		a.id AS "id",
 		a.item_id AS "itemId",
+		a.item_name AS "itemName",
 		a.name AS "name",
 		a.unit AS "unit",
 		a.meterage AS "meterage",
@@ -76,6 +77,7 @@
 		INSERT INTO ser_item_commodity(
 			id,
 			item_id,
+			item_name,
 			name,
 			unit,
 			meterage,
@@ -91,6 +93,7 @@
 		) VALUES (
 			#{id},
 			#{itemId},
+			#{itemName},
 			#{name},
 			#{unit},
 			#{meterage},
@@ -109,6 +112,7 @@
 	<update id="update">
 		UPDATE ser_item_commodity SET 	
 			item_id = #{itemId},
+			item_name = #{itemName},
 			name = #{name},
 			unit = #{unit},
 			meterage = #{meterage},
@@ -126,5 +130,24 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<select id="getSerItemCommodityByItem">
+		SELECT id
+		FROM ser_item_commodity
+		WHERE item_id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<update id="delSerItemCommodityPersons">
+		UPDATE ser_item_commodity_persons SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE commodity_id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<update id="delSerItemCommodity">
+		UPDATE ser_item_commodity SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE item_id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</update>
 </mapper>

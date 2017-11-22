@@ -56,11 +56,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         }
         List<SerSortCity> citys = serSortInfo.getCitys();
         if(0 == citys.size()){
-            //获取机构下所有定向城市
-            User user = UserUtils.getUser();
-            if (null != user) {
-                citys = serSortCityDao.getOfficeCitys(user.getOfficeId());
-            }
+            citys = serSortCityDao.getOfficeCitys(serSortInfo);
         }
         super.save(serSortInfo);
         //批量插入定向城市

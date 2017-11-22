@@ -6,6 +6,9 @@ package com.thinkgem.jeesite.modules.service.dao.item;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+
+import java.util.List;
 
 /**
  * 服务项目商品信息DAO接口
@@ -14,5 +17,10 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
  */
 @MyBatisDao
 public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
-	
+
+    void delSerItemCommodityPersons(SerItemCommodity serItemCommodity);
+
+    void delSerItemCommodity(SerItemInfo serItemInfo);
+
+    List<SerItemCommodity> getSerItemCommodityByItem(SerItemInfo serItemInfo);
 }
