@@ -57,6 +57,8 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	
 	@Transactional(readOnly = false)
 	public void delete(SerItemCommodity serItemCommodity) {
+		//删除商品信息派人数量
+		serItemCommodityDao.delSerItemCommodityPersons(serItemCommodity);
 		super.delete(serItemCommodity);
 	}
 

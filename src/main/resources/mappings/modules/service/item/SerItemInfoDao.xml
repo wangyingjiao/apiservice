@@ -10,6 +10,7 @@
 		a.office_name AS "officeName",
 		a.major_sort AS "majorSort",
 		a.sort_id AS "sortId",
+		a.sort_name AS "sortName",
 		a.name AS "name",
 		a.picture AS "picture",
 		a.description AS "description",
@@ -80,6 +81,7 @@
 		a.office_name AS "officeName",
 		a.major_sort AS "majorSort",
 		a.sort_id AS "sortId",
+		a.sort_name AS "sortName",
 		a.name AS "name",
 		a.picture AS "picture",
 		a.description AS "description",
@@ -104,7 +106,7 @@
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
 		select id,name,unit,meterage,price from ser_item_commodity
-		where id=#{reqId}
+		where item_id=#{reqId}
 	</select>
 
 	<!--		<association property="commoditys" javaType="SerItemCommodity">
@@ -142,6 +144,7 @@
 			office_name,
 			major_sort,
 			sort_id,
+			sort_name,
 			name,
 			picture,
 			description,
@@ -161,6 +164,7 @@
 			#{officeName},
 			#{majorSort},
 			#{sortId},
+			#{sortName},
 			#{name},
 			#{picture},
 			#{description},
@@ -183,6 +187,7 @@
 			office_name = #{officeName},
 			major_sort = #{majorSort},
 			sort_id = #{sortId},
+			sort_name = #{sortName},
 			name = #{name},
 			picture = #{picture},
 			description = #{description},
@@ -209,5 +214,8 @@
 		</if>
 		AND office_id = #{officeId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<select id="getSerItemCommoditys" resultType="SerItemCommodity">
+		SELECT id FROM ser_item_commodity WHERE item_id = #{id}
 	</select>
 </mapper>

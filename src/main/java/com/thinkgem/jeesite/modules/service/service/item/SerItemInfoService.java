@@ -108,6 +108,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	
 	@Transactional(readOnly = false)
 	public void delete(SerItemInfo serItemInfo) {
+		//删除定向城市
+		serItemCityDao.delSerItemCityByItem(serItemInfo);
+
+		//删除商品信息
+		List<SerItemCommodity> commoditys = serItemInfoDao.getSerItemCommoditys(serItemInfo);
+		for(SerItemCommodity commodity : commoditys){
+			serItemCommodityService.delete(commodity);
+		}
 		super.delete(serItemInfo);
 	}
 
