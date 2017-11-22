@@ -55,7 +55,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
             serSortCityDao.delSerSortCityBySort(serSortInfo);
         }
         List<SerSortCity> citys = serSortInfo.getCitys();
-        if(0 == citys.size()){
+        if(citys==null || 0==citys.size()){
             citys = serSortCityDao.getOfficeCitys(serSortInfo);
         }
         super.save(serSortInfo);

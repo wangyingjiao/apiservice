@@ -59,7 +59,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		}
 
 		List<SerItemCity> citys = serItemInfo.getCitys();
-		if(0 == citys.size()){
+		if(citys==null || 0==citys.size()){
 			if(StringUtils.isNotBlank(serItemInfo.getSortId())){
 				//若选择了分类，则展示当前分类指定的城市列表
 				//获取分类下所有定向城市
