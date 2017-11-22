@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.entity.technician;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Date;
 import java.util.List;
@@ -104,6 +105,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.techStationName = techStationName;
     }
 
+    @NotBlank(message = "技师名称不可为空")
     @Length(min = 0, max = 255, message = "技师姓名长度必须介于 0 和 255 之间")
     public String getTechName() {
         return techName;
@@ -122,6 +124,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.techIdCard = techIdCard;
     }
 
+    @NotBlank(message = "技师手机号不可为空！")
     @Length(min = 0, max = 32, message = "手机号长度必须介于 0 和 32 之间")
     public String getTechPhone() {
         return techPhone;

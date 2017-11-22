@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao">
-    
-	<sql id="serviceTechnicianInfoColumns">
+
+    <sql id="serviceTechnicianInfoColumns">
 		a.id AS "id",
 		a.tech_office_id AS "techOfficeId",
 		a.tech_office_name AS "techOfficeName",
@@ -39,55 +39,73 @@
 		a.del_flag AS "delFlag",
 		a.column_31 AS "column31"
 	</sql>
-	
-	<sql id="serviceTechnicianInfoJoins">
-	</sql>
-    
-	<select id="get" resultType="ServiceTechnicianInfo">
-		SELECT 
-			<include refid="serviceTechnicianInfoColumns"/>
-		FROM service_technician_info a
-		<include refid="serviceTechnicianInfoJoins"/>
-		WHERE a.id = #{id}
-	</select>
-	
-	<select id="findList" resultType="ServiceTechnicianInfo">
-		SELECT 
-			<include refid="serviceTechnicianInfoColumns"/>
-		FROM service_technician_info a
-		<include refid="serviceTechnicianInfoJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="ServiceTechnicianInfo">
-		SELECT 
-			<include refid="serviceTechnicianInfoColumns"/>
-		FROM service_technician_info a
-		<include refid="serviceTechnicianInfoJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<insert id="insert">
+
+    <sql id="serviceTechnicianInfoJoins">
+    </sql>
+
+    <select id="get" resultType="ServiceTechnicianInfo">
+        SELECT
+        <include refid="serviceTechnicianInfoColumns"/>
+        FROM service_technician_info a
+        <include refid="serviceTechnicianInfoJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="ServiceTechnicianInfo">
+        SELECT
+        <include refid="serviceTechnicianInfoColumns"/>
+        FROM service_technician_info a
+        <include refid="serviceTechnicianInfoJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="ServiceTechnicianInfo">
+        SELECT
+        <include refid="serviceTechnicianInfoColumns"/>
+        FROM service_technician_info a
+        <include refid="serviceTechnicianInfoJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findTech"  resultType="ServiceTechnicianInfo">
+        SELECT
+        <include refid="serviceTechnicianInfoColumns"/>
+        FROM service_technician_info a
+        <include refid="serviceTechnicianInfoJoins"/>
+        <where>
+            <if test="true">
+                a.del_flag = #{DEL_FLAG_NORMAL}
+            </if>
+            <if test="techPhone != null">
+                AND a.tech_phone = #{techPhone}
+            </if>
+            <if test="techName != null">
+                AND a.tech_name = #{techName}
+            </if>
+        </where>
+
+    </select>
+
+    <insert id="insert">
 		INSERT INTO service_technician_info(
 			id,
 			tech_office_id,
@@ -162,8 +180,8 @@
 			#{column31}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE service_technician_info SET 	
 			tech_office_id = #{techOfficeId},
 			tech_office_name = #{techOfficeName},
@@ -198,11 +216,11 @@
 			column_31 = #{column31}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE service_technician_info SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
 </mapper>
