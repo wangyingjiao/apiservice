@@ -50,7 +50,7 @@
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
-			<if test="majorSort != null and majorSort !=''">
+			<if test="majorSort != null and majorSort !='' and majorSort !='0'.toString()">
 				AND a.major_sort= #{majorSort}
 			</if>
 			<if test="sortId != null and sortId !=''">

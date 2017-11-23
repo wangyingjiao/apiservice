@@ -3,24 +3,24 @@
  */
 package com.thinkgem.jeesite.modules.service.web.order;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.common.result.Result;
+import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderCustomInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 客户信息Controller
@@ -28,6 +28,7 @@ import com.thinkgem.jeesite.modules.service.service.order.OrderCustomInfoService
  * @version 2017-11-23
  */
 @Controller
+@Api(tags = "客户信息", description = "客户信息相关接口")
 @RequestMapping(value = "${adminPath}/service/order/orderCustomInfo")
 public class OrderCustomInfoController extends BaseController {
 
@@ -45,39 +46,44 @@ public class OrderCustomInfoController extends BaseController {
 		}
 		return entity;
 	}
-	
-	@RequiresPermissions("service:order:orderCustomInfo:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(OrderCustomInfo orderCustomInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<OrderCustomInfo> page = orderCustomInfoService.findPage(new Page<OrderCustomInfo>(request, response), orderCustomInfo); 
-		model.addAttribute("page", page);
-		return "modules/service/order/orderCustomInfoList";
-	}
 
-	@RequiresPermissions("service:order:orderCustomInfo:view")
-	@RequestMapping(value = "form")
-	public String form(OrderCustomInfo orderCustomInfo, Model model) {
-		model.addAttribute("orderCustomInfo", orderCustomInfo);
-		return "modules/service/order/orderCustomInfoForm";
-	}
 
-	@RequiresPermissions("service:order:orderCustomInfo:edit")
-	@RequestMapping(value = "save")
-	public String save(OrderCustomInfo orderCustomInfo, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, orderCustomInfo)){
-			return form(orderCustomInfo, model);
+	@ResponseBody
+	@RequestMapping(value = "saveData", method = {RequestMethod.POST})
+	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	@ApiOperation("保存客户")
+	public Result saveData(@RequestBody OrderCustomInfo orderCustomInfo) {
+		if (!beanValidator(orderCustomInfo)) {
+			return new FailResult("保存客户" + orderCustomInfo.getCustomName() + "失败");
 		}
+		User user = UserUtils.getUser();
+		orderCustomInfo.setOfficeId(user.getOffice().getId());//机构ID
+		orderCustomInfo.setOfficeName(user.getOffice().getName());//机构名称
+		orderCustomInfo.setStationId(user.getStation().getId());//服务站ID
+		orderCustomInfo.setStationName(user.getStation().getName());//服务站名称
 		orderCustomInfoService.save(orderCustomInfo);
-		addMessage(redirectAttributes, "保存客户信息成功");
-		return "redirect:"+Global.getAdminPath()+"/service/order/orderCustomInfo/?repage";
+		return new SuccResult("保存客户" + orderCustomInfo.getCustomName() + "成功");
 	}
-	
-	@RequiresPermissions("service:order:orderCustomInfo:edit")
-	@RequestMapping(value = "delete")
-	public String delete(OrderCustomInfo orderCustomInfo, RedirectAttributes redirectAttributes) {
+
+	@ResponseBody
+	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation("获取客户列表")
+	public Result listData(@RequestBody(required=false)  OrderCustomInfo orderCustomInfo, HttpServletRequest request, HttpServletResponse response) {
+		if(orderCustomInfo == null){
+			orderCustomInfo = new OrderCustomInfo();
+		}
+		Page<OrderCustomInfo> stationPage = new Page<>(request, response);
+		Page<OrderCustomInfo> page = orderCustomInfoService.findPage(stationPage, orderCustomInfo);
+		return new SuccResult(page);
+	}
+
+	@ResponseBody
+	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	@RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST})
+	@ApiOperation("删除客户")
+	public Result deleteSortInfo(@RequestBody OrderCustomInfo orderCustomInfo) {
 		orderCustomInfoService.delete(orderCustomInfo);
-		addMessage(redirectAttributes, "删除客户信息成功");
-		return "redirect:"+Global.getAdminPath()+"/service/order/orderCustomInfo/?repage";
+		return new SuccResult("删除客户成功");
 	}
 
 }
