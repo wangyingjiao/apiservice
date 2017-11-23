@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.web.technician;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
@@ -18,10 +19,12 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
-import javax.validation.groups.Default;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -51,54 +54,30 @@ public class ServiceTechnicianInfoController extends BaseController {
         return entity;
     }
 
-//	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
-//	@RequestMapping(value = {"list", ""})
-//	public String list(ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
-//		Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.findPage(new Page<ServiceTechnicianInfo>(request, response), serviceTechnicianInfo);
-//		model.addAttribute("page", page);
-//		return "modules/service/technician/serviceTechnicianInfoList";
-//	}
-//
-//	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
-//	@RequestMapping(value = "form")
-//	public String form(ServiceTechnicianInfo serviceTechnicianInfo, Model model) {
-//		model.addAttribute("serviceTechnicianInfo", serviceTechnicianInfo);
-//		return "modules/service/technician/serviceTechnicianInfoForm";
-//	}
-//
-//	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
-//	@RequestMapping(value = "save")
-//	public String save(ServiceTechnicianInfo serviceTechnicianInfo, Model model, RedirectAttributes redirectAttributes) {
-//		if (!beanValidator(model, serviceTechnicianInfo)){
-//			return form(serviceTechnicianInfo, model);
-//		}
-//		serviceTechnicianInfoService.save(serviceTechnicianInfo);
-//		addMessage(redirectAttributes, "保存服务技师基础信息成功");
-//		return "redirect:"+Global.getAdminPath()+"/service/technician/serviceTechnicianInfo/?repage";
-//	}
-//
-//	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
-//	@RequestMapping(value = "delete")
-//	public String delete(ServiceTechnicianInfo serviceTechnicianInfo, RedirectAttributes redirectAttributes) {
-//		serviceTechnicianInfoService.delete(serviceTechnicianInfo);
-//		addMessage(redirectAttributes, "删除服务技师基础信息成功");
-//		return "redirect:"+Global.getAdminPath()+"/service/technician/serviceTechnicianInfo/?repage";
-//	}
+    //@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
+    @ResponseBody
+    @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
+    public Result list(ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
+        Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.findPage(new Page<ServiceTechnicianInfo>(request, response), serviceTechnicianInfo);
 
-    /**
-     *
-     */
-//    @ResponseBody
-//    @RequestMapping(value = "save")
-//    public Result saveData(@RequestBody ServiceTechnicianInfo info) {
-//        if (StringUtils.isBlank(info.getSort())) {
-//            info.setSort("0");
-//        }
-//
-//        serviceTechnicianInfoService.save(info);  //更新或修改主信息
-//
-//        return new SuccResult("保存：" + info.getTechName() + " 成功。");
-//    }
+        return new SuccResult(page);
+    }
+
+
+//	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
+    @RequestMapping(value = "form")
+    public Result form(ServiceTechnicianInfo serviceTechnicianInfo, Model model) {
+        return new SuccResult(serviceTechnicianInfo);
+    }
+
+//	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
+    @RequestMapping(value = "delete")
+    public Result delete(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfoService.delete(serviceTechnicianInfo);
+        serviceTechnicianInfoService.deleteFamilyMembers(serviceTechnicianInfo);
+        return new SuccResult("删除技师信息成功");
+    }
+
 
 
     /**
@@ -137,7 +116,8 @@ public class ServiceTechnicianInfoController extends BaseController {
     }
 
     /**
-     * 保存更多信息
+     * 保存更多信息,保存手机号密码，保存其它信息
+     *
      * @param info
      * @return
      */
@@ -159,10 +139,16 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult(info);
     }
 
+    /**
+     * 保存服务信息
+     *
+     * @param info
+     * @return
+     */
     @ResponseBody
-    @RequestMapping(value = "saveServiceInfoData",method = RequestMethod.POST)
-    public Result saveServiceInfoData(ServiceTechnicianInfo info){
-        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class);
+    @RequestMapping(value = "saveServiceInfoData", method = RequestMethod.POST)
+    public Result saveServiceInfoData(ServiceTechnicianInfo info) {
+        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
         if (validate != null && validate.size() > 0) {
             ArrayList<String> errs = new ArrayList<>();
             for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
@@ -171,6 +157,23 @@ public class ServiceTechnicianInfoController extends BaseController {
             return new FailResult(errs);
         }
         serviceTechnicianInfoService.saveServiceInfo(info);
-        return null;
+        serviceTechnicianInfoService.saveWorkTimes(info);
+        return new SuccResult("保存服务信息成功");
     }
+
+    public Result saveFamilyMembers(ServiceTechnicianInfo info) {
+        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
+        if (validate != null && validate.size() > 0) {
+            ArrayList<String> errs = new ArrayList<>();
+            for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
+                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
+            }
+            return new FailResult(errs);
+        }
+
+        serviceTechnicianInfoService.saveFamilyMembers(info);
+        return new SuccResult("保存家庭成员成功");
+    }
+
+
 }
