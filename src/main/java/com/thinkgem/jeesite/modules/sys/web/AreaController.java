@@ -189,17 +189,18 @@ public class AreaController extends BaseController {
 
     @ResponseBody
     //@RequiresPermissions("sys:area:view")
-    @RequestMapping(value = {"getchildArea"}, method = {RequestMethod.POST, RequestMethod.GET})
-    public Result getchildArea(@RequestBody Area area) {
-        if (null == area || StringUtils.isBlank(area.getId())) {
+    @RequestMapping(value = "getchildArea", method = RequestMethod.GET)
+    public Result getchildArea(@RequestParam(required = false) String id) {
+        Area area = new Area();
+        if (null == id || StringUtils.isBlank(id)) {
             area = new Area("1");
             area.setParentIds("0,1,");
         } else {
-            area = areaService.get(area.getId());
-            area.setParentIds(area.getParentIds()+area.getId()+",");
+            area = areaService.get(id);
+            area.setParentIds(area.getParentIds() + area.getId() + ",");
         }
         List<Area> areas = areaService.findchildArea(area);
-        if (areas.size() < 1){
+        if (areas.size() < 1) {
             return new FailResult(
                     "失败，没有子级区域了。"
             );

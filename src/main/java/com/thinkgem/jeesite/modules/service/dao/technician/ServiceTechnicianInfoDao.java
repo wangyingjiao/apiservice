@@ -14,5 +14,6 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianI
  */
 @MyBatisDao
 public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo> {
-	
+
+    ServiceTechnicianInfo findTech(ServiceTechnicianInfo info);
 }

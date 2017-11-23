@@ -287,4 +287,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         }
         return images;
     }
+
+    public ServiceTechnicianInfo findTech(ServiceTechnicianInfo info) {
+       return technicianInfoDao.findTech(info);
+
+    }
 }
