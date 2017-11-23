@@ -11,7 +11,7 @@
 		a.addr_longitude AS "addrLongitude",
 		a.addr_latitude AS "addrLatitude",
 		a.custom_email AS "customEmail",
-		a.office_id AS "office.id",
+		a.office_id AS "officeId",
 		a.office_name AS "officeName",
 		a.station_id AS "stationId",
 		a.station_name AS "stationName",
@@ -20,12 +20,10 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag",
-		o9.name AS "office.name"
+		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="orderCustomInfoJoins">
-		LEFT JOIN sys_office o9 ON o9.id = a.office_id
 	</sql>
     
 	<select id="get" resultType="OrderCustomInfo">
@@ -43,6 +41,18 @@
 		<include refid="orderCustomInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customPhone != null and customPhone != ''">
+				AND a.custom_phone = #{customPhone}
+			</if>
+			<if test="customName != null and customName != ''">
+				AND a.custom_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{customName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{customName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{customName},'%')</if>
+			</if>
+			<if test="officeId != null and officeId != ''">
+				AND a.office_id = #{officeId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -101,7 +111,7 @@
 			#{addrLongitude},
 			#{addrLatitude},
 			#{customEmail},
-			#{office.id},
+			#{officeId},
 			#{officeName},
 			#{stationId},
 			#{stationName},
@@ -123,7 +133,7 @@
 			addr_longitude = #{addrLongitude},
 			addr_latitude = #{addrLatitude},
 			custom_email = #{customEmail},
-			office_id = #{office.id},
+			office_id = #{officeId},
 			office_name = #{officeName},
 			station_id = #{stationId},
 			station_name = #{stationName},

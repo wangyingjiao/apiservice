@@ -23,7 +23,8 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	private String addrLongitude;		// 经度
 	private String addrLatitude;		// 纬度
 	private String customEmail;		// 客户邮箱
-	private Office office;		// 所属服务机构ID
+	//private Office office;		// 所属服务机构ID
+	private String officeId;
 	private String officeName;		// 所属服务机构名称
 	private String stationId;		// 所属服务站ID
 	private String stationName;		// 所属服务站名称
@@ -99,13 +100,13 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.customEmail = customEmail;
 	}
 	
-	public Office getOffice() {
+/*	public Office getOffice() {
 		return office;
 	}
 
 	public void setOffice(Office office) {
 		this.office = office;
-	}
+	}*/
 	
 	@Length(min=0, max=255, message="所属服务机构名称长度必须介于 0 和 255 之间")
 	public String getOfficeName() {
@@ -133,5 +134,12 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	public void setStationName(String stationName) {
 		this.stationName = stationName;
 	}
-	
+
+	public String getOfficeId() {
+		return officeId;
+	}
+
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
+	}
 }
