@@ -9,6 +9,9 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.technician.SaveMoreGroup;
+import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
+import com.thinkgem.jeesite.modules.service.entity.technician.SaveServiceInfoGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -108,7 +111,7 @@ public class ServiceTechnicianInfoController extends BaseController {
     @RequestMapping(value = "savePersonalData", method = RequestMethod.POST)
     public Result savePersonalData(@RequestBody ServiceTechnicianInfo info) {
 
-        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, Default.class);
+        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SavePersonalGroup.class);
         if (validate != null && validate.size() > 0) {
             ArrayList<String> errs = new ArrayList<>();
             for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
@@ -133,12 +136,22 @@ public class ServiceTechnicianInfoController extends BaseController {
         }
     }
 
+    /**
+     * 保存更多信息
+     * @param info
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "saveMoreData", method = RequestMethod.POST)
     public Result saveMoreData(@RequestBody ServiceTechnicianInfo info) {
-        if (StringUtils.isBlank(info.getId())) {
-            logger.info("保存技师更多信息时，id未传值");
-            return new FailResult("id:不能为空");
+
+        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveMoreGroup.class);
+        if (validate != null && validate.size() > 0) {
+            ArrayList<String> errs = new ArrayList<>();
+            for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
+                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
+            }
+            return new FailResult(errs);
         }
         ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoService.get(info.getId());
         BeanUtils.cloneProperties(info, technicianInfo);
@@ -146,5 +159,18 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult(info);
     }
 
-
+    @ResponseBody
+    @RequestMapping(value = "saveServiceInfoData",method = RequestMethod.POST)
+    public Result saveServiceInfoData(ServiceTechnicianInfo info){
+        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class);
+        if (validate != null && validate.size() > 0) {
+            ArrayList<String> errs = new ArrayList<>();
+            for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
+                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
+            }
+            return new FailResult(errs);
+        }
+        serviceTechnicianInfoService.saveServiceInfo(info);
+        return null;
+    }
 }

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderCustomInfoDao">
+    
+	<sql id="orderCustomInfoColumns">
+		a.id AS "id",
+		a.custom_name AS "customName",
+		a.custom_sex AS "customSex",
+		a.custom_phone AS "customPhone",
+		a.custom_addr AS "customAddr",
+		a.addr_longitude AS "addrLongitude",
+		a.addr_latitude AS "addrLatitude",
+		a.custom_email AS "customEmail",
+		a.office_id AS "office.id",
+		a.office_name AS "officeName",
+		a.station_id AS "stationId",
+		a.station_name AS "stationName",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		o9.name AS "office.name"
+	</sql>
+	
+	<sql id="orderCustomInfoJoins">
+		LEFT JOIN sys_office o9 ON o9.id = a.office_id
+	</sql>
+    
+	<select id="get" resultType="OrderCustomInfo">
+		SELECT 
+			<include refid="orderCustomInfoColumns"/>
+		FROM order_custom_info a
+		<include refid="orderCustomInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderCustomInfo">
+		SELECT 
+			<include refid="orderCustomInfoColumns"/>
+		FROM order_custom_info a
+		<include refid="orderCustomInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderCustomInfo">
+		SELECT 
+			<include refid="orderCustomInfoColumns"/>
+		FROM order_custom_info a
+		<include refid="orderCustomInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_custom_info(
+			id,
+			custom_name,
+			custom_sex,
+			custom_phone,
+			custom_addr,
+			addr_longitude,
+			addr_latitude,
+			custom_email,
+			office_id,
+			office_name,
+			station_id,
+			station_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{customName},
+			#{customSex},
+			#{customPhone},
+			#{customAddr},
+			#{addrLongitude},
+			#{addrLatitude},
+			#{customEmail},
+			#{office.id},
+			#{officeName},
+			#{stationId},
+			#{stationName},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_custom_info SET 	
+			custom_name = #{customName},
+			custom_sex = #{customSex},
+			custom_phone = #{customPhone},
+			custom_addr = #{customAddr},
+			addr_longitude = #{addrLongitude},
+			addr_latitude = #{addrLatitude},
+			custom_email = #{customEmail},
+			office_id = #{office.id},
+			office_name = #{officeName},
+			station_id = #{stationId},
+			station_name = #{stationName},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_custom_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

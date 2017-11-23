@@ -7,7 +7,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +24,7 @@ import java.util.List;
 public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     private static final long serialVersionUID = 1L;
+    private String id;
     private String techOfficeId;        // 技师所属机构id
     private String techOfficeName;        // 技师所属机构名称
     private String techStationId;        // 技师所属服务站
@@ -60,6 +65,16 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     //技师家庭成员信息
     private List<ServiceTechnicianFamilyMembers> familyMembers;
 
+    @Override
+    @NotBlank(message = "技师id不可为空",groups = SaveMoreGroup.class)
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public ServiceTechnicianInfo() {
         super();
@@ -105,7 +120,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.techStationName = techStationName;
     }
 
-    @NotBlank(message = "技师名称不可为空")
+    @NotBlank(message = "技师名称不可为空",groups = SavePersonalGroup.class)
     @Length(min = 0, max = 255, message = "技师姓名长度必须介于 0 和 255 之间")
     public String getTechName() {
         return techName;
@@ -115,7 +130,8 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.techName = techName;
     }
 
-    @Length(min = 0, max = 32, message = "身份证号长度必须介于 0 和 32 之间")
+    @NotBlank(message = "技师身份证号不可为空。",groups = SavePersonalGroup.class)
+    @Length(min = 15, max = 18, message = "身份证号长度必须介于 15 和 18 之间")
     public String getTechIdCard() {
         return techIdCard;
     }
@@ -124,7 +140,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.techIdCard = techIdCard;
     }
 
-    @NotBlank(message = "技师手机号不可为空！")
+    @NotBlank(message = "技师手机号不可为空！",groups = SavePersonalGroup.class)
     @Length(min = 0, max = 32, message = "手机号长度必须介于 0 和 32 之间")
     public String getTechPhone() {
         return techPhone;
@@ -161,6 +177,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.bankCardNo = bankCardNo;
     }
 
+    @NotBlank(message = "技师省id为空",groups = SavePersonalGroup.class)
     @Length(min = 0, max = 64, message = "现住地址_省_id长度必须介于 0 和 64 之间")
     public String getAddrProvinceId() {
         return addrProvinceId;
@@ -170,6 +187,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.addrProvinceId = addrProvinceId;
     }
 
+    @NotBlank(message = "技师市id为空",groups = SavePersonalGroup.class)
     @Length(min = 0, max = 64, message = "现住地址_市_id长度必须介于 0 和 64 之间")
     public String getAddrCityId() {
         return addrCityId;
@@ -179,6 +197,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.addrCityId = addrCityId;
     }
 
+    @NotBlank(message = "技师区id为空",groups = SavePersonalGroup.class)
     @Length(min = 0, max = 64, message = "现地地址_区_id长度必须介于 0 和 64 之间")
     public String getAddrDistrictId() {
         return addrDistrictId;
@@ -224,6 +243,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.addrDetailInfo = addrDetailInfo;
     }
 
+    @NotBlank(message = "性别不可为空",groups = SavePersonalGroup.class)
     @Length(min = 0, max = 2, message = "性别长度必须介于 0 和 2 之间")
     public String getTechSex() {
         return techSex;
@@ -242,6 +262,10 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.techNation = techNation;
     }
 
+    //@NotEmpty(message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
+    //@NotEmpty(groups = SavePersonalGroup.class,message = "技师出生日期不可为空")
+    //@Pattern(regexp="[0-9]{4}-[0-9]{2}-[0-9]{2}",message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
+    @NotNull(message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date getTechBirthDate() {
         return techBirthDate;

@@ -3,8 +3,11 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.technician;
 
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -30,6 +33,7 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 	private String assessGrade;		// 评价级别
 	private String experDesc;		// 经验描述
 	private String sort;		// 排序
+	private List<SerSkillInfo> skills; //技师技能
 	
 	public ServiceTechnicianServiceInfo() {
 		super();
@@ -154,5 +158,12 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 	public void setSort(String sort) {
 		this.sort = sort;
 	}
-	
+
+	public List<SerSkillInfo> getSkills() {
+		return skills;
+	}
+
+	public void setSkills(List<SerSkillInfo> skills) {
+		this.skills = skills;
+	}
 }

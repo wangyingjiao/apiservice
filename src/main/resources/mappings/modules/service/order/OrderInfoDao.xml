@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao">
+    
+	<sql id="orderInfoColumns">
+		a.id AS "id",
+		a.order_number AS "orderNumber",
+		a.custom_id AS "customId",
+		a.order_time AS "orderTime",
+		a.ser_time AS "serTime",
+		a.status AS "status",
+		a.order_source AS "orderSource",
+		a.custom_remark AS "customRemark",
+		a.servicer_name AS "servicerName",
+		a.servicer_phone AS "servicerPhone",
+		a.shop_name AS "shopName",
+		a.shop_phone AS "shopPhone",
+		a.shop_addr AS "shopAddr",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.office_id AS "office.id",
+		a.office_name AS "officeName",
+		a.station_id AS "stationId",
+		a.station_name AS "stationName",
+		o20.name AS "office.name"
+	</sql>
+	
+	<sql id="orderInfoJoins">
+		LEFT JOIN sys_office o20 ON o20.id = a.office_id
+	</sql>
+    
+	<select id="get" resultType="OrderInfo">
+		SELECT 
+			<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<include refid="orderInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderInfo">
+		SELECT 
+			<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<include refid="orderInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderInfo">
+		SELECT 
+			<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<include refid="orderInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_info(
+			id,
+			order_number,
+			custom_id,
+			order_time,
+			ser_time,
+			status,
+			order_source,
+			custom_remark,
+			servicer_name,
+			servicer_phone,
+			shop_name,
+			shop_phone,
+			shop_addr,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			office_id,
+			office_name,
+			station_id,
+			station_name
+		) VALUES (
+			#{id},
+			#{orderNumber},
+			#{customId},
+			#{orderTime},
+			#{serTime},
+			#{status},
+			#{orderSource},
+			#{customRemark},
+			#{servicerName},
+			#{servicerPhone},
+			#{shopName},
+			#{shopPhone},
+			#{shopAddr},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{office.id},
+			#{officeName},
+			#{stationId},
+			#{stationName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_info SET 	
+			order_number = #{orderNumber},
+			custom_id = #{customId},
+			order_time = #{orderTime},
+			ser_time = #{serTime},
+			status = #{status},
+			order_source = #{orderSource},
+			custom_remark = #{customRemark},
+			servicer_name = #{servicerName},
+			servicer_phone = #{servicerPhone},
+			shop_name = #{shopName},
+			shop_phone = #{shopPhone},
+			shop_addr = #{shopAddr},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			office_id = #{office.id},
+			office_name = #{officeName},
+			station_id = #{stationId},
+			station_name = #{stationName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
