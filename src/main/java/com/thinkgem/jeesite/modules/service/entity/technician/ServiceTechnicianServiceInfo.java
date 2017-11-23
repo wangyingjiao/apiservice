@@ -11,6 +11,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 服务技师服务信息Entity
@@ -43,6 +44,7 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 		super(id);
 	}
 
+	@NotBlank(message = "技师id不可为空")
 	@Length(min=0, max=64, message="技师id长度必须介于 0 和 64 之间")
 	public String getTechId() {
 		return techId;
@@ -60,7 +62,8 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 	public void setTechName(String techName) {
 		this.techName = techName;
 	}
-	
+
+	@NotBlank(message = "服务城市id不能为空")
 	@Length(min=0, max=64, message="服务城市id长度必须介于 0 和 64 之间")
 	public String getServiceCityId() {
 		return serviceCityId;
@@ -78,7 +81,8 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 	public void setServiceCityName(String serviceCityName) {
 		this.serviceCityName = serviceCityName;
 	}
-	
+
+	@NotBlank(message = "岗位性质 不可为空")
 	@Length(min=0, max=2, message="岗位性质（全职，兼职）长度必须介于 0 和 2 之间")
 	public String getJobNatrue() {
 		return jobNatrue;
@@ -87,7 +91,8 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 	public void setJobNatrue(String jobNatrue) {
 		this.jobNatrue = jobNatrue;
 	}
-	
+
+	@NotBlank(message = "所属服务站id不可为空")
 	@Length(min=0, max=64, message="所属服务站id长度必须介于 0 和 64 之间")
 	public String getStationId() {
 		return stationId;
@@ -105,7 +110,8 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 	public void setStationName(String stationName) {
 		this.stationName = stationName;
 	}
-	
+
+	@NotBlank(message = "岗位状态 不可为空")
 	@Length(min=0, max=2, message="岗位状态(在职，离职)长度必须介于 0 和 2 之间")
 	public String getJobStatus() {
 		return jobStatus;
@@ -114,7 +120,8 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 	public void setJobStatus(String jobStatus) {
 		this.jobStatus = jobStatus;
 	}
-	
+
+	@NotBlank(message = "工作年限 不可为空")
 	@Length(min=0, max=64, message="工作年限长度必须介于 0 和 64 之间")
 	public String getWorkTime() {
 		return workTime;

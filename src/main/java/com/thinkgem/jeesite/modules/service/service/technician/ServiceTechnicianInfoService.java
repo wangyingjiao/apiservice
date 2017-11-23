@@ -7,7 +7,11 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.technician.*;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
+import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
+import com.thinkgem.jeesite.modules.service.service.skill.SerSkillTechnicianService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,18 +62,29 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     @Autowired
     private ServiceTechnicianServiceInfoDao serviceInfoDao;
 
+    @Autowired
+    private SerSkillTechnicianService serSkillTechnicianService;
 
     public void saveServiceInfo(ServiceTechnicianInfo info) {
+        ServiceTechnicianInfo technicianInfo = get(info.getId());
         ServiceTechnicianServiceInfo serviceInfo = info.getServiceInfo();
         if (StringUtils.isNotBlank(serviceInfo.getId())) {
             serviceInfo.preUpdate();
             serviceInfoDao.update(serviceInfo);
         }else {
             serviceInfo.preInsert();
-            serviceInfo.setTechId(info.getId());
+            serviceInfo.setTechId(technicianInfo.getId());
+            serviceInfo.setTechName(technicianInfo.getTechName());
             serviceInfo.setSort("0");
             serviceInfoDao.insert(serviceInfo);
         }
+
+        List<SerSkillInfo> skills = serviceInfo.getSkills();
+        for (SerSkillInfo skill : skills) {
+            SerSkillTechnician sst = new SerSkillTechnician(serviceInfo,skill);
+            serSkillTechnicianService.save(sst);
+        }
+
     }
 
 
@@ -117,7 +132,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
      * @param info
      */
     public void deleteFamilyMembers(ServiceTechnicianInfo info) {
-        List<ServiceTechnicianFamilyMembers> members = info.getFamilyMembers();
+        //List<ServiceTechnicianFamilyMembers> members = info.getFamilyMembers();
+        List<ServiceTechnicianFamilyMembers> members = familyMembersDao.findListByTech(info);
         for (ServiceTechnicianFamilyMembers member : members) {
             if (info.getId().equals(member.getTechId())) {
                 deleteFamilyMember(member);
@@ -158,6 +174,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public void saveWorkTimes(ServiceTechnicianInfo info) {
         List<ServiceTechnicianWorkTime> times = info.getWorkTime();
         for (ServiceTechnicianWorkTime time : times) {
+            time.setTechId(info.getId());
+            time.setTechName(info.getTechName());
             saveWorkTime(time);
         }
     }
@@ -170,7 +188,6 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     @Transactional(readOnly = false)
     public void saveWorkTime(ServiceTechnicianWorkTime time) {
         if (StringUtils.isNotBlank(time.getTechId())) {
-
             if (StringUtils.isNotBlank(time.getTechId())) {
                 if (StringUtils.isBlank(time.getId())) {
                     time.setSort("0");
@@ -182,8 +199,6 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
                 }
             }
         }
-
-
     }
 
     /**
