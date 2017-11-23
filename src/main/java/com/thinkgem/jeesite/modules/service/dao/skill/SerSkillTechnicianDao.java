@@ -7,6 +7,9 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+
+import java.util.List;
 
 /**
  * 技师技能关联DAO接口
@@ -17,4 +20,6 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 public interface SerSkillTechnicianDao extends CrudDao<SerSkillTechnician> {
 
     void delSerSkillTechnicianBySkill(SerSkillInfo serSkillInfo);
+
+    List<SerSkillInfo> findByTech(ServiceTechnicianInfo technicianInfo);
 }

@@ -67,6 +67,11 @@ public class ServiceTechnicianInfoController extends BaseController {
 //	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
     @RequestMapping(value = "form")
     public Result form(ServiceTechnicianInfo serviceTechnicianInfo, Model model) {
+        ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoService.get(serviceTechnicianInfo.getId());
+        technicianInfo.setImages(serviceTechnicianInfoService.getImages(technicianInfo));
+        technicianInfo.setServiceInfo(serviceTechnicianInfoService.getServiceInfo(technicianInfo));
+        technicianInfo.setWorkTime(serviceTechnicianInfoService.findWorkTimeByTech(technicianInfo));
+
         return new SuccResult(serviceTechnicianInfo);
     }
 

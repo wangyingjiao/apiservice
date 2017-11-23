@@ -71,8 +71,28 @@
 			</otherwise>
 		</choose>
 	</select>
-	
-	<insert id="insert">
+    <select id="findByTech"
+            resultType="ServiceTechnicianServiceInfo">
+		SELECT
+		<include refid="serviceTechnicianServiceInfoColumns"/>
+		FROM service_technician_service_info a
+		<include refid="serviceTechnicianServiceInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and a.tech_id = #{id}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+
+	</select>
+
+    <insert id="insert">
 		INSERT INTO service_technician_service_info(
 			id,
 			tech_id,

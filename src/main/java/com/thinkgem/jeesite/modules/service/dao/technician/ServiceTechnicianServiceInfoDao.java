@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.technician;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianServiceInfo;
 
 /**
@@ -14,5 +15,6 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianS
  */
 @MyBatisDao
 public interface ServiceTechnicianServiceInfoDao extends CrudDao<ServiceTechnicianServiceInfo> {
-	
+
+    ServiceTechnicianServiceInfo findByTech(ServiceTechnicianInfo technicianInfo);
 }

@@ -307,4 +307,14 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
        return technicianInfoDao.findTech(info);
 
     }
+
+    public List<ServiceTechnicianImages> getImages(ServiceTechnicianInfo technicianInfo) {
+        return imagesDao.findAllByTech(technicianInfo);
+    }
+
+    public ServiceTechnicianServiceInfo getServiceInfo(ServiceTechnicianInfo technicianInfo) {
+        ServiceTechnicianServiceInfo serviceInfo = serviceInfoDao.findByTech(technicianInfo);
+        serviceInfo.setSkills(serSkillTechnicianService.findByTech(technicianInfo));
+        return serviceInfo;
+    }
 }
