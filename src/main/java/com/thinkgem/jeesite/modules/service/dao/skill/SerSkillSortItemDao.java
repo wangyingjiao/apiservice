@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.skill;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSortItem;
 
 /**
@@ -14,5 +15,6 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSortItem;
  */
 @MyBatisDao
 public interface SerSkillSortItemDao extends CrudDao<SerSkillSortItem> {
-	
+
+    void delSerSkillSortItemBySkill(SerSkillInfo serSkillInfo);
 }

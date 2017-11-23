@@ -5,6 +5,11 @@ package com.thinkgem.jeesite.modules.service.service.skill;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortItemDao;
+import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSortItem;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,15 @@ import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillInfoDao;
 public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillInfo> {
 	@Autowired
 	SerSkillInfoDao serSkillInfoDao;
+	@Autowired
+	SerSkillSortItemDao serSkillSortItemDao;
+	@Autowired
+	SerSkillTechnicianDao serSkillTechnicianDao;
+
+	@Autowired
+	SerSkillSortItemService serSkillSortItemService;
+	@Autowired
+	SerSkillTechnicianService serSkillTechnicianService;
 
 	public SerSkillInfo get(String id) {
 		return super.get(id);
@@ -33,7 +47,31 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 
 	@Transactional(readOnly = false)
 	public void save(SerSkillInfo serSkillInfo) {
+		if (StringUtils.isNotBlank(serSkillInfo.getId())) {
+			//删除商品信息
+			serSkillSortItemDao.delSerSkillSortItemBySkill(serSkillInfo);
+			//更新时，删除技师关系
+			serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
+		}
+		List<SerSkillSortItem> serItems = serSkillInfo.getSerItems();
+		List<SerSkillTechnician> technicians = serSkillInfo.getTechnicians();
+		if(technicians != null){
+			serSkillInfo.setTechnicianNum(technicians.size());
+		}
+
 		super.save(serSkillInfo);
+		//批量插入商品信息
+		for(SerSkillSortItem item : serItems){
+			item.setSkillId(serSkillInfo.getId());
+			item.setSkillName(serSkillInfo.getName());
+			serSkillSortItemService.save(item);
+		}
+		//批量插入技师信息
+		for(SerSkillTechnician technician : technicians){
+			technician.setSkillId(serSkillInfo.getId());
+			technician.setSkillName(serSkillInfo.getName());
+			serSkillTechnicianService.save(technician);
+		}
 	}
 
 	public List<SerSkillInfo> findList(SerSkillInfo serSkillInfo) {
@@ -60,10 +98,6 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	 * @return
 	 */
 	public int checkDataName(SerSkillInfo serSkillInfo) {
-		User user = UserUtils.getUser();
-		if (null != user) {
-			//serSkillInfo.setOfficeId(user.getOfficeId());
-		}
 		return serSkillInfoDao.checkDataName(serSkillInfo);
 	}
 }

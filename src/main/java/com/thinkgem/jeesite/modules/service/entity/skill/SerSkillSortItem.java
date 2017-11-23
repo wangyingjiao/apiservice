@@ -17,10 +17,12 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	private static final long serialVersionUID = 1L;
 	private String skillId;		// 技能编号
 	private String skillName;   //技能
-	private String sortId;		// 分类编号
-	private String sortName;		// 分类名称
+	/*private String sortId;		// 分类编号
+	private String sortName;		// 分类名称*/
 	private String itemId;		// 项目编号
 	private String itemName;		// 项目名称
+	private String commodityId;		// 商品编号
+	private String commodityName;		// 商品名称
 	
 	public SerSkillSortItem() {
 		super();
@@ -46,7 +48,7 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	public void setSkillName(String skillName) {
 		this.skillName = skillName;
 	}
-
+/*
 	@Length(min=0, max=64, message="分类编号长度必须介于 0 和 64 之间")
 	public String getSortId() {
 		return sortId;
@@ -64,7 +66,7 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	public void setSortName(String sortName) {
 		this.sortName = sortName;
 	}
-	
+	*/
 	@Length(min=0, max=64, message="项目编号长度必须介于 0 和 64 之间")
 	public String getItemId() {
 		return itemId;
@@ -82,5 +84,20 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
 	}
-	
+
+	public String getCommodityId() {
+		return commodityId;
+	}
+
+	public void setCommodityId(String commodityId) {
+		this.commodityId = commodityId;
+	}
+
+	public String getCommodityName() {
+		return commodityName;
+	}
+
+	public void setCommodityName(String commodityName) {
+		this.commodityName = commodityName;
+	}
 }

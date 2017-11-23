@@ -5,7 +5,9 @@
 	<sql id="serSkillTechnicianColumns">
 		a.id AS "id",
 		a.skill_id AS "skillId",
+		a.skill_name AS "skillName",
 		a.technician_id AS "technicianId",
+		a.technician_name AS "technicianName",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -65,7 +67,9 @@
 		INSERT INTO ser_skill_technician(
 			id,
 			skill_id,
+			skill_name,
 			technician_id,
+			technician_name,
 			create_by,
 			create_date,
 			update_by,
@@ -75,7 +79,9 @@
 		) VALUES (
 			#{id},
 			#{skillId},
+			#{skillName},
 			#{technicianId},
+			#{technicianName},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -88,7 +94,9 @@
 	<update id="update">
 		UPDATE ser_skill_technician SET 	
 			skill_id = #{skillId},
+			skill_name = #{skillName},
 			technician_id = #{technicianId},
+			technician_name = #{technicianName},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -100,5 +108,12 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<update id="delSerSkillTechnicianBySkill">
+		UPDATE ser_skill_technician SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE skill_id = #{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
 </mapper>

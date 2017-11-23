@@ -127,4 +127,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	public int checkDataName(SerItemInfo serItemInfo) {
 		return serItemInfoDao.checkDataName(serItemInfo);
 	}
+
+	@Transactional(readOnly = false)
+    public void updateSerItemPicNum(SerItemInfo serItemInfo) {
+		serItemInfo.preUpdate();
+		serItemInfoDao.updateSerItemPicNum(serItemInfo);
+    }
+
+	public SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo) {
+		return serItemInfoDao.getSerItemInfoPic(serItemInfo);
+	}
 }

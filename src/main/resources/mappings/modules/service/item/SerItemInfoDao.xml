@@ -68,7 +68,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.sort_num ASC
 			</otherwise>
 		</choose>
 	</select>
@@ -209,13 +209,27 @@
 	<select id="checkDataName" resultType="int">
 		SELECT COUNT(*) FROM ser_item_info
 		WHERE name = #{name}
-		<if test="sortId != null and sortId != ''">
-			AND sort_id = #{sortId}
-		</if>
 		AND office_id = #{officeId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	<select id="getSerItemCommoditys" resultType="SerItemCommodity">
 		SELECT id FROM ser_item_commodity WHERE item_id = #{id}
 	</select>
+
+	<select id="getSerItemInfoPic" resultType="SerItemInfo">
+		SELECT picture_detail FROM ser_item_info WHERE id=#{id}
+	</select>
+
+	<update id="updateSerItemPicNum">
+		UPDATE ser_item_info SET
+		<if test="pictureDetail != null and pictureDetail != ''">
+			picture_detail = #{pictureDetail},
+		</if>
+		<if test="sortNum != null and sortNum != ''">
+			sort_num = #{sortNum},
+		</if>
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
 </mapper>

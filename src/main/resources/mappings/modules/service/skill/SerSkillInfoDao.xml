@@ -4,8 +4,13 @@
     
 	<sql id="serSkillInfoColumns">
 		a.id AS "id",
+		a.station_id AS "stationId",
+		a.station_name AS "stationName",
+		a.office_id AS "officeId",
+		a.office_name AS "officeName",
 		a.name AS "name",
 		a.code AS "code",
+		a.technician_num AS "technicianNum",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -70,8 +75,13 @@
 	<insert id="insert">
 		INSERT INTO ser_skill_info(
 			id,
+			station_id,
+			station_name,
+			office_id,
+			office_name,
 			name,
 			code,
+			technician_num,
 			create_by,
 			create_date,
 			update_by,
@@ -80,8 +90,13 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{stationId},
+			#{stationName},
+			#{officeId},
+			#{officeName},
 			#{name},
 			#{code},
+			#{technicianNum},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -92,9 +107,14 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE ser_skill_info SET 	
+		UPDATE ser_skill_info SET
+			station_id = #{stationId},
+			station_name = #{stationName},
+			office_id = #{officeId},
+			office_name = #{officeName},
 			name = #{name},
 			code = #{code},
+			technician_num = #{technicianNum};
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -106,5 +126,11 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<select id="checkDataName" resultType="int">
+		SELECT COUNT(*) FROM ser_skill_info
+		WHERE name = #{name}
+		AND  office_id = #{officeId}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 </mapper>

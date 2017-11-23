@@ -7,6 +7,8 @@ import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
  * 技能管理Entity
  * @author a
@@ -17,10 +19,14 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	private static final long serialVersionUID = 1L;
 	private String name;		// 技能名称
 	private String code;		// 技能编码
+	private int technicianNum;  // 技师数量
 	private String stationId;//服务站ID
 	private String officeId;//机构ID
 	private String stationName;//服务站名称
 	private String officeName;//机构名称
+
+	private List<SerSkillTechnician> technicians;
+	private List<SerSkillSortItem> serItems;
 
 
 	public SerSkillInfo() {
@@ -79,5 +85,29 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 
 	public void setOfficeName(String officeName) {
 		this.officeName = officeName;
+	}
+
+	public int getTechnicianNum() {
+		return technicianNum;
+	}
+
+	public void setTechnicianNum(int technicianNum) {
+		this.technicianNum = technicianNum;
+	}
+
+	public List<SerSkillTechnician> getTechnicians() {
+		return technicians;
+	}
+
+	public void setTechnicians(List<SerSkillTechnician> technicians) {
+		this.technicians = technicians;
+	}
+
+	public List<SerSkillSortItem> getSerItems() {
+		return serItems;
+	}
+
+	public void setSerItems(List<SerSkillSortItem> serItems) {
+		this.serItems = serItems;
 	}
 }

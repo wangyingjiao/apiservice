@@ -11,6 +11,8 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,16 @@ public class SerSkillInfoController extends BaseController {
     public Result saveData(@RequestBody SerSkillInfo serSkillInfo) {
         if (!beanValidator(serSkillInfo)) {
             return new FailResult("保存技能" + serSkillInfo.getName() + "失败");
+        }
+        User user = UserUtils.getUser();
+        serSkillInfo.setOfficeId(user.getOffice().getId());//机构ID
+        serSkillInfo.setOfficeName(user.getOffice().getName());//机构名称
+        serSkillInfo.setStationId(user.getStation().getId());//服务站ID
+        serSkillInfo.setStationName(user.getStation().getName());//服务站名称
+        if (!StringUtils.isNotBlank(serSkillInfo.getId())) {//新增时验证重复
+            if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
+                return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
+            }
         }
         serSkillInfoService.save(serSkillInfo);
         return new SuccResult("保存技能" + serSkillInfo.getName() + "成功");

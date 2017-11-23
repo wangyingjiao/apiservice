@@ -106,14 +106,28 @@ public class SerItemInfoController extends BaseController {
         return new SuccResult("删除服务项目成功");
     }
 
-/*    @ResponseBody
-    @RequestMapping(value = "checkDataName", method = {RequestMethod.POST})
-    @ApiOperation("验证服务项目名称是否重复")
-    public Result checkDataName(@RequestBody SerItemInfo serItemInfo) {
-        if (0 != serItemInfoService.checkDataName(serItemInfo)) {
-            return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
+    @ResponseBody
+    @RequestMapping(value = "getSerItemInfoPic", method = {RequestMethod.POST})
+    @ApiOperation("根据ID查找服务项目图文详情")
+    public Result getSerItemInfoPic(@RequestBody SerItemInfo serItemInfo) {
+        SerItemInfo entity = null;
+        if (StringUtils.isNotBlank(serItemInfo.getId())) {
+            entity = serItemInfoService.getSerItemInfoPic(serItemInfo);
         }
-        return new SuccResult("服务项目名称" + serItemInfo.getName() + "可用");
-    }*/
+        if (entity == null) {
+            return new FailResult("未找到此id：" + serItemInfo.getId() + "对应的图文详情");
+        } else {
+            return new SuccResult(entity);
+        }
+    }
+
+    @ResponseBody
+    //@RequiresPermissions("service:station:serItemInfo:edit")
+    @RequestMapping(value = "updateSerItemPicNum", method = {RequestMethod.POST})
+    @ApiOperation("更新服务项目图文详情和排序号")
+    public Result updateSerItemPicNum(@RequestBody SerItemInfo serItemInfo) {
+        serItemInfoService.updateSerItemPicNum(serItemInfo);
+        return new SuccResult("更新服务项目成功");
+    }
 
 }

@@ -5,10 +5,11 @@
 	<sql id="serSkillSortItemColumns">
 		a.id AS "id",
 		a.skill_id AS "skillId",
-		a.sort_id AS "sortId",
-		a.sort_name AS "sortName",
+		a.skill_name AS "skillName",
 		a.item_id AS "itemId",
 		a.item_name AS "itemName",
+		a.commodity_id AS "commodityId",
+		a.commodity_name AS "commodityName",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -68,8 +69,9 @@
 		INSERT INTO ser_skill_sort_item(
 			id,
 			skill_id,
-			sort_id,
-			sort_name,
+			skill_name,
+			commodity_id,
+			commodity_name,
 			item_id,
 			item_name,
 			create_by,
@@ -81,8 +83,9 @@
 		) VALUES (
 			#{id},
 			#{skillId},
-			#{sortId},
-			#{sortName},
+			#{skillName},
+			#{commodityId},
+			#{commodityName},
 			#{itemId},
 			#{itemName},
 			#{createBy.id},
@@ -97,8 +100,9 @@
 	<update id="update">
 		UPDATE ser_skill_sort_item SET 	
 			skill_id = #{skillId},
-			sort_id = #{sortId},
-			sort_name = #{sortName},
+			skill_name = #{skillName},
+			commodity_id = #{commodityId},
+			commodity_name = #{commodityName},
 			item_id = #{itemId},
 			item_name = #{itemName},
 			update_by = #{updateBy.id},
@@ -112,5 +116,12 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<update id="delSerSkillSortItemBySkill">
+		UPDATE ser_skill_sort_item SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE skill_id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
 </mapper>
