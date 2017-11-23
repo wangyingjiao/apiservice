@@ -103,7 +103,7 @@ public class SerSkillInfoController extends BaseController {
         serSkillInfoService.delete(serSkillInfo);
         return new SuccResult("删除技能成功");
     }
-
+/*
     @ResponseBody
     @RequestMapping(value = "checkDataName", method = {RequestMethod.POST})
     @ApiOperation("验证技能名称是否重复")
@@ -112,7 +112,7 @@ public class SerSkillInfoController extends BaseController {
             return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
         }
         return new SuccResult("技能名称" + serSkillInfo.getName() + "可用");
-    }
+    }*/
 
 
 }

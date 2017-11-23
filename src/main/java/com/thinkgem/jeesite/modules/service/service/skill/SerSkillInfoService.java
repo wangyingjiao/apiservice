@@ -83,11 +83,16 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	}
 
 	public SerSkillInfo getData(String id) {
-		return super.get(id);
+		return serSkillInfoDao.getSkillInfoById(id);
 	}
 
 	@Transactional(readOnly = false)
 	public void delete(SerSkillInfo serSkillInfo) {
+		//删除商品信息
+		serSkillSortItemDao.delSerSkillSortItemBySkill(serSkillInfo);
+		//更新时，删除技师关系
+		serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
+
 		super.delete(serSkillInfo);
 	}
 

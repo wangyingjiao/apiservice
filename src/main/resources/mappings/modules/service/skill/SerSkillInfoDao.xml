@@ -133,4 +133,52 @@
 		AND  office_id = #{officeId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
+
+
+
+	<select id="getSkillInfoById" resultMap="SerSkillInfoResultMap">
+		SELECT
+		<include refid="serSkillInfoColumnsAll"/>
+		FROM ser_skill_info a
+		<where>
+			a.id = #{id}
+		</where>
+	</select>
+
+	<sql id="serSkillInfoColumnsAll">
+		a.id AS "id",
+		a.station_id AS "stationId",
+		a.station_name AS "stationName",
+		a.office_id AS "officeId",
+		a.office_name AS "officeName",
+		a.name AS "name",
+		a.code AS "code",
+		a.technician_num AS "technicianNum"
+	</sql>
+	<resultMap type="SerSkillInfo" id="SerSkillInfoResultMap">
+		<id column="id" property="id"/>
+		<result column="station_id" property="stationId"/>
+		<result column="station_name" property="stationName"/>
+		<result column="office_id" property="officeId"/>
+		<result column="office_name" property="officeName"/>
+		<result column="sort_name" property="sortName"/>
+		<result column="name" property="name"/>
+		<result column="code" property="code"/>
+		<result column="technician_num" property="technicianNum"/>
+		<!-- 关联商品 -->
+		<association property="serItems" column="{reqId=id}" select="selectSerItemsById"></association>
+		<!-- 关联技师 -->
+		<association property="technicians" column="{reqId=id}" select="selectTechnicianById"></association>
+	</resultMap>
+	<select id="selectSerItemsById" parameterType="java.util.Map" resultType="SerSkillSortItem">
+		select id,item_id AS itemId,item_name AS itemName,commodity_id AS commodityId,commodity_name AS commodityName
+		from ser_skill_sort_item
+		where skill_id=#{reqId}
+	</select>
+	<select id="selectTechnicianById" parameterType="java.util.Map" resultType="SerSkillTechnician">
+		select id,technician_id AS technicianId,technician_name AS technicianName
+		from ser_skill_technician
+		where skill_id=#{reqId}
+	</select>
+
 </mapper>

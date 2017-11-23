@@ -16,4 +16,6 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 public interface SerSkillInfoDao extends CrudDao<SerSkillInfo> {
 
     int checkDataName(SerSkillInfo serSkillInfo);
+
+    SerSkillInfo getSkillInfoById(String id);
 }
