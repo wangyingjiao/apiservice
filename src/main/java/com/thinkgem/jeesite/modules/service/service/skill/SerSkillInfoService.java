@@ -8,8 +8,10 @@ import java.util.List;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortItemDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSortItem;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +106,17 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	 */
 	public int checkDataName(SerSkillInfo serSkillInfo) {
 		return serSkillInfoDao.checkDataName(serSkillInfo);
+	}
+
+    public Page<SerItemInfo> findSerPage(Page<SerItemInfo> objectPage, SerItemInfo serInfo) {
+		serInfo.setPage(objectPage);
+		objectPage.setList(serSkillInfoDao.choiceSerlist(serInfo));
+		return objectPage;
+    }
+
+	public Page<ServiceTechnicianInfo> findTechnicianPage(Page<ServiceTechnicianInfo> objectPage, ServiceTechnicianInfo technicianInfo) {
+		technicianInfo.setPage(objectPage);
+		objectPage.setList(serSkillInfoDao.choiceTechnicianlist(technicianInfo));
+		return objectPage;
 	}
 }

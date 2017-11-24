@@ -50,6 +50,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String techNativePlace;        // 籍贯
     private String sort;        // 排序
     private String column31;        // column_31
+    private String imgUrl;
 
     //技师服务信息
     private ServiceTechnicianServiceInfo serviceInfo;
@@ -371,5 +372,13 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setFamilyMembers(List<ServiceTechnicianFamilyMembers> familyMembers) {
         this.familyMembers = familyMembers;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

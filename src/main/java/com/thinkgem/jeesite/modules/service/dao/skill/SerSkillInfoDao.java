@@ -5,7 +5,11 @@ package com.thinkgem.jeesite.modules.service.dao.skill;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+
+import java.util.List;
 
 /**
  * 技能管理DAO接口
@@ -18,4 +22,8 @@ public interface SerSkillInfoDao extends CrudDao<SerSkillInfo> {
     int checkDataName(SerSkillInfo serSkillInfo);
 
     SerSkillInfo getSkillInfoById(String id);
+
+    List<SerItemInfo> choiceSerlist(SerItemInfo serSkillInfo);
+
+    List<ServiceTechnicianInfo> choiceTechnicianlist(ServiceTechnicianInfo serSkillInfo);
 }

@@ -181,4 +181,69 @@
 		where skill_id=#{reqId}
 	</select>
 
+
+	<select id="choiceSerlist" resultMap="SerItemCommodityResultMap">
+		SELECT
+		a.id AS "id",
+		a.name AS "name"
+		FROM ser_item_info a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sort_num ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<!-- 项目关联商品 -->
+		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
+	</resultMap>
+	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
+		select id,name from ser_item_commodity
+		where item_id=#{reqId}
+	</select>
+
+	<select id="choiceTechnicianlist" resultType="ServiceTechnicianInfo">
+		SELECT
+		a.id, a.tech_name AS techName,a.tech_sex AS techSex,
+		a.tech_station_id AS techStationId,a.tech_station_name AS techStationName,
+		b.img_url AS imgUrl
+		FROM service_technician_info a
+		LEFT JOIN  service_technician_images b
+		ON a.id=b.tech_id AND b.del_flag = #{DEL_FLAG_NORMAL} AND b.img_type = '1'
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="techName != null and techName != ''">
+				AND a.tech_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{techName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{techName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{techName},'%')</if>
+			</if>
+			<if test="techStationId != null and techStationId !=''">
+				AND a.tech_station_id= #{techStationId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
 </mapper>

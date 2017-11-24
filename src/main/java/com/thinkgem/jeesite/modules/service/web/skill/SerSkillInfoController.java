@@ -9,7 +9,9 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -74,9 +76,12 @@ public class SerSkillInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取技能列表")
-    public Result listData(@RequestBody SerSkillInfo serSkillInfo, HttpServletRequest request, HttpServletResponse response) {
-        Page<SerSkillInfo> stationPage = new Page<>(request, response);
-        Page<SerSkillInfo> page = serSkillInfoService.findPage(stationPage, serSkillInfo);
+    public Result listData(@RequestBody(required=false) SerSkillInfo serSkillInfo, HttpServletRequest request, HttpServletResponse response) {
+        if(serSkillInfo == null){
+            serSkillInfo = new SerSkillInfo();
+        }
+        Page<SerSkillInfo> serSkillPage = new Page<>(request, response);
+        Page<SerSkillInfo> page = serSkillInfoService.findPage(serSkillPage, serSkillInfo);
         return new SuccResult(page);
     }
 
@@ -103,16 +108,23 @@ public class SerSkillInfoController extends BaseController {
         serSkillInfoService.delete(serSkillInfo);
         return new SuccResult("删除技能成功");
     }
-/*
-    @ResponseBody
-    @RequestMapping(value = "checkDataName", method = {RequestMethod.POST})
-    @ApiOperation("验证技能名称是否重复")
-    public Result checkDataName(@RequestBody SerSkillInfo serSkillInfo) {
-        if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
-            return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
-        }
-        return new SuccResult("技能名称" + serSkillInfo.getName() + "可用");
-    }*/
 
+    @ResponseBody
+    @RequestMapping(value = "choiceSerlistData", method = {RequestMethod.POST})
+    @ApiOperation("选择服务")
+    public Result choiceSerlistData(@RequestBody SerItemInfo serInfo, HttpServletRequest request, HttpServletResponse response) {
+        Page<SerItemInfo> serPage = new Page<>(request, response);
+        Page<SerItemInfo> page = serSkillInfoService.findSerPage(serPage, serInfo);
+        return new SuccResult(page);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "choiceTechnicianlistData", method = {RequestMethod.POST})
+    @ApiOperation("选择技师")
+    public Result choiceTechnicianlistData(@RequestBody ServiceTechnicianInfo technicianInfo, HttpServletRequest request, HttpServletResponse response) {
+        Page<ServiceTechnicianInfo> technicianPage = new Page<>(request, response);
+        Page<ServiceTechnicianInfo> page = serSkillInfoService.findTechnicianPage(technicianPage, technicianInfo);
+        return new SuccResult(page);
+    }
 
 }
