@@ -64,8 +64,9 @@ public class ServiceTechnicianInfoController extends BaseController {
     }
 
 
-//	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
-    @RequestMapping(value = "form")
+    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
+    @ResponseBody
+    @RequestMapping(value = "form", method = RequestMethod.GET)
     public Result form(ServiceTechnicianInfo serviceTechnicianInfo, Model model) {
         ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoService.get(serviceTechnicianInfo.getId());
         technicianInfo.setImages(serviceTechnicianInfoService.getImages(technicianInfo));
@@ -75,14 +76,14 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult(serviceTechnicianInfo);
     }
 
-//	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
-    @RequestMapping(value = "delete")
+    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
+    @ResponseBody
+    @RequestMapping(value = "delete", method = RequestMethod.GET)
     public Result delete(ServiceTechnicianInfo serviceTechnicianInfo) {
         serviceTechnicianInfoService.delete(serviceTechnicianInfo);
         serviceTechnicianInfoService.deleteFamilyMembers(serviceTechnicianInfo);
         return new SuccResult("删除技师信息成功");
     }
-
 
 
     /**

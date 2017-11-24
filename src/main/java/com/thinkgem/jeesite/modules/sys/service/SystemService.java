@@ -273,7 +273,7 @@ public class SystemService extends BaseService implements InitializingBean {
 			role.preInsert();
 			roleDao.insert(role);
 			// 同步到Activiti
-			saveActivitiGroup(role);
+			//saveActivitiGroup(role);
 		}else{
 			role.preUpdate();
 			roleDao.update(role);
@@ -289,7 +289,7 @@ public class SystemService extends BaseService implements InitializingBean {
 			roleDao.insertRoleOffice(role);
 		}
 		// 同步到Activiti
-		saveActivitiGroup(role);
+		//saveActivitiGroup(role);
 		// 清除用户角色缓存
 		UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
 //		// 清除权限缓存

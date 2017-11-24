@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.entity;
 
+import java.beans.Transient;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 角色Entity
@@ -97,6 +99,7 @@ public class Role extends DataEntity<Role> {
 		this.office = office;
 	}
 
+	@NotBlank(message = "岗位名称不可为空",groups = SaveRoleGroup.class)
 	@Length(min=1, max=100)
 	public String getName() {
 		return name;
@@ -124,6 +127,7 @@ public class Role extends DataEntity<Role> {
 		this.roleType = roleType;
 	}
 
+	@NotBlank(message = "岗位等级不可为空",groups = SaveRoleGroup.class)
 	public String getDataScope() {
 		return dataScope;
 	}
@@ -193,6 +197,7 @@ public class Role extends DataEntity<Role> {
 		}
 	}
 
+	@NotBlank(message = "菜单列表不能为空",groups = SaveRoleGroup.class)
 	public String getMenuIds() {
 		return StringUtils.join(getMenuIdList(), ",");
 	}
@@ -263,20 +268,20 @@ public class Role extends DataEntity<Role> {
 		this.user = user;
 	}
 
-//	public boolean isAdmin(){
-//		return isAdmin(this.id);
-//	}
-//	
-//	public static boolean isAdmin(String id){
-//		return id != null && "1".equals(id);
-//	}
+	public boolean isAdmin(){
+		return isAdmin(this.id);
+	}
+
+	public static boolean isAdmin(String id){
+		return id != null && "1".equals(id);
+	}
 	
-//	@Transient
-//	public String getMenuNames() {
-//		List<String> menuNameList = Lists.newArrayList();
-//		for (Menu menu : menuList) {
-//			menuNameList.add(menu.getName());
-//		}
-//		return StringUtils.join(menuNameList, ",");
-//	}
+	@Transient
+	public String getMenuNames() {
+		List<String> menuNameList = Lists.newArrayList();
+		for (Menu menu : menuList) {
+			menuNameList.add(menu.getName());
+		}
+		return StringUtils.join(menuNameList, ",");
+	}
 }
