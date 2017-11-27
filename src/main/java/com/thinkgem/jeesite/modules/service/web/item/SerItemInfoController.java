@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 服务项目Controller
@@ -130,4 +131,17 @@ public class SerItemInfoController extends BaseController {
         return new SuccResult("更新服务项目成功");
     }
 
+
+    @ResponseBody
+    @RequestMapping(value="getSerSortInfoList",method={RequestMethod.GET})
+    @ApiOperation("所属分类下拉列表")
+    public List<SerItemInfo> getSerSortInfoList(HttpServletRequest request, HttpServletResponse response){
+        SerItemInfo serItemInfo = new SerItemInfo();
+        User user = UserUtils.getUser();
+        serItemInfo.setOfficeId(user.getOffice().getId());//机构ID
+        serItemInfo.setOfficeName(user.getOffice().getName());//机构名称
+        serItemInfo.setStationId(user.getStation().getId());//服务站ID
+        serItemInfo.setStationName(user.getStation().getName());//服务站名称
+        return serItemInfoService.getSerSortInfoList(serItemInfo);
+    }
 }

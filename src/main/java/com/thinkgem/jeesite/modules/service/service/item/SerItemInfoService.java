@@ -137,4 +137,8 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	public SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo) {
 		return serItemInfoDao.getSerItemInfoPic(serItemInfo);
 	}
+
+    public List<SerItemInfo> getSerSortInfoList(SerItemInfo serItemInfo) {
+		return serItemInfoDao.getSerSortInfoList(serItemInfo);
+    }
 }

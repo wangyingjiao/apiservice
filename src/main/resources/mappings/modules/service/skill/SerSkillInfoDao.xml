@@ -246,4 +246,10 @@
 			</otherwise>
 		</choose>
 	</select>
+
+	<select id="getServiceStationList" resultType="ServiceStation">
+		select a.id , a.name as name
+		from service_station a
+		where del_flag = '0'
+	</select>
 </mapper>

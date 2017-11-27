@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 
 import java.util.List;
@@ -26,4 +27,6 @@ public interface SerSkillInfoDao extends CrudDao<SerSkillInfo> {
     List<SerItemInfo> choiceSerlist(SerItemInfo serSkillInfo);
 
     List<ServiceTechnicianInfo> choiceTechnicianlist(ServiceTechnicianInfo serSkillInfo);
+
+    List<ServiceStation> getServiceStationList();
 }

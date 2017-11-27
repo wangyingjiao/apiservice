@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianI
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +36,7 @@ import java.util.Set;
  * @version 2017-11-16
  */
 @Controller
+@Api(tags = "技师管理",description = "技师管理相关接口")
 @RequestMapping(value = "${adminPath}/service/technician/serviceTechnicianInfo")
 public class ServiceTechnicianInfoController extends BaseController {
 

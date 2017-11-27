@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 技能管理Controller
@@ -112,7 +114,10 @@ public class SerSkillInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "choiceSerlistData", method = {RequestMethod.POST})
     @ApiOperation("选择服务")
-    public Result choiceSerlistData(@RequestBody SerItemInfo serInfo, HttpServletRequest request, HttpServletResponse response) {
+    public Result choiceSerlistData(@RequestBody(required = false) SerItemInfo serInfo, HttpServletRequest request, HttpServletResponse response) {
+        if(null == serInfo){
+            serInfo = new SerItemInfo();
+        }
         Page<SerItemInfo> serPage = new Page<>(request, response);
         Page<SerItemInfo> page = serSkillInfoService.findSerPage(serPage, serInfo);
         return new SuccResult(page);
@@ -121,10 +126,19 @@ public class SerSkillInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "choiceTechnicianlistData", method = {RequestMethod.POST})
     @ApiOperation("选择技师")
-    public Result choiceTechnicianlistData(@RequestBody ServiceTechnicianInfo technicianInfo, HttpServletRequest request, HttpServletResponse response) {
+    public Result choiceTechnicianlistData(@RequestBody(required = false) ServiceTechnicianInfo technicianInfo, HttpServletRequest request, HttpServletResponse response) {
+        if(null == technicianInfo){
+            technicianInfo = new ServiceTechnicianInfo();
+        }
         Page<ServiceTechnicianInfo> technicianPage = new Page<>(request, response);
         Page<ServiceTechnicianInfo> page = serSkillInfoService.findTechnicianPage(technicianPage, technicianInfo);
         return new SuccResult(page);
     }
 
+    @ResponseBody
+    @RequestMapping(value="getServiceStationList",method={RequestMethod.GET})
+    @ApiOperation("服务站下拉列表")
+    public List<ServiceStation> getServiceStationList(HttpServletRequest request, HttpServletResponse response){
+        return serSkillInfoService.getServiceStationList();
+    }
 }

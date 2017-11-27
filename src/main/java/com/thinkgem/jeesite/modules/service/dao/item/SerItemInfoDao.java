@@ -25,4 +25,6 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
     void updateSerItemPicNum(SerItemInfo serItemInfo);
 
     SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo);
+
+    List<SerItemInfo> getSerSortInfoList(SerItemInfo serItemInfo);
 }

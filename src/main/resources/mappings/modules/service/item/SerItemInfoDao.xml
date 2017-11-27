@@ -235,4 +235,11 @@
 		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
+
+	<select id="getSerSortInfoList" resultType="SerItemInfo">
+		select a.id AS sortId, a.name as sortName
+		from ser_sort_info a
+		where del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
 </mapper>

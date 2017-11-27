@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSortItem;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -119,4 +120,8 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		objectPage.setList(serSkillInfoDao.choiceTechnicianlist(technicianInfo));
 		return objectPage;
 	}
+
+    public List<ServiceStation> getServiceStationList() {
+		return serSkillInfoDao.getServiceStationList();
+    }
 }
