@@ -152,20 +152,8 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.sortNum = sortNum;
 	}
 
-
-
-
-	private String city;//城市
 	private String cityId;        // 城市编号
 	private String cityName;        // 城市名称
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
 
 	public String getCityId() {
 		return cityId;

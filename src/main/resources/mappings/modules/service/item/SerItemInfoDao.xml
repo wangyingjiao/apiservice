@@ -56,11 +56,14 @@
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
 			</if>
-			<if test="city != null and city !=''">
+			<if test="cityName != null and cityName !=''">
 				AND b.city_name LIKE
-				<if test="dbName == 'oracle'">'%'||#{city}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{city}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{city},'%')</if>
+				<if test="dbName == 'oracle'">'%'||#{cityName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{cityName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{cityName},'%')</if>
+			</if>
+			<if test="cityId != null and cityId !=''">
+				AND b.city_id = #{cityId}
 			</if>
 		</where>
 		<choose>
