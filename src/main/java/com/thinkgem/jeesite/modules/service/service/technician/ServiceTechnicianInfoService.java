@@ -84,6 +84,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             SerSkillTechnician sst = new SerSkillTechnician(serviceInfo,skill);
             serSkillTechnicianService.save(sst);
         }
+        if (info.getImages().size() > 0){
+            saveImages(info);
+        }
 
     }
 

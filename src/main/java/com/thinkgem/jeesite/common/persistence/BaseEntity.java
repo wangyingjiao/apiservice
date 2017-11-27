@@ -128,6 +128,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	 * 设置为true后强制执行插入语句，ID不会自动生成，需从手动传入。
      * @return
      */
+	@JsonIgnore
 	public boolean getIsNewRecord() {
         return isNewRecord || StringUtils.isBlank(getId());
     }

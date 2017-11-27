@@ -3,14 +3,23 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.Collections3;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.sys.entity.Office;
+import com.thinkgem.jeesite.modules.sys.entity.Role;
+import com.thinkgem.jeesite.modules.sys.entity.SaveRoleGroup;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.OfficeService;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -19,21 +28,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.Collections3;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.sys.entity.Office;
-import com.thinkgem.jeesite.modules.sys.entity.Role;
-import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.service.OfficeService;
-import com.thinkgem.jeesite.modules.sys.service.SystemService;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 角色Controller
@@ -287,6 +289,22 @@ public class RoleController extends BaseController {
         return "false";
     }
 
+    @ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "chkName", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation(value = "验证角色名是否有效")
+    public Result chkName(@RequestParam(required = false) String oldName, @RequestParam String name) {
+        if (name != null && name.equals(oldName)) {
+            //return "true";
+            return new SuccResult("名称可用");
+        } else if (name != null && systemService.getRoleByName(name) == null) {
+            return new SuccResult("名称可用");
+            //return "true";
+        }
+        return new FailResult("名称不可用");
+        //return "false";
+    }
+
     /**
      * 验证角色英文名是否有效
      *
@@ -312,29 +330,32 @@ public class RoleController extends BaseController {
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
-        //if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
-        //    addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
-        //    return new FailResult("权限不足");
-        //}
-        if (!beanValidator(role)) {
-            return new FailResult("参数错误");
+
+        Set<ConstraintViolation<Role>> validate = validator.validate(role, SaveRoleGroup.class);
+        if (validate.size() > 0) {
+            ArrayList<String> errs = new ArrayList<>();
+            for (ConstraintViolation<Role> violation : validate) {
+                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
+            }
+            return new FailResult(errs);
         }
-        if (!"true".equals(checkName(role.getOldName(), role.getName()))) {
+
+        Role roleByName = systemService.getRoleByName(role.getName());
+        if (roleByName != null) {
             return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
         }
-        if (!"true".equals(checkEnname(role.getOldEnname(), role.getEnname()))) {
-            return new FailResult("保存角色'" + role.getName() + "'失败, 英文名已存在");
-        }
+        role.setOffice(UserUtils.getUser().getOffice());
         systemService.saveRole(role);
-        return new SuccResult("保存角色'" + role.getName() + "'成功");
+
+        return new SuccResult(role);
 
     }
 
     @ResponseBody
     @RequiresPermissions("sys:role:edit")
-    @RequestMapping(value = "deleteRole", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteRole", method = RequestMethod.GET)
     @ApiOperation(value = "删除角色（岗位）")
-    public Result deleteRole(Role role, RedirectAttributes redirectAttributes) {
+    public Result deleteRole(String id) {
 //        if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
 //            addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
 //            return "redirect:" + adminPath + "/sys/role/?repage";
@@ -343,13 +364,17 @@ public class RoleController extends BaseController {
 //            addMessage(redirectAttributes, "演示模式，不允许操作！");
 //            return "redirect:" + adminPath + "/sys/role/?repage";
 //        }
-//		if (Role.isAdmin(id)){
-//			addMessage(redirectAttributes, "删除角色失败, 不允许内置角色或编号空");
-////		}else if (UserUtils.getUser().getRoleIdList().contains(id)){
-////			addMessage(redirectAttributes, "删除角色失败, 不能删除当前用户所在角色");
-//		}else{
-        systemService.deleteRole(role);
-        return new SuccResult("删除角色成功");
+		if (Role.isAdmin(id)){
+            return new FailResult(  "删除角色失败, 不允许内置角色或编号空");
+		}else if (UserUtils.getUser().getRoleIdList().contains(id)){
+			return new FailResult( "删除角色失败, 不能删除当前用户所在角色");
+		}else {
+            Role role = new Role();
+            role.setId(id);
+            systemService.deleteRole(role);
+            UserUtils.clearCache();
+            return new SuccResult("删除角色成功");
+        }
 
     }
 
@@ -364,7 +389,7 @@ public class RoleController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:role:view")
-    @RequestMapping(value = "search",method = RequestMethod.GET)
+    @RequestMapping(value = "search", method = RequestMethod.GET)
     @ApiOperation("岗位搜索")
     public Result search(@RequestParam String name) {
         if (StringUtils.isNotBlank(name)) {
@@ -372,6 +397,15 @@ public class RoleController extends BaseController {
             return new SuccResult(roles);
         }
         return new FailResult("未传值");
+    }
+    @ResponseBody
+    @RequestMapping(value = "getRoleDetail",method = RequestMethod.GET)
+    public Result getRoleDetail(@RequestParam String id){
+        Role role = systemService.getRole(id);
+        if (role != null) {
+            return new SuccResult(role);
+        }
+        return new FailResult("岗位信息未找到");
     }
 
 }
