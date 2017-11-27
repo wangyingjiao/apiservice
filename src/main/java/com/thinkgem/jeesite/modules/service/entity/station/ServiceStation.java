@@ -26,6 +26,8 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	private String aunts;		// 阿姨数量
 	private String servicePoint;		// 服务站座标点
 	private String status;		// 是否可以使用
+	private String officeId;
+	private String officeName;
 	
 	public ServiceStation() {
 		super();
@@ -123,5 +125,20 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
+	public String getOfficeId() {
+		return officeId;
+	}
+
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
+	}
+
+	public String getOfficeName() {
+		return officeName;
+	}
+
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
+	}
 }

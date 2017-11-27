@@ -88,8 +88,8 @@ public class UserController extends BaseController {
     @ResponseBody
     @RequiresPermissions("sys:user:view")
     @ApiOperation(notes = "返回用户列表", value = "获取用户列表")
-    @RequestMapping(value = {"listData"}, method = RequestMethod.GET)
-    public Result listData(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
+    @RequestMapping(value = {"listData"}, method = RequestMethod.POST)
+    public Result listData(@RequestBody(required = false) User user, HttpServletRequest request, HttpServletResponse response) {
         Page<User> page = systemService.findUser(new Page<User>(request, response), user);
         return new SuccResult(page);
     }

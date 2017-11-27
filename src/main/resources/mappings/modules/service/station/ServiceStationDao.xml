@@ -8,6 +8,8 @@
 		a.type AS "type",
 		a.area AS "area",
 		a.address AS "address",
+		a.office_id as "officeId",
+		a.office_name as "officeName",
 		a.user_id AS "user.id",
 		a.phone AS "phone",
 		a.employees AS "employees",
@@ -47,6 +49,9 @@
 					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="officeId != null">
+				and a.office_id = #{officeId}
 			</if>
 		</where>
 		<choose>

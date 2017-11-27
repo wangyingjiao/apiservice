@@ -1,9 +1,9 @@
 package com.thinkgem.jeesite.common.filter;
 
 import com.alibaba.fastjson.JSONObject;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
  */
 public class DefaultHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
-    private String body;
+    private String body= "{}";
     private Log logger = LogFactory.getLog(getClass());
 
     /**
@@ -39,8 +39,10 @@ public class DefaultHttpServletRequestWrapper extends HttpServletRequestWrapper 
         } catch (Exception ex) {
             logger.debug("异常信息：" + ex.getMessage());
         }
-        JSONObject json = JSONObject.parseObject(jsonStr.toString());
-        body = json.toJSONString();
+        if (StringUtils.isNotBlank(jsonStr)) {
+            JSONObject json = JSONObject.parseObject(jsonStr.toString());
+            body = json.toJSONString();
+        }
     }
 
     @Override

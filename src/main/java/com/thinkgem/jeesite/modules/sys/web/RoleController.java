@@ -353,7 +353,7 @@ public class RoleController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:role:edit")
+    @RequiresPermissions("sys:user:delete")
     @RequestMapping(value = "deleteRole", method = RequestMethod.POST)
     @ApiOperation(value = "删除角色（岗位）")
     public Result deleteRole(@RequestBody Role role) {
@@ -362,12 +362,15 @@ public class RoleController extends BaseController {
         if (errors.size() > 0){
             return new FailResult(errors);
         }
-
         if (Role.isAdmin(role.getId())){
             return new FailResult(  "删除角色失败, 不允许内置角色或编号空");
 		}else if (UserUtils.getUser().getRoleIdList().contains(role.getId())){
 			return new FailResult( "删除角色失败, 不能删除当前用户所在角色");
-		}else {
+		}else if(false){
+		    //todo 删除岗位时要检查
+            return null;
+        }
+		else {
             systemService.deleteRole(role);
             UserUtils.clearCache();
             return new SuccResult("删除角色成功");

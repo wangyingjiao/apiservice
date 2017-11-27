@@ -54,6 +54,7 @@ public class User extends DataEntity<User> {
     private String photo;    // 头像
     private String useable;  //是否可用
 
+    private String roleName;
     private String oldLoginName;// 原登录名
     private String newPassword;    // 新密码
 
@@ -176,7 +177,7 @@ public class User extends DataEntity<User> {
         this.company = company;
     }
 
-    @JsonIgnore
+    //@JsonIgnore
     @NotNull(message = "归属部门不能为空")
     @ExcelField(title = "归属部门", align = 2, sort = 25)
     public Office getOffice() {
@@ -358,7 +359,7 @@ public class User extends DataEntity<User> {
         this.role = role;
     }
 
-    @JsonIgnore
+    //@JsonIgnore
     @ExcelField(title = "拥有角色", align = 1, sort = 800, fieldType = RoleListType.class)
     public List<Role> getRoleList() {
         return roleList;
@@ -412,5 +413,14 @@ public class User extends DataEntity<User> {
 
     public void setUseable(String useable) {
         this.useable = useable;
+    }
+
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

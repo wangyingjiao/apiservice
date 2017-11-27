@@ -66,13 +66,15 @@ public class ServiceStationController extends BaseController {
         return new SuccResult(page);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "listByOffice", method = {RequestMethod.POST, RequestMethod.GET})
+    //@RequiresPermissions("service:station:serviceStation:view")
+    public Result listByOffice(@RequestBody(required = false) ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
+        List<ServiceStation> list = serviceStationService.findList(serviceStation);
+        return new SuccResult(list);
+    }
 
-//	@RequiresPermissions("service:station:serviceStation:view")
-//	@RequestMapping(value = "form")
-//	public String form(ServiceStation serviceStation, Model model) {
-//		model.addAttribute("serviceStation", serviceStation);
-//		return "modules/service/station/serviceStationForm";
-//	}
+
 
     @ResponseBody
     @RequestMapping(value = "getData", method = {RequestMethod.POST, RequestMethod.GET})
@@ -163,18 +165,17 @@ public class ServiceStationController extends BaseController {
     @RequiresPermissions("service:station:serviceStation:view")
     @RequestMapping()
     @ApiOperation("当前服务站所有员工")
-    public Result listUserData(@RequestBody ServiceStation serviceStation,HttpServletRequest request, HttpServletResponse response){
+    public Result listUserData(@RequestBody ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
         if (null == serviceStation.getId()) {
             return new FailResult("未指定设置的服务站的ID。");
         }
         //ServiceStation station = serviceStationService.get(serviceStation.getId());
 
         //serviceStationService.findPage(stationPage, serviceStation);
-        Page<User> userList =  serviceStationService.findUserData(serviceStation.getId());
+        Page<User> userList = serviceStationService.findUserData(serviceStation.getId());
 
         return new SuccResult(userList);
     }
-
 
 
 }
