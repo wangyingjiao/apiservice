@@ -24,6 +24,7 @@ public class Role extends DataEntity<Role> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	@NotBlank(message = "删除岗位，不可为空。",groups = DeleteRoleGroup.class)
 	public String getId() {
 		return id;
 	}

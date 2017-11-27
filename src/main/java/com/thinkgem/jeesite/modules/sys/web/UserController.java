@@ -17,10 +17,12 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.Menu;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
@@ -54,6 +56,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private SystemService systemService;
+
+    @Autowired
+    private OfficeService officeService;
 
     @ModelAttribute
     public User get(@RequestParam(required = false) String id) {
@@ -499,6 +504,9 @@ public class UserController extends BaseController {
         }
     }
 
+    @Autowired
+    private ServiceStationService stationService;
+
     @ResponseBody
     //@RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
@@ -506,18 +514,22 @@ public class UserController extends BaseController {
     public Result saveData(@RequestBody User user) {
 
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
-        user.setCompany(new Office(user.getCompanyId()));
-        user.setOffice(new Office(user.getOfficeId()));
-        // 如果新密码为空，则不更换密码
+        user.setCompany(new Office("1"));
+        user.setOffice(officeService.get(user.getOfficeId()));
+        user.setStation(stationService.get(user.getStationId()));
+
         if (StringUtils.isNotBlank(user.getNewPassword())) {
             user.setPassword(SystemService.entryptPassword(user.getNewPassword()));
+            user.setNewPassword(null);
         }
-        if (!beanValidator(user)) {
-            return new FailResult("参数有误！");
+        List<String> errors = errors(user);
+        if (errors.size() > 0) {
+            return new FailResult(errors);
         }
-        if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))) {
-            return new FailResult("保存用户'" + user.getLoginName() + "'失败，登录名已存在");
-
+        if (StringUtils.isBlank(user.getId())) {
+            if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))) {
+                return new FailResult("保存用户'" + user.getLoginName() + "'失败，登录名已存在");
+            }
         }
         // 角色数据有效性验证，过滤不在授权内的角色
         List<Role> roleList = Lists.newArrayList();
@@ -535,7 +547,7 @@ public class UserController extends BaseController {
         if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
             UserUtils.clearCache();
         }
-        return new SuccResult("保存用户'" + user.getLoginName() + "'成功");
+        return new SuccResult(user);
 
     }
 

@@ -206,8 +206,13 @@
         <include refid="roleColumns"></include>
         FROM sys_role a
         JOIN sys_office o ON o.id = a.office_id
-        WHERE 1=1
-        AND a.name LIKE concat( '%' , #{name} , '%' )
+        WHERE a.del_flag = #{DEL_FLAG_DELETE}
+        <if test="name != null">
+            AND a.name LIKE concat( '%' , #{name} , '%' )
+        </if>
+        <if test="name == null">
+            and a.name is null
+        </if>
     </select>
 
 </mapper>

@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.common.web;
 
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -24,17 +25,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import sun.font.TrueTypeFont;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 控制器支持类
@@ -72,6 +75,17 @@ public abstract class BaseController {
      */
     @Autowired
     protected Validator validator;
+
+    protected List<String> errors(DataEntity entity, Class<?>... groups) {
+        ArrayList<String> errs = new ArrayList<>();
+        Set<ConstraintViolation<DataEntity>> validate = validator.validate(entity, groups);
+        if (validate.size() > 0) {
+            for (ConstraintViolation<DataEntity> violation : validate) {
+                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
+            }
+        }
+        return errs;
+    }
 
     /**
      * 服务端参数有效性验证
@@ -251,5 +265,6 @@ public abstract class BaseController {
 //			}
         });
     }
+
 
 }

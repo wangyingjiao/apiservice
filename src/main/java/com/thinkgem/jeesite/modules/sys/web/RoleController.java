@@ -13,10 +13,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.Collections3;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.sys.entity.Office;
-import com.thinkgem.jeesite.modules.sys.entity.Role;
-import com.thinkgem.jeesite.modules.sys.entity.SaveRoleGroup;
-import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.entity.*;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -340,9 +337,13 @@ public class RoleController extends BaseController {
             return new FailResult(errs);
         }
 
-        Role roleByName = systemService.getRoleByName(role.getName());
-        if (roleByName != null) {
-            return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+        if (StringUtils.isBlank(role.getId())) {
+
+            Role roleByName = systemService.getRoleByName(role.getName());
+            if (roleByName != null) {
+                return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+            }
+
         }
         role.setOffice(UserUtils.getUser().getOffice());
         systemService.saveRole(role);
@@ -353,29 +354,24 @@ public class RoleController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:role:edit")
-    @RequestMapping(value = "deleteRole", method = RequestMethod.GET)
+    @RequestMapping(value = "deleteRole", method = RequestMethod.POST)
     @ApiOperation(value = "删除角色（岗位）")
-    public Result deleteRole(String id) {
-//        if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
-//            addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
-//            return "redirect:" + adminPath + "/sys/role/?repage";
-//        }
-//        if (Global.isDemoMode()) {
-//            addMessage(redirectAttributes, "演示模式，不允许操作！");
-//            return "redirect:" + adminPath + "/sys/role/?repage";
-//        }
-		if (Role.isAdmin(id)){
+    public Result deleteRole(@RequestBody Role role) {
+
+        List<String> errors = errors(role, DeleteRoleGroup.class);
+        if (errors.size() > 0){
+            return new FailResult(errors);
+        }
+
+        if (Role.isAdmin(role.getId())){
             return new FailResult(  "删除角色失败, 不允许内置角色或编号空");
-		}else if (UserUtils.getUser().getRoleIdList().contains(id)){
+		}else if (UserUtils.getUser().getRoleIdList().contains(role.getId())){
 			return new FailResult( "删除角色失败, 不能删除当前用户所在角色");
 		}else {
-            Role role = new Role();
-            role.setId(id);
             systemService.deleteRole(role);
             UserUtils.clearCache();
             return new SuccResult("删除角色成功");
         }
-
     }
 
     @ResponseBody
@@ -388,16 +384,26 @@ public class RoleController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:role:view")
-    @RequestMapping(value = "search", method = RequestMethod.GET)
+    //@RequiresPermissions("sys:role:view")
+    @RequestMapping(value = "search", method = RequestMethod.POST)
     @ApiOperation("岗位搜索")
-    public Result search(@RequestParam String name) {
-        if (StringUtils.isNotBlank(name)) {
-            List<Role> roles = systemService.searchRoleByName(name);
-            return new SuccResult(roles);
+    public Result search(@RequestBody Role role) {
+        if (StringUtils.isNotBlank(role.getName())) {
+            List<Role> roles = systemService.searchRoleByName(role.getName());
+            if (roles.size() > 0) {
+                return new SuccResult(roles);
+            }else {
+                return new FailResult("未找到岗位");
+            }
         }
         return new FailResult("未传值");
     }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "getRoleDetail",method = RequestMethod.GET)
     public Result getRoleDetail(@RequestParam String id){
@@ -407,5 +413,7 @@ public class RoleController extends BaseController {
         }
         return new FailResult("岗位信息未找到");
     }
+
+
 
 }
