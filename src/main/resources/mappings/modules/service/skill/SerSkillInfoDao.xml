@@ -31,8 +31,11 @@
 	</select>
 	
 	<select id="findList" resultType="SerSkillInfo">
-		SELECT 
-			<include refid="serSkillInfoColumns"/>
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.code AS "code",
+			a.technician_num AS "technicianNum"
 		FROM ser_skill_info a
 		<include refid="serSkillInfoJoins"/>
 		<where>
