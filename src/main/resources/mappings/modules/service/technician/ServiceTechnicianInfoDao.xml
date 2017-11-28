@@ -53,11 +53,51 @@
 
     <select id="findList" resultType="ServiceTechnicianInfo">
         SELECT
-        <include refid="serviceTechnicianInfoColumns"/>
+			a.id AS "id",
+			a.tech_office_id AS "techOfficeId",
+			a.tech_office_name AS "techOfficeName",
+			a.tech_name AS "techName",
+			a.tech_sex AS "techSex",
+			a.tech_birth_date AS "techBirthDate",
+			year( from_days( datediff( now( ), a.tech_birth_date))) as age,
+			a.tech_email AS "techEmail",
+			b.station_id AS "serviceInfo.stationId",
+			b.station_name AS "serviceInfo.stationName",
+			b.job_natrue AS "serviceInfo.jobNatrue",
+			b.work_time AS "serviceInfo.workTime",
+			c.img_url AS "imgUrl"
         FROM service_technician_info a
+		LEFT JOIN service_technician_service_info b on a.id = b.tech_id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN service_technician_images c ON a.id = c.tech_id AND c.img_type = '1' AND c.del_flag = #{DEL_FLAG_NORMAL}
         <include refid="serviceTechnicianInfoJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="techStationId != null and techStationId != ''">
+				AND b.station_id = #{techStationId}
+			</if>
+			<if test="jobNatrue != null and jobNatrue != ''">
+				AND b.job_natrue = #{jobNatrue}
+			</if>
+			<if test="techName != null and techName !=''">
+				AND a.tech_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{techName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{techName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{techName},'%')</if>
+			</if>
+			<if test="techPhone != null and techPhone != ''">
+				AND a.tech_phone = #{techPhone}
+			</if>
+			<if test="skillIds != null and skillIds != ''">
+				AND a.id IN(
+				SELECT t1.id from service_technician_info t1
+				INNER JOIN ser_skill_technician t2 on t1.id = t2.technician_id
+				WHERE  t1.del_flag= #{DEL_FLAG_NORMAL} AND  t2.del_flag= #{DEL_FLAG_NORMAL}
+				and t2.skill_id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{skillIds}
+				</foreach>
+				)
+			</if>
         </where>
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">

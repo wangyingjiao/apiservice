@@ -50,7 +50,10 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String techNativePlace;        // 籍贯
     private String sort;        // 排序
     private String column31;        // column_31
-    private String imgUrl;
+    private String imgUrl; //头像
+    private String jobNatrue;//岗位性质
+    private String age; //年龄
+    private List<String> skillIds;//技能List
 
     //技师服务信息
     private ServiceTechnicianServiceInfo serviceInfo;
@@ -380,5 +383,29 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getJobNatrue() {
+        return jobNatrue;
+    }
+
+    public void setJobNatrue(String jobNatrue) {
+        this.jobNatrue = jobNatrue;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public List<String> getSkillIds() {
+        return skillIds;
+    }
+
+    public void setSkillIds(List<String> skillIds) {
+        this.skillIds = skillIds;
     }
 }

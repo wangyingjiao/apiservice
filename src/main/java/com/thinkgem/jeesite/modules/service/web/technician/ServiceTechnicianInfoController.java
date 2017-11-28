@@ -18,6 +18,7 @@ import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnician
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,8 +59,12 @@ public class ServiceTechnicianInfoController extends BaseController {
 
     //@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
     @ResponseBody
+    @ApiOperation("获取技师列表")
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
-    public Result list(ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
+    public Result listData(@RequestBody(required = false) ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
+        if(null == serviceTechnicianInfo){
+            serviceTechnicianInfo = new ServiceTechnicianInfo();
+        }
         Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.findPage(new Page<ServiceTechnicianInfo>(request, response), serviceTechnicianInfo);
 
         return new SuccResult(page);
@@ -95,6 +100,7 @@ public class ServiceTechnicianInfoController extends BaseController {
      * @return
      */
     @ResponseBody
+    @ApiOperation("保存创建个人资料")
     @RequestMapping(value = "savePersonalData", method = RequestMethod.POST)
     public Result savePersonalData(@RequestBody ServiceTechnicianInfo info) {
 
@@ -130,6 +136,7 @@ public class ServiceTechnicianInfoController extends BaseController {
      * @return
      */
     @ResponseBody
+    @ApiOperation("保存补充个人资料,保存APP密码,保存其它信息")
     @RequestMapping(value = "saveMoreData", method = RequestMethod.POST)
     public Result saveMoreData(@RequestBody ServiceTechnicianInfo info) {
 
@@ -154,6 +161,7 @@ public class ServiceTechnicianInfoController extends BaseController {
      * @return
      */
     @ResponseBody
+    @ApiOperation("保存服务信息")
     @RequestMapping(value = "saveServiceInfoData", method = RequestMethod.POST)
     public Result saveServiceInfoData(ServiceTechnicianInfo info) {
         Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
@@ -169,6 +177,15 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult("保存服务信息成功");
     }
 
+    /**
+     * 保存家庭成员
+     *
+     * @param info
+     * @return
+     */
+    @ResponseBody
+    @ApiOperation("保存家庭成员")
+    @RequestMapping(value = "saveFamilyMembers", method = RequestMethod.POST)
     public Result saveFamilyMembers(ServiceTechnicianInfo info) {
         Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
         if (validate != null && validate.size() > 0) {
