@@ -182,4 +182,14 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private List<SerItemCommodity> commoditys;
 	public List<SerItemCommodity> getCommoditys() {return commoditys;}
 	public void setCommoditys(List<SerItemCommodity> commoditys) {this.commoditys = commoditys;}
+
+	private List<String> cityNames;
+
+	public List<String> getCityNames() {
+		return cityNames;
+	}
+
+	public void setCityNames(List<String> cityNames) {
+		this.cityNames = cityNames;
+	}
 }

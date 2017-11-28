@@ -39,11 +39,10 @@
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
 		FROM ser_item_info a
-		LEFT JOIN ser_item_city b on a.id = b.item_id
+
 		<include refid="serItemInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			AND b.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
 				AND a.name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
@@ -55,15 +54,6 @@
 			</if>
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
-			</if>
-			<if test="cityName != null and cityName !=''">
-				AND b.city_name LIKE
-				<if test="dbName == 'oracle'">'%'||#{cityName}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{cityName}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{cityName},'%')</if>
-			</if>
-			<if test="cityId != null and cityId !=''">
-				AND b.city_id = #{cityId}
 			</if>
 		</where>
 		<choose>
@@ -89,9 +79,15 @@
 		a.picture AS "picture",
 		a.description AS "description",
 		a.sale AS "sale",
-		a.sort_num AS "sortNum",
-		b.city_id AS "cityId",
-		b.city_name AS "cityName"
+		a.sort_num AS "sortNum"
+		<choose>
+			<when test="cityId != null and cityId !=''">
+				, #{cityId} AS "cityId"
+			</when>
+			<otherwise>
+				, '' AS "cityId"
+			</otherwise>
+		</choose>
 	</sql>
 	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
 		<id column="id" property="id"/>
@@ -102,23 +98,23 @@
 		<result column="sort_name" property="sortName"/>
 		<result column="name" property="name"/>
 		<result column="sale" property="sale"/>
-		<result column="city_id" property="cityId"/>
-		<result column="city_name" property="cityName"/>
 		<!-- 项目关联商品 -->
 		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
+		<!-- 定向城市 -->
+		<association property="cityNames" column="{reqId=id,cityId=cityId}" select="selectCityById"></association>
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
 		select id,name,unit,meterage,price from ser_item_commodity
 		where item_id=#{reqId}
 	</select>
 
-	<!--		<association property="commoditys" javaType="SerItemCommodity">
-                <id column="id" property="id"/>
-                <result column="name" property="name"/>
-                <result column="unit" property="unit"/>
-                <result column="meterage" property="meterage"/>
-                <result column="price" property="price"/>
-            </association>-->
+	<select id="selectCityById" parameterType="java.util.Map" resultType="string">
+		select city_name as cityName from ser_item_city
+		where item_id=#{reqId}
+		<if test="cityId != null and cityId !=''">
+			AND city_id = #{cityId}
+		</if>
+	</select>
 
 	<select id="findAllList" resultType="SerItemInfo">
 		SELECT 
