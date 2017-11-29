@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -138,6 +139,36 @@ public class DictController extends BaseController {
     public List<String> listData() {
         return dictService.findTypeList();
     }
+
+    @ResponseBody
+    @RequestMapping(value = "techHeightList", method = {RequestMethod.GET})
+    @ApiOperation(value = "获取身高数据")
+    public List<Dict> techHeightList() {
+        List<Dict> list = new ArrayList<Dict>();
+        Dict dict = new Dict();
+        for(int i=130;i<=230;i++){
+            dict = new Dict();
+            dict.setLabel(i+"");
+            dict.setValue(i+"cm");
+            list.add(dict);
+        }
+        return list;
+    }
+    @ResponseBody
+    @RequestMapping(value = "techWeightList", method = {RequestMethod.GET})
+    @ApiOperation(value = "获取体重数据")
+    public List<Dict> techWeightList() {
+        List<Dict> list = new ArrayList<Dict>();
+        Dict dict = new Dict();
+        for(int i=30;i<=150;i++){
+            dict = new Dict();
+            dict.setLabel(i+"");
+            dict.setValue(i+"kg");
+            list.add(dict);
+        }
+        return list;
+    }
+
 
     @ResponseBody
     @RequiresPermissions("sys:dict:edit")

@@ -16,4 +16,20 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianI
 public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo> {
 
     ServiceTechnicianInfo findTech(ServiceTechnicianInfo info);
+
+    int getOrderTechRelation(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void delSerSkillTechnicianByTechnician(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void updateStatus(ServiceTechnicianInfo info1);
+
+    void saveMoreData(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void deleteTechnicianService(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void deleteTechnicianWorkTime(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void deleteTechnicianHoliday(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void deleteTechnicianImages(ServiceTechnicianInfo serviceTechnicianInfo);
 }

@@ -33,7 +33,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     //技师基础信息
     @Autowired
     private ServiceTechnicianInfoDao technicianInfoDao;
-
+    @Autowired
+    private ServiceTechnicianInfoDao serviceTechnicianInfoDao;
 
     public ServiceTechnicianInfo get(String id) {
         return super.get(id);
@@ -53,8 +54,58 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     @Transactional(readOnly = false)
+    public void saveMoreData(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfo.preUpdate();
+        serviceTechnicianInfoDao.saveMoreData(serviceTechnicianInfo);
+        saveImages(serviceTechnicianInfo);
+    }
+    /**
+     * 服务人员有未完成订单
+     * @param serviceTechnicianInfo
+     * @return
+     */
+    public int getOrderTechRelation(ServiceTechnicianInfo serviceTechnicianInfo) {
+        return serviceTechnicianInfoDao.getOrderTechRelation(serviceTechnicianInfo);
+    }
+
+    @Transactional(readOnly = false)
     public void delete(ServiceTechnicianInfo serviceTechnicianInfo) {
         super.delete(serviceTechnicianInfo);
+
+        //删除服务信息 按技师
+        deleteTechnicianService(serviceTechnicianInfo);
+        //删除工作时间 按技师
+        deleteTechnicianWorkTime(serviceTechnicianInfo);
+        //删除休假时间 按技师
+        deleteTechnicianHoliday(serviceTechnicianInfo);
+        //删除头像 按技师
+        deleteTechnicianImages(serviceTechnicianInfo);
+
+        //删除家庭成员 按技师
+        deleteFamilyMembers(serviceTechnicianInfo);
+        //删除时同时删除关联的技能
+        delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteTechnicianService(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfoDao.deleteTechnicianService(serviceTechnicianInfo);
+    }
+    @Transactional(readOnly = false)
+    public void deleteTechnicianWorkTime(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfoDao.deleteTechnicianWorkTime(serviceTechnicianInfo);
+    }
+    @Transactional(readOnly = false)
+    public void deleteTechnicianHoliday(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfoDao.deleteTechnicianHoliday(serviceTechnicianInfo);
+    }
+    @Transactional(readOnly = false)
+    public void deleteTechnicianImages(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfoDao.deleteTechnicianImages(serviceTechnicianInfo);
+    }
+    @Transactional(readOnly = false)
+    public void delSerSkillTechnicianByTechnician(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfoDao.delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
     }
 
 
@@ -65,6 +116,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     @Autowired
     private SerSkillTechnicianService serSkillTechnicianService;
 
+    @Transactional(readOnly = false)
     public void saveServiceInfo(ServiceTechnicianInfo info) {
         ServiceTechnicianInfo technicianInfo = get(info.getId());
         ServiceTechnicianServiceInfo serviceInfo = info.getServiceInfo();
@@ -84,13 +136,20 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             SerSkillTechnician sst = new SerSkillTechnician(serviceInfo,skill);
             serSkillTechnicianService.save(sst);
         }
-        if (info.getImages().size() > 0){
+        /*if (info.getImages().size() > 0){
             saveImages(info);
-        }
+        }*/
 
     }
 
-
+    @Transactional(readOnly = false)
+    public void updateStatus(String id) {
+        ServiceTechnicianInfo info1 = new ServiceTechnicianInfo();
+        info1.preUpdate();
+        info1.setId(id);
+        info1.setStatus("1");//服务信息补充完毕并保存成功后，该技师变为可用状态1
+        serviceTechnicianInfoDao.updateStatus(info1);
+    }
     //技师家庭成员
     @Autowired
     private ServiceTechnicianFamilyMembersDao familyMembersDao;
@@ -100,6 +159,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
      *
      * @param info
      */
+    @Transactional(readOnly = false)
     public void saveFamilyMembers(ServiceTechnicianInfo info) {
         if (StringUtils.isNotBlank(info.getId())) {
             List<ServiceTechnicianFamilyMembers> members = info.getFamilyMembers();
@@ -116,6 +176,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
      *
      * @param member
      */
+    @Transactional(readOnly = false)
     public void saveFamilyMember(ServiceTechnicianFamilyMembers member) {
         if (StringUtils.isNotBlank(member.getTechId())) {
             if (StringUtils.isBlank(member.getId())) {
@@ -134,6 +195,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
      * 删除家庭成员 按技师
      * @param info
      */
+    @Transactional(readOnly = false)
     public void deleteFamilyMembers(ServiceTechnicianInfo info) {
         //List<ServiceTechnicianFamilyMembers> members = info.getFamilyMembers();
         List<ServiceTechnicianFamilyMembers> members = familyMembersDao.findListByTech(info);
@@ -148,6 +210,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
      * 删除家庭成员
      * @param member
      */
+    @Transactional(readOnly = false)
     public void deleteFamilyMember(ServiceTechnicianFamilyMembers member) {
         if (StringUtils.isNotBlank(member.getId())) {
             familyMembersDao.delete(member);
@@ -174,6 +237,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     @Autowired
     private ServiceTechnicianWorkTimeDao workTimeDao;
 
+    @Transactional(readOnly = false)
     public void saveWorkTimes(ServiceTechnicianInfo info) {
         List<ServiceTechnicianWorkTime> times = info.getWorkTime();
         for (ServiceTechnicianWorkTime time : times) {
@@ -255,6 +319,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
      *
      * @param info
      */
+    @Transactional(readOnly = false)
     public void saveImages(ServiceTechnicianInfo info) {
         List<ServiceTechnicianImages> images = info.getImages();
         if (null != images && images.size() > 0) {
@@ -320,4 +385,5 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         serviceInfo.setSkills(serSkillTechnicianService.findByTech(technicianInfo));
         return serviceInfo;
     }
+
 }

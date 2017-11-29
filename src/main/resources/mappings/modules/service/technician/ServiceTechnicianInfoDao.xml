@@ -11,6 +11,7 @@
 		a.tech_name AS "techName",
 		a.tech_id_card AS "techIdCard",
 		a.tech_phone AS "techPhone",
+		a.status AS "status",
 		a.app_login_password AS "appLoginPassword",
 		a.bank_type AS "bankType",
 		a.bank_card_no AS "bankCardNo",
@@ -36,8 +37,7 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag",
-		a.column_31 AS "column31"
+		a.del_flag AS "delFlag"
 	</sql>
 
     <sql id="serviceTechnicianInfoJoins">
@@ -72,6 +72,7 @@
         <include refid="serviceTechnicianInfoJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.status = 1
 			<if test="techStationId != null and techStationId != ''">
 				AND b.station_id = #{techStationId}
 			</if>
@@ -155,6 +156,7 @@
 			tech_name,
 			tech_id_card,
 			tech_phone,
+			status,
 			app_login_password,
 			bank_type,
 			bank_card_no,
@@ -180,8 +182,7 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag,
-			column_31
+			del_flag
 		) VALUES (
 			#{id},
 			#{techOfficeId},
@@ -191,6 +192,7 @@
 			#{techName},
 			#{techIdCard},
 			#{techPhone},
+			#{status},
 			#{appLoginPassword},
 			#{bankType},
 			#{bankCardNo},
@@ -216,8 +218,7 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag},
-			#{column31}
+			#{delFlag}
 		)
 	</insert>
 
@@ -230,6 +231,7 @@
 			tech_name = #{techName},
 			tech_id_card = #{techIdCard},
 			tech_phone = #{techPhone},
+			status = #{status},
 			app_login_password = #{appLoginPassword},
 			bank_type = #{bankType},
 			bank_card_no = #{bankCardNo},
@@ -252,8 +254,7 @@
 			sort = #{sort},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks},
-			column_31 = #{column31}
+			remarks = #{remarks}
 		WHERE id = #{id}
 	</update>
 
@@ -261,6 +262,88 @@
 		UPDATE service_technician_info SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+	</update>
+
+	<select id="getOrderTechRelation" resultType="int">
+		select count(*)
+		from order_info a
+		left join order_tech_relation b on a.id = b.order_id
+		where a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
+		and b.tech_id = #{id}
+	</select>
+
+	<update id="updateStatus">
+		UPDATE service_technician_info SET
+		status = #{status},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="saveMoreData">
+		UPDATE service_technician_info SET
+		<if test="appLoginPassword != null and appLoginPassword != ''">
+			app_login_password = #{appLoginPassword},
+		</if>
+		<if test="remarks != null and remarks != ''">
+			remarks = #{remarks},
+		</if>
+		<if test="techEducation != null and techEducation != ''">
+			tech_education = #{techEducation},
+		</if>
+		<if test="techEmail != null and techEmail != ''">
+			tech_email = #{techEmail},
+		</if>
+		<if test="techHeight != null and techHeight != ''">
+			tech_height = #{techHeight},
+		</if>
+		<if test="techMatrimony != null and techMatrimony != ''">
+			tech_matrimony = #{techMatrimony},
+		</if>
+		<if test="techNativePlace != null and techNativePlace != ''">
+			tech_native_place = #{techNativePlace},
+		</if>
+		<if test="techWeight != null and techWeight != ''">
+			tech_weight = #{techWeight},
+		</if>
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteTechnicianService">
+		UPDATE service_technician_service_info SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE tech_id = #{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<update id="deleteTechnicianWorkTime">
+		UPDATE service_technician_work_time SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE tech_id = #{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<update id="deleteTechnicianHoliday">
+		UPDATE service_technician_holiday SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE tech_id = #{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<update id="deleteTechnicianImages">
+		UPDATE service_technician_images SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE tech_id = #{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<update id="delSerSkillTechnicianByTechnician">
+		UPDATE ser_skill_technician SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE technician_id = #{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
 </mapper>
