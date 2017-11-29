@@ -221,7 +221,7 @@ public class OfficeController extends BaseController {
             return new FailResult("参数有误:");
         }
         //检查重名
-        if (officeService.getByName(office.getName())) {
+        if ((office.getId() == null || office.getId().equals("")) && officeService.getByName(office.getName())) {
             return new FailResult("机构名称重复");
         }
 
