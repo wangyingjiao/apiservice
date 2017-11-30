@@ -29,6 +29,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String techName;        // 技师姓名
     private String techIdCard;        // 身份证号
     private String techPhone;        // 手机号
+    private String status;           //是否可用
     private String appLoginPassword;        // app登录密码
     private String bankType;        // 银行卡类型
     private String bankCardNo;        // 银行卡号
@@ -49,7 +50,6 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String techMatrimony;        // 婚姻状况
     private String techNativePlace;        // 籍贯
     private String sort;        // 排序
-    private String column31;        // column_31
     private String imgUrl; //头像
     private String jobNatrue;//岗位性质
     private String age; //年龄
@@ -267,7 +267,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     //@NotEmpty(groups = SavePersonalGroup.class,message = "技师出生日期不可为空")
     //@Pattern(regexp="[0-9]{4}-[0-9]{2}-[0-9]{2}",message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
     @NotNull(message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     public Date getTechBirthDate() {
         return techBirthDate;
     }
@@ -336,15 +336,6 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.sort = sort;
     }
 
-    @Length(min = 0, max = 10, message = "column_31长度必须介于 0 和 10 之间")
-    public String getColumn31() {
-        return column31;
-    }
-
-    public void setColumn31(String column31) {
-        this.column31 = column31;
-    }
-
     public ServiceTechnicianServiceInfo getServiceInfo() {
         return serviceInfo;
     }
@@ -407,5 +398,13 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setSkillIds(List<String> skillIds) {
         this.skillIds = skillIds;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

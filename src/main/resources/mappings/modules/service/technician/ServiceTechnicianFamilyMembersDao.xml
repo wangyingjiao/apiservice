@@ -68,10 +68,9 @@
 	</select>
 	<select id="findListByTech"
 			resultType="ServiceTechnicianFamilyMembers">
-		select * from service_technician_family_members WHERE tech_id = #{id};
-		<where>
-			del_flag = #{DEL_FLAG_NORMAL}
-		</where>
+		select * from service_technician_family_members
+		WHERE tech_id = #{id}
+		and del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<insert id="insert">

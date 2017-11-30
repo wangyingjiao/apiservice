@@ -131,7 +131,7 @@ public class ServiceTechnicianServiceInfo extends DataEntity<ServiceTechnicianSe
 		this.workTime = workTime;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	public Date getInJobTime() {
 		return inJobTime;
 	}

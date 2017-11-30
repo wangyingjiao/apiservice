@@ -10,10 +10,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.service.entity.technician.SaveMoreGroup;
-import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
-import com.thinkgem.jeesite.modules.service.entity.technician.SaveServiceInfoGroup;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -28,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -85,10 +83,16 @@ public class ServiceTechnicianInfoController extends BaseController {
 
     //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
     @ResponseBody
-    @RequestMapping(value = "delete", method = RequestMethod.GET)
-    public Result delete(ServiceTechnicianInfo serviceTechnicianInfo) {
+    @ApiOperation("删除技师")
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    public Result delete(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
+        //服务人员还有未完成的订单，则不可删除
+        if(serviceTechnicianInfoService.getOrderTechRelation(serviceTechnicianInfo) > 0){
+            return new FailResult("服务人员有未完成订单,不可删除.");
+        }
+        //删除技师
         serviceTechnicianInfoService.delete(serviceTechnicianInfo);
-        serviceTechnicianInfoService.deleteFamilyMembers(serviceTechnicianInfo);
+
         return new SuccResult("删除技师信息成功");
     }
 
@@ -121,6 +125,9 @@ public class ServiceTechnicianInfoController extends BaseController {
             info.setTechOfficeName(user.getOffice().getName());
             info.setTechStationId(user.getStation().getId());
             info.setTechStationName(user.getStation().getName());
+            if(StringUtils.isBlank(info.getId())){
+                info.setStatus("0");//新增技师，状态不可用0 服务信息补充完毕并保存成功后，该技师变为可用状态1
+            }
             serviceTechnicianInfoService.save(info);
             serviceTechnicianInfoService.saveImages(info);
             return new SuccResult(info);
@@ -150,8 +157,11 @@ public class ServiceTechnicianInfoController extends BaseController {
         }
         ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoService.get(info.getId());
         BeanUtils.cloneProperties(info, technicianInfo);
-        serviceTechnicianInfoService.save(technicianInfo);
-        return new SuccResult(info);
+        technicianInfo.setImages(info.getImages());
+        serviceTechnicianInfoService.saveMoreData(technicianInfo);
+       // serviceTechnicianInfoService.saveImages(info);
+       // return new SuccResult(info);
+        return new SuccResult("保存成功");
     }
 
     /**
@@ -163,7 +173,7 @@ public class ServiceTechnicianInfoController extends BaseController {
     @ResponseBody
     @ApiOperation("保存服务信息")
     @RequestMapping(value = "saveServiceInfoData", method = RequestMethod.POST)
-    public Result saveServiceInfoData(ServiceTechnicianInfo info) {
+    public Result saveServiceInfoData(@RequestBody ServiceTechnicianInfo info) {
         Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
         if (validate != null && validate.size() > 0) {
             ArrayList<String> errs = new ArrayList<>();
@@ -174,6 +184,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         }
         serviceTechnicianInfoService.saveServiceInfo(info);
         serviceTechnicianInfoService.saveWorkTimes(info);
+
+        serviceTechnicianInfoService.updateStatus(info.getId());
         return new SuccResult("保存服务信息成功");
     }
 
@@ -186,7 +198,7 @@ public class ServiceTechnicianInfoController extends BaseController {
     @ResponseBody
     @ApiOperation("保存家庭成员")
     @RequestMapping(value = "saveFamilyMembers", method = RequestMethod.POST)
-    public Result saveFamilyMembers(ServiceTechnicianInfo info) {
+    public Result saveFamilyMembers(@RequestBody ServiceTechnicianInfo info) {
         Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
         if (validate != null && validate.size() > 0) {
             ArrayList<String> errs = new ArrayList<>();
@@ -200,5 +212,25 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult("保存家庭成员成功");
     }
 
+
+    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
+    @ResponseBody
+    @ApiOperation("删除家庭成员")
+    @RequestMapping(value = "deleteFamilyMembers", method = RequestMethod.POST)
+    public Result deleteFamilyMembers(@RequestBody ServiceTechnicianFamilyMembers member) {
+        //删除家庭成员
+        serviceTechnicianInfoService.deleteFamilyMember(member);
+        return new SuccResult("删除家庭成员成功");
+    }
+
+    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
+    @ResponseBody
+    @ApiOperation("得到技师的所有家庭成员")
+    @RequestMapping(value = "findFamilyMember", method = RequestMethod.POST)
+    public Result findFamilyMember(@RequestBody ServiceTechnicianInfo info) {
+        //得到技师的所有家庭成员
+        List<ServiceTechnicianFamilyMembers> members = serviceTechnicianInfoService.findFamilyMember(info);
+        return new SuccResult(members);
+    }
 
 }
