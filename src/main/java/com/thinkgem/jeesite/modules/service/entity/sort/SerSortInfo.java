@@ -89,7 +89,15 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 /*    private String city;//城市*/
     private String cityId;        // 城市编号
     private String cityName;        // 城市名称
+    private List<String> cityNames;
 
+    public List<String> getCityNames() {
+        return cityNames;
+    }
+
+    public void setCityNames(List<String> cityNames) {
+        this.cityNames = cityNames;
+    }
 /*    public String getCity() {
         return city;
     }

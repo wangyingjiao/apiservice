@@ -45,12 +45,11 @@
 		<include refid="serSortInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
-	<select id="findList" resultType="SerSortInfo">
+
+	<select id="findList" resultMap="SerSortResultMap">
 		SELECT
-			<include refid="serSortCityColumns"/>
+		<include refid="serSortCityNamesColumns"/>
 		FROM ser_sort_info a
-		LEFT JOIN ser_sort_city b ON a.id = b.sort_id
 		<include refid="serSortInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -63,15 +62,6 @@
 			<if test="majorSort != null and majorSort !='' and majorSort !='0'.toString()">
 				AND a.major_sort= #{majorSort}
 			</if>
-			<if test="cityName != null and cityName !=''">
-				AND b.city_name LIKE
-					<if test="dbName == 'oracle'">'%'||#{cityName}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{cityName}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{cityName},'%')</if>
-			</if>
-			<if test="cityId != null and cityId !=''">
-				AND b.city_id = #{cityId}
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -82,6 +72,38 @@
 			</otherwise>
 		</choose>
 	</select>
+
+	<sql id="serSortCityNamesColumns">
+		a.id AS "id",
+		a.major_sort AS "majorSort",
+		a.name AS "name",
+		a.remarks AS "remarks"
+		<choose>
+			<when test="cityId != null and cityId !=''">
+				, #{cityId} AS "cityId"
+			</when>
+			<otherwise>
+				, '' AS "cityId"
+			</otherwise>
+		</choose>
+	</sql>
+	<resultMap type="SerSortInfo" id="SerSortResultMap">
+		<id column="id" property="id"/>
+		<result column="major_sort" property="majorSort"/>
+		<result column="name" property="name"/>
+		<result column="remarks" property="remarks"/>
+		<!-- 定向城市 -->
+		<association property="cityNames" column="{reqId=id,cityId=cityId}" select="selectCityById"></association>
+	</resultMap>
+	<select id="selectCityById" parameterType="java.util.Map" resultType="string">
+		select city_name as cityName from ser_sort_city
+		where sort_id=#{reqId}
+		<if test="cityId != null and cityId !=''">
+			AND city_id = #{cityId}
+		</if>
+		and del_flag = '0'
+	</select>
+
 	<!-- 验证服务分类名称是否重复 -->
 	<select id="checkDataName" resultType="int">
 		SELECT COUNT(*) FROM ser_sort_info
