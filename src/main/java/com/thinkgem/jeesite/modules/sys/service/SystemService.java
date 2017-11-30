@@ -173,7 +173,7 @@ public class SystemService extends BaseService implements InitializingBean {
 	public void deleteUser(User user) {
 		userDao.delete(user);
 		// 同步到Activiti
-		deleteActivitiUser(user);
+		//deleteActivitiUser(user);
 		// 清除用户缓存
 		UserUtils.clearCache(user);
 //		// 清除权限缓存
@@ -547,7 +547,25 @@ public class SystemService extends BaseService implements InitializingBean {
 			identityService.deleteUser(userId);
 		}
 	}
-	
+
+	public Page<Role> findRole(Page<Role> page, Role role) {
+
+		//role.getSqlMap().put("dsf", dataScopeFilter(role.getCurrentUser(), "o", "a"));
+		// 设置分页参数
+		role.setPage(page);
+		// 执行分页查询
+		page.setList(roleDao.findPageList(role));
+		return page;
+
+
+
+
+		//return page;
+	}
+
+//	public Page<Role> findRolePage(Page){
+//
+//	}
 	///////////////// Synchronized to the Activiti end //////////////////
 	
 }

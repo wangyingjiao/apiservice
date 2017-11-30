@@ -9,7 +9,7 @@
         <result property="roleType" column="roleType"/>
         <result property="dataScope" column="dataScope"/>
         <result property="remarks" column="remarks"/>
-        <result property="useable" column="useable"/>
+
         <result property="sysData" column="sysData"/><!--
 		<collection property="userList" ofType="User">
 			<id property="id" column="userList.id" />
@@ -44,7 +44,6 @@
 		a.del_flag,
     	o.name AS "office.name",
     	o.code,
-    	a.useable AS useable,
     	a.is_sys AS sysData
     </sql>
 
@@ -97,7 +96,7 @@
         LEFT JOIN sys_user_role ur ON ur.role_id = a.id
         LEFT JOIN sys_user u ON u.id = ur.user_id
         LEFT JOIN sys_role_office ro ON ro.role_id = a.id
-        WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.useable=#{useable}
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
         <if test="user != null and user.id != null and user.id != ''">
             AND u.id = #{user.id}
         </if>
@@ -108,6 +107,10 @@
         ${sqlMap.dsf}
         ORDER BY o.code, a.name
     </select>
+
+
+
+
 
     <select id="findAllList" resultType="Role">
         SELECT
@@ -132,8 +135,8 @@
 			update_date, 
 			remarks, 
 			del_flag,
-			is_sys,
-			useable
+			is_sys
+
 		) VALUES (
 			#{id}, 
 			#{office.id}, 
@@ -147,8 +150,8 @@
 			#{updateDate}, 
 			#{remarks}, 
 			#{delFlag},
-			#{sysData},
-			#{useable}
+			#{sysData}
+
 		)
 	</insert>
 
@@ -162,8 +165,8 @@
 			update_by = #{updateBy.id}, 
 			update_date = #{updateDate}, 
 			remarks = #{remarks},
-			is_sys = #{sysData},
-			useable = #{useable}
+			is_sys = #{sysData}
+
 		WHERE id = #{id}
 	</update>
 
@@ -213,6 +216,25 @@
         <if test="name == null">
             and a.name is null
         </if>
+    </select>
+
+    <select id="findPageList" resultMap="roleResult">
+        SELECT
+        <include refid="roleColumns" />
+        FROM sys_role a
+        JOIN sys_office o ON o.id = a.office_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        <if test="name != null">
+            AND a.name LIKE concat( '%' , #{name} , '%' )
+        </if>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <!--<otherwise>-->
+                <!--ORDER BY c.code, o.code, a.name-->
+            <!--</otherwise>-->
+        </choose>
     </select>
 
 </mapper>

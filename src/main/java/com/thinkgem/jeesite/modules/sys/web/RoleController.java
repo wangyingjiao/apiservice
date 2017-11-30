@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
@@ -385,6 +386,18 @@ public class RoleController extends BaseController {
         List<Role> list = systemService.findAllRole();
         return new SuccResult(list);
     }
+
+    @ResponseBody
+    @RequiresPermissions("sys:role:view")
+    @RequestMapping(value = "listPageData", method = {RequestMethod.GET,RequestMethod.POST})
+    @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
+    public Result listPageData(@RequestBody(required = false) Role role, HttpServletRequest request,HttpServletResponse response) {
+        Page<Role> page = new Page<>(request, response);
+        Page<Role> list  = systemService.findRole(page,role);
+        return new SuccResult(list);
+    }
+
+
 
     @ResponseBody
     //@RequiresPermissions("sys:role:view")

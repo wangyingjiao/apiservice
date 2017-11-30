@@ -143,7 +143,8 @@ public class UserUtils {
 	 */
 	public static List<Role> getRoleList(){
 		@SuppressWarnings("unchecked")
-		List<Role> roleList = (List<Role>)getCache(CACHE_ROLE_LIST);
+		List<Role> roleList = null;
+		//List<Role> roleList = (List<Role>)getCache(CACHE_ROLE_LIST);
 		if (roleList == null){
 			User user = getUser();
 			if (user.isAdmin()){
