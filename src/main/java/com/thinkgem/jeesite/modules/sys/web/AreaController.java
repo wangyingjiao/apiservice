@@ -3,6 +3,23 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
@@ -12,21 +29,13 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.TreeArea;
 import com.thinkgem.jeesite.modules.sys.service.AreaService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 区域Controller
@@ -103,6 +112,31 @@ public class AreaController extends BaseController {
 //		}
         return "redirect:" + adminPath + "/sys/area/";
     }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "treeArea", method = {RequestMethod.GET, RequestMethod.POST})
+    @ApiOperation(value = "树形结构的区域全部数据")
+    public Result<List<TreeArea>> treeArea() {
+        List<Area> list = areaService.treeArea();
+        List<TreeArea> result = subArea("1", list);
+        return new SuccResult(result);
+    }
+    
+    private List<TreeArea> subArea(String id, List<Area> list) {
+    	List<TreeArea> subs = Lists.newArrayList();
+    	for (Area area : list) {
+    		TreeArea treeArea = new TreeArea();
+    		treeArea.setArea(area);
+    		if (area.getParentId().equals(id)) {
+    			List<TreeArea> subs0 = subArea(area.getId(), list);
+    			treeArea.setSubs(subs0);
+    			subs.add(treeArea);
+    		}
+    	}
+    	return subs;
+	}
 
     @ResponseBody
     @RequiresPermissions("user")

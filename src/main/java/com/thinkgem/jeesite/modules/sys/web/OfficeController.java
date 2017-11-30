@@ -3,9 +3,28 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
@@ -17,19 +36,10 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 机构Controller
@@ -189,16 +199,27 @@ public class OfficeController extends BaseController {
         return mapList;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@ResponseBody
+    @RequiresPermissions("sys:office:view")
+    @RequestMapping(value = "/pageData", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation(value = "获得机构列表")
+    public Result listData(@RequestBody Office office, HttpServletRequest request, HttpServletResponse response) {
+    	Page<Office> stationPage = new Page<>(request, response);
+		Page<Office> page = officeService.findPage(stationPage, office);
+		return new SuccResult(page);
+    }
+    
     @ResponseBody
     @RequiresPermissions("sys:office:view")
     @RequestMapping(value = "/listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "获得机构列表")
     public Result listData(Office office) {
-        if (null == office) {
-            office = UserUtils.getUser().getOffice();
-        }
-        List<Office> all = officeService.findAll();
-        return new SuccResult(all);
+    	if (null == office) {
+    		office = UserUtils.getUser().getOffice();
+    	}
+    	List<Office> all = officeService.findAll();
+    	return new SuccResult(all);
     }
 
     @ResponseBody

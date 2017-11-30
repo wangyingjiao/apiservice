@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.TreeService;
 import com.thinkgem.jeesite.modules.sys.dao.OfficeDao;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
@@ -26,6 +27,11 @@ public class OfficeService extends TreeService<OfficeDao, Office> {
 
 	public List<Office> findAll(){
 		return UserUtils.getOfficeList();
+	}
+	
+	public Page<Office> findPage(Page<Office> page, Office office){
+		return super.findPage(page, office);
+//		return UserUtils.getOfficeList();
 	}
 
 	public List<Office> findList(Boolean isAll){

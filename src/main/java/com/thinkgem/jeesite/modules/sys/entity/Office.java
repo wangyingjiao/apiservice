@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import java.util.List;
 
 /**
@@ -24,7 +26,8 @@ public class Office extends TreeEntity<Office> {
     private String masterName;		// 负责人
     private String masterPhone;		// 负责人电话
 
-
+    @NotNull
+	@Length(min=2, max=15)
     public String getMasterName() {
         return masterName;
     }
@@ -33,6 +36,8 @@ public class Office extends TreeEntity<Office> {
         this.masterName = masterName;
     }
 
+    @NotNull
+    @Pattern(regexp = "^[0-9]{11}$", message = "请填写11位手机号码") 
     public String getMasterPhone() {
         return masterPhone;
     }
@@ -66,6 +71,67 @@ public class Office extends TreeEntity<Office> {
     private String address;        // 联系地址
     private String serviceAreaType;        // 服务范围类型
 
+	private String cusProvId;		// 客户所在省ID
+	private String cusProvName;		// 客户所在省名称
+	private String cusCityId;		// 客户所在市ID
+	private String cusCityName;		// 客户所在市名称
+	private String cusTownId;		// 客户所在县ID
+	private String cusTownName;		// 客户所在县名称
+
+    @NotNull
+	public String getCusProvId() {
+		return cusProvId;
+	}
+
+	public void setCusProvId(String cusProvId) {
+		this.cusProvId = cusProvId;
+	}
+
+    @NotNull
+	public String getCusProvName() {
+		return cusProvName;
+	}
+
+	public void setCusProvName(String cusProvName) {
+		this.cusProvName = cusProvName;
+	}
+
+    @NotNull
+	public String getCusCityId() {
+		return cusCityId;
+	}
+
+	public void setCusCityId(String cusCityId) {
+		this.cusCityId = cusCityId;
+	}
+
+    @NotNull
+	public String getCusCityName() {
+		return cusCityName;
+	}
+
+	public void setCusCityName(String cusCityName) {
+		this.cusCityName = cusCityName;
+	}
+
+    @NotNull
+	public String getCusTownId() {
+		return cusTownId;
+	}
+
+	public void setCusTownId(String cusTownId) {
+		this.cusTownId = cusTownId;
+	}
+
+    @NotNull
+	public String getCusTownName() {
+		return cusTownName;
+	}
+
+	public void setCusTownName(String cusTownName) {
+		this.cusTownName = cusTownName;
+	}
+
     public List<String> getCityIds() {
         return cityIds;
     }
@@ -76,6 +142,7 @@ public class Office extends TreeEntity<Office> {
 
     private List<String> cityIds;
 
+    @NotNull
     public String getServiceCityId() {
         if (null != cityIds) {
             return cityIds.toString();
@@ -122,7 +189,8 @@ public class Office extends TreeEntity<Office> {
     @ApiModelProperty(hidden = true)
     private User deputyPerson;        // 副负责人
 
-
+    @NotNull
+    @Pattern(regexp = "^[1-2]{1}$", message = "请正确选择服务范围类型")
     public String getServiceAreaType() {
         return serviceAreaType;
     }
@@ -140,6 +208,7 @@ public class Office extends TreeEntity<Office> {
         this.officeUrl = officeUrl;
     }
 
+    @Pattern(regexp = "^400[0-9]{4,}$", message = "请正确填写400电话号码") 
     public String getOffice400() {
         return office400;
     }
@@ -219,15 +288,16 @@ public class Office extends TreeEntity<Office> {
     public void setArea(Area area) {
         this.area = area;
     }
-//
-//	@Length(min=1, max=100)
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		this.name = name;
-//	}
+
+    @NotNull
+	@Length(min=2, max=15)
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 //
 //	public Integer getSort() {
 //		return sort;
@@ -282,7 +352,8 @@ public class Office extends TreeEntity<Office> {
         this.master = master;
     }
 
-    @Length(min = 0, max = 200)
+    @NotNull
+    @Pattern(regexp = "^[0-9]{3}-[0-9]{6,9}$", message = "机构格式：座机（区号+号码）如：010-66667777")  
     public String getPhone() {
         return phone;
     }

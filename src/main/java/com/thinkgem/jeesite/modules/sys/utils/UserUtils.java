@@ -5,17 +5,18 @@ package com.thinkgem.jeesite.modules.sys.utils;
 
 import java.util.List;
 
-import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
-import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
+import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
 import com.thinkgem.jeesite.modules.sys.dao.MenuDao;
 import com.thinkgem.jeesite.modules.sys.dao.OfficeDao;
@@ -190,6 +191,22 @@ public class UserUtils {
 			putCache(CACHE_AREA_LIST, areaList);
 		}
 		return areaList;
+	}
+	
+	/**
+	 * 机构查询，分页和条件搜索
+	 * @return
+	 */
+	public static Page<Office> getOffices(Page<Office> page, Office office){
+		office.setPage(page);
+		User user = getUser();
+		if (user.isAdmin()){
+			page.setList(officeDao.findAllList(office));
+		}else{
+			office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
+			page.setList(officeDao.findList(office));
+		}
+		return page;
 	}
 	
 	/**

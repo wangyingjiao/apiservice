@@ -178,34 +178,58 @@ public class OrderInfoController extends BaseController {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@ResponseBody
-	@RequestMapping(value = "editTechs", method = {RequestMethod.POST})
+	@RequestMapping(value = "editTech", method = {RequestMethod.POST})
 	@ApiOperation("编辑技师")
-	public Result editTechs(@RequestBody OrderInfo orderInfo) {
-		String id = orderInfo.getId();
+	public Result editTech(@RequestParam String orderId, @RequestParam String id0, @RequestParam String techId) {
 		OrderInfo entity = null;
-		if (StringUtils.isNotBlank(id)){
-			entity = orderInfoService.get(id);
+		if (StringUtils.isNotBlank(orderId)){
+			entity = orderInfoService.get(orderId);
 		}
         if (entity == null) {
             return new FailResult("未找到对应的订单。");
         } else {
-        	for (OrderTech orderTech : entity.getOrderTechs()) {
-        		orderTechRelationService.delete(new OrderTechRelation(orderTech.getId()));
+        	if (id0 != null && !id0.equals("")) {
+        		orderTechRelationService.delete(new OrderTechRelation(id0));
         	}
-    		//保存订单技师的关联信息
-    		if (orderInfo.getOrderTechs() != null) {
-    			for (OrderTech orderTech : orderInfo.getOrderTechs()) {
-    				OrderTechRelation orderTechRelation = new OrderTechRelation();
-    				orderTechRelation.setOrderId(id);
-    				orderTechRelation.setTechId(orderTech.getTechId());
-//    				orderTechRelation.setStatus(0); //设置技师当前的状态
-    				orderTechRelationService.save(orderTechRelation);
-    			}
-    		}
-    		else {
-    			return new FailResult("没有技师数据。");
-    		}
+        	OrderTechRelation orderTechRelation = new OrderTechRelation();
+			orderTechRelation.setOrderId(orderId);
+			orderTechRelation.setTechId(techId);
+//			orderTechRelation.setStatus(0); //设置技师当前的状态
+			orderTechRelationService.save(orderTechRelation);
         }
 		return new SuccResult("编辑技师成功");
 	}
+	
+//	@SuppressWarnings({ "unchecked", "rawtypes" })
+//	@ResponseBody
+//	@RequestMapping(value = "editTechs", method = {RequestMethod.POST})
+//	@ApiOperation("编辑技师")
+//	public Result editTechs(@RequestBody OrderInfo orderInfo) {
+//		String id = orderInfo.getId();
+//		OrderInfo entity = null;
+//		if (StringUtils.isNotBlank(id)){
+//			entity = orderInfoService.get(id);
+//		}
+//		if (entity == null) {
+//			return new FailResult("未找到对应的订单。");
+//		} else {
+//			for (OrderTech orderTech : entity.getOrderTechs()) {
+//				orderTechRelationService.delete(new OrderTechRelation(orderTech.getId()));
+//			}
+//			//保存订单技师的关联信息
+//			if (orderInfo.getOrderTechs() != null) {
+//				for (OrderTech orderTech : orderInfo.getOrderTechs()) {
+//					OrderTechRelation orderTechRelation = new OrderTechRelation();
+//					orderTechRelation.setOrderId(id);
+//					orderTechRelation.setTechId(orderTech.getTechId());
+////    				orderTechRelation.setStatus(0); //设置技师当前的状态
+//					orderTechRelationService.save(orderTechRelation);
+//				}
+//			}
+//			else {
+//				return new FailResult("没有技师数据。");
+//			}
+//		}
+//		return new SuccResult("编辑技师成功");
+//	}
 }
