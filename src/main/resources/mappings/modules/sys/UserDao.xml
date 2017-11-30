@@ -163,8 +163,8 @@
             JOIN sys_user_role ur ON ur.user_id = a.id AND ur.role_id = #{role.id}
         </if>
 
-            JOIN sys_user_role sur ON a.id = sur.user_id
-            JOIN sys_role sr ON sur.role_id = sr.id
+        JOIN sys_user_role sur ON a.id = sur.user_id
+        JOIN sys_role sr ON sur.role_id = sr.id
 
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 
@@ -223,6 +223,12 @@
 		FROM sys_user a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
+    <select id="findUserByRole" resultType="User">
+        SELECT * FROM sys_user a
+        JOIN sys_user_role sur ON a.id = sur.user_id
+        WHERE  sur.role_id = #{id}
+
+    </select>
 
     <!-- 插入用户 -->
     <insert id="insert">
@@ -293,7 +299,7 @@
             <if test="updateDate != null">update_date = #{updateDate} ,</if>
             <if test="remarks != null">remarks = #{remarks} ,</if>
             <if test="loginFlag != null">login_flag = #{loginFlag} ,</if>
-            <if test="photo != null">photo = #{photo} ,</if>
+            <if test="photo != null">photo = #{photo},</if>
         </set>
         WHERE id = #{id}
     </update>

@@ -548,6 +548,10 @@ public class SystemService extends BaseService implements InitializingBean {
 		}
 	}
 
+	public List<User> findUserByRole(Role role){
+		return userDao.findUserByRole(role);
+	}
+
 	public Page<Role> findRole(Page<Role> page, Role role) {
 
 		//role.getSqlMap().put("dsf", dataScopeFilter(role.getCurrentUser(), "o", "a"));

@@ -360,21 +360,22 @@ public class RoleController extends BaseController {
     public Result deleteRole(@RequestBody Role role) {
 
         List<String> errors = errors(role, DeleteRoleGroup.class);
-        if (errors.size() > 0){
+        if (errors.size() > 0) {
             return new FailResult(errors);
         }
-        if (Role.isAdmin(role.getId())){
-            return new FailResult(  "删除角色失败, 不允许内置角色或编号空");
-		}else if (UserUtils.getUser().getRoleIdList().contains(role.getId())){
-			return new FailResult( "删除角色失败, 不能删除当前用户所在角色");
-		}else if(false){
-		    //todo 删除岗位时要检查
-            return null;
-        }
-		else {
-            systemService.deleteRole(role);
-            UserUtils.clearCache();
-            return new SuccResult("删除角色成功");
+        if (Role.isAdmin(role.getId())) {
+            return new FailResult("删除角色失败, 不允许内置角色或编号空");
+        } else if (UserUtils.getUser().getRoleIdList().contains(role.getId())) {
+            return new FailResult("删除角色失败, 不能删除当前用户所在角色");
+        } else {
+            List<User> users = systemService.findUserByRole(role);
+            if (users.size() > 0) {
+                return new FailResult("有" + users.size() + "个用户属于要删除的角色，不能删除此角色");
+            } else {
+                systemService.deleteRole(role);
+                UserUtils.clearCache();
+                return new SuccResult("删除角色成功");
+            }
         }
     }
 
@@ -389,14 +390,13 @@ public class RoleController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("sys:role:view")
-    @RequestMapping(value = "listPageData", method = {RequestMethod.GET,RequestMethod.POST})
+    @RequestMapping(value = "listPageData", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
-    public Result listPageData(@RequestBody(required = false) Role role, HttpServletRequest request,HttpServletResponse response) {
+    public Result listPageData(@RequestBody(required = false) Role role, HttpServletRequest request, HttpServletResponse response) {
         Page<Role> page = new Page<>(request, response);
-        Page<Role> list  = systemService.findRole(page,role);
+        Page<Role> list = systemService.findRole(page, role);
         return new SuccResult(list);
     }
-
 
 
     @ResponseBody
@@ -408,7 +408,7 @@ public class RoleController extends BaseController {
             List<Role> roles = systemService.searchRoleByName(role.getName());
             if (roles.size() > 0) {
                 return new SuccResult(roles);
-            }else {
+            } else {
                 return new FailResult("未找到岗位");
             }
         }
@@ -416,20 +416,18 @@ public class RoleController extends BaseController {
     }
 
     /**
-     *
      * @param id
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getRoleDetail",method = RequestMethod.GET)
-    public Result getRoleDetail(@RequestParam String id){
+    @RequestMapping(value = "getRoleDetail", method = RequestMethod.GET)
+    public Result getRoleDetail(@RequestParam String id) {
         Role role = systemService.getRole(id);
         if (role != null) {
             return new SuccResult(role);
         }
         return new FailResult("岗位信息未找到");
     }
-
 
 
 }
