@@ -5,7 +5,10 @@ package com.thinkgem.jeesite.modules.service.dao.technician;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+
+import java.util.List;
 
 /**
  * 服务技师基础信息DAO接口
@@ -32,4 +35,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     void deleteTechnicianHoliday(ServiceTechnicianInfo serviceTechnicianInfo);
 
     void deleteTechnicianImages(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    List<ServiceTechnicianInfo> findOfficeSeviceAreaList(ServiceTechnicianInfo info);
 }

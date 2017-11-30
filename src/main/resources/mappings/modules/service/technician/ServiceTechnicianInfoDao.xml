@@ -346,4 +346,11 @@
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
+	<select id="findOfficeSeviceAreaList" resultType="ServiceTechnicianInfo">
+		SELECT area_id AS addrCityId,area_name AS addrCityName
+		FROM office_sevice_area_list
+		WHERE office_id = #{techOfficeId}
+		ORDER BY sort
+	</select>
+
 </mapper>

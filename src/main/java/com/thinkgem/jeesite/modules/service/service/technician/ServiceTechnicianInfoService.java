@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.technician.*;
+import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
@@ -386,4 +387,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         return serviceInfo;
     }
 
+    public List<ServiceTechnicianInfo> findOfficeSeviceAreaList(ServiceTechnicianInfo info) {
+        return serviceTechnicianInfoDao.findOfficeSeviceAreaList(info);
+    }
 }

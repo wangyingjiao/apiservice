@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -233,4 +235,50 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult(members);
     }
 
+    @ResponseBody
+    @ApiOperation("选择城市")
+    @RequestMapping(value = "findOfficeSeviceAreaList", method = RequestMethod.GET)
+    public Result findOfficeSeviceAreaList() {
+        ServiceTechnicianInfo info = new ServiceTechnicianInfo();
+        //选择城市
+        User user = UserUtils.getUser();
+        info.setTechOfficeId(user.getOffice().getId());
+        info.setTechOfficeName(user.getOffice().getName());
+        List<ServiceTechnicianInfo> list = serviceTechnicianInfoService.findOfficeSeviceAreaList(info);
+        return new SuccResult(list);
+    }
+
+    @ResponseBody
+    @ApiOperation("选择城市所属服务站")
+    @RequestMapping(value = "findServiceStationByArea", method = RequestMethod.POST)
+    public Result findServiceStationByArea(@RequestBody ServiceTechnicianInfo info) {
+        //addr_city_id
+        //List<OfficeSeviceAreaList> list = serviceTechnicianInfoService.findOfficeSeviceAreaList(info);
+        List<ServiceTechnicianInfo> list = new ArrayList<ServiceTechnicianInfo>();
+
+        ServiceTechnicianInfo o1 = new ServiceTechnicianInfo();
+        o1.setTechStationId("1");
+        o1.setTechStationName("服务站1");
+        ServiceTechnicianInfo o2 = new ServiceTechnicianInfo();
+        o2.setTechStationId("2");
+        o2.setTechStationName("服务站2");
+        ServiceTechnicianInfo o3 = new ServiceTechnicianInfo();
+        o3.setTechStationId("3");
+        o3.setTechStationName("服务站3");
+        Random random = new Random();
+
+        int s = random.nextInt(3);
+        switch(s){
+            case 1:
+                list.add(o1);
+                break;
+            case 2:
+                list.add(o2);
+                break;
+            default:
+                list.add(o3);
+                break;
+        }
+        return new SuccResult(list);
+    }
 }
