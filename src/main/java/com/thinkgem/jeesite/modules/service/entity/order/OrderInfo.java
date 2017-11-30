@@ -3,11 +3,12 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.order;
 
-import org.hibernate.validator.constraints.Length;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.thinkgem.jeesite.modules.sys.entity.Office;
+import java.util.List;
 
+import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
@@ -30,10 +31,20 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String shopName;		// 门店名称
 	private String shopPhone;		// 门店电话
 	private String shopAddr;		// 门店地址
-	private Office office;		// 所属服务机构ID
+	private String officeId;		// 所属服务机构ID
 	private String officeName;		// 所属服务机构名称
 	private String stationId;		// 所属服务站ID
 	private String stationName;		// 所属服务站名称
+	private List<OrderTech> orderTechs; //技师列表
+	private List<OrderItemCommodity> OrderItems; //项目商品列表
+	
+	private String customName;		// 客户姓名
+	private String customPhone;		// 客户电话
+	
+	private String payMode;		    // 支付方式
+	private String payTime;		    // 支付时间
+	private String payAccount;		// 支付金额
+	private String payStatus;		// 支付状态
 	
 	public OrderInfo() {
 		super();
@@ -61,6 +72,22 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.customId = customId;
 	}
 	
+	public String getCustomName() {
+		return customName;
+	}
+
+	public void setCustomName(String customName) {
+		this.customName = customName;
+	}
+
+	public String getCustomPhone() {
+		return customPhone;
+	}
+
+	public void setCustomPhone(String customPhone) {
+		this.customPhone = customPhone;
+	}
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getOrderTime() {
 		return orderTime;
@@ -150,15 +177,16 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	public void setShopAddr(String shopAddr) {
 		this.shopAddr = shopAddr;
 	}
-	
-	public Office getOffice() {
-		return office;
+
+	@Length(min=0, max=64, message="所属服务机构名称长度必须介于 0 和64 之间")
+	public String getOfficeId() {
+		return officeId;
 	}
 
-	public void setOffice(Office office) {
-		this.office = office;
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
 	}
-	
+
 	@Length(min=0, max=255, message="所属服务机构名称长度必须介于 0 和 255 之间")
 	public String getOfficeName() {
 		return officeName;
@@ -184,6 +212,54 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setStationName(String stationName) {
 		this.stationName = stationName;
+	}
+
+	public List<OrderTech> getOrderTechs() {
+		return orderTechs;
+	}
+
+	public void setOrderTechs(List<OrderTech> orderTechs) {
+		this.orderTechs = orderTechs;
+	}
+
+	public List<OrderItemCommodity> getOrderItems() {
+		return OrderItems;
+	}
+
+	public void setOrderItems(List<OrderItemCommodity> orderItems) {
+		OrderItems = orderItems;
+	}
+
+	public String getPayMode() {
+		return payMode;
+	}
+
+	public void setPayMode(String payMode) {
+		this.payMode = payMode;
+	}
+
+	public String getPayTime() {
+		return payTime;
+	}
+
+	public void setPayTime(String payTime) {
+		this.payTime = payTime;
+	}
+
+	public String getPayAccount() {
+		return payAccount;
+	}
+
+	public void setPayAccount(String payAccount) {
+		this.payAccount = payAccount;
+	}
+
+	public String getPayStatus() {
+		return payStatus;
+	}
+
+	public void setPayStatus(String payStatus) {
+		this.payStatus = payStatus;
 	}
 	
 }

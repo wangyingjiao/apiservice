@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.order_id AS "orderId",
 		a.item_id AS "itemId",
+		a.order_num AS "orderNum",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -66,6 +67,7 @@
 			id,
 			order_id,
 			item_id,
+			order_num,
 			create_by,
 			create_date,
 			update_by,
@@ -76,6 +78,7 @@
 			#{id},
 			#{orderId},
 			#{itemId},
+			#{orderNum},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -89,6 +92,7 @@
 		UPDATE order_service_relation SET 	
 			order_id = #{orderId},
 			item_id = #{itemId},
+			order_num = #{orderNum},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -97,7 +101,7 @@
 	
 	<update id="delete">
 		UPDATE order_service_relation SET 
-			del_flag = #{DEL_FLAG_DELETE}
+			del_flag = '1'
 		WHERE id = #{id}
 	</update>
 	

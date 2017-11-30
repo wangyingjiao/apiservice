@@ -14,9 +14,13 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
  */
 public class OrderServiceRelation extends DataEntity<OrderServiceRelation> {
 	
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3786455708069113405L;
 	private String orderId;		// 订单ID
 	private String itemId;		// 服务项目商品ID
+	private long orderNum;	    // 服务项目商品数量
 	
 	public OrderServiceRelation() {
 		super();
@@ -42,6 +46,14 @@ public class OrderServiceRelation extends DataEntity<OrderServiceRelation> {
 
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
+	}
+
+	public long getOrderNum() {
+		return orderNum;
+	}
+
+	public void setOrderNum(long orderNum) {
+		this.orderNum = orderNum;
 	}
 	
 }

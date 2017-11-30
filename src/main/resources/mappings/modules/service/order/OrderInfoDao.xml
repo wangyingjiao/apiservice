@@ -22,30 +22,37 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		a.office_id AS "office.id",
+		a.office_id AS "officeId",
 		a.office_name AS "officeName",
 		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		o20.name AS "office.name"
-	</sql>
-	
-	<sql id="orderInfoJoins">
-		LEFT JOIN sys_office o20 ON o20.id = a.office_id
+		a.station_name AS "stationName"
 	</sql>
     
-	<select id="get" resultType="OrderInfo">
+	<select id="get" resultMap="orderInfoResultMap">
 		SELECT 
+			c.custom_name as customName,
+			c.custom_phone as customPhone,
+			p.pay_mode as payMode,
+			p.pay_time as payTime,
+			p.pay_account as payAccount,
+			p.status as payStatus,
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
-		<include refid="orderInfoJoins"/>
+		left join order_custom_info c on a.custom_id = c.id
+		left join order_pay_info p on a.id = p.order_id
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="OrderInfo">
+	<select id="findList" resultMap="orderInfoResultMap">
 		SELECT 
+			c.custom_name as customName,
+			c.custom_phone as customPhone,
+			p.pay_mode as payMode,
+			p.pay_time as payTime,
+			p.pay_account as payAccount,
+			p.status as payStatus,
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
-		<include refid="orderInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -59,22 +66,56 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="OrderInfo">
-		SELECT 
-			<include refid="orderInfoColumns"/>
-		FROM order_info a
-		<include refid="orderInfoJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
+	<resultMap id="orderInfoResultMap" type="OrderInfo">
+		<id column="id" property="id"/>
+		<result column="order_number" property="orderNumber"/>
+		<result column="custom_id" property="customId"/>
+		<result column="order_time" property="orderTime"/>
+		<result column="ser_time" property="serTime"/>
+		<result column="status" property="status"/>
+		<result column="order_source" property="orderSource"/>
+		<result column="custom_remark" property="customRemark"/>
+		<result column="servicer_name" property="servicerName"/>
+		<result column="servicer_phone" property="servicerPhone"/>
+		<result column="shop_name" property="shopName"/>
+		<result column="shop_phone" property="shopPhone"/>
+		<result column="shop_addr" property="shopAddr"/>
+		<result column="create_by" property="createBy.id"/>
+		<result column="create_date" property="createDate"/>
+		<result column="update_by" property="updateBy.id"/>
+		<result column="update_date" property="updateDate"/>
+		<result column="remarks" property="remarks"/>
+		<result column="del_flag" property="delFlag"/>
+		<result column="office_id" property="officeId"/>
+		<result column="office_name" property="officeName"/>
+		<result column="station_id" property="stationId"/>
+		<result column="station_name" property="stationName"/>
+		<!-- 关联商品 -->
+		<association property="OrderItems" column="{reqId=id}" select="selectItemByOrder"></association>
+		<!-- 关联技师 -->
+		<association property="orderTechs" column="{reqId=id}" select="selectTechByOrder"></association>
+	</resultMap>
+	<select id="selectItemByOrder" parameterType="java.util.Map" resultType="OrderItemCommodity">
+		select i.sort_id as sortId, i.sort_name as sortName, u.* 
+			from 
+				((select r.id, r.order_id as orderId, c.item_id as itemId, c.item_name as itemName, 
+					c.id as commodityId, c.name as commodityName, c.meterage, c.price, r.order_num as orderNum
+						from order_service_relation r, ser_item_commodity c 
+						where c.id = r.item_id
+						and r.order_id = #{reqId}
+						and r.del_flag = '0') u
+				left join ser_item_info i on u.itemId = i.id)
+	</select>
+	<select id="selectTechByOrder" parameterType="java.util.Map" resultType="OrderTech">
+		select u.*, v.img_url
+			from 
+				((select r.id, r.order_id as orderId, t.id as techId, t.tech_name as techName,
+					t.tech_sex as techSex, t.tech_phone as techPhone
+						from order_tech_relation r, service_technician_info t 
+						where t.id = r.tech_id
+						and r.order_id = #{reqId}
+						and r.del_flag = '0') u
+				left join service_technician_images v on v.tech_id = u.techId)
 	</select>
 	
 	<insert id="insert">
@@ -122,7 +163,7 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{office.id},
+			#{officeId},
 			#{officeName},
 			#{stationId},
 			#{stationName}
@@ -130,26 +171,62 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE order_info SET 	
-			order_number = #{orderNumber},
-			custom_id = #{customId},
-			order_time = #{orderTime},
-			ser_time = #{serTime},
-			status = #{status},
-			order_source = #{orderSource},
-			custom_remark = #{customRemark},
-			servicer_name = #{servicerName},
-			servicer_phone = #{servicerPhone},
-			shop_name = #{shopName},
-			shop_phone = #{shopPhone},
-			shop_addr = #{shopAddr},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks},
-			office_id = #{office.id},
-			office_name = #{officeName},
-			station_id = #{stationId},
-			station_name = #{stationName}
+		UPDATE order_info 
+		<set>
+			<if test="orderNumber != null and orderNumber != ''">	
+				order_number = #{orderNumber},
+			</if>
+			<if test="customId != null and customId != ''">	
+				custom_id = #{customId},
+			</if>
+			<if test="orderTime != null and orderTime != ''">	
+				order_time = #{orderTime},
+			</if>
+			<if test="serTime != null and serTime != ''">	
+				ser_time = #{serTime},
+			</if>
+			<if test="status != null and status != ''">	
+				status = #{status},
+			</if>
+			<if test="orderSource != null and orderSource != ''">	
+				order_source = #{orderSource},
+			</if>
+			<if test="customRemark != null and customRemark != ''">	
+				custom_remark = #{customRemark},
+			</if>
+			<if test="servicerName != null and servicerName != ''">	
+				servicer_name = #{servicerName},
+			</if>
+			<if test="servicerPhone != null and servicerPhone != ''">	
+				servicer_phone = #{servicerPhone},
+			</if>
+			<if test="shopName != null and shopName != ''">	
+				shop_name = #{shopName},
+			</if>
+			<if test="shopPhone != null and shopPhone != ''">	
+				shop_phone = #{shopPhone},
+			</if>
+			<if test="shopAddr != null and shopAddr != ''">	
+				shop_addr = #{shopAddr},
+			</if>
+			<if test="remarks != null and remarks != ''">	
+				remarks = #{remarks},
+			</if>
+			<if test="officeId != null and officeId != ''">	
+				office_id = #{officeId},
+			</if>
+			<if test="officeName != null and officeName != ''">	
+				office_name = #{officeName},
+			</if>
+			<if test="stationId != null and stationId != ''">	
+				station_id = #{stationId},
+			</if>
+			<if test="stationName != null and stationName != ''">	
+				station_name = #{stationName},
+			</if>
+				update_by = #{updateBy.id},
+				update_date = #{updateDate}
+		</set>
 		WHERE id = #{id}
 	</update>
 	
