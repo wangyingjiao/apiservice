@@ -69,6 +69,7 @@
         a.email,
         a.phone,
         a.mobile,
+        a.useable,
         a.user_type,
         a.login_ip,
         a.login_date,
@@ -154,25 +155,19 @@
     <select id="findList" resultType="User">
         SELECT
         <include refid="userColumns"/>
-        <if test="roleName != null">
-            ,sr.name AS "roleName"
-        </if>
+        ,sr.name AS "roleName"
+        ,sr.id as "roleId"
         FROM sys_user a
         <include refid="userJoins"/>
         <if test="role != null and role.id != null and role.id != ''">
             JOIN sys_user_role ur ON ur.user_id = a.id AND ur.role_id = #{role.id}
         </if>
-        <if test="roleName != null">
+
             JOIN sys_user_role sur ON a.id = sur.user_id
             JOIN sys_role sr ON sur.role_id = sr.id
-        </if>
+
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-        <!--<if test="company != null and company.id != null and company.id != ''">-->
-            <!--AND (c.id = #{company.id} OR c.parent_ids LIKE-->
-            <!--<if test="dbName == 'oracle'">'%,'||#{company.id}||',%')</if>-->
-            <!--<if test="dbName == 'mssql'">'%,'+#{company.id}+',%')</if>-->
-            <!--<if test="dbName == 'mysql'">CONCAT('%,', #{company.id}, ',%'))</if>-->
-        <!--</if>-->
+
         <if test="office != null and office.id != null and office.id != ''">
             AND (o.id = #{office.id} OR o.parent_ids LIKE
             <if test="dbName == 'oracle'">'%,'||#{office.id}||',%')</if>
@@ -183,12 +178,6 @@
         <if test="!currentUser.admin">
             AND a.id != '1'
         </if>
-        <!--<if test="name != null and name != ''">-->
-            <!--AND a.name like-->
-            <!--<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>-->
-            <!--<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>-->
-            <!--<if test="dbName == 'mysql'">CONCAT('%', #{name}, '%')</if>-->
-        <!--</if>-->
         <if test="mobile != null">
             AND a.mobile LIKE concat("%",#{mobile},"%")
         </if>
@@ -202,7 +191,7 @@
                 ORDER BY ${page.orderBy}
             </when>
             <otherwise>
-                ORDER BY c.code, o.code, a.name
+                ORDER BY a.create_date desc
             </otherwise>
         </choose>
     </select>
@@ -248,7 +237,8 @@
 			name, 
 			email, 
 			phone, 
-			mobile, 
+			mobile,
+			useable,
 			user_type, 
 			create_by, 
 			create_date, 
@@ -269,7 +259,8 @@
 			#{name}, 
 			#{email}, 
 			#{phone}, 
-			#{mobile}, 
+			#{mobile},
+			#{useable},
 			#{userType}, 
 			#{createBy.id}, 
 			#{createDate}, 
@@ -284,25 +275,28 @@
 
     <!-- 更新用户 -->
     <update id="update">
-		UPDATE sys_user SET 
-			company_id = #{company.id}, 
-			office_id = #{office.id},
-			station_id = #{station.id},
-			login_name = #{loginName}, 
-			password = #{password}, 
-			no = #{no}, 
-			name = #{name}, 
-			email = #{email}, 
-			phone = #{phone}, 
-			mobile = #{mobile}, 
-			user_type = #{userType}, 
-			update_by = #{updateBy.id}, 
-			update_date = #{updateDate}, 
-			remarks = #{remarks},
-			login_flag = #{loginFlag},
-			photo = #{photo}
-		WHERE id = #{id}
-	</update>
+        UPDATE sys_user
+        <set>
+            <if test="company.id != null">company_id = #{company.id},</if>
+            <if test="office.id != null">office_id = #{office.id},</if>
+            <if test="station.id != null">station_id = #{station.id},</if>
+            <if test="loginName != null">login_name = #{loginName},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="no != null">no = #{no},</if>
+            <if test="name != null">name = #{name} ,</if>
+            <if test="email != null">email = #{email} ,</if>
+            <if test="phone != null">phone = #{phone} ,</if>
+            <if test="mobile != null">mobile = #{mobile} ,</if>
+            <if test="useable != null">useable = #{useable} ,</if>
+            <if test="userType != null">user_type = #{userType} ,</if>
+            <if test="updateBy.id != null">update_by = #{updateBy.id} ,</if>
+            <if test="updateDate != null">update_date = #{updateDate} ,</if>
+            <if test="remarks != null">remarks = #{remarks} ,</if>
+            <if test="loginFlag != null">login_flag = #{loginFlag} ,</if>
+            <if test="photo != null">photo = #{photo} ,</if>
+        </set>
+        WHERE id = #{id}
+    </update>
 
     <!-- 删除用户和角色关联表数据 -->
     <delete id="deleteUserRole">
@@ -325,7 +319,8 @@
 		UPDATE sys_user SET 
 			email = #{email}, 
 			phone = #{phone}, 
-			mobile = #{mobile}, 
+			mobile = #{mobile},
+			useable = #{useable},
 			update_by = #{updateBy.id}, 
 			update_date = #{updateDate}, 
 			remarks = #{remarks},

@@ -492,7 +492,7 @@ public class UserController extends BaseController {
     @ApiOperation(value = "删除用户！")
     @RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "deleteUser", method = RequestMethod.POST)
-    public Result deleteUser(User user) {
+    public Result deleteUser(@RequestBody User user) {
 
         if (UserUtils.getUser().getId().equals(user.getId())) {
             return new FailResult("删除用户失败, 不允许删除当前用户");
@@ -548,29 +548,5 @@ public class UserController extends BaseController {
             UserUtils.clearCache();
         }
         return new SuccResult(user);
-
     }
-
-
-//	@InitBinder
-//	public void initBinder(WebDataBinder b) {
-//		b.registerCustomEditor(List.class, "roleList", new PropertyEditorSupport(){
-//			@Autowired
-//			private SystemService systemService;
-//			@Override
-//			public void setAsText(String text) throws IllegalArgumentException {
-//				String[] ids = StringUtils.split(text, ",");
-//				List<Role> roles = new ArrayList<Role>();
-//				for (String id : ids) {
-//					Role role = systemService.getRole(Long.valueOf(id));
-//					roles.add(role);
-//				}
-//				setValue(roles);
-//			}
-//			@Override
-//			public String getAsText() {
-//				return Collections3.extractToString((List) getValue(), "id", ",");
-//			}
-//		});
-//	}
 }

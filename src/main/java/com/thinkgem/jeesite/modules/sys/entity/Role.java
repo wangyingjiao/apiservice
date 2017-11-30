@@ -44,7 +44,7 @@ public class Role extends DataEntity<Role> {
 	private String oldName; 	// 原角色名称
 	private String oldEnname;	// 原英文名称
 	private String sysData; 		//是否是系统数据
-	private String useable; 		//是否是可用
+	//private String useable; 		//是否是可用
 	
 	private User user;		// 根据用户ID查询角色列表
 
@@ -64,7 +64,7 @@ public class Role extends DataEntity<Role> {
 	public Role() {
 		super();
 		this.dataScope = DATA_SCOPE_SELF;
-		this.useable=Global.YES;
+
 	}
 	
 	public Role(String id){
@@ -76,13 +76,6 @@ public class Role extends DataEntity<Role> {
 		this.user = user;
 	}
 
-	public String getUseable() {
-		return useable;
-	}
-
-	public void setUseable(String useable) {
-		this.useable = useable;
-	}
 
 	public String getSysData() {
 		return sysData;

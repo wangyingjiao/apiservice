@@ -55,6 +55,7 @@ public class User extends DataEntity<User> {
     private String useable;  //是否可用
 
     private String roleName;
+    private String roleId;
     private String oldLoginName;// 原登录名
     private String newPassword;    // 新密码
 
@@ -214,12 +215,9 @@ public class User extends DataEntity<User> {
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
-
     @NotBlank(message = "用户姓名不可为空。")
     @Length(min = 1, max = 100, message = "姓名长度必须介于 1 和 100 之间")
     @ExcelField(title = "姓名", align = 2, sort = 40)
@@ -422,5 +420,15 @@ public class User extends DataEntity<User> {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+//
+
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 }
