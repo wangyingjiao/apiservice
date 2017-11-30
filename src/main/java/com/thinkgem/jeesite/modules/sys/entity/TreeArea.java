@@ -22,14 +22,21 @@ public class TreeArea extends DataEntity<TreeArea> {
 	 * 
 	 */
 	private static final long serialVersionUID = -8217662232904534202L;
-	private Area area;
+	private String id;
+	private String name;
 	private List<TreeArea> subs;
 	
-	public Area getArea() {
-		return area;
+	public String getId() {
+		return id;
 	}
-	public void setArea(Area area) {
-		this.area = area;
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public List<TreeArea> getSubs() {
 		return subs;
