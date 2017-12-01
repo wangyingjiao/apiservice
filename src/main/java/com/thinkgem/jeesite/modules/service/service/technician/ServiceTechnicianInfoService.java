@@ -240,7 +240,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     @Transactional(readOnly = false)
     public void saveWorkTimes(ServiceTechnicianInfo info) {
-        List<ServiceTechnicianWorkTime> times = info.getWorkTime();
+        deleteWorkTimeByTech(info);
+        List<ServiceTechnicianWorkTime> times = info.getWorkTimes();
         for (ServiceTechnicianWorkTime time : times) {
             time.setTechId(info.getId());
             time.setTechName(info.getTechName());
@@ -389,5 +390,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     public List<ServiceTechnicianInfo> findOfficeSeviceAreaList(ServiceTechnicianInfo info) {
         return serviceTechnicianInfoDao.findOfficeSeviceAreaList(info);
+    }
+
+    public ServiceTechnicianInfo getData(ServiceTechnicianInfo serviceTechnicianInfo) {
+        return serviceTechnicianInfoDao.getData(serviceTechnicianInfo);
     }
 }

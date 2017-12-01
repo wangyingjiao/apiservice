@@ -12,11 +12,10 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 /**
  * 服务站DAO接口
  * @author x
- * @version 2017-11-06
+ * @version 2017-12-01
  */
 @MyBatisDao
 public interface ServiceStationDao extends CrudDao<ServiceStation> {
-
     Page<User> findUserData(String id);
 
     ServiceStation findStationByUser(User user);

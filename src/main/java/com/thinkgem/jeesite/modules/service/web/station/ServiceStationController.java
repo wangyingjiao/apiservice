@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "${adminPath}/service/station/serviceStation")
+@Api(tags = "服务站管理",description = "服务站管理相关接口")
 public class ServiceStationController extends BaseController {
 
     @Autowired
@@ -47,18 +49,9 @@ public class ServiceStationController extends BaseController {
         return entity;
     }
 
-
-//
-//	@RequiresPermissions("service:station:serviceStation:view")
-//	@RequestMapping(value = {"list", ""})
-//	public String list(ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response, Model model) {
-//		Page<ServiceStation> page = serviceStationService.findPage(new Page<ServiceStation>(request, response), serviceStation);
-//		model.addAttribute("page", page);
-//		return "modules/service/station/serviceStationList";
-//	}
-
     @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("获取服务站列表")
     //@RequiresPermissions("service:station:serviceStation:view")
     public Result listData(ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
         Page<ServiceStation> stationPage = new Page<>(request, response);
