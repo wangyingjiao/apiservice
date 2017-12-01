@@ -8,7 +8,7 @@
 		a.custom_id AS "customId",
 		a.order_time AS "orderTime",
 		a.ser_time AS "serTime",
-		a.status AS "status",
+		a.order_status AS "orderStatus",
 		a.order_source AS "orderSource",
 		a.custom_remark AS "customRemark",
 		a.servicer_name AS "servicerName",
@@ -35,11 +35,13 @@
 			p.pay_mode as payMode,
 			p.pay_time as payTime,
 			p.pay_account as payAccount,
-			p.status as payStatus,
+			p.pay_status as payStatus,
+			r.return_status as returnStatus,
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
 		left join order_custom_info c on a.custom_id = c.id
 		left join order_pay_info p on a.id = p.order_id
+		left join order_return r on a.id = r.order_id
 		WHERE a.id = #{id}
 	</select>
 	
@@ -50,11 +52,36 @@
 			p.pay_mode as payMode,
 			p.pay_time as payTime,
 			p.pay_account as payAccount,
-			p.status as payStatus,
+			p.pay_status as payStatus,
+			r.return_status as returnStatus,
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
+		left join order_custom_info c on a.custom_id = c.id
+		left join order_pay_info p on a.id = p.order_id
+		left join order_return r on a.id = r.order_id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customName != null and customName != ''">	
+				and c.custom_name like concat('%',#{customName},'%')
+			</if>
+			<if test="customPhone != null and customPhone != ''">	
+				and c.custom_phone like concat('%',#{customPhone},'%')
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">	
+				and a.order_number = #{orderNumber}
+			</if>
+			<if test="stationId != null and stationId != ''">	
+				and a.station_id = #{stationId}
+			</if>
+			<if test="payMode != null and payMode != ''">	
+				and p.pay_mode = #{payMode}
+			</if>
+			<if test="payStatus != null and payStatus != ''">	
+				and p.payStatus = #{payStatus}
+			</if>
+			<if test="returnStatus != null and returnStatus != ''">	
+				and r.return_status = #{returnStatus}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -72,7 +99,7 @@
 		<result column="custom_id" property="customId"/>
 		<result column="order_time" property="orderTime"/>
 		<result column="ser_time" property="serTime"/>
-		<result column="status" property="status"/>
+		<result column="order_status" property="orderStatus"/>
 		<result column="order_source" property="orderSource"/>
 		<result column="custom_remark" property="customRemark"/>
 		<result column="servicer_name" property="servicerName"/>
@@ -103,6 +130,9 @@
 						from order_service_relation r, ser_item_commodity c 
 						where c.id = r.item_id
 						and r.order_id = #{reqId}
+						<if test="itemName != null and itemName != ''">	
+							and c.item_name like concat('%',#{itemName},'%')
+						</if>
 						and r.del_flag = '0') u
 				left join ser_item_info i on u.itemId = i.id)
 	</select>
@@ -125,7 +155,7 @@
 			custom_id,
 			order_time,
 			ser_time,
-			status,
+			order_status,
 			order_source,
 			custom_remark,
 			servicer_name,
@@ -149,7 +179,7 @@
 			#{customId},
 			#{orderTime},
 			#{serTime},
-			#{status},
+			#{orderStatus},
 			#{orderSource},
 			#{customRemark},
 			#{servicerName},
@@ -185,8 +215,8 @@
 			<if test="serTime != null and serTime != ''">	
 				ser_time = #{serTime},
 			</if>
-			<if test="status != null and status != ''">	
-				status = #{status},
+			<if test="orderStatus != null and orderStatus != ''">	
+				order_status = #{orderStatus},
 			</if>
 			<if test="orderSource != null and orderSource != ''">	
 				order_source = #{orderSource},
