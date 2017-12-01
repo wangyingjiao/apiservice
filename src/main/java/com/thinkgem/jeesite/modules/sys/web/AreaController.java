@@ -120,20 +120,25 @@ public class AreaController extends BaseController {
     @ApiOperation(value = "树形结构的区域全部数据")
     public Result<List<TreeArea>> treeArea() {
         List<Area> list = areaService.treeArea();
-        List<TreeArea> result = subArea("1", list, 0);
+        TreeArea treeArea = new TreeArea();
+        treeArea.setId("1");
+        List<TreeArea> result = subArea(treeArea, list/*, deep*/);
         return new SuccResult(result);
     }
     
-    private List<TreeArea> subArea(String id, List<Area> list, int deep) {
+    private List<TreeArea> subArea(TreeArea treeArea, List<Area> list/*, int deep*/) {
     	List<TreeArea> subs = Lists.newArrayList();
     	for (Area area : list) {
-    		TreeArea treeArea = new TreeArea();
-    		treeArea.setId(area.getId());
-    		treeArea.setName(area.getName());
-    		if (deep < 2 && area.getParentId().equals(id)) {
-    			List<TreeArea> subs0 = subArea(area.getId(), list, deep++);
-    			treeArea.setSubs(subs0);
-    			subs.add(treeArea);
+//    		treeArea.setId(area.getId());
+//    		treeArea.setName(area.getName());
+    		if (/*treeArea.getDeep() < deep &&*/ area.getParentId().equals(treeArea.getId())) {
+    			TreeArea subArea = new TreeArea();
+    			subArea.setDeep(treeArea.getDeep() + 1);
+    			subArea.setId(area.getId());
+    			subArea.setName(area.getName());
+    			List<TreeArea> subs0 = subArea(subArea, list/*, deep*/);
+    			subArea.setSubs(subs0);
+    			subs.add(subArea);
     		}
     	}
     	return subs;

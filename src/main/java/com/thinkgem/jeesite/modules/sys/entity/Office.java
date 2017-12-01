@@ -87,7 +87,6 @@ public class Office extends TreeEntity<Office> {
 		this.cusProvId = cusProvId;
 	}
 
-    @NotNull
 	public String getCusProvName() {
 		return cusProvName;
 	}
@@ -105,7 +104,6 @@ public class Office extends TreeEntity<Office> {
 		this.cusCityId = cusCityId;
 	}
 
-    @NotNull
 	public String getCusCityName() {
 		return cusCityName;
 	}
@@ -123,7 +121,6 @@ public class Office extends TreeEntity<Office> {
 		this.cusTownId = cusTownId;
 	}
 
-    @NotNull
 	public String getCusTownName() {
 		return cusTownName;
 	}
@@ -208,7 +205,6 @@ public class Office extends TreeEntity<Office> {
         this.officeUrl = officeUrl;
     }
 
-    @Pattern(regexp = "^400[0-9]{4,}$", message = "请正确填写400电话号码") 
     public String getOffice400() {
         return office400;
     }

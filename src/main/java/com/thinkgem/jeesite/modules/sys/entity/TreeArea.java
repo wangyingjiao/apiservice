@@ -24,6 +24,7 @@ public class TreeArea extends DataEntity<TreeArea> {
 	private static final long serialVersionUID = -8217662232904534202L;
 	private String id;
 	private String name;
+	private int deep;
 	private List<TreeArea> subs;
 	
 	public String getId() {
@@ -43,6 +44,12 @@ public class TreeArea extends DataEntity<TreeArea> {
 	}
 	public void setSubs(List<TreeArea> subs) {
 		this.subs = subs;
+	}
+	public int getDeep() {
+		return deep;
+	}
+	public void setDeep(int deep) {
+		this.deep = deep;
 	}
 
 }
