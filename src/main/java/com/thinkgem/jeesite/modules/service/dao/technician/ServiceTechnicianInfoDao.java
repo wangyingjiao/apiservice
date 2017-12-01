@@ -37,4 +37,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     void deleteTechnicianImages(ServiceTechnicianInfo serviceTechnicianInfo);
 
     List<ServiceTechnicianInfo> findOfficeSeviceAreaList(ServiceTechnicianInfo info);
+
+    ServiceTechnicianInfo getData(ServiceTechnicianInfo serviceTechnicianInfo);
 }

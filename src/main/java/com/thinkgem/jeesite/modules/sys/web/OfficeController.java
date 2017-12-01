@@ -238,9 +238,13 @@ public class OfficeController extends BaseController {
         office.setUseable("1");
 
 
-        if (!beanValidator(office)) {
-            return new FailResult("参数有误:");
+        List<String> errors = errors(office);
+        if (errors.size() > 0) {
+        	return new FailResult(errors);
         }
+//        if (!beanValidator(office)) {
+//            return new FailResult("参数有误:");
+//        }
         //检查重名
         if ((office.getId() == null || office.getId().equals("")) && officeService.getByName(office.getName())) {
             return new FailResult("机构名称重复");

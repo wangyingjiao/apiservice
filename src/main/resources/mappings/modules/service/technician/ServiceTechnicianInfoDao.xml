@@ -51,6 +51,134 @@
         WHERE a.id = #{id}
     </select>
 
+	<select id="getData" resultMap="ServiceTechnicianInfoResultMap">
+		SELECT
+		<include refid="serviceTechnicianInfoColumnsAll"/>
+		FROM service_technician_info a
+		left join service_technician_service_info b on a.id = b.tech_id and b.del_flag = '0'
+		<where>
+			a.id = #{id}
+		</where>
+	</select>
+	<sql id="serviceTechnicianInfoColumnsAll">
+		a.id AS "id",
+		a.tech_office_id AS "techOfficeId",
+		a.tech_office_name AS "techOfficeName",
+		a.tech_station_id AS "techStationId",
+		a.tech_station_name AS "techStationName",
+		a.tech_name AS "techName",
+		a.tech_id_card AS "techIdCard",
+		a.tech_phone AS "techPhone",
+		a.addr_province_id AS "addrProvinceId",
+		a.addr_city_id AS "addrCityId",
+		a.addr_district_id AS "addrDistrictId",
+		a.addr_province_name AS "addrProvinceName",
+		a.addr_city_name AS "addrCityName",
+		a.addr_district_name AS "addrDistrictName",
+		a.addr_detail_info AS "addrDetailInfo",
+		a.tech_sex AS "techSex",
+		a.tech_nation AS "techNation",
+		a.tech_birth_date AS "techBirthDate",
+		a.tech_email AS "techEmail",
+		a.tech_education AS "techEducation",
+		a.tech_height AS "techHeight",
+		a.tech_weight AS "techWeight",
+		a.tech_matrimony AS "techMatrimony",
+		a.tech_native_place AS "techNativePlace",
+		a.remarks AS "remarks",
+
+		b.service_city_id AS "serviceInfo.serviceCityId",
+		b.service_city_name AS "serviceInfo.serviceCityName",
+		b.job_natrue AS "serviceInfo.jobNatrue",
+		b.station_id AS "serviceInfo.stationId",
+		b.station_name AS "serviceInfo.stationName",
+		b.job_status AS "serviceInfo.jobStatus",
+		b.work_time AS "serviceInfo.workTime",
+		b.in_job_time AS "serviceInfo.inJobTime",
+		b.assess_grade AS "serviceInfo.assessGrade",
+		b.exper_desc AS "serviceInfo.experDesc"
+	</sql>
+	<resultMap type="ServiceTechnicianInfo" id="ServiceTechnicianInfoResultMap">
+		<result column="id" property="id"/>
+		<result column="tech_office_id" property="techOfficeId"/>
+		<result column="tech_office_name" property="techOfficeName"/>
+		<result column="tech_station_id" property="techStationId"/>
+		<result column="tech_station_name" property="techStationName"/>
+		<result column="tech_name" property="techName"/>
+		<result column="tech_id_card" property="techIdCard"/>
+		<result column="tech_phone" property="techPhone"/>
+		<result column="addr_province_id" property="addrProvinceId"/>
+		<result column="addr_city_id" property="addrCityId"/>
+		<result column="addr_district_id" property="addrDistrictId"/>
+		<result column="addr_province_name" property="addrProvinceName"/>
+		<result column="addr_city_name" property="addrCityName"/>
+		<result column="addr_district_name" property="addrDistrictName"/>
+		<result column="addr_detail_info" property="addrDetailInfo"/>
+		<result column="tech_sex" property="techSex"/>
+		<result column="tech_nation" property="techNation"/>
+		<result column="tech_birth_date" property="techBirthDate"/>
+		<result column="tech_email" property="techEmail"/>
+		<result column="tech_education" property="techEducation"/>
+		<result column="tech_height" property="techHeight"/>
+		<result column="tech_weight" property="techWeight"/>
+		<result column="tech_matrimony" property="techMatrimony"/>
+		<result column="tech_native_place" property="techNativePlace"/>
+		<result column="remarks" property="remarks"/>
+		<result column="service_city_id" property="serviceCityId"/>
+		<result column="service_city_name" property="serviceCityName"/>
+		<result column="job_natrue" property="jobNatrue"/>
+		<result column="station_id" property="stationId"/>
+		<result column="station_name" property="stationName"/>
+		<result column="job_status" property="jobStatus"/>
+		<result column="work_time" property="workTime"/>
+		<result column="in_job_time" property="inJobTime"/>
+		<result column="assess_grade" property="assessGrade"/>
+		<result column="exper_desc" property="experDesc"/>
+
+		<!-- 技能 -->
+		<association property="serviceInfo.skills" column="{reqId=id}" select="selectSkillsByTechId"></association>
+		<!-- 工作时间 -->
+		<association property="workTimes" column="{reqId=id}" select="selectWorkTimeByTechId"></association>
+		<!-- 家庭成员 -->
+		<association property="familyMembers" column="{reqId=id}" select="selectFamilyMembersByTechId"></association>
+		<!-- 照片 -->
+		<association property="images" column="{reqId=id}" select="selectImagesByTechId"></association>
+	</resultMap>
+	<select id="selectSkillsByTechId" parameterType="java.util.Map" resultType="SerSkillInfo">
+		select skill_id AS id,skill_name AS name
+		from ser_skill_technician
+		where technician_id=#{reqId}
+		AND del_flag = '0'
+	</select>
+	<select id="selectWorkTimeByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianWorkTime">
+		select
+		tech_id AS techId,tech_name AS techName,
+		DATE_FORMAT(start_time,'%T') AS startTime, DATE_FORMAT(end_time,'%T') AS endTime,
+		GROUP_CONCAT(work_date) AS workDate
+		from service_technician_work_time
+		where tech_id=#{reqId}
+		AND del_flag = '0'
+		GROUP BY tech_id,tech_name,start_time,end_time
+	</select>
+	<select id="selectFamilyMembersByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianFamilyMembers">
+		select
+		relation AS relation,member_name AS memberName,
+		member_phone AS memberPhone,member_unit AS memberUnit,
+		member_job AS memberJob
+		from service_technician_family_members
+		where tech_id=#{reqId}
+		AND del_flag = '0'
+	</select>
+	<select id="selectImagesByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianImages">
+		select
+		img_type AS imgType,img_url AS imgUrl
+		from service_technician_images
+		where tech_id=#{reqId}
+		AND del_flag = '0'
+	</select>
+
+
+
     <select id="findList" resultType="ServiceTechnicianInfo">
         SELECT
 			a.id AS "id",
@@ -72,7 +200,6 @@
         <include refid="serviceTechnicianInfoJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-			AND a.status = 1
 			<if test="techStationId != null and techStationId != ''">
 				AND b.station_id = #{techStationId}
 			</if>
@@ -270,6 +397,7 @@
 		left join order_tech_relation b on a.id = b.order_id
 		where a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
 		and b.tech_id = #{id}
+		and (a.order_status = '2' or a.order_status = '4')
 	</select>
 
 	<update id="updateStatus">

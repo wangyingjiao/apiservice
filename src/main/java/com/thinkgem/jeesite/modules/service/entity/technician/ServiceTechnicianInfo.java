@@ -61,7 +61,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private List<ServiceTechnicianImages> images;
 
     //技师工作时间
-    private List<ServiceTechnicianWorkTime> workTime;
+    private List<ServiceTechnicianWorkTime> workTimes;
 
     //技师家庭成员信息
     private List<ServiceTechnicianFamilyMembers> familyMembers;
@@ -352,12 +352,12 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.images = images;
     }
 
-    public List<ServiceTechnicianWorkTime> getWorkTime() {
-        return workTime;
+    public List<ServiceTechnicianWorkTime> getWorkTimes() {
+        return workTimes;
     }
 
-    public void setWorkTime(List<ServiceTechnicianWorkTime> workTime) {
-        this.workTime = workTime;
+    public void setWorkTimes(List<ServiceTechnicianWorkTime> workTimes) {
+        this.workTimes = workTimes;
     }
 
     public List<ServiceTechnicianFamilyMembers> getFamilyMembers() {
