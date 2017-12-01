@@ -151,6 +151,7 @@
 		where a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
 		and b.tech_id = #{techId}
 		and a.ser_time BETWEEN #{startTime} AND #{endTime}
+		and (a.order_status = '2' or a.order_status = '4')
 	</select>
 	<select id="getServiceTechnicianWorkTime" resultType="ServiceTechnicianHoliday">
 		SELECT

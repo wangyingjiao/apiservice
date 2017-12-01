@@ -70,6 +70,21 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult(page);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getData", method = {RequestMethod.POST})
+    @ApiOperation("根据ID查找技师")
+    public Result getData(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
+        ServiceTechnicianInfo entity = null;
+        if (StringUtils.isNotBlank(serviceTechnicianInfo.getId())) {
+            entity = serviceTechnicianInfoService.getData(serviceTechnicianInfo);
+        }
+        if (entity == null) {
+            return new FailResult("未找到此id：" + serviceTechnicianInfo.getId() + "对应的服务分类。");
+        } else {
+            return new SuccResult(entity);
+        }
+    }
+
 
     //	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
     @ResponseBody
@@ -78,7 +93,7 @@ public class ServiceTechnicianInfoController extends BaseController {
         ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoService.get(serviceTechnicianInfo.getId());
         technicianInfo.setImages(serviceTechnicianInfoService.getImages(technicianInfo));
         technicianInfo.setServiceInfo(serviceTechnicianInfoService.getServiceInfo(technicianInfo));
-        technicianInfo.setWorkTime(serviceTechnicianInfoService.findWorkTimeByTech(technicianInfo));
+        technicianInfo.setWorkTimes(serviceTechnicianInfoService.findWorkTimeByTech(technicianInfo));
 
         return new SuccResult(serviceTechnicianInfo);
     }
