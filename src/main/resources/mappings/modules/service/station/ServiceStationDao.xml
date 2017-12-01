@@ -1,94 +1,106 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao">
-    
-	<sql id="serviceStationColumns">
+
+    <sql id="serviceStationColumns">
 		a.id AS "id",
 		a.name AS "name",
 		a.type AS "type",
 		a.area AS "area",
 		a.address AS "address",
-		a.office_id as "officeId",
-		a.office_name as "officeName",
 		a.user_id AS "user.id",
+		a.user_name AS "userName",
 		a.phone AS "phone",
 		a.employees AS "employees",
 		a.aunts AS "aunts",
 		a.service_point AS "servicePoint",
-		a.status AS "status",
 		a.create_by AS "createBy.id",
+		a.office_id AS "office.id",
+		a.office_name AS "officeName",
 		a.create_date AS "createDate",
+		a.addr_province_id AS "addrProvinceId",
 		a.update_by AS "updateBy.id",
+		a.addr_city_id AS "addrCityId",
 		a.update_date AS "updateDate",
+		a.addr_district_id AS "addrDistrictId",
 		a.remarks AS "remarks",
+		a.addr_province_name AS "addrProvinceName",
 		a.del_flag AS "delFlag",
-		u6.name AS "user.name"
+		a.addr_city_name AS "addrCityName",
+		a.addr_district_name AS "addrDistrictName",
+		a.addr_detail_info AS "addrDetailInfo",
+		a.radius AS "radius",
+		a.circle_center AS "circleCenter",
+		a.range_type AS "rangeType",
+		a.useable AS "useable",
+		u6.name AS "user.name",
+		o13.name AS "office.name"
 	</sql>
-	
-	<sql id="serviceStationJoins">
+
+    <sql id="serviceStationJoins">
 		LEFT JOIN sys_user u6 ON u6.id = a.user_id
+		LEFT JOIN sys_office o13 ON o13.id = a.office_id
 	</sql>
-    
-	<select id="get" resultType="ServiceStation">
-		SELECT 
-			<include refid="serviceStationColumns"/>
-		FROM service_station a
-		<include refid="serviceStationJoins"/>
-		WHERE a.id = #{id}
-	</select>
-	
-	<select id="findList" resultType="ServiceStation">
-		SELECT 
-			<include refid="serviceStationColumns"/>
-		FROM service_station a
-		<include refid="serviceStationJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-			<if test="officeId != null">
-				and a.office_id = #{officeId}
-			</if>
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="ServiceStation">
-		SELECT 
-			<include refid="serviceStationColumns"/>
-		FROM service_station a
-		<include refid="serviceStationJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	<!--返回当前服务站下的员工列表-->
-	<select id="findUserData" resultType="com.thinkgem.jeesite.modules.sys.entity.User">
-		SELECT * FROM sys_user WHERE office_id = #{id}
+
+    <select id="get" resultType="ServiceStation">
+        SELECT
+        <include refid="serviceStationColumns"/>
+        FROM service_station a
+        <include refid="serviceStationJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="ServiceStation">
+        SELECT
+        <include refid="serviceStationColumns"/>
+        FROM service_station a
+        <include refid="serviceStationJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="name != null and name != ''">
+                AND a.name LIKE
+                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+            </if>
+            <if test="officeId != null">
+                and a.office_id = #{officeId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="ServiceStation">
+        SELECT
+        <include refid="serviceStationColumns"/>
+        FROM service_station a
+        <include refid="serviceStationJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <!--返回当前服务站下的员工列表-->
+    <select id="findUserData" resultType="com.thinkgem.jeesite.modules.sys.entity.User">
+		SELECT * FROM sys_user WHERE del_flag = 0 AND office_id = #{id}
 	</select>
     <select id="findStationByUser"
             resultType="com.thinkgem.jeesite.modules.service.entity.station.ServiceStation">
-		SELECT * FROM service_station WHERE user_id = #{id}
-
+		SELECT * FROM service_station WHERE del_flag = 0 AND user_id = #{id}
 	</select>
 
     <insert id="insert">
@@ -99,17 +111,30 @@
 			area,
 			address,
 			user_id,
+			user_name,
 			phone,
 			employees,
 			aunts,
 			service_point,
-			useable,
 			create_by,
+			office_id,
+			office_name,
 			create_date,
+			addr_province_id,
 			update_by,
+			addr_city_id,
 			update_date,
+			addr_district_id,
 			remarks,
-			del_flag
+			addr_province_name,
+			del_flag,
+			addr_city_name,
+			addr_district_name,
+			addr_detail_info,
+			radius,
+			circle_center,
+			range_type,
+			useable
 		) VALUES (
 			#{id},
 			#{name},
@@ -117,42 +142,70 @@
 			#{area},
 			#{address},
 			#{user.id},
+			#{userName},
 			#{phone},
 			#{employees},
 			#{aunts},
 			#{servicePoint},
-			#{useable},
 			#{createBy.id},
+			#{office.id},
+			#{officeName},
 			#{createDate},
+			#{addrProvinceId},
 			#{updateBy.id},
+			#{addrCityId},
 			#{updateDate},
+			#{addrDistrictId},
 			#{remarks},
-			#{delFlag}
+			#{addrProvinceName},
+			#{delFlag},
+			#{addrCityName},
+			#{addrDistrictName},
+			#{addrDetailInfo},
+			#{radius},
+			#{circleCenter},
+			#{rangeType},
+			#{useable}
 		)
 	</insert>
-	
-	<update id="update">
-		UPDATE service_station SET 	
-			name = #{name},
-			type = #{type},
-			area = #{area},
-			address = #{address},
-			user_id = #{user.id},
-			phone = #{phone},
-			employees = #{employees},
-			aunts = #{aunts},
-			service_point = #{servicePoint},
-			useable = #{useable},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
-		WHERE id = #{id}
-	</update>
-	
-	<update id="delete">
+
+    <update id="update">
+        UPDATE service_station
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="area != null">area = #{area},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="user.id != null">user_id = #{user.id},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="employees != null">employees = #{employees},</if>
+            <if test="aunts != null">aunts = #{aunts},</if>
+            <if test="servicePoint != null">service_point = #{servicePoint},</if>
+            <if test="office.id != null">office_id = #{office.id},</if>
+            <if test="officeName != null">office_name = #{officeName},</if>
+            <if test="addrProvinceId != null">addr_province_id = #{addrProvinceId},</if>
+            <if test="updateBy.id != null">update_by = #{updateBy.id},</if>
+            <if test="addrCityId != null">addr_city_id = #{addrCityId},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="addrDistrictId != null">addr_district_id = #{addrDistrictId},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="addrProvinceName != null">addr_province_name = #{addrProvinceName},</if>
+            <if test="addrCityName != null">addr_city_name = #{addrCityName},</if>
+            <if test="addrDistrictName != null">addr_district_name = #{addrDistrictName},</if>
+            <if test="addrDetailInfo != null">addr_detail_info = #{addrDetailInfo},</if>
+            <if test="radius != null">radius = #{radius},</if>
+            <if test="circleCenter != null">circle_center = #{circleCenter},</if>
+            <if test="rangeType != null">range_type = #{rangeType},</if>
+            <if test="useable != null">useable = #{useable},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
 		UPDATE service_station SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
 </mapper>
