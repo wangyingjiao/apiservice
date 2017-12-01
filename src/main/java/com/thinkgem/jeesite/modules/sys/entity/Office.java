@@ -129,15 +129,15 @@ public class Office extends TreeEntity<Office> {
 		this.cusTownName = cusTownName;
 	}
 
-    public List<String> getCityIds() {
+    public String getCityIds() {
         return cityIds;
     }
 
-    public void setCityIds(List<String> cityIds) {
+    public void setCityIds(String cityIds) {
         this.cityIds = cityIds;
     }
 
-    private List<String> cityIds;
+    private String cityIds;
 
     @NotNull
     public String getServiceCityId() {
