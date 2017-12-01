@@ -78,7 +78,7 @@
 		<if test="masterPhone != null and masterPhone != ''">
 			AND a.master_phone like concat('%',#{masterPhone},'%')
 		</if>
-		ORDER BY a.code
+		ORDER BY a.create_date desc
 	</select>
 			
 	<select id="findAllList" resultType="Office">
@@ -96,7 +96,7 @@
 		<if test="masterPhone != null and masterPhone != ''">
 			AND a.master_phone like concat('%',#{masterPhone},'%')
 		</if>
-		ORDER BY a.code
+		ORDER BY a.create_date desc
 	</select>
 	
 	<select id="findByParentIdsLike" resultType="Office">
@@ -105,7 +105,7 @@
 		FROM sys_office a
 		<include refid="officeJoins"/>
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
-		ORDER BY a.code
+		ORDER BY a.create_date desc
 	</select>
 	<select id="getByName" resultType="com.thinkgem.jeesite.modules.sys.entity.Office">
 		select * from sys_office WHERE 1=1 AND name = #{name};
