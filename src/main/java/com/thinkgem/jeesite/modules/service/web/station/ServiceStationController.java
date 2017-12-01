@@ -53,7 +53,7 @@ public class ServiceStationController extends BaseController {
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务站列表")
     //@RequiresPermissions("service:station:serviceStation:view")
-    public Result listData(ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
+    public Result listData(@RequestBody(required = false) ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
         Page<ServiceStation> stationPage = new Page<>(request, response);
         Page<ServiceStation> page = serviceStationService.findPage(stationPage, serviceStation);
         return new SuccResult(page);
