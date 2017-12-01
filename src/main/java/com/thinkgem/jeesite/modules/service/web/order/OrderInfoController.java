@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.service.web.order;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,7 +95,7 @@ public class OrderInfoController extends BaseController {
 		orderInfo.setStationId(user.getStation().getId());//服务站ID
 		orderInfo.setStationName(user.getStation().getName());//服务站名称
 		orderInfo.setOrderTime(new Date());
-//		orderInfo.setStatus("0");//订单状态
+//		orderInfo.setOrderStatus("0");//订单状态
 		orderInfoService.save(orderInfo);
 		
 		//保存订单商品的关联信息
@@ -119,6 +121,35 @@ public class OrderInfoController extends BaseController {
 		}
 		
 		return new SuccResult("保存订单成功");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
+	@RequestMapping(value = "editData", method = {RequestMethod.POST})
+	@ApiOperation("编辑订单")
+	public Result editData(@RequestParam String orderId, @RequestParam(required = false) String serTime, @RequestParam(required = false) String orderStatus) {
+		OrderInfo entity = null;
+		if (StringUtils.isNotBlank(orderId)){
+			entity = orderInfoService.get(orderId);
+		}
+        if (entity == null) {
+            return new FailResult("未找到对应的订单。");
+        } else {
+        	try {
+        		OrderInfo orderInfo = new OrderInfo(orderId);
+				if (serTime != null && !serTime.equals("")) {
+					orderInfo.setSerTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(serTime));
+				}
+				if (orderStatus != null && !orderStatus.equals("")) {
+					orderInfo.setOrderStatus(orderStatus);
+				}
+				orderInfoService.save(orderInfo);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				return new FailResult<String>("数据处理错误！请调整服务时间数据格式");
+			}
+        }
+		return new SuccResult("编辑订单成功");
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -178,6 +209,16 @@ public class OrderInfoController extends BaseController {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@ResponseBody
+	@RequestMapping(value = "getTechs", method = {RequestMethod.POST})
+	@ApiOperation("查询技师列表")
+	public Result getTechs(@RequestBody OrderTechRelation orderTechRelation, HttpServletRequest request, HttpServletResponse response) {
+        Page<OrderTechRelation> stationPage = new Page<>(request, response);
+        Page<OrderTechRelation> page = orderTechRelationService.findPage(stationPage, orderTechRelation);
+        return new SuccResult(page);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
 	@RequestMapping(value = "editTech", method = {RequestMethod.POST})
 	@ApiOperation("编辑技师")
 	public Result editTech(@RequestParam String orderId, @RequestParam String id0, @RequestParam String techId) {
@@ -185,51 +226,47 @@ public class OrderInfoController extends BaseController {
 		if (StringUtils.isNotBlank(orderId)){
 			entity = orderInfoService.get(orderId);
 		}
-        if (entity == null) {
-            return new FailResult("未找到对应的订单。");
-        } else {
-        	if (id0 != null && !id0.equals("")) {
-        		orderTechRelationService.delete(new OrderTechRelation(id0));
-        	}
-        	OrderTechRelation orderTechRelation = new OrderTechRelation();
+		if (entity == null) {
+			return new FailResult("未找到对应的订单。");
+		} else {
+			if (id0 != null && !id0.equals("")) {
+				orderTechRelationService.delete(new OrderTechRelation(id0));
+			}
+			OrderTechRelation orderTechRelation = new OrderTechRelation();
 			orderTechRelation.setOrderId(orderId);
 			orderTechRelation.setTechId(techId);
 //			orderTechRelation.setStatus(0); //设置技师当前的状态
 			orderTechRelationService.save(orderTechRelation);
-        }
+		}
 		return new SuccResult("编辑技师成功");
 	}
 	
-//	@SuppressWarnings({ "unchecked", "rawtypes" })
-//	@ResponseBody
-//	@RequestMapping(value = "editTechs", method = {RequestMethod.POST})
-//	@ApiOperation("编辑技师")
-//	public Result editTechs(@RequestBody OrderInfo orderInfo) {
-//		String id = orderInfo.getId();
-//		OrderInfo entity = null;
-//		if (StringUtils.isNotBlank(id)){
-//			entity = orderInfoService.get(id);
-//		}
-//		if (entity == null) {
-//			return new FailResult("未找到对应的订单。");
-//		} else {
-//			for (OrderTech orderTech : entity.getOrderTechs()) {
-//				orderTechRelationService.delete(new OrderTechRelation(orderTech.getId()));
-//			}
-//			//保存订单技师的关联信息
-//			if (orderInfo.getOrderTechs() != null) {
-//				for (OrderTech orderTech : orderInfo.getOrderTechs()) {
-//					OrderTechRelation orderTechRelation = new OrderTechRelation();
-//					orderTechRelation.setOrderId(id);
-//					orderTechRelation.setTechId(orderTech.getTechId());
-////    				orderTechRelation.setStatus(0); //设置技师当前的状态
-//					orderTechRelationService.save(orderTechRelation);
-//				}
-//			}
-//			else {
-//				return new FailResult("没有技师数据。");
-//			}
-//		}
-//		return new SuccResult("编辑技师成功");
-//	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
+	@RequestMapping(value = "deliverOrder", method = {RequestMethod.POST})
+	@ApiOperation("派单")
+	public Result deliverOrder(@RequestParam String orderId, @RequestParam String techIds) {
+		OrderInfo entity = null;
+		if (StringUtils.isNotBlank(orderId)){
+			entity = orderInfoService.get(orderId);
+		}
+		if (entity == null) {
+			return new FailResult("未找到对应的订单。");
+		} else {
+			//保存订单技师的关联信息
+			if (techIds != null && !techIds.equals("")) {
+				for (String techId : techIds.split(",")) {
+					OrderTechRelation orderTechRelation = new OrderTechRelation();
+					orderTechRelation.setOrderId(orderId);
+					orderTechRelation.setTechId(techId);
+//    				orderTechRelation.setStatus(0); //设置技师当前的状态
+					orderTechRelationService.save(orderTechRelation);
+				}
+			}
+			else {
+				return new FailResult("没有技师数据。");
+			}
+		}
+		return new SuccResult("派单成功");
+	}
 }

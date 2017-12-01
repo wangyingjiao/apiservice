@@ -35,22 +35,25 @@ public class OrderCustomInfoController extends BaseController {
 	@Autowired
 	private OrderCustomInfoService orderCustomInfoService;
 	
-	@ModelAttribute
-	public OrderCustomInfo get(@RequestParam(required=false) String id) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
+    @RequestMapping(value = "getData", method = {RequestMethod.POST})
+    @ApiOperation("客户详情")
+	public Result getData(@RequestParam(required=false) String id) {
 		OrderCustomInfo entity = null;
 		if (StringUtils.isNotBlank(id)){
 			entity = orderCustomInfoService.get(id);
 		}
-		if (entity == null){
-			entity = new OrderCustomInfo();
-		}
-		return entity;
+        if (entity == null) {
+            return new FailResult("未找到此id：" + id + "对应的客户。");
+        } else {
+            return new SuccResult(entity);
+        }
 	}
 
-
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@ResponseBody
 	@RequestMapping(value = "saveData", method = {RequestMethod.POST})
-	//@RequiresPermissions("service:station:orderCustomInfo:edit")
 	@ApiOperation("保存客户")
 	public Result saveData(@RequestBody OrderCustomInfo orderCustomInfo) {
 		if (!beanValidator(orderCustomInfo)) {
@@ -65,8 +68,9 @@ public class OrderCustomInfoController extends BaseController {
 		return new SuccResult("保存客户" + orderCustomInfo.getCustomName() + "成功");
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@ResponseBody
-	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "listData", method = {RequestMethod.POST})
 	@ApiOperation("获取客户列表")
 	public Result listData(@RequestBody(required=false)  OrderCustomInfo orderCustomInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(orderCustomInfo == null){
@@ -77,9 +81,9 @@ public class OrderCustomInfoController extends BaseController {
 		return new SuccResult(page);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@ResponseBody
-	//@RequiresPermissions("service:station:orderCustomInfo:edit")
-	@RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST})
+	@RequestMapping(value = "delData", method = {RequestMethod.POST})
 	@ApiOperation("删除客户")
 	public Result deleteSortInfo(@RequestBody OrderCustomInfo orderCustomInfo) {
 		orderCustomInfoService.delete(orderCustomInfo);

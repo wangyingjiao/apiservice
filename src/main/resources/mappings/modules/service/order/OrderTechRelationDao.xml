@@ -6,7 +6,11 @@
 		a.id AS "id",
 		a.order_id AS "orderId",
 		a.tech_id AS "techId",
-		a.status AS "status",
+		t.tech_name as "techName",
+		t.tech_sex as "techSex",
+		t.tech_phone as "techPhone",
+		v.img_url as "imgUrl",
+		a.tech_status AS "techStatus",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -16,6 +20,9 @@
 	</sql>
 	
 	<sql id="orderTechRelationJoins">
+		left join service_technician_info t on a.tech_id = t.id	
+		left join service_technician_images v on a.tech_id = v.tech_id
+		left join order_info o on a.order_id = o.id
 	</sql>
     
 	<select id="get" resultType="OrderTechRelation">
@@ -33,6 +40,15 @@
 		<include refid="orderTechRelationJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderId != null and orderId != ''">	
+				and a.order_id like concat('%',#{orderId},'%')
+			</if>
+			<if test="techName != null and techName != ''">	
+				and t.tech_name like concat('%',#{techName},'%')
+			</if>
+			<if test="techPhone != null and techPhone != ''">	
+				and t.tech_phone like concat('%',#{techPhone},'%')
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -67,7 +83,7 @@
 			id,
 			order_id,
 			tech_id,
-			status,
+			tech_status,
 			create_by,
 			create_date,
 			update_by,
@@ -78,7 +94,7 @@
 			#{id},
 			#{orderId},
 			#{techId},
-			#{status},
+			#{techStatus},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -92,7 +108,7 @@
 		UPDATE order_tech_relation SET 	
 			order_id = #{orderId},
 			tech_id = #{techId},
-			status = #{status},
+			tech_status = #{techStatus},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

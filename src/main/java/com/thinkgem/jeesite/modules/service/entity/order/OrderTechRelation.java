@@ -17,7 +17,11 @@ public class OrderTechRelation extends DataEntity<OrderTechRelation> {
 	private static final long serialVersionUID = 1L;
 	private String orderId;		// 订单ID
 	private String techId;		// 技师ID
-	private String status;		// 状态
+	private String techStatus;	// 状态
+    private String techName;    // 技师姓名
+    private String techSex;     // 性别
+    private String techPhone;   // 手机号
+	private String imgUrl;		// 图片地址
 	
 	public OrderTechRelation() {
 		super();
@@ -46,12 +50,44 @@ public class OrderTechRelation extends DataEntity<OrderTechRelation> {
 	}
 	
 	@Length(min=0, max=1, message="状态长度必须介于 0 和 1 之间")
-	public String getStatus() {
-		return status;
+	public String getTechStatus() {
+		return techStatus;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setTechStatus(String techStatus) {
+		this.techStatus = techStatus;
+	}
+
+	public String getTechName() {
+		return techName;
+	}
+
+	public void setTechName(String techName) {
+		this.techName = techName;
+	}
+
+	public String getTechSex() {
+		return techSex;
+	}
+
+	public void setTechSex(String techSex) {
+		this.techSex = techSex;
+	}
+
+	public String getTechPhone() {
+		return techPhone;
+	}
+
+	public void setTechPhone(String techPhone) {
+		this.techPhone = techPhone;
+	}
+
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
 	}
 	
 }

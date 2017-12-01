@@ -21,7 +21,7 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	private String payMode;		// 支付方式
 	private Date payTime;		// 支付时间
 	private String payAccount;		// 支付总额
-	private String status;		// 支付状态
+	private String payStatus;		// 支付状态
 	
 	public OrderPayInfo() {
 		super();
@@ -67,12 +67,12 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	}
 	
 	@Length(min=0, max=1, message="支付状态长度必须介于 0 和 1 之间")
-	public String getStatus() {
-		return status;
+	public String getPayStatus() {
+		return payStatus;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setPayStatus(String payStatus) {
+		this.payStatus = payStatus;
 	}
 	
 }

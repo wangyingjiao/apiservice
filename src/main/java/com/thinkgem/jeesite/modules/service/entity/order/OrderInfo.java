@@ -23,7 +23,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String customId;		// 客户ID
 	private Date orderTime;		// 下单时间
 	private Date serTime;		// 服务时间
-	private String status;		// 订单状态
+	private String orderStatus;		// 订单状态(1:待派单;2:已派单;3:已取消;4:已上门;5:已完成;6:已关闭;)
 	private String orderSource;		// 订单来源
 	private String customRemark;		// 备注
 	private String servicerName;		// 业务人员姓名
@@ -35,16 +35,20 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String officeName;		// 所属服务机构名称
 	private String stationId;		// 所属服务站ID
 	private String stationName;		// 所属服务站名称
+	
+	private OrderCustomInfo customInfo; // 客户信息
+	private OrderPayInfo payInfo; //支付信息
+	private OrderReturn returnInfo; // 退款信息
 	private List<OrderTech> orderTechs; //技师列表
 	private List<OrderItemCommodity> OrderItems; //项目商品列表
 	
-	private String customName;		// 客户姓名
-	private String customPhone;		// 客户电话
-	
-	private String payMode;		    // 支付方式
-	private String payTime;		    // 支付时间
-	private String payAccount;		// 支付金额
-	private String payStatus;		// 支付状态
+//	private String customName;		// 客户姓名
+//	private String customPhone;		// 客户电话
+//	
+//	private String payMode;		    // 支付方式(1:微信;2:支付宝;3:现金;4:银行卡;5:钱包;)
+//	private String payTime;		    // 支付时间
+//	private String payAccount;		// 支付金额
+//	private String payStatus;		// 支付状态(1:待支付;2:已支付;)
 	
 	public OrderInfo() {
 		super();
@@ -71,22 +75,6 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	public void setCustomId(String customId) {
 		this.customId = customId;
 	}
-	
-	public String getCustomName() {
-		return customName;
-	}
-
-	public void setCustomName(String customName) {
-		this.customName = customName;
-	}
-
-	public String getCustomPhone() {
-		return customPhone;
-	}
-
-	public void setCustomPhone(String customPhone) {
-		this.customPhone = customPhone;
-	}
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getOrderTime() {
@@ -107,12 +95,12 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	}
 	
 	@Length(min=0, max=1, message="订单状态长度必须介于 0 和 1 之间")
-	public String getStatus() {
-		return status;
+	public String getOrderStatus() {
+		return orderStatus;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 	
 	@Length(min=0, max=255, message="订单来源长度必须介于 0 和 255 之间")
@@ -230,36 +218,28 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		OrderItems = orderItems;
 	}
 
-	public String getPayMode() {
-		return payMode;
+	public OrderCustomInfo getCustomInfo() {
+		return customInfo;
 	}
 
-	public void setPayMode(String payMode) {
-		this.payMode = payMode;
+	public void setCustomInfo(OrderCustomInfo customInfo) {
+		this.customInfo = customInfo;
 	}
 
-	public String getPayTime() {
-		return payTime;
+	public OrderPayInfo getPayInfo() {
+		return payInfo;
 	}
 
-	public void setPayTime(String payTime) {
-		this.payTime = payTime;
+	public void setPayInfo(OrderPayInfo payInfo) {
+		this.payInfo = payInfo;
 	}
 
-	public String getPayAccount() {
-		return payAccount;
+	public OrderReturn getReturnInfo() {
+		return returnInfo;
 	}
 
-	public void setPayAccount(String payAccount) {
-		this.payAccount = payAccount;
-	}
-
-	public String getPayStatus() {
-		return payStatus;
-	}
-
-	public void setPayStatus(String payStatus) {
-		this.payStatus = payStatus;
+	public void setReturnInfo(OrderReturn returnInfo) {
+		this.returnInfo = returnInfo;
 	}
 	
 }

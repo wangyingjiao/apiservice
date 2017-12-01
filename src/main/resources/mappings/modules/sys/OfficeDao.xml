@@ -3,7 +3,7 @@
 <mapper namespace="com.thinkgem.jeesite.modules.sys.dao.OfficeDao">
 
 	<sql id="officeColumns">
-				a.id AS "id",
+		a.id AS "id",
 		a.parent_id AS "parent.id",
 		a.parent_ids AS "parentIds",
 		a.name AS "name",
@@ -19,6 +19,7 @@
 		a.cus_town_id AS "cusTownId",
 		a.cus_town_name AS "cusTownName",
 		a.address AS "address",
+		a.visable AS "visable",
 		a.service_area_type AS "serviceAreaType",
 		a.service_city_id AS "serviceCityId",
 		a.office_url AS "officeUrl",
@@ -129,6 +130,7 @@
 			cus_town_id,
 			cus_town_name,
 			address,
+			visable,
 			service_area_type,
 			service_city_id,
 			office_url,
@@ -165,6 +167,7 @@
 			#{cusTownId},
 			#{cusTownName},
 			#{address},
+			#{visable},
 			#{serviceAreaType},
 			#{serviceCityId},
 			#{officeUrl},
@@ -204,6 +207,7 @@
 			cus_town_id = #{cusTownId},
 			cus_town_name = #{cusTownName},
 			address = #{address},
+			visable = #{visable},
 			service_area_type = #{serviceAreaType},
 			service_city_id = #{serviceCityId},
 			office_url = #{officeUrl},

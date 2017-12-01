@@ -30,57 +30,22 @@
     
 	<select id="get" resultMap="orderInfoResultMap">
 		SELECT 
-			c.custom_name as customName,
-			c.custom_phone as customPhone,
-			p.pay_mode as payMode,
-			p.pay_time as payTime,
-			p.pay_account as payAccount,
-			p.pay_status as payStatus,
-			r.return_status as returnStatus,
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
-		left join order_custom_info c on a.custom_id = c.id
-		left join order_pay_info p on a.id = p.order_id
-		left join order_return r on a.id = r.order_id
 		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultMap="orderInfoResultMap">
-		SELECT 
-			c.custom_name as customName,
-			c.custom_phone as customPhone,
-			p.pay_mode as payMode,
-			p.pay_time as payTime,
-			p.pay_account as payAccount,
-			p.pay_status as payStatus,
-			r.return_status as returnStatus,
+		SELECT
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
-		left join order_custom_info c on a.custom_id = c.id
-		left join order_pay_info p on a.id = p.order_id
-		left join order_return r on a.id = r.order_id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="customName != null and customName != ''">	
-				and c.custom_name like concat('%',#{customName},'%')
-			</if>
-			<if test="customPhone != null and customPhone != ''">	
-				and c.custom_phone like concat('%',#{customPhone},'%')
-			</if>
 			<if test="orderNumber != null and orderNumber != ''">	
 				and a.order_number = #{orderNumber}
 			</if>
 			<if test="stationId != null and stationId != ''">	
 				and a.station_id = #{stationId}
-			</if>
-			<if test="payMode != null and payMode != ''">	
-				and p.pay_mode = #{payMode}
-			</if>
-			<if test="payStatus != null and payStatus != ''">	
-				and p.payStatus = #{payStatus}
-			</if>
-			<if test="returnStatus != null and returnStatus != ''">	
-				and r.return_status = #{returnStatus}
 			</if>
 		</where>
 		<choose>
@@ -117,11 +82,53 @@
 		<result column="office_name" property="officeName"/>
 		<result column="station_id" property="stationId"/>
 		<result column="station_name" property="stationName"/>
+		<!-- 关联客户 -->
+		<association property="customInfo" column="{reqId=id}" select="selectCustomByOrder"></association>
+		<!-- 关联支付 -->
+		<association property="payInfo" column="{reqId=id}" select="selectPayByOrder"></association>
+		<!-- 关联退款-->
+		<association property="returnInfo" column="{reqId=id}" select="selectReturnByOrder"></association>
 		<!-- 关联商品 -->
 		<association property="OrderItems" column="{reqId=id}" select="selectItemByOrder"></association>
 		<!-- 关联技师 -->
 		<association property="orderTechs" column="{reqId=id}" select="selectTechByOrder"></association>
 	</resultMap>
+	<select id="selectCustomByOrder" parameterType="java.util.Map" resultType="OrderCustomInfo">
+		select c.id as id, c.custom_name as customName, c.custom_phone as custom_phone
+				from order_custom_info c
+				inner join order_info o on o.custom_id = c.id
+        		where o.id = #{reqId}
+				<if test="customName != null and customName != ''">	
+					and c.custom_name like concat('%',#{customName},'%')
+				</if>
+				<if test="customPhone != null and customPhone != ''">	
+					and c.custom_phone like concat('%',#{customPhone},'%')
+				</if>
+				and c.del_flag = '0'
+	</select>
+	<select id="selectPayByOrder" parameterType="java.util.Map" resultType="OrderPayInfo">
+		select p.id as id, p.order_id as orderId, p.pay_mode as payMode, 
+			p.pay_time as payTime, p.pay_account as payAccount, p.pay_status as payStatus
+				from order_pay_info p
+				where p.order_id = #{reqId}
+				<if test="payMode != null and payMode != ''">	
+					and p.pay_mode = #{payMode}
+				</if>
+				<if test="payStatus != null and payStatus != ''">	
+					and p.payStatus = #{payStatus}
+				</if>
+				and p.del_flag = '0'
+	</select>
+	<select id="selectReturnByOrder" parameterType="java.util.Map" resultType="OrderReturn">
+		select r.id as id, r.order_id as orderId, r.apply_time as applyTime, r.return_account as returnAccount,
+			r.return_status as returnStatus, r.return_cause as returnCause, r.return_refuse as returnRefuse
+				from order_return r
+				where r.order_id = #{reqId}
+				<if test="returnStatus != null and returnStatus != ''">	
+					and r.return_status = #{returnStatus}
+				</if>
+				and r.del_flag = '0'
+	</select>
 	<select id="selectItemByOrder" parameterType="java.util.Map" resultType="OrderItemCommodity">
 		select i.sort_id as sortId, i.sort_name as sortName, u.* 
 			from 

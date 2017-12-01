@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderReturnDao">
+    
+	<sql id="orderReturnColumns">
+		a.id AS "id",
+		a.order_id AS "orderId",
+		a.apply_time AS "applyTime",
+		a.return_account AS "returnAccount",
+		a.return_status AS "returnStatus",
+		a.return_cause AS "returnCause",
+		a.return_refuse AS "returnRefuse",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orderReturnJoins">
+	</sql>
+    
+	<select id="get" resultType="OrderReturn">
+		SELECT 
+			<include refid="orderReturnColumns"/>
+		FROM order_return a
+		<include refid="orderReturnJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderReturn">
+		SELECT 
+			<include refid="orderReturnColumns"/>
+		FROM order_return a
+		<include refid="orderReturnJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderReturn">
+		SELECT 
+			<include refid="orderReturnColumns"/>
+		FROM order_return a
+		<include refid="orderReturnJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_return(
+			id,
+			order_id,
+			apply_time,
+			return_account,
+			return_status,
+			return_cause,
+			return_refuse,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{applyTime},
+			#{returnAccount},
+			#{returnStatus},
+			#{returnCause},
+			#{returnRefuse},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_return
+		<set>
+			<if test="orderId != null and orderId != ''">	
+				order_id = #{orderId},
+			</if>
+			<if test="applyTime != null and applyTime != ''">	
+				apply_time = #{applyTime},
+			</if>
+			<if test="account != null and account != ''">	
+				return_account = #{returnAccount},
+			</if>
+			<if test="payStatus != null and payStatus != ''">	
+				return_status = #{returnStatus},
+			</if>
+			<if test="cause != null and cause != ''">	
+				return_cause = #{returnCause},
+			</if>
+			<if test="refuse != null and refuse != ''">	
+				return_refuse = #{returnRefuse},
+			</if>
+			<if test="remarks != null and remarks != ''">	
+				remarks = #{remarks},
+			</if>
+				update_by = #{updateBy.id},
+				update_date = #{updateDate}
+		</set> 	
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_return SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

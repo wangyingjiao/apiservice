@@ -77,6 +77,7 @@ public class Office extends TreeEntity<Office> {
 	private String cusCityName;		// 客户所在市名称
 	private String cusTownId;		// 客户所在县ID
 	private String cusTownName;		// 客户所在县名称
+	private String visable;         // 用户是否可见
 
     @NotNull(message = "机构所在区域省份不能为空")
 	public String getCusProvId() {
@@ -129,7 +130,15 @@ public class Office extends TreeEntity<Office> {
 		this.cusTownName = cusTownName;
 	}
 
-    public String getCityIds() {
+    public String getVisable() {
+		return visable;
+	}
+
+	public void setVisable(String visable) {
+		this.visable = visable;
+	}
+
+	public String getCityIds() {
         return cityIds;
     }
 
