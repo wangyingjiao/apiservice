@@ -26,8 +26,8 @@ public class Office extends TreeEntity<Office> {
     private String masterName;		// 负责人
     private String masterPhone;		// 负责人电话
 
-    @NotNull
-	@Length(min=2, max=15)
+    @NotNull(message = "负责人姓名不能为空")
+	@Length(min=2, max=15, message = "负责人姓名需要2-15字")
     public String getMasterName() {
         return masterName;
     }
@@ -36,7 +36,7 @@ public class Office extends TreeEntity<Office> {
         this.masterName = masterName;
     }
 
-    @NotNull
+    @NotNull(message = "负责人电话不能为空")
     @Pattern(regexp = "^[0-9]{11}$", message = "请填写11位手机号码") 
     public String getMasterPhone() {
         return masterPhone;
@@ -78,7 +78,7 @@ public class Office extends TreeEntity<Office> {
 	private String cusTownId;		// 客户所在县ID
 	private String cusTownName;		// 客户所在县名称
 
-    @NotNull
+    @NotNull(message = "机构所在区域省份不能为空")
 	public String getCusProvId() {
 		return cusProvId;
 	}
@@ -95,7 +95,7 @@ public class Office extends TreeEntity<Office> {
 		this.cusProvName = cusProvName;
 	}
 
-    @NotNull
+    @NotNull(message = "机构所在区域市不能为空")
 	public String getCusCityId() {
 		return cusCityId;
 	}
@@ -112,7 +112,7 @@ public class Office extends TreeEntity<Office> {
 		this.cusCityName = cusCityName;
 	}
 
-    @NotNull
+    @NotNull(message = "机构所在区域县不能为空")
 	public String getCusTownId() {
 		return cusTownId;
 	}
@@ -139,7 +139,7 @@ public class Office extends TreeEntity<Office> {
 
     private String cityIds;
 
-    @NotNull
+    @NotNull(message = "机构服务城市不能为空")
     public String getServiceCityId() {
         if (null != cityIds) {
             return cityIds.toString();
@@ -186,7 +186,7 @@ public class Office extends TreeEntity<Office> {
     @ApiModelProperty(hidden = true)
     private User deputyPerson;        // 副负责人
 
-    @NotNull
+    @NotNull(message = "机构服务范围类型不能为空")
     @Pattern(regexp = "^[1-2]{1}$", message = "请正确选择服务范围类型")
     public String getServiceAreaType() {
         return serviceAreaType;
@@ -276,7 +276,6 @@ public class Office extends TreeEntity<Office> {
 //		this.parentIds = parentIds;
 //	}
 
-    @NotNull
     public Area getArea() {
         return area;
     }
@@ -285,7 +284,7 @@ public class Office extends TreeEntity<Office> {
         this.area = area;
     }
 
-    @NotNull
+    @NotNull(message = "机构名称不能为空")
 	@Length(min=2, max=15)
 	public String getName() {
 		return name;
@@ -303,7 +302,7 @@ public class Office extends TreeEntity<Office> {
 //		this.sort = sort;
 //	}
 
-    @Length(min = 1, max = 1)
+    @Length(min = 1, max = 1, message = "服务范围类型为一位数字")
     public String getType() {
         return type;
     }
@@ -348,8 +347,8 @@ public class Office extends TreeEntity<Office> {
         this.master = master;
     }
 
-    @NotNull
-    @Pattern(regexp = "^[0-9]{3}-[0-9]{6,9}$", message = "机构格式：座机（区号+号码）如：010-66667777")  
+    @NotNull(message = "机构电话不能为空")
+    @Pattern(regexp = "^[0-9]{3}-[0-9]{6,9}$", message = "机构电话格式：座机（区号+号码）如：010-66667777")  
     public String getPhone() {
         return phone;
     }
