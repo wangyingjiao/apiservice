@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     private static final long serialVersionUID = 1L;
     private String majorSort;        // 分类：保洁、家修
     private String name;        // 服务分类名称
+    private String allCity;   //是否是全部城市
     private String stationId;//服务站ID
     private String officeId;//机构ID
     private String stationName;//服务站名称
@@ -67,6 +69,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
         super(id);
     }
 
+    @NotBlank(message = "服务分类：保洁、家修不可为空")
     @Length(min = 0, max = 1, message = "分类：保洁、家修长度必须介于 0 和 1 之间")
     public String getMajorSort() {
         return majorSort;
@@ -76,7 +79,8 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
         this.majorSort = majorSort;
     }
 
-    @Length(min = 0, max = 64, message = "服务分类名称长度必须介于 0 和 64 之间")
+    @NotBlank(message = "服务分类名称不可为空")
+    @Length(min = 2, max = 10, message = "服务分类名称长度必须介于 2 和 10 之间")
     public String getName() {
         return name;
     }
@@ -85,11 +89,17 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
         this.name = name;
     }
 
+    public String getAllCity() {
+        return allCity;
+    }
 
-/*    private String city;//城市*/
-    private String cityId;        // 城市编号
-    private String cityName;        // 城市名称
-    private List<String> cityNames;
+    public void setAllCity(String allCity) {
+        this.allCity = allCity;
+    }
+
+    private String cityId;        // 城市编号 查询用
+    private List<String> cityNames; // 城市 列表显示用
+    private List<SerSortCity> citys; // 城市 保存用
 
     public List<String> getCityNames() {
         return cityNames;
@@ -98,13 +108,6 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     public void setCityNames(List<String> cityNames) {
         this.cityNames = cityNames;
     }
-/*    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }*/
 
     public String getCityId() {
         return cityId;
@@ -113,25 +116,6 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     public void setCityId(String cityId) {
         this.cityId = cityId;
     }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
-    private List<SerSortCity> citys;
-    /*private List<OfficeSeviceAreaList> officeCitys;
-
-    public List<OfficeSeviceAreaList> getOfficeCitys() {
-        return officeCitys;
-    }
-
-    public void setOfficeCitys(List<OfficeSeviceAreaList> officeCitys) {
-        this.officeCitys = officeCitys;
-    }*/
 
     public List<SerSortCity> getCitys() {
         return citys;

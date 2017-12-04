@@ -10,9 +10,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
-import com.thinkgem.jeesite.modules.service.entity.sort.SerSortCity;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
-import com.thinkgem.jeesite.modules.service.service.sort.SerSortCityService;
 import com.thinkgem.jeesite.modules.service.service.sort.SerSortInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -58,15 +56,18 @@ public class SerSortInfoController extends BaseController {
     //@RequiresPermissions("service:station:serSortInfo:edit")
     @ApiOperation(value="保存服务分类" ,produces = MediaType.APPLICATION_JSON_VALUE+";charset=utf8",consumes =MediaType.APPLICATION_JSON_VALUE+";charset=utf8" )
     public Result saveData(@RequestBody SerSortInfo serSortInfo) {
-        if (!beanValidator(serSortInfo)) {
-            return new FailResult("保存服务分类" + serSortInfo.getName() + "失败");
+        List<String> errList = errors(serSortInfo);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
         }
-        User user = UserUtils.getUser();
-        serSortInfo.setOfficeId(user.getOffice().getId());//机构ID
-        serSortInfo.setOfficeName(user.getOffice().getName());//机构名称
-        serSortInfo.setStationId(user.getStation().getId());//服务站ID
-        serSortInfo.setStationName(user.getStation().getName());//服务站名称
+
         if (!StringUtils.isNotBlank(serSortInfo.getId())) {//新增时验证重复
+            User user = UserUtils.getUser();
+            serSortInfo.setOfficeId(user.getOffice().getId());//机构ID
+            serSortInfo.setOfficeName(user.getOffice().getName());//机构名称
+            serSortInfo.setStationId(user.getStation().getId());//服务站ID
+            serSortInfo.setStationName(user.getStation().getName());//服务站名称
+
             if (0 != serSortInfoService.checkDataName(serSortInfo)) {
                 return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
             }
@@ -113,16 +114,6 @@ public class SerSortInfoController extends BaseController {
         serSortInfoService.delete(serSortInfo);
         return new SuccResult("删除服务分类成功");
     }
-
-/*    @ResponseBody
-    @RequestMapping(value = "checkDataName", method = {RequestMethod.POST})
-    @ApiOperation("验证服务分类名称是否重复")
-    public Result checkDataName(@RequestBody SerSortInfo serSortInfo) {
-        if (0 != serSortInfoService.checkDataName(serSortInfo)) {
-            return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
-        }
-        return new SuccResult("服务分类名称" + serSortInfo.getName() + "可用");
-    }*/
 
     @ResponseBody
     @RequestMapping(value = "checkCityItem", method = {RequestMethod.POST})
