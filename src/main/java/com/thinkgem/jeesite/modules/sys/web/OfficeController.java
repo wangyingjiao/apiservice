@@ -319,24 +319,28 @@ public class OfficeController extends BaseController {
     @RequiresPermissions("sys:office:view")
     @RequestMapping(value = "officeServerCity", method = {RequestMethod.POST})
     @ApiOperation(value = "查询机构所服务的城市列表")
-    public Result officeServerCity(@RequestParam String id) {
+    public Result officeServerCity(@RequestParam(required=false) String id) {
     	//校验参数
-    	if (id == null || id.equals(""))
-    		return new FailResult<String>("请输入机构编号");
+    	if (id == null || id.equals("")) {
+    		User user = UserUtils.getUser();
+    		id = user.getOffice().getId();
+    		if (id.equals("0"))
+    			return new FailResult("请输入机构编号");
+    	}
     	//查询机构
     	Office office = new Office(id);
     	office = officeService.get(office);
     	if (office == null)
-    		return new FailResult<String>("未找到机构信息");
+    		return new FailResult("未找到机构信息");
     	if (office.getServiceCityId() == null || office.getServiceCityId().equals(""))
-    		return new FailResult<String>("未找到该机构的服务城市信息");
+    		return new FailResult("未找到该机构的服务城市信息");
     	//通过cityId查询城市信息
     	String idStr = office.getServiceCityId();
     	if (idStr.endsWith(","))
     		idStr = idStr.substring(0, idStr.length() - 1);
     	List<Area> areas = areaService.findListByIds(idStr.split(","));
-    	if (areas == null)
-    		return new FailResult<String>("查询失败");
+    	if (areas == null || areas.size() == 0)
+    		return new FailResult("查询失败");
         return new SuccResult(areas);
     }
 
