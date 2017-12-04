@@ -7,28 +7,28 @@ import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
- * 服务技能关联Entity
+ * 技能服务项目关联Entity
  * @author a
- * @version 2017-11-15
+ * @version 2017-12-04
  */
-public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
+public class SerSkillItem extends DataEntity<SerSkillItem> {
 	
 	private static final long serialVersionUID = 1L;
 	private String skillId;		// 技能编号
-	private String skillName;   //技能
-	/*private String sortId;		// 分类编号
-	private String sortName;		// 分类名称*/
+	private String skillName;		// 技能名称
 	private String itemId;		// 项目编号
 	private String itemName;		// 项目名称
-	private String commodityId;		// 商品编号
-	private String commodityName;		// 商品名称
+
+	private List<SerSkillItemCommodity> serItemCommoditys;
 	
-	public SerSkillSortItem() {
+	public SerSkillItem() {
 		super();
 	}
 
-	public SerSkillSortItem(String id){
+	public SerSkillItem(String id){
 		super(id);
 	}
 
@@ -40,7 +40,8 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	public void setSkillId(String skillId) {
 		this.skillId = skillId;
 	}
-
+	
+	@Length(min=0, max=64, message="技能名称长度必须介于 0 和 64 之间")
 	public String getSkillName() {
 		return skillName;
 	}
@@ -48,25 +49,7 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 	public void setSkillName(String skillName) {
 		this.skillName = skillName;
 	}
-/*
-	@Length(min=0, max=64, message="分类编号长度必须介于 0 和 64 之间")
-	public String getSortId() {
-		return sortId;
-	}
-
-	public void setSortId(String sortId) {
-		this.sortId = sortId;
-	}
 	
-	@Length(min=0, max=64, message="分类名称长度必须介于 0 和 64 之间")
-	public String getSortName() {
-		return sortName;
-	}
-
-	public void setSortName(String sortName) {
-		this.sortName = sortName;
-	}
-	*/
 	@Length(min=0, max=64, message="项目编号长度必须介于 0 和 64 之间")
 	public String getItemId() {
 		return itemId;
@@ -85,19 +68,11 @@ public class SerSkillSortItem extends DataEntity<SerSkillSortItem> {
 		this.itemName = itemName;
 	}
 
-	public String getCommodityId() {
-		return commodityId;
+	public List<SerSkillItemCommodity> getSerItemCommoditys() {
+		return serItemCommoditys;
 	}
 
-	public void setCommodityId(String commodityId) {
-		this.commodityId = commodityId;
-	}
-
-	public String getCommodityName() {
-		return commodityName;
-	}
-
-	public void setCommodityName(String commodityName) {
-		this.commodityName = commodityName;
+	public void setSerItemCommoditys(List<SerSkillItemCommodity> serItemCommoditys) {
+		this.serItemCommoditys = serItemCommoditys;
 	}
 }

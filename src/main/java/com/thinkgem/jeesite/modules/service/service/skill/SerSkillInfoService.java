@@ -6,15 +6,13 @@ package com.thinkgem.jeesite.modules.service.service.skill;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortItemDao;
+import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillItemDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
-import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSortItem;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,12 +33,12 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	@Autowired
 	SerSkillInfoDao serSkillInfoDao;
 	@Autowired
-	SerSkillSortItemDao serSkillSortItemDao;
+	SerSkillItemDao serSkillItemDao;
 	@Autowired
 	SerSkillTechnicianDao serSkillTechnicianDao;
 
 	@Autowired
-	SerSkillSortItemService serSkillSortItemService;
+	SerSkillItemService serSkillItemService;
 	@Autowired
 	SerSkillTechnicianService serSkillTechnicianService;
 
@@ -52,28 +50,32 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	public void save(SerSkillInfo serSkillInfo) {
 		if (StringUtils.isNotBlank(serSkillInfo.getId())) {
 			//删除商品信息
-			serSkillSortItemDao.delSerSkillSortItemBySkill(serSkillInfo);
+			serSkillItemDao.delSerSkillItemBySkill(serSkillInfo);
 			//更新时，删除技师关系
 			serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
 		}
-		List<SerSkillSortItem> serItems = serSkillInfo.getSerItems();
+		List<SerSkillItem> serItems = serSkillInfo.getSerItems();
 		List<SerSkillTechnician> technicians = serSkillInfo.getTechnicians();
 		if(technicians != null){
 			serSkillInfo.setTechnicianNum(technicians.size());
 		}
 
 		super.save(serSkillInfo);
-		//批量插入商品信息
-		for(SerSkillSortItem item : serItems){
-			item.setSkillId(serSkillInfo.getId());
-			item.setSkillName(serSkillInfo.getName());
-			serSkillSortItemService.save(item);
+		if(serItems != null) {
+			//批量插入商品信息
+			for (SerSkillItem item : serItems) {
+				item.setSkillId(serSkillInfo.getId());
+				item.setSkillName(serSkillInfo.getName());
+				serSkillItemService.save(item);
+			}
 		}
-		//批量插入技师信息
-		for(SerSkillTechnician technician : technicians){
-			technician.setSkillId(serSkillInfo.getId());
-			technician.setSkillName(serSkillInfo.getName());
-			serSkillTechnicianService.save(technician);
+		if(technicians != null) {
+			//批量插入技师信息
+			for (SerSkillTechnician technician : technicians) {
+				technician.setSkillId(serSkillInfo.getId());
+				technician.setSkillName(serSkillInfo.getName());
+				serSkillTechnicianService.save(technician);
+			}
 		}
 	}
 
@@ -91,8 +93,13 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 
 	@Transactional(readOnly = false)
 	public void delete(SerSkillInfo serSkillInfo) {
+
 		//删除商品信息
-		serSkillSortItemDao.delSerSkillSortItemBySkill(serSkillInfo);
+		List<SerSkillItem> serItems = serSkillItemDao.getSerItems(serSkillInfo);
+		for(SerSkillItem serItem : serItems) {
+			serSkillItemService.delete(serItem);
+		}
+
 		//更新时，删除技师关系
 		serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
 
