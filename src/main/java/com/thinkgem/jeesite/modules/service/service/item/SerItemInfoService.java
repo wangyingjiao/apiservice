@@ -60,31 +60,29 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 
 		List<SerItemCity> citys = serItemInfo.getCitys();
 		if(citys==null || 0==citys.size()){
-			if(StringUtils.isNotBlank(serItemInfo.getSortId())){
-				//若选择了分类，则展示当前分类指定的城市列表
-				//获取分类下所有定向城市
-				citys = serItemCityDao.getSortCitys(serItemInfo);
-			}else{
-				//若未选择分类，则展示当前机构的所有城市列表
-				//获取机构下所有定向城市
-				citys = serItemCityDao.getOfficeCitys(serItemInfo);
-			}
+			serItemInfo.setAllCity("1");//全部城市
+		}else{
+			serItemInfo.setAllCity("0");
 		}
 
 		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
 
 		super.save(serItemInfo);
-		//批量插入定向城市
-		for(SerItemCity city:citys){
-			city.setItemId(serItemInfo.getId());
-			city.setItemName(serItemInfo.getName());
-			serItemCityService.save(city);
+		if(citys != null){
+			//批量插入定向城市
+			for(SerItemCity city:citys){
+				city.setItemId(serItemInfo.getId());
+				city.setItemName(serItemInfo.getName());
+				serItemCityService.save(city);
+			}
 		}
-		//批量插入商品信息
-		for(SerItemCommodity commodity : commoditys){
-			commodity.setItemId(serItemInfo.getId());
-			commodity.setItemName(serItemInfo.getName());
-			serItemCommodityService.save(commodity);
+		if(commoditys != null) {
+			//批量插入商品信息
+			for (SerItemCommodity commodity : commoditys) {
+				commodity.setItemId(serItemInfo.getId());
+				commodity.setItemName(serItemInfo.getName());
+				serItemCommodityService.save(commodity);
+			}
 		}
 	}
 

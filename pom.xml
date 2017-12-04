@@ -1026,10 +1026,6 @@
                                 <dbunit driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}"
                                         password="${jdbc.password}">
 
-                                    <!-- oracle
-                                    <dbunit driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}"
-                                        password="${jdbc.password}" schema="${jdbc.username}" > -->
-
                                     <dbconfig>
                                         <property name="datatypeFactory" value="${dbunit.datatype}"/>
                                     </dbconfig>
@@ -1048,9 +1044,15 @@
             </build>
         </profile>
         <profile>
-            <id>dev</id>
+            <id>devel</id>
             <properties>
-                <package.environment>dev</package.environment>
+                <package.environment>devel</package.environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>local</id>
+            <properties>
+                <package.environment>local</package.environment>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -1063,18 +1065,4 @@
             </properties>
         </profile>
     </profiles>
-
-    <!-- 开发者信息 -->
-    <developers>
-        <developer>
-            <id>thinkgem</id>
-            <name>WangZhen</name>
-            <email>thinkgem at 163.com</email>
-            <roles>
-                <role>Project lead</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-    </developers>
-
 </project>

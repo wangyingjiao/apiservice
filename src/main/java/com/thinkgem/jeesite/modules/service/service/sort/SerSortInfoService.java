@@ -56,14 +56,18 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         }
         List<SerSortCity> citys = serSortInfo.getCitys();
         if(citys==null || 0==citys.size()){
-            citys = serSortCityDao.getOfficeCitys(serSortInfo);
+            serSortInfo.setAllCity("1");
+        }else{
+            serSortInfo.setAllCity("0");
         }
         super.save(serSortInfo);
         //批量插入定向城市
-        for(SerSortCity city:citys){
-            city.setSortId(serSortInfo.getId());
-            city.setSortName(serSortInfo.getName());
-            serSortCityService.save(city);
+        if(citys != null){
+            for(SerSortCity city : citys){
+                city.setSortId(serSortInfo.getId());
+                city.setSortName(serSortInfo.getName());
+                serSortCityService.save(city);
+            }
         }
     }
 
@@ -78,7 +82,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
     /**
      * 根据ID获取服务分类
      *
-     * @param id
+     * @param serSortInfo
      * @return
      */
     public SerSortInfo getData(SerSortInfo serSortInfo) {

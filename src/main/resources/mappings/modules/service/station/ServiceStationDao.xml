@@ -34,7 +34,8 @@
 		a.range_type AS "rangeType",
 		a.useable AS "useable",
 		u6.name AS "user.name",
-		o13.name AS "office.name"
+		o13.name AS "office.name",
+		o13.service_area_type as "office.serviceAreaType"
 	</sql>
 
     <sql id="serviceStationJoins">
@@ -59,13 +60,14 @@
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="name != null and name != ''">
                 AND a.name LIKE
-                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
                 <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
             </if>
             <if test="officeId != null">
                 and a.office_id = #{officeId}
             </if>
+			<if test="addrCityId != null">
+				and a.addr_city_id = #{addrCityId}
+			</if>
         </where>
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">

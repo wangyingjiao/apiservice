@@ -27,6 +27,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String description;		// 服务描述
 	private String sale;		// 是否上架
 	private Long sortNum;		// 排序号
+	private String allCity;
 
 	private String stationId;//服务站ID
 	private String officeId;//机构ID
@@ -150,6 +151,14 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	public void setSortNum(Long sortNum) {
 		this.sortNum = sortNum;
+	}
+
+	public String getAllCity() {
+		return allCity;
+	}
+
+	public void setAllCity(String allCity) {
+		this.allCity = allCity;
 	}
 
 	private String cityId;        // 城市编号
