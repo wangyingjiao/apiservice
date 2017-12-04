@@ -51,4 +51,8 @@ public class AreaService extends TreeService<AreaDao, Area> {
 	public List<Area> treeArea() {
 		return areaDao.findAllList(new Area());
 	}
+	
+	public List<Area> findListByIds(String[] ids) {
+		return areaDao.findListByIds(ids);
+	}
 }

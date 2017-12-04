@@ -5,6 +5,9 @@ package com.thinkgem.jeesite.modules.service.entity.order;
 
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
+
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -18,10 +21,10 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	
 	private static final long serialVersionUID = 1L;
 	private String orderId;		// 订单ID
-	private String payMode;		// 支付方式
+	private String payMode;		// 支付方式(1:cash(现金);2:wx_pub_qr(微信扫码);3:wx(微信);4:alipay_qr(支付宝扫码);5:alipay(支付宝);6:pos(银行卡);7:balance(余额);)
 	private Date payTime;		// 支付时间
-	private String payAccount;		// 支付总额
-	private String payStatus;		// 支付状态
+	private String payAccount;	// 支付总额
+	private String payStatus;	// 支付状态(1:待支付;2:已支付;)
 	
 	public OrderPayInfo() {
 		super();
@@ -40,7 +43,8 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 		this.orderId = orderId;
 	}
 	
-	@Length(min=0, max=1, message="支付方式长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="支付方式必须为【1-7】之间的1位数字")
+    @Pattern(regexp = "^[1-7]{1}$", message = "支付方式必须为【1-7】之间的1位数字")
 	public String getPayMode() {
 		return payMode;
 	}
@@ -57,7 +61,8 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	public void setPayTime(Date payTime) {
 		this.payTime = payTime;
 	}
-	
+
+    @Pattern(regexp = "^(-?\\\\d+)(\\\\.\\\\d+)?$", message = "支付金额请填写数字") 
 	public String getPayAccount() {
 		return payAccount;
 	}
@@ -66,7 +71,8 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 		this.payAccount = payAccount;
 	}
 	
-	@Length(min=0, max=1, message="支付状态长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="支付状态必须为【1-2】之间的1位数字")
+    @Pattern(regexp = "^[1-2]{1}$", message = "支付方式必须为【1-2】之间的1位数字")
 	public String getPayStatus() {
 		return payStatus;
 	}

@@ -5,13 +5,17 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 订单信息Service
@@ -21,6 +25,9 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
 @Service
 @Transactional(readOnly = true)
 public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
+	
+	@Autowired
+	OrderInfoDao orderInfoDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -31,7 +38,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 	
 	public Page<OrderInfo> findPage(Page<OrderInfo> page, OrderInfo orderInfo) {
-		return super.findPage(page, orderInfo);
+		orderInfo.setPage(page);
+		User user = UserUtils.getUser();
+		if (user.isAdmin()){
+			page.setList(orderInfoDao.findAllList(new OrderInfo()));
+		}else{
+			orderInfo.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
+			page.setList(orderInfoDao.findList(orderInfo));
+		}
+		return page;
 	}
 	
 	@Transactional(readOnly = false)

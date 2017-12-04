@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.service.TreeService;
 import com.thinkgem.jeesite.modules.sys.dao.OfficeDao;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -30,8 +32,15 @@ public class OfficeService extends TreeService<OfficeDao, Office> {
 	}
 	
 	public Page<Office> findPage(Page<Office> page, Office office){
-		return super.findPage(page, office);
-//		return UserUtils.getOfficeList();
+		office.setPage(page);
+		User user = UserUtils.getUser();
+		if (user.isAdmin()){
+			page.setList(officeDao.findAllList(new Office()));
+		}else{
+			office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
+			page.setList(officeDao.findList(office));
+		}
+		return page;
 	}
 
 	public List<Office> findList(Boolean isAll){

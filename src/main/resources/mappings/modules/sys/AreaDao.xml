@@ -72,6 +72,18 @@
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
 		ORDER BY a.code
 	</select>
+	
+	<select id="findListByIds" resultType="Area">
+		SELECT
+			<include refid="areaColumns"/>
+		FROM sys_area a
+		<include refid="areaJoins"/>
+		WHERE a.del_flag = '0'
+		and a.id in <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                        #{item}
+                	</foreach>
+		ORDER BY a.code
+	</select>
 
 	<insert id="insert">
 		INSERT INTO sys_area(

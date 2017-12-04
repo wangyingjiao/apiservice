@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.web.order;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,9 +79,13 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("保存订单")
 	@Transactional
 	public Result saveData(@RequestBody OrderInfo orderInfo) {
-		if (!beanValidator(orderInfo)) {
-			return new FailResult("保存订单失败");
-		}
+		List<String> errors = errors(orderInfo);
+        if (errors.size() > 0) {
+        	return new FailResult(errors);
+        }
+//		if (!beanValidator(orderInfo)) {
+//			return new FailResult("保存订单失败");
+//		}
 		if (orderInfo.getId() == null || orderInfo.getId().equals("")) {
 			if (orderInfo.getOrderItems().size() == 0) {
 				return new FailResult("未选择商品");
@@ -206,22 +211,12 @@ public class OrderInfoController extends BaseController {
         }
 		return new SuccResult("编辑商品成功");
 	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@ResponseBody
-	@RequestMapping(value = "getTechs", method = {RequestMethod.POST})
-	@ApiOperation("查询技师列表")
-	public Result getTechs(@RequestBody OrderTechRelation orderTechRelation, HttpServletRequest request, HttpServletResponse response) {
-        Page<OrderTechRelation> stationPage = new Page<>(request, response);
-        Page<OrderTechRelation> page = orderTechRelationService.findPage(stationPage, orderTechRelation);
-        return new SuccResult(page);
-	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@ResponseBody
-	@RequestMapping(value = "editTech", method = {RequestMethod.POST})
-	@ApiOperation("编辑技师")
-	public Result editTech(@RequestParam String orderId, @RequestParam String id0, @RequestParam String techId) {
+	@RequestMapping(value = "editTechs", method = {RequestMethod.POST})
+	@ApiOperation("派单或改派")
+	public Result editTechs(@RequestParam String orderId, @RequestParam(required = false) String id0, @RequestParam String techIds) {
 		OrderInfo entity = null;
 		if (StringUtils.isNotBlank(orderId)){
 			entity = orderInfoService.get(orderId);
@@ -232,27 +227,6 @@ public class OrderInfoController extends BaseController {
 			if (id0 != null && !id0.equals("")) {
 				orderTechRelationService.delete(new OrderTechRelation(id0));
 			}
-			OrderTechRelation orderTechRelation = new OrderTechRelation();
-			orderTechRelation.setOrderId(orderId);
-			orderTechRelation.setTechId(techId);
-//			orderTechRelation.setStatus(0); //设置技师当前的状态
-			orderTechRelationService.save(orderTechRelation);
-		}
-		return new SuccResult("编辑技师成功");
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@ResponseBody
-	@RequestMapping(value = "deliverOrder", method = {RequestMethod.POST})
-	@ApiOperation("派单")
-	public Result deliverOrder(@RequestParam String orderId, @RequestParam String techIds) {
-		OrderInfo entity = null;
-		if (StringUtils.isNotBlank(orderId)){
-			entity = orderInfoService.get(orderId);
-		}
-		if (entity == null) {
-			return new FailResult("未找到对应的订单。");
-		} else {
 			//保存订单技师的关联信息
 			if (techIds != null && !techIds.equals("")) {
 				for (String techId : techIds.split(",")) {
@@ -267,6 +241,18 @@ public class OrderInfoController extends BaseController {
 				return new FailResult("没有技师数据。");
 			}
 		}
-		return new SuccResult("派单成功");
+		return new SuccResult("编辑技师成功");
 	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
+	@RequestMapping(value = "getTechs", method = {RequestMethod.POST})
+	@ApiOperation("查询技师列表")
+	public Result getTechs(@RequestBody OrderTechRelation orderTechRelation, HttpServletRequest request, HttpServletResponse response) {
+        Page<OrderTechRelation> stationPage = new Page<>(request, response);
+        Page<OrderTechRelation> page = orderTechRelationService.findPage(stationPage, orderTechRelation);
+        return new SuccResult(page);
+	}
+	
+
 }

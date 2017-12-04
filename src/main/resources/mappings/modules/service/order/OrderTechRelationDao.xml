@@ -40,9 +40,7 @@
 		<include refid="orderTechRelationJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="orderId != null and orderId != ''">	
-				and a.order_id like concat('%',#{orderId},'%')
-			</if>
+			and a.order_id = #{orderId}
 			<if test="techName != null and techName != ''">	
 				and t.tech_name like concat('%',#{techName},'%')
 			</if>

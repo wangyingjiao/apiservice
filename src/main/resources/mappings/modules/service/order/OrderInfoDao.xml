@@ -40,6 +40,32 @@
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
 		<where>
+			(a.del_flag = #{DEL_FLAG_NORMAL}
+			<!-- 数据范围过滤 -->
+			<!-- ${sqlMap.dsf}
+			OR a.office_id = #{currentUser.office.id} -->)
+			<if test="orderNumber != null and orderNumber != ''">	
+				and a.order_number = #{orderNumber}
+			</if>
+			<if test="stationId != null and stationId != ''">	
+				and a.station_id = #{stationId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultMap="orderInfoResultMap">
+		SELECT
+			<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="orderNumber != null and orderNumber != ''">	
 				and a.order_number = #{orderNumber}

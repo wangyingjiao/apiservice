@@ -6,6 +6,8 @@ package com.thinkgem.jeesite.modules.service.entity.order;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -21,13 +23,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private static final long serialVersionUID = 1L;
 	private String orderNumber;		// 订单流水号
 	private String customId;		// 客户ID
-	private Date orderTime;		// 下单时间
-	private Date serTime;		// 服务时间
+	private Date orderTime;		    // 下单时间
+	private Date serTime;		    // 服务时间
 	private String orderStatus;		// 订单状态(1:待派单;2:已派单;3:已取消;4:已上门;5:已完成;6:已关闭;)
-	private String orderSource;		// 订单来源
-	private String customRemark;		// 备注
-	private String servicerName;		// 业务人员姓名
-	private String servicerPhone;		// 业务人员电话
+	private String orderSource;		// 订单来源(1:app;2:callcenter(400);3:store(门店);4:wechat(微信);5:score(积分商城);6:web(PC);7:tv(电视);)
+	private String customRemark;	// 备注
+	private String servicerName;	// 业务人员姓名
+	private String servicerPhone;	// 业务人员电话
 	private String shopName;		// 门店名称
 	private String shopPhone;		// 门店电话
 	private String shopAddr;		// 门店地址
@@ -67,6 +69,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.orderNumber = orderNumber;
 	}
 	
+	@NotNull(message="客户ID不能为空")
 	@Length(min=0, max=64, message="客户ID长度必须介于 0 和 64 之间")
 	public String getCustomId() {
 		return customId;
@@ -94,7 +97,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.serTime = serTime;
 	}
 	
-	@Length(min=0, max=1, message="订单状态长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="订单状态必须为1位数字")
 	public String getOrderStatus() {
 		return orderStatus;
 	}
