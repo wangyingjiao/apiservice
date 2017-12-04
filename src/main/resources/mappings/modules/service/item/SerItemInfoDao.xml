@@ -12,6 +12,7 @@
 		a.sort_id AS "sortId",
 		a.sort_name AS "sortName",
 		a.name AS "name",
+		a.all_city AS "allCity",
 		a.picture AS "picture",
 		a.description AS "description",
 		a.sale AS "sale",
@@ -39,7 +40,9 @@
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
 		FROM ser_item_info a
-
+		<if test="cityId != null and cityId !=''">
+			LEFT JOIN ser_item_city b ON a.id = b.item_id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		</if>
 		<include refid="serItemInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -54,6 +57,9 @@
 			</if>
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
+			</if>
+			<if test="cityId != null and cityId !=''">
+				AND (b.city_id = #{cityId} OR a.all_city = '1')
 			</if>
 		</where>
 		<choose>
@@ -76,18 +82,11 @@
 		a.sort_id AS "sortId",
 		a.sort_name AS "sortName",
 		a.name AS "name",
+		a.all_city AS "allCity",
 		a.picture AS "picture",
 		a.description AS "description",
 		a.sale AS "sale",
 		a.sort_num AS "sortNum"
-		<choose>
-			<when test="cityId != null and cityId !=''">
-				, #{cityId} AS "cityId"
-			</when>
-			<otherwise>
-				, '' AS "cityId"
-			</otherwise>
-		</choose>
 	</sql>
 	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
 		<id column="id" property="id"/>
@@ -97,11 +96,12 @@
 		<result column="sort_id" property="sortId"/>
 		<result column="sort_name" property="sortName"/>
 		<result column="name" property="name"/>
+		<result column="all_city" property="allCity"/>
 		<result column="sale" property="sale"/>
 		<!-- 项目关联商品 -->
 		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
 		<!-- 定向城市 -->
-		<association property="cityNames" column="{reqId=id,cityId=cityId}" select="selectCityById"></association>
+		<association property="cityNames" column="{reqId=id}" select="selectCityById"></association>
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
 		select id,name,unit,meterage,price from ser_item_commodity
@@ -112,9 +112,6 @@
 	<select id="selectCityById" parameterType="java.util.Map" resultType="string">
 		select city_name as cityName from ser_item_city
 		where item_id=#{reqId}
-		<if test="cityId != null and cityId !=''">
-			AND city_id = #{cityId}
-		</if>
 		and del_flag = '0'
 	</select>
 
@@ -147,6 +144,7 @@
 			sort_id,
 			sort_name,
 			name,
+			all_city,
 			picture,
 			description,
 			sale,
@@ -167,6 +165,7 @@
 			#{sortId},
 			#{sortName},
 			#{name},
+			#{allCity},
 			#{picture},
 			#{description},
 			#{sale},
@@ -190,6 +189,7 @@
 			sort_id = #{sortId},
 			sort_name = #{sortName},
 			name = #{name},
+			all_city = #{allCity},
 			picture = #{picture},
 			description = #{description},
 			sale = #{sale},
