@@ -63,8 +63,11 @@
                 <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
             </if>
             <if test="officeId != null">
-                and a.office_id = #{officeId},
+                and a.office_id = #{officeId}
             </if>
+			<if test="addrCityId != null">
+				and a.addr_city_id = #{addrCityId}
+			</if>
         </where>
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
