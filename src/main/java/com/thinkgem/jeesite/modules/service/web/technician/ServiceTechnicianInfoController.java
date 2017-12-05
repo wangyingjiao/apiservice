@@ -137,6 +137,7 @@ public class ServiceTechnicianInfoController extends BaseController {
             info.setTechOfficeName(user.getOffice().getName());
             info.setTechStationId(user.getStation().getId());
             info.setTechStationName(user.getStation().getName());
+            info.setAppLoginPassword(info.getTechPhone().substring(6,10));//APP端登录密码默认为手机号的后4位
             serviceTechnicianInfoService.save(info);
             serviceTechnicianInfoService.saveImages(info);
             serviceTechnicianInfoService.saveServiceInfo(info);
