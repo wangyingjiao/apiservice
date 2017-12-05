@@ -3,6 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.Result;
@@ -13,6 +16,7 @@ import com.thinkgem.jeesite.common.utils.CookieUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm.Principal;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
@@ -28,6 +32,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -42,6 +47,9 @@ public class LoginController extends BaseController {
 
     @Autowired
     private SessionDAO sessionDAO;
+
+    @Autowired
+    HttpServletRequest request;
 
     /**
      * 管理登录
@@ -79,16 +87,22 @@ public class LoginController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "${adminPath}/login", method = RequestMethod.POST)
     @ApiOperation(value = "登入系统", notes = "用户登录")
-    public Object login(@RequestBody LoginUser user) {
-        Principal principal = UserUtils.getPrincipal();
-        return new SuccResult<>(principal);
-        // 如果已经登录，则跳转到管理首页
-//        if (principal != null) {
-//            UserUtils.getSubject().logout();
-//            return new Result<String>(1, "您已经成功退出！");
-//        } else {
-//            return new Result<String>(0, "用户或密码错误, 请重试!");
-//        }
+    public Object login(@RequestBody(required = false) LoginUser user) {
+
+        Result<HashMap<String, Object>> result = new SuccResult<>();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("message", "登录成功！");
+        map.put("JSESSIONID", WebUtils.toHttp(request).getSession().getId());
+        ObjectMapper mapper = new ObjectMapper();
+        String s = null;
+        try {
+            s = mapper.writeValueAsString(UserUtils.getUser());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        map.put("user", JSON.parseObject(s));
+        result.setData(map);
+        return result;
     }
 
     @ResponseBody

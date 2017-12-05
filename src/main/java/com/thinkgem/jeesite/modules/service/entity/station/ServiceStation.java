@@ -3,11 +3,15 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.station;
 
+import com.thinkgem.jeesite.common.utils.RegexTool;
 import org.hibernate.validator.constraints.Length;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.Pattern;
 
 /**
  * 服务站Entity
@@ -18,9 +22,14 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;		// 服务站名称
-	private String type;		// 服务站类型
+	private String type;// 服务站类型
+
+	@Deprecated
 	private String area;		// 服务站所在区域
+
+	@Deprecated
 	private String address;		// 详细地址
+
 	private User user;		// 站长id
 	private String userName;		// 站长名称
 	private String phone;		// 联系电话或联系手机号
@@ -51,7 +60,7 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 		super(id);
 	}
 
-	@Length(min=0, max=255, message="服务站名称长度必须介于 0 和 255 之间")
+	@NotBlank(message = "服务站名称不能为空",groups = SaveStationGroup.class)
 	public String getName() {
 		return name;
 	}
@@ -59,7 +68,8 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	@NotBlank(message = "服务站类型不能为空" ,groups = SaveStationGroup.class)
 	@Length(min=0, max=12, message="服务站类型长度必须介于 0 和 12 之间")
 	public String getType() {
 		return type;
@@ -69,7 +79,7 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 		this.type = type;
 	}
 	
-	@Length(min=0, max=255, message="服务站所在区域长度必须介于 0 和 255 之间")
+	//@Length(min=0, max=255, message="服务站所在区域长度必须介于 0 和 255 之间")
 	public String getArea() {
 		return area;
 	}
@@ -103,8 +113,8 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
-	@Length(min=0, max=32, message="联系电话或联系手机号长度必须介于 0 和 32 之间")
+
+	@Pattern(regexp = RegexTool.REGEX_MOBILE,message = "手机号不符合规则",groups = SaveStationGroup.class)
 	public String getPhone() {
 		return phone;
 	}
@@ -156,7 +166,8 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	public void setOfficeName(String officeName) {
 		this.officeName = officeName;
 	}
-	
+
+	@NotBlank(message = "服务站省id不能为空",groups = SaveStationGroup.class)
 	@Length(min=0, max=64, message="现住地址_省_id长度必须介于 0 和 64 之间")
 	public String getAddrProvinceId() {
 		return addrProvinceId;
@@ -165,7 +176,8 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	public void setAddrProvinceId(String addrProvinceId) {
 		this.addrProvinceId = addrProvinceId;
 	}
-	
+
+	@NotBlank(message = "服务站市id不能为空",groups = SaveStationGroup.class)
 	@Length(min=0, max=64, message="现住地址_市_id长度必须介于 0 和 64 之间")
 	public String getAddrCityId() {
 		return addrCityId;
@@ -174,7 +186,8 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	public void setAddrCityId(String addrCityId) {
 		this.addrCityId = addrCityId;
 	}
-	
+
+	@NotBlank(message = "服务站区id不能为空",groups = SaveStationGroup.class)
 	@Length(min=0, max=64, message="现地地址_区_id长度必须介于 0 和 64 之间")
 	public String getAddrDistrictId() {
 		return addrDistrictId;
@@ -210,7 +223,8 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	public void setAddrDistrictName(String addrDistrictName) {
 		this.addrDistrictName = addrDistrictName;
 	}
-	
+
+	@NotBlank(message = "服务站详细地址不能为空",groups = SaveStationGroup.class)
 	@Length(min=0, max=255, message="现住地址_详细信息长度必须介于 0 和 255 之间")
 	public String getAddrDetailInfo() {
 		return addrDetailInfo;

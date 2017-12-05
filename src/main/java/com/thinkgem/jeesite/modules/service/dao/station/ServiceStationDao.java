@@ -16,7 +16,6 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
  */
 @MyBatisDao
 public interface ServiceStationDao extends CrudDao<ServiceStation> {
-    Page<User> findUserData(String id);
 
     ServiceStation findStationByUser(User user);
 }

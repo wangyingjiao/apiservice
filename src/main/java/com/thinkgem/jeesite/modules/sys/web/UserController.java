@@ -90,7 +90,11 @@ public class UserController extends BaseController {
     @ApiOperation(notes = "返回用户列表", value = "获取用户列表")
     @RequestMapping(value = {"listData"}, method = RequestMethod.POST)
     public Result listData(@RequestBody(required = false) User user, HttpServletRequest request, HttpServletResponse response) {
-        Page<User> page = systemService.findUser(new Page<User>(request, response), user);
+        Page<User> page = new Page<>(request, response);
+        if (request.getParameter("pageSize").equals("-1")) {
+            page = new Page<>(request, response, -1);
+        }
+        page = systemService.findUser(page, user);
         return new SuccResult(page);
     }
 

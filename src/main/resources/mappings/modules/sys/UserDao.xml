@@ -169,20 +169,20 @@
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 
         <if test="office != null and office.id != null and office.id != ''">
-            AND (o.id = #{office.id} OR o.parent_ids LIKE
-            <if test="dbName == 'oracle'">'%,'||#{office.id}||',%')</if>
-            <if test="dbName == 'mssql'">'%,'+#{office.id}+',%')</if>
-            <if test="dbName == 'mysql'">CONCAT('%,', #{office.id}, ',%'))</if>
+            AND (o.id = #{office.id} OR o.parent_ids LIKE CONCAT('%,', #{office.id}, ',%'))
         </if>
         <!-- 如果不是超级管理员，则不显示超级管理员用户 -->
         <if test="!currentUser.admin">
             AND a.id != '1'
         </if>
-        <if test="mobile != null">
+        <if test="mobile != null and mobile != ''">
             AND a.mobile LIKE concat("%",#{mobile},"%")
         </if>
-        <if test="roleName != null">
+        <if test="roleName != null and roleName != ''">
             AND sr.name LIKE concat("%",#{roleName},"%")
+        </if>
+        <if test="stationId != null and stationId != ''">
+            AND ss.id = #{stationId}
         </if>
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}

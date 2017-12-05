@@ -48,7 +48,5 @@ public class ServiceStationService extends CrudService<ServiceStationDao, Servic
 		super.delete(serviceStation);
 	}
 
-	public Page<User> findUserData(String id) {
-		return stationDao.findUserData(id);
-	}
+
 }

@@ -9,9 +9,11 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.station.SaveStationGroup;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -31,7 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "${adminPath}/service/station/serviceStation")
-@Api(tags = "服务站管理",description = "服务站管理相关接口")
+@Api(tags = "服务站管理", description = "服务站管理相关接口")
 public class ServiceStationController extends BaseController {
 
     @Autowired
@@ -68,7 +70,6 @@ public class ServiceStationController extends BaseController {
     }
 
 
-
     @ResponseBody
     @RequestMapping(value = "getData", method = {RequestMethod.POST, RequestMethod.GET})
     public Result getData(@RequestBody ServiceStation serviceStation) {
@@ -84,23 +85,25 @@ public class ServiceStationController extends BaseController {
         }
     }
 
-    //
-//	@RequiresPermissions("service:station:serviceStation:edit")
-//	@RequestMapping(value = "save")
-//	public String save(ServiceStation serviceStation, Model model, RedirectAttributes redirectAttributes) {
-//		if (!beanValidator(model, serviceStation)){
-//			return form(serviceStation, model);
-//		}
-//		serviceStationService.save(serviceStation);
-//		addMessage(redirectAttributes, "保存服务站成功");
-//		return "redirect:"+Global.getAdminPath()+"/service/station/serviceStation/?repage";
-//	}
+
     @ResponseBody
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
-    @RequiresPermissions("service:station:serviceStation:edit")
+    //@RequiresPermissions("service:station:serviceStation:edit")
+    @ApiOperation("保存服务站")
     public Result saveData(@RequestBody ServiceStation serviceStation) {
-        if (!beanValidator(serviceStation)) {
-            return new FailResult("保存服务站" + serviceStation.getName() + "失败");
+
+        List<String> errors = errors(serviceStation, SaveStationGroup.class);
+        if (errors.size() > 0) {
+            return new FailResult(errors);
+        }
+        User user = UserUtils.getUser();
+
+        if (user.getOffice() != null && user.getOffice().getId() != "0") {
+            serviceStation.setOffice(user.getOffice());
+            serviceStation.setOfficeId(user.getOffice().getId());
+            serviceStation.setOfficeName(user.getOffice().getName());
+        } else {
+            return new FailResult("用户没有具体的所属机构(全平台)");
         }
         serviceStationService.save(serviceStation);
         return new SuccResult("保存服务站" + serviceStation.getName() + "成功");
@@ -130,20 +133,11 @@ public class ServiceStationController extends BaseController {
             return new FailResult("未指定设置的服务站的ID。");
         }
         ServiceStation station = serviceStationService.get(serviceStation.getId());
-        station.setServicePoint(serviceStation.getServicePoint());
+
         serviceStationService.save(station);
         return new SuccResult("保存服务站：" + station.getName() + " 站长信息成功。");
     }
 
-
-//
-//	@RequiresPermissions("service:station:serviceStation:edit")
-//	@RequestMapping(value = "delete")
-//	public String delete(ServiceStation serviceStation, RedirectAttributes redirectAttributes) {
-//		serviceStationService.delete(serviceStation);
-//		addMessage(redirectAttributes, "删除服务站成功");
-//		return "redirect:"+Global.getAdminPath()+"/service/station/serviceStation/?repage";
-//	}
 
     @ResponseBody
     @RequiresPermissions("service:station:serviceStation:edit")
@@ -153,22 +147,4 @@ public class ServiceStationController extends BaseController {
         serviceStationService.delete(serviceStation);
         return new SuccResult("删除服务站成功");
     }
-
-    @ResponseBody
-    @RequiresPermissions("service:station:serviceStation:view")
-    @RequestMapping()
-    @ApiOperation("当前服务站所有员工")
-    public Result listUserData(@RequestBody ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
-        if (null == serviceStation.getId()) {
-            return new FailResult("未指定设置的服务站的ID。");
-        }
-        //ServiceStation station = serviceStationService.get(serviceStation.getId());
-
-        //serviceStationService.findPage(stationPage, serviceStation);
-        Page<User> userList = serviceStationService.findUserData(serviceStation.getId());
-
-        return new SuccResult(userList);
-    }
-
-
 }

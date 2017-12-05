@@ -40,8 +40,8 @@ public class OfficeService extends TreeService<OfficeDao, Office> {
 			office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
 			page.setList(officeDao.findList(office));
 		}
-//		return page;
-		return super.findPage(page, office);
+		return page;
+		//return super.findPage(page, office);
 	}
 
 	public List<Office> findList(Boolean isAll){

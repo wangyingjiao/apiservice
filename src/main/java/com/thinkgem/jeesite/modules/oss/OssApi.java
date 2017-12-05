@@ -32,7 +32,7 @@ public class OssApi {
         String accessKey = loader.getProperty("OSS_ACCESS_KEY");
         String bucket = loader.getProperty("OSS_TEST_BUCKET");
 
-        String dir = "user-dir";
+        String dir = "openservice";
         String host = "http://" + bucket + "." + endpoint;
         OSSClient client = new OSSClient(endpoint, accessId, accessKey);
 

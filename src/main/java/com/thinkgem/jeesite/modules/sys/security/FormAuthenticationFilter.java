@@ -6,7 +6,9 @@ package com.thinkgem.jeesite.modules.sys.security;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thinkgem.jeesite.common.result.Result;
+import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -19,6 +21,7 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletRequest;
@@ -150,12 +153,14 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
 
-        Result<HashMap<String, Object>> result = new Result<>();
+        Result<HashMap<String, Object>> result = new SuccResult<>();
         HashMap<String, Object> map = new HashMap<>();
         map.put("message", "登录成功！");
         map.put("JSESSIONID", WebUtils.toHttp(request).getSession().getId());
+        ObjectMapper mapper = new ObjectMapper();
+        String s = mapper.writeValueAsString(UserUtils.getUser());
+        map.put("user", JSON.parseObject(s));
         result.setData(map);
-        result.setCode(1);
         response.setContentType(FastJsonJsonView.DEFAULT_CONTENT_TYPE);
         response.getWriter().print(JSON.toJSONString(result));
         return false;
