@@ -207,12 +207,12 @@ public class OfficeController extends BaseController {
     @RequiresPermissions("sys:office:view")
     @RequestMapping(value = "/pageData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "获得机构列表")
-    public Result listData(@RequestBody Office office, HttpServletRequest request, HttpServletResponse response) {
+    public Result pageData(@RequestBody Office office, HttpServletRequest request, HttpServletResponse response) {
     	if(office == null){
     		office = new Office();
 		}
-    	Page<Office> stationPage = new Page<>(request, response);
-		Page<Office> page = officeService.findPage(stationPage, office);
+    	Page<Office> officePage = new Page<>(request, response);
+		Page<Office> page = officeService.findPage(officePage, office);
 		return new SuccResult(page);
     }
     

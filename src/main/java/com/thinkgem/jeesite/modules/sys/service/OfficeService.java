@@ -32,14 +32,14 @@ public class OfficeService extends TreeService<OfficeDao, Office> {
 	}
 	
 	public Page<Office> findPage(Page<Office> page, Office office){
-//		office.setPage(page);
-//		User user = UserUtils.getUser();
-//		if (user.isAdmin()){
-//			page.setList(officeDao.findAllList(new Office()));
-//		}else{
-//			office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
-//			page.setList(officeDao.findList(office));
-//		}
+		office.setPage(page);
+		User user = UserUtils.getUser();
+		if (user.isAdmin()){
+			page.setList(officeDao.findAllList(new Office()));
+		}else{
+			office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
+			page.setList(officeDao.findList(office));
+		}
 //		return page;
 		return super.findPage(page, office);
 	}
