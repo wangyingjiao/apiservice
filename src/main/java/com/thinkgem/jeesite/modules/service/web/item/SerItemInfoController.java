@@ -54,21 +54,23 @@ public class SerItemInfoController extends BaseController {
     //@RequiresPermissions("service:station:serItemInfo:edit")
     @ApiOperation("保存服务项目")
     public Result saveData(@RequestBody SerItemInfo serItemInfo) {
-        if (!beanValidator(serItemInfo)) {
-            return new FailResult("保存服务项目" + serItemInfo.getName() + "失败");
+        List<String> errList = errors(serItemInfo);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
         }
-        User user = UserUtils.getUser();
-        serItemInfo.setOfficeId(user.getOffice().getId());//机构ID
-        serItemInfo.setOfficeName(user.getOffice().getName());//机构名称
-        serItemInfo.setStationId(user.getStation().getId());//服务站ID
-        serItemInfo.setStationName(user.getStation().getName());//服务站名称
+
         if (!StringUtils.isNotBlank(serItemInfo.getId())) {//新增时验证重复
             if (0 != serItemInfoService.checkDataName(serItemInfo)) {
                 return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
             }
+            User user = UserUtils.getUser();
+            serItemInfo.setOfficeId(user.getOffice().getId());//机构ID
+            serItemInfo.setOfficeName(user.getOffice().getName());//机构名称
+            serItemInfo.setStationId(user.getStation().getId());//服务站ID
+            serItemInfo.setStationName(user.getStation().getName());//服务站名称
         }
         serItemInfoService.save(serItemInfo);
-        return new SuccResult("保存服务项目" + serItemInfo.getName() + "成功");
+        return new SuccResult("保存成功");
     }
 
     @ResponseBody
@@ -92,7 +94,7 @@ public class SerItemInfoController extends BaseController {
             entity = serItemInfoService.getData(serItemInfo.getId());
         }
         if (entity == null) {
-            return new FailResult("未找到此id：" + serItemInfo.getId() + "对应的服务项目。");
+            return new FailResult("未找到此id对应的服务项目。");
         } else {
             return new SuccResult(entity);
         }
@@ -104,7 +106,7 @@ public class SerItemInfoController extends BaseController {
     @ApiOperation("删除服务项目")
     public Result deleteSortInfo(@RequestBody SerItemInfo serItemInfo) {
         serItemInfoService.delete(serItemInfo);
-        return new SuccResult("删除服务项目成功");
+        return new SuccResult("删除成功");
     }
 
     @ResponseBody
@@ -116,7 +118,7 @@ public class SerItemInfoController extends BaseController {
             entity = serItemInfoService.getSerItemInfoPic(serItemInfo);
         }
         if (entity == null) {
-            return new FailResult("未找到此id：" + serItemInfo.getId() + "对应的图文详情");
+            return new FailResult("未找到此id对应的图文详情");
         } else {
             return new SuccResult(entity);
         }
@@ -128,7 +130,7 @@ public class SerItemInfoController extends BaseController {
     @ApiOperation("更新服务项目图文详情和排序号")
     public Result updateSerItemPicNum(@RequestBody SerItemInfo serItemInfo) {
         serItemInfoService.updateSerItemPicNum(serItemInfo);
-        return new SuccResult("更新服务项目成功");
+        return new SuccResult("保存成功");
     }
 
 

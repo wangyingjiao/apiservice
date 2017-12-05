@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.entity.item;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.List;
 
@@ -83,6 +84,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		super(id);
 	}
 
+	@NotBlank(message = "服务分类：保洁、家修不可为空")
 	@Length(min=0, max=1, message="分类：保洁、家修长度必须介于 0 和 1 之间")
 	public String getMajorSort() {
 		return majorSort;
@@ -100,8 +102,9 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setSortId(String sortId) {
 		this.sortId = sortId;
 	}
-	
-	@Length(min=0, max=64, message="服务项目名称长度必须介于 0 和 64 之间")
+
+	@NotBlank(message = "服务项目名称不可为空")
+	@Length(min=2, max=10, message="服务项目名称长度必须介于 2 和 10 之间")
 	public String getName() {
 		return name;
 	}
@@ -109,7 +112,8 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	@NotBlank(message = "服务图片不可为空")
 	@Length(min=0, max=255, message="服务图片长度必须介于 0 和 255 之间")
 	public String getPicture() {
 		return picture;
@@ -127,6 +131,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.pictureDetail = pictureDetail;
 	}
 
+	@NotBlank(message = "服务描述不可为空")
 	@Length(min=0, max=255, message="服务描述长度必须介于 0 和 255 之间")
 	public String getDescription() {
 		return description;
