@@ -87,7 +87,7 @@ public class LoginController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "${adminPath}/login", method = RequestMethod.POST)
     @ApiOperation(value = "登入系统", notes = "用户登录")
-    public Object login(@RequestBody(required = false) LoginUser user) {
+    public Object login( LoginUser user) {
 
         Result<HashMap<String, Object>> result = new SuccResult<>();
         HashMap<String, Object> map = new HashMap<>();

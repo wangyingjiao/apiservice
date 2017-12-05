@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.common.redis;
 
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -82,8 +83,11 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
     @Override  
     public void afterPropertiesSet() throws Exception {  
         Set<HostAndPort> haps = this.parseHostAndPort();  
-
-        jedisCluster = new JedisCluster(haps, timeout,timeout, maxRedirections,password,genericObjectPoolConfig);
+        if (StringUtils.isNotBlank(this.password)){
+            jedisCluster = new JedisCluster(haps, timeout,timeout, maxRedirections,password,genericObjectPoolConfig);
+        }else {
+            jedisCluster = new JedisCluster(haps, timeout,timeout, maxRedirections,genericObjectPoolConfig);
+        }
 
     }  
     public void setAddressConfig(Resource addressConfig) {  
