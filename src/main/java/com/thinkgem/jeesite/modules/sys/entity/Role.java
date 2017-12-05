@@ -60,7 +60,11 @@ public class Role extends DataEntity<Role> {
 	public static final String DATA_SCOPE_OFFICE = "5";
 	public static final String DATA_SCOPE_SELF = "8";
 	public static final String DATA_SCOPE_CUSTOM = "9";
-	
+
+	public static final String DATA_ROLE_ALL = "1";//全平台
+	public static final String DATA_ROLE_OFFICE = "2";//全机构、本机构
+	public static final String DATA_ROLE_STATION = "3";//本服务站
+
 	public Role() {
 		super();
 		this.dataScope = DATA_SCOPE_SELF;

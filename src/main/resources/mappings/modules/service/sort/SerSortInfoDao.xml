@@ -70,6 +70,8 @@
 			<if test="cityId != null and cityId !=''">
 				AND (b.city_id = #{cityId} OR a.all_city = '1')
 			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -95,10 +97,16 @@
 		<result column="all_city" property="allCity"/>
 		<result column="remarks" property="remarks"/>
 		<!-- 定向城市 -->
-		<association property="cityNames" column="{reqId=id}" select="selectCityById"></association>
+		<association property="cityNames" column="{reqId=id}" select="selectCityNameById"></association>
+		<association property="cityIds" column="{reqId=id}" select="selectCityIdById"></association>
 	</resultMap>
-	<select id="selectCityById" parameterType="java.util.Map" resultType="string">
+	<select id="selectCityNameById" parameterType="java.util.Map" resultType="string">
 		select city_name as cityName from ser_sort_city
+		where sort_id=#{reqId}
+		and del_flag = '0'
+	</select>
+	<select id="selectCityIdById" parameterType="java.util.Map" resultType="string">
+		select city_id as cityId from ser_sort_city
 		where sort_id=#{reqId}
 		and del_flag = '0'
 	</select>

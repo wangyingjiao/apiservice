@@ -99,6 +99,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     private String cityId;        // 城市编号 查询用
     private List<String> cityNames; // 城市 列表显示用
+    private List<String> cityIds; // 城市 编辑选中用
     private List<SerSortCity> citys; // 城市 保存用
 
     public List<String> getCityNames() {
@@ -107,6 +108,14 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     public void setCityNames(List<String> cityNames) {
         this.cityNames = cityNames;
+    }
+
+    public List<String> getCityIds() {
+        return cityIds;
+    }
+
+    public void setCityIds(List<String> cityIds) {
+        this.cityIds = cityIds;
     }
 
     public String getCityId() {
