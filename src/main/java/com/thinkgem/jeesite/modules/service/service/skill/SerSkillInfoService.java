@@ -58,6 +58,8 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		List<SerSkillTechnician> technicians = serSkillInfo.getTechnicians();
 		if(technicians != null){
 			serSkillInfo.setTechnicianNum(technicians.size());
+		}else{
+			serSkillInfo.setTechnicianNum(0);
 		}
 
 		super.save(serSkillInfo);

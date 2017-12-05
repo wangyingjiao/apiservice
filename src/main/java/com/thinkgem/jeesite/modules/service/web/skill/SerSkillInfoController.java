@@ -58,21 +58,23 @@ public class SerSkillInfoController extends BaseController {
     //@RequiresPermissions("service:station:serSkillInfo:edit")
     @ApiOperation("保存技能")
     public Result saveData(@RequestBody SerSkillInfo serSkillInfo) {
-        if (!beanValidator(serSkillInfo)) {
-            return new FailResult("保存技能" + serSkillInfo.getName() + "失败");
+        List<String> errList = errors(serSkillInfo);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
         }
-        User user = UserUtils.getUser();
-        serSkillInfo.setOfficeId(user.getOffice().getId());//机构ID
-        serSkillInfo.setOfficeName(user.getOffice().getName());//机构名称
-        serSkillInfo.setStationId(user.getStation().getId());//服务站ID
-        serSkillInfo.setStationName(user.getStation().getName());//服务站名称
+
         if (!StringUtils.isNotBlank(serSkillInfo.getId())) {//新增时验证重复
             if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
                 return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
             }
+            User user = UserUtils.getUser();
+            serSkillInfo.setOfficeId(user.getOffice().getId());//机构ID
+            serSkillInfo.setOfficeName(user.getOffice().getName());//机构名称
+            serSkillInfo.setStationId(user.getStation().getId());//服务站ID
+            serSkillInfo.setStationName(user.getStation().getName());//服务站名称
         }
         serSkillInfoService.save(serSkillInfo);
-        return new SuccResult("保存技能" + serSkillInfo.getName() + "成功");
+        return new SuccResult("保存成功");
     }
 
     @ResponseBody
@@ -96,7 +98,7 @@ public class SerSkillInfoController extends BaseController {
             entity = serSkillInfoService.getData(serSkillInfo.getId());
         }
         if (entity == null) {
-            return new FailResult("未找到此id：" + serSkillInfo.getId() + "对应的技能。");
+            return new FailResult("未找到此id对应的技能。");
         } else {
             return new SuccResult(entity);
         }
@@ -108,7 +110,7 @@ public class SerSkillInfoController extends BaseController {
     @ApiOperation("删除技能")
     public Result deleteSortInfo(@RequestBody SerSkillInfo serSkillInfo) {
         serSkillInfoService.delete(serSkillInfo);
-        return new SuccResult("删除技能成功");
+        return new SuccResult("删除成功");
     }
 
     @ResponseBody

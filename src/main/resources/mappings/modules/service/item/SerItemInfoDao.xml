@@ -181,19 +181,36 @@
 	
 	<update id="update">
 		UPDATE ser_item_info SET
-			station_id = #{stationId},
-			station_name = #{stationName},
-			office_id = #{officeId},
-			office_name = #{officeName},
-			major_sort = #{majorSort},
+			<if test="majorSort != null and majorSort != ''">
+				major_sort = #{majorSort},
+			</if>
+			<if test="sortId != null and sortId != ''">
 			sort_id = #{sortId},
-			sort_name = #{sortName},
-			name = #{name},
-			all_city = #{allCity},
-			picture = #{picture},
-			description = #{description},
-			sale = #{sale},
-			sort_num = #{sortNum},
+			</if>
+			<if test="sortName != null and sortName != ''">
+				sort_name = #{sortName},
+			</if>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="allCity != null and allCity != ''">
+				all_city = #{allCity},
+			</if>
+			<if test="picture != null and picture != ''">
+				picture = #{picture},
+			</if>
+			<if test="pictureDetail != null and pictureDetail != ''">
+				picture_detail = #{pictureDetail},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description},
+			</if>
+			<if test="sale != null and sale != ''">
+				sale = #{sale},
+			</if>
+			<if test="sortNum != null and sortNum != ''">
+				sort_num = #{sortNum},
+			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

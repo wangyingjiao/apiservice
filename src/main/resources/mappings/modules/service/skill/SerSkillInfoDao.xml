@@ -111,13 +111,15 @@
 	
 	<update id="update">
 		UPDATE ser_skill_info SET
-			station_id = #{stationId},
-			station_name = #{stationName},
-			office_id = #{officeId},
-			office_name = #{officeName},
-			name = #{name},
-			code = #{code},
-			technician_num = #{technicianNum};
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="code != null and code != ''">
+				code = #{code},
+			</if>
+			<if test="technicianNum != null and technicianNum != ''">
+				technician_num = #{technicianNum};
+			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

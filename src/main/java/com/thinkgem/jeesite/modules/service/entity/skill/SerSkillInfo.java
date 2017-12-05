@@ -37,7 +37,7 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 		super(id);
 	}
 
-	@Length(min=0, max=64, message="技能名称长度必须介于 0 和 64 之间")
+	@Length(min=2, max=15, message="技能名称长度必须介于 2 和 15 之间")
 	public String getName() {
 		return name;
 	}
