@@ -44,13 +44,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<OrderTech> orderTechs; //技师列表
 	private List<OrderItemCommodity> OrderItems; //项目商品列表
 	
-//	private String customName;		// 客户姓名
-//	private String customPhone;		// 客户电话
-//	
-//	private String payMode;		    // 支付方式(1:微信;2:支付宝;3:现金;4:银行卡;5:钱包;)
-//	private String payTime;		    // 支付时间
-//	private String payAccount;		// 支付金额
-//	private String payStatus;		// 支付状态(1:待支付;2:已支付;)
+	//查询条件
+	private String customName;		// 客户姓名
+	private String customPhone;		// 客户电话
+	private String payMode;		    // 支付方式(1:微信;2:支付宝;3:现金;4:银行卡;5:钱包;)
+	private String payStatus;		// 支付状态(1:待支付;2:已支付;)
+	private String returnStatus;	// 退款状态
+	private String itemName;		// 商品名称
 	
 	public OrderInfo() {
 		super();
@@ -243,6 +243,54 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setReturnInfo(OrderReturn returnInfo) {
 		this.returnInfo = returnInfo;
+	}
+
+	public String getCustomName() {
+		return customName;
+	}
+
+	public void setCustomName(String customName) {
+		this.customName = customName;
+	}
+
+	public String getCustomPhone() {
+		return customPhone;
+	}
+
+	public void setCustomPhone(String customPhone) {
+		this.customPhone = customPhone;
+	}
+
+	public String getPayMode() {
+		return payMode;
+	}
+
+	public void setPayMode(String payMode) {
+		this.payMode = payMode;
+	}
+
+	public String getPayStatus() {
+		return payStatus;
+	}
+
+	public void setPayStatus(String payStatus) {
+		this.payStatus = payStatus;
+	}
+
+	public String getReturnStatus() {
+		return returnStatus;
+	}
+
+	public void setReturnStatus(String returnStatus) {
+		this.returnStatus = returnStatus;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
 	}
 	
 }

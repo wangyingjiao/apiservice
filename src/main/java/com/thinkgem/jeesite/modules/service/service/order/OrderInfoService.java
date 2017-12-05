@@ -41,7 +41,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setPage(page);
 		User user = UserUtils.getUser();
 		if (user.isAdmin()){
-			page.setList(orderInfoDao.findAllList(new OrderInfo()));
+			page.setList(orderInfoDao.findAllList(orderInfo));
 		}else{
 			orderInfo.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
 			page.setList(orderInfoDao.findList(orderInfo));

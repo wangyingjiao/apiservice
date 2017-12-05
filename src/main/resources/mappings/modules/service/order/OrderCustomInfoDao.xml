@@ -49,7 +49,10 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="customPhone != null and customPhone != ''">
-				AND a.custom_phone = #{customPhone}
+				AND a.custom_phone LIKE
+				<if test="dbName == 'oracle'">'%'||#{customPhone}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{customPhone}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{customPhone},'%')</if>
 			</if>
 			<if test="customName != null and customName != ''">
 				AND a.custom_name LIKE
