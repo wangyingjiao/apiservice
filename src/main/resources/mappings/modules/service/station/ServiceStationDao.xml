@@ -64,9 +64,9 @@
             <if test="officeId != null and officeId != ''">
                 and a.office_id = #{officeId}
             </if>
-			<if test="addrCityId != null and addrCityId != ''">
-				and a.addr_city_id = #{addrCityId}
-			</if>
+            <if test="addrCityId != null and addrCityId != ''">
+                and a.addr_city_id = #{addrCityId}
+            </if>
         </where>
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -168,26 +168,29 @@
 		)
 	</insert>
 
+    <!--<update id="update">-->
+    <!--UPDATE service_station set-->
+    <!--<set>-->
+    <!--<if test="office != null and office.id != null">office_id = #{office.id},</if>-->
+
+    <!--<if test="updateBy!=null and updateBy.id != null">update_by = #{updateBy.id},</if>-->
+
+
+    <!--</set>-->
+    <!--WHERE id = #{id}-->
+    <!--</update>-->
     <update id="update">
         UPDATE service_station
         <set>
+            <if test="updateBy!=null and updateBy.id != null">update_by = #{updateBy.id},</if>
+            <if test="office != null and office.id != null">office_id = #{office.id},</if>
+            <if test="user != null and user.id != null">user_id = #{user.id},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="phone != null">phone = #{phone},</if>
             <if test="name != null">name = #{name},</if>
             <if test="type != null">type = #{type},</if>
             <if test="area != null">area = #{area},</if>
             <if test="address != null">address = #{address},</if>
-            <if test="user.id != null">user_id = #{user.id},</if>
-            <if test="userName != null">user_name = #{userName},</if>
-            <if test="phone != null">phone = #{phone},</if>
-            <if test="employees != null">employees = #{employees},</if>
-            <if test="aunts != null">aunts = #{aunts},</if>
-            <if test="servicePoint != null">service_point = #{servicePoint},</if>
-            <if test="office.id != null">office_id = #{office.id},</if>
-            <if test="officeName != null">office_name = #{officeName},</if>
-            <if test="addrProvinceId != null">addr_province_id = #{addrProvinceId},</if>
-            <if test="updateBy.id != null">update_by = #{updateBy.id},</if>
-            <if test="addrCityId != null">addr_city_id = #{addrCityId},</if>
-            <if test="updateDate != null">update_date = #{updateDate},</if>
-            <if test="addrDistrictId != null">addr_district_id = #{addrDistrictId},</if>
             <if test="remarks != null">remarks = #{remarks},</if>
             <if test="addrProvinceName != null">addr_province_name = #{addrProvinceName},</if>
             <if test="addrCityName != null">addr_city_name = #{addrCityName},</if>
@@ -197,9 +200,18 @@
             <if test="circleCenter != null">circle_center = #{circleCenter},</if>
             <if test="rangeType != null">range_type = #{rangeType},</if>
             <if test="useable != null">useable = #{useable},</if>
+            <if test="employees != null">employees = #{employees},</if>
+            <if test="aunts != null">aunts = #{aunts},</if>
+            <if test="servicePoint != null">service_point = #{servicePoint},</if>
+            <if test="addrCityId != null">addr_city_id = #{addrCityId},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="addrDistrictId != null">addr_district_id = #{addrDistrictId},</if>
+            <if test="officeName != null">office_name = #{officeName},</if>
+            <if test="addrProvinceId != null">addr_province_id = #{addrProvinceId},</if>
         </set>
         WHERE id = #{id}
     </update>
+
 
     <update id="delete">
 		UPDATE service_station SET 
