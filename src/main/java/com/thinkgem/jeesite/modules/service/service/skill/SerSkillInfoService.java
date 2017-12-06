@@ -118,7 +118,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		return serSkillInfoDao.checkDataName(serSkillInfo);
 	}
 
-    public Page<SerItemInfo> findSerPage(Page<SerItemInfo> objectPage, SerItemInfo serInfo) {
+    public Page<SerSkillItem> findSerPage(Page<SerSkillItem> objectPage, SerSkillItem serInfo) {
 		serInfo.setPage(objectPage);
 		objectPage.setList(serSkillInfoDao.choiceSerlist(serInfo));
 		return objectPage;

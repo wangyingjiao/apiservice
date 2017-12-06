@@ -29,13 +29,10 @@
 		<include refid="serSkillInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
-	<select id="findList" resultType="SerSkillInfo">
+
+	<select id="findList" resultMap="SerSkillInfoResultMap">
 		SELECT
-			a.id AS "id",
-			a.name AS "name",
-			a.code AS "code",
-			a.technician_num AS "technicianNum"
+		<include refid="serSkillInfoColumnsAll"/>
 		FROM ser_skill_info a
 		<include refid="serSkillInfoJoins"/>
 		<where>
@@ -208,16 +205,17 @@
 
 	<select id="choiceSerlist" resultMap="SerItemCommodityResultMap">
 		SELECT
-		a.id AS "id",
-		a.name AS "name"
+		a.id,
+		a.id AS "itemId",
+		a.name AS "itemName"
 		FROM ser_item_info a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
+			<if test="itemName != null and itemName != ''">
 				AND a.name LIKE
-				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				<if test="dbName == 'oracle'">'%'||#{itemName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{itemName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{itemName},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -230,14 +228,17 @@
 		</choose>
 	</select>
 
-	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
-		<id column="id" property="id"/>
-		<result column="name" property="name"/>
+	<resultMap type="SerSkillItem" id="SerItemCommodityResultMap">
+		<id column="id" property="itemId"/>
+		<result column="name" property="itemName"/>
 		<!-- 项目关联商品 -->
-		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
+		<association property="serItemCommoditys" column="{reqId=id}" select="selectCommodityById">
+			<result column="id" property="commodityId"/>
+			<result column="name" property="commodityName"/>
+		</association>
 	</resultMap>
-	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
-		select id,name from ser_item_commodity
+	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerSkillItemCommodity">
+		select id as commodityId,name as commodityName from ser_item_commodity
 		where item_id=#{reqId}
 	</select>
 

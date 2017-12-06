@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
@@ -116,12 +117,12 @@ public class SerSkillInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "choiceSerlistData", method = {RequestMethod.POST})
     @ApiOperation("选择服务")
-    public Result choiceSerlistData(@RequestBody(required = false) SerItemInfo serInfo, HttpServletRequest request, HttpServletResponse response) {
+    public Result choiceSerlistData(@RequestBody(required = false) SerSkillItem serInfo, HttpServletRequest request, HttpServletResponse response) {
         if(null == serInfo){
-            serInfo = new SerItemInfo();
+            serInfo = new SerSkillItem();
         }
-        Page<SerItemInfo> serPage = new Page<>(request, response);
-        Page<SerItemInfo> page = serSkillInfoService.findSerPage(serPage, serInfo);
+        Page<SerSkillItem> serPage = new Page<>(request, response);
+        Page<SerSkillItem> page = serSkillInfoService.findSerPage(serPage, serInfo);
         return new SuccResult(page);
     }
 
