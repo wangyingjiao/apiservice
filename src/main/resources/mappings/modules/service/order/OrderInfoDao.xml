@@ -35,25 +35,77 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<!-- 查询条件列 -->
+	<!-- a.id, order_number, a.order_status, a.ser_time, a.office_id, c.custom_name, c.custom_phone, p.pay_status, p.pay_mode, s.item_name, r.return_status -->
+	
 	<select id="findList" resultMap="orderInfoResultMap">
 		SELECT
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
+where a.id in ( select t1.id from (
+SELECT
+	a0.id
+FROM
+	order_info a0
+		left join order_custom_info c on a0.custom_id = c.id
+		left join order_pay_info p on a0.id = p.order_id
+		left join order_return r on a0.id = r.order_id
+		left join (SELECT a.id, c.item_id, c.item_name
+			FROM order_info a, order_service_relation r, ser_item_commodity c 
+			where a.id = r.order_id
+			and r.item_id = c.id
+			and a.del_flag = #{DEL_FLAG_NORMAL}
+			and r.del_flag = #{DEL_FLAG_NORMAL}
+			and c.del_flag = #{DEL_FLAG_NORMAL}) s on a0.id = s.id
 		<where>
-			(a.del_flag = #{DEL_FLAG_NORMAL}
+			(a0.del_flag = #{DEL_FLAG_NORMAL}
 			<!-- 数据范围过滤 -->
 			<!-- ${sqlMap.dsf}
-			OR a.office_id = #{currentUser.office.id} -->)
+			OR a0.office_id = #{currentUser.office.id} -->)
 			<if test="orderNumber != null and orderNumber != ''">	
-				and a.order_number = #{orderNumber}
+				and a0.order_number = #{orderNumber}
 			</if>
-			<if test="stationId != null and stationId != ''">	
-				and a.station_id = #{stationId}
+			<if test="orderStatus != null and orderStatus != ''">	
+				and a0.order_status = #{orderStatus}
 			</if>
-		</where>
+			<if test="officeId != null and officeId != ''">	
+				and a0.office_id = #{officeId}
+			</if>
+			<if test="customName != null and customName != ''">	
+				and c.custom_name like concat('%',#{customName},'%')
+				and c.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="customPhone != null and customPhone != ''">	
+				and c.custom_phone like concat('%',#{customPhone},'%')
+				and c.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="payMode != null and payMode != ''">	
+				and p.pay_mode = #{payMode}
+				and p.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="payStatus != null and payStatus != ''">	
+				and p.payStatus = #{payStatus}
+				and p.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="serBegin != null and serBegin != ''">	
+				and r.ser_time &gt; #{serBegin}
+				and r.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="serEnd != null and serEnd != ''">	
+				and r.ser_time &lt; #{serEnd}
+				and r.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="returnStatus != null and returnStatus != ''">	
+				and r.return_status = #{returnStatus}
+				and r.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="itemName != null and itemName != ''">	
+				and s.item_name = #{itemName}
+			</if>
+		</where> ) t1 )
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
+				ORDER BY ${page.orderBy} desc
 			</when>
 			<otherwise>
 				ORDER BY a.update_date DESC
@@ -65,18 +117,67 @@
 		SELECT
 			<include refid="orderInfoColumns"/>
 		FROM order_info a
+where a.id in ( select t1.id from (
+SELECT
+	a0.id
+FROM
+	order_info a0
+		left join order_custom_info c on a0.custom_id = c.id
+		left join order_pay_info p on a0.id = p.order_id
+		left join order_return r on a0.id = r.order_id
+		left join (SELECT a.id, c.item_id, c.item_name
+			FROM order_info a, order_service_relation r, ser_item_commodity c 
+			where a.id = r.order_id
+			and r.item_id = c.id
+			and a.del_flag = #{DEL_FLAG_NORMAL}
+			and r.del_flag = #{DEL_FLAG_NORMAL}
+			and c.del_flag = #{DEL_FLAG_NORMAL}) s on a0.id = s.id
 		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
+			a0.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="orderNumber != null and orderNumber != ''">	
-				and a.order_number = #{orderNumber}
+				and a0.order_number = #{orderNumber}
 			</if>
-			<if test="stationId != null and stationId != ''">	
-				and a.station_id = #{stationId}
+			<if test="orderStatus != null and orderStatus != ''">	
+				and a0.order_status = #{orderStatus}
 			</if>
-		</where>
+			<if test="officeId != null and officeId != ''">	
+				and a0.office_id = #{officeId}
+			</if>
+			<if test="customName != null and customName != ''">	
+				and c.custom_name like concat('%',#{customName},'%')
+				and c.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="customPhone != null and customPhone != ''">	
+				and c.custom_phone like concat('%',#{customPhone},'%')
+				and c.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="payMode != null and payMode != ''">	
+				and p.pay_mode = #{payMode}
+				and p.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="payStatus != null and payStatus != ''">	
+				and p.payStatus = #{payStatus}
+				and p.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="serBegin != null and serBegin != ''">	
+				and r.ser_time &gt; #{serBegin}
+				and r.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="serEnd != null and serEnd != ''">	
+				and r.ser_time &lt; #{serEnd}
+				and r.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="returnStatus != null and returnStatus != ''">	
+				and r.return_status = #{returnStatus}
+				and r.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			<if test="itemName != null and itemName != ''">	
+				and s.item_name = #{itemName}
+			</if>
+		</where> ) t1 )
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
+				ORDER BY ${page.orderBy} desc
 			</when>
 			<otherwise>
 				ORDER BY a.update_date DESC
@@ -120,16 +221,10 @@
 		<association property="orderTechs" column="{reqId=id}" select="selectTechByOrder"></association>
 	</resultMap>
 	<select id="selectCustomByOrder" parameterType="java.util.Map" resultType="OrderCustomInfo">
-		select c.id as id, c.custom_name as customName, c.custom_phone as custom_phone
+		select c.id as id, c.custom_name as customName, c.custom_phone as customPhone
 				from order_custom_info c
 				inner join order_info o on o.custom_id = c.id
         		where o.id = #{reqId}
-				<if test="customName != null and customName != ''">	
-					and c.custom_name like concat('%',#{customName},'%')
-				</if>
-				<if test="customPhone != null and customPhone != ''">	
-					and c.custom_phone like concat('%',#{customPhone},'%')
-				</if>
 				and c.del_flag = '0'
 	</select>
 	<select id="selectPayByOrder" parameterType="java.util.Map" resultType="OrderPayInfo">
@@ -137,12 +232,6 @@
 			p.pay_time as payTime, p.pay_account as payAccount, p.pay_status as payStatus
 				from order_pay_info p
 				where p.order_id = #{reqId}
-				<if test="payMode != null and payMode != ''">	
-					and p.pay_mode = #{payMode}
-				</if>
-				<if test="payStatus != null and payStatus != ''">	
-					and p.payStatus = #{payStatus}
-				</if>
 				and p.del_flag = '0'
 	</select>
 	<select id="selectReturnByOrder" parameterType="java.util.Map" resultType="OrderReturn">
@@ -150,9 +239,6 @@
 			r.return_status as returnStatus, r.return_cause as returnCause, r.return_refuse as returnRefuse
 				from order_return r
 				where r.order_id = #{reqId}
-				<if test="returnStatus != null and returnStatus != ''">	
-					and r.return_status = #{returnStatus}
-				</if>
 				and r.del_flag = '0'
 	</select>
 	<select id="selectItemByOrder" parameterType="java.util.Map" resultType="OrderItemCommodity">
