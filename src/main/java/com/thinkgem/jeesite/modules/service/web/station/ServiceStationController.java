@@ -126,16 +126,16 @@ public class ServiceStationController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "setManager", method = {RequestMethod.POST, RequestMethod.GET})
-    @RequiresPermissions("service:station:serviceStation:edit")
+    //@RequiresPermissions("service:station:serviceStation:edit")
     @ApiOperation("设置站长")
     public Result setManager(@RequestBody ServiceStation serviceStation) {
         if (null == serviceStation.getId()) {
             return new FailResult("未指定设置的服务站的ID。");
         }
-        ServiceStation station = serviceStationService.get(serviceStation.getId());
-
-        serviceStationService.save(station);
-        return new SuccResult("保存服务站：" + station.getName() + " 站长信息成功。");
+        //ServiceStation station = serviceStationService.get(serviceStation.getId());
+        //station.setUser(serviceStation.getUser());
+        serviceStationService.save(serviceStation);
+        return new SuccResult("保存服务站：" + serviceStation.getName() + " 站长信息成功。");
     }
 
 

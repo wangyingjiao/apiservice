@@ -30,13 +30,13 @@ public class ServiceStation extends DataEntity<ServiceStation> {
 	@Deprecated
 	private String address;		// 详细地址
 
-	private User user;		// 站长id
+	private User user;				// 站长id
 	private String userName;		// 站长名称
-	private String phone;		// 联系电话或联系手机号
+	private String phone;			// 联系电话或联系手机号
 	private String employees;		// 员工数量
-	private String aunts;		// 阿姨数量
-	private String servicePoint;		// 服务站座标点
-	private Office office;		// office_id
+	private String aunts;			// 阿姨数量
+	private String servicePoint;	// 服务站座标点
+	private Office office;			// office_id
 	private String officeId;
 	private String officeName;		// office_name
 	private String addrProvinceId;		// 现住地址_省_id

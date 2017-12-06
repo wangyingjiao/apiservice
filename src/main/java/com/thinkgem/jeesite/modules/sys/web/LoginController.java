@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.security.shiro.session.SessionDAO;
@@ -16,13 +17,11 @@ import com.thinkgem.jeesite.common.utils.CookieUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
-import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm.Principal;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -85,9 +84,13 @@ public class LoginController extends BaseController {
 
 
     @ResponseBody
-    @RequestMapping(value = "${adminPath}/login", method = RequestMethod.POST)
+    @RequestMapping(value = "${adminPath}/login")
     @ApiOperation(value = "登入系统", notes = "用户登录")
-    public Object login( LoginUser user) {
+    public Object login(LoginUser user) {
+
+        if (null == UserUtils.getUser()) {
+            return new FailResult("未登录用户！");
+        }
 
         Result<HashMap<String, Object>> result = new SuccResult<>();
         HashMap<String, Object> map = new HashMap<>();

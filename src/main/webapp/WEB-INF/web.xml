@@ -17,6 +17,55 @@
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
+
+    <filter>
+        <filter-name>CORS</filter-name>
+        <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
+        <init-param>
+            <param-name>cors.allowGenericHttpRequests</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.allowOrigin</param-name>
+            <param-value>*</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.allowSubdomains</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.supportedMethods</param-name>
+            <param-value>GET, HEAD, POST, OPTIONS, PUT, DELETE</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.supportedHeaders</param-name>
+            <param-value>*</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.exposedHeaders</param-name>
+            <param-value>X-Test-1, X-Test-2</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.supportsCredentials</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.maxAge</param-name>
+            <param-value>3600</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CORS</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <filter>
         <filter-name>requestWrapper</filter-name>
         <filter-class>com.thinkgem.jeesite.common.filter.DefaultServletRequestFilter</filter-class>
@@ -42,19 +91,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <filter>
-        <filter-name>CORS</filter-name>
-        <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
-        <init-param>
-            <param-name>cors.allowOrigin</param-name>
-            <!--<param-value>https://backendservice.guoanshequ.wang</param-value>-->
-            <param-value>*</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>CORS</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+
 
 
     <!-- Apache Shiro -->
