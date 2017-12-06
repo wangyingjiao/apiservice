@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
@@ -129,12 +130,12 @@ public class SerSkillInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "choiceTechnicianlistData", method = {RequestMethod.POST})
     @ApiOperation("选择技师")
-    public Result choiceTechnicianlistData(@RequestBody(required = false) ServiceTechnicianInfo technicianInfo, HttpServletRequest request, HttpServletResponse response) {
+    public Result choiceTechnicianlistData(@RequestBody(required = false) SerSkillTechnician technicianInfo, HttpServletRequest request, HttpServletResponse response) {
         if(null == technicianInfo){
-            technicianInfo = new ServiceTechnicianInfo();
+            technicianInfo = new SerSkillTechnician();
         }
-        Page<ServiceTechnicianInfo> technicianPage = new Page<>(request, response);
-        Page<ServiceTechnicianInfo> page = serSkillInfoService.findTechnicianPage(technicianPage, technicianInfo);
+        Page<SerSkillTechnician> technicianPage = new Page<>(request, response);
+        Page<SerSkillTechnician> page = serSkillInfoService.findTechnicianPage(technicianPage, technicianInfo);
         return new SuccResult(page);
     }
 

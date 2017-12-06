@@ -173,10 +173,15 @@
 		<association property="technicians" column="{reqId=id}" select="selectTechnicianById"></association>
 	</resultMap>
 	<select id="selectTechnicianById" parameterType="java.util.Map" resultType="SerSkillTechnician">
-		select id,technician_id AS technicianId,technician_name AS technicianName
-		from ser_skill_technician
-		where skill_id=#{reqId}
-		and del_flag = '0'
+		select a.id,a.technician_id AS technicianId,a.technician_name AS technicianName,
+		b.tech_sex AS techSex,
+		b.tech_station_id AS techStationId,b.tech_station_name AS techStationName,
+		c.img_url AS imgUrl
+		from ser_skill_technician a
+		LEFT JOIN  service_technician_info b ON a.technician_id = b.id AND b.del_flag = '0'
+		LEFT JOIN  service_technician_images c ON a.technician_id = c.tech_id AND c.del_flag = '0' AND c.img_type = '1'
+		where a.skill_id=#{reqId}
+		and a.del_flag = '0'
 	</select>
 	<select id="selectSerItemsById" parameterType="java.util.Map" resultMap="SerSkillItemResultMap">
 		select id,
@@ -242,9 +247,9 @@
 		where item_id=#{reqId}
 	</select>
 
-	<select id="choiceTechnicianlist" resultType="ServiceTechnicianInfo">
+	<select id="choiceTechnicianlist" resultType="SerSkillTechnician">
 		SELECT
-		a.id, a.tech_name AS techName,a.tech_sex AS techSex,
+		a.id as technicianId, a.tech_name AS technicianName,a.tech_sex AS techSex,
 		a.tech_station_id AS techStationId,a.tech_station_name AS techStationName,
 		b.img_url AS imgUrl
 		FROM service_technician_info a
@@ -252,11 +257,11 @@
 		ON a.id=b.tech_id AND b.del_flag = #{DEL_FLAG_NORMAL} AND b.img_type = '1'
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="techName != null and techName != ''">
+			<if test="technicianName != null and technicianName != ''">
 				AND a.tech_name LIKE
-				<if test="dbName == 'oracle'">'%'||#{techName}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{techName}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{techName},'%')</if>
+				<if test="dbName == 'oracle'">'%'||#{technicianName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{technicianName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{technicianName},'%')</if>
 			</if>
 			<if test="techStationId != null and techStationId !=''">
 				AND a.tech_station_id= #{techStationId}

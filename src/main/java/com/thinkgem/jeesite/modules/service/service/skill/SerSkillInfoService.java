@@ -124,7 +124,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		return objectPage;
     }
 
-	public Page<ServiceTechnicianInfo> findTechnicianPage(Page<ServiceTechnicianInfo> objectPage, ServiceTechnicianInfo technicianInfo) {
+	public Page<SerSkillTechnician> findTechnicianPage(Page<SerSkillTechnician> objectPage, SerSkillTechnician technicianInfo) {
 		technicianInfo.setPage(objectPage);
 		objectPage.setList(serSkillInfoDao.choiceTechnicianlist(technicianInfo));
 		return objectPage;

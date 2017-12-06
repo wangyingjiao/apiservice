@@ -20,7 +20,13 @@ public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
 	private String skillName;		// 技能
 	private String technicianId;		// 技师编号
 	private String technicianName;		// 技师
-	
+
+	private String techSex;
+	private String techStationId;
+	private String techStationName;
+	private String imgUrl;
+
+
 	public SerSkillTechnician() {
 		super();
 	}
@@ -68,5 +74,37 @@ public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
 
 	public void setTechnicianName(String technicianName) {
 		this.technicianName = technicianName;
+	}
+
+	public String getTechSex() {
+		return techSex;
+	}
+
+	public void setTechSex(String techSex) {
+		this.techSex = techSex;
+	}
+
+	public String getTechStationId() {
+		return techStationId;
+	}
+
+	public void setTechStationId(String techStationId) {
+		this.techStationId = techStationId;
+	}
+
+	public String getTechStationName() {
+		return techStationName;
+	}
+
+	public void setTechStationName(String techStationName) {
+		this.techStationName = techStationName;
+	}
+
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
 	}
 }
