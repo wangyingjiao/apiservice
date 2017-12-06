@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillTechnicianService;
+import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -394,5 +395,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     public ServiceTechnicianInfo getData(ServiceTechnicianInfo serviceTechnicianInfo) {
         return serviceTechnicianInfoDao.getData(serviceTechnicianInfo);
+    }
+
+    public AppServiceTechnicianInfo appLogin(LoginUser user) {
+        return serviceTechnicianInfoDao.getTechnicianByPhone(user);
     }
 }

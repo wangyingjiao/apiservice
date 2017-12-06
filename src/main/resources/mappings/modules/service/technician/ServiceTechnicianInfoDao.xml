@@ -481,4 +481,32 @@
 		ORDER BY sort
 	</select>
 
+	<select id="getTechnicianByPhone" resultType="AppServiceTechnicianInfo">
+		SELECT
+			c.img_url AS imgUrlHead,
+			a.tech_phone AS techPhone,
+			a.tech_name AS techName,
+			a.tech_sex AS techSex,
+			a.tech_birth_date AS techBirthDate,
+			a.addr_detail_info AS addrDetailInfo,
+			a.tech_id_card AS techIdCard,
+			d.img_url AS imgUrlCard,
+			a.tech_email AS techEmail,
+			a.tech_height AS techHeight,
+			a.tech_weight AS techWeight,
+			a.tech_native_place AS techNativePlace,
+			a.tech_nation AS techNation,
+			b.exper_desc AS experDesc,
+			e.img_url AS imgUrlLife
+		FROM
+			service_technician_info a
+			LEFT JOIN service_technician_service_info b ON a.id = b.tech_id AND b.del_flag = '0'
+			LEFT JOIN service_technician_images c ON a.id = c.tech_id AND c.img_type = '1' AND c.del_flag = '0'
+			LEFT JOIN service_technician_images d ON a.id = d.tech_id AND d.img_type = '2' AND c.del_flag = '0'
+			LEFT JOIN service_technician_images e ON a.id = e.tech_id AND e.img_type = '4' AND c.del_flag = '0'
+		WHERE
+			a.del_flag = '0'
+			AND a.tech_phone = #{username}
+			AND a.app_login_password = #{password}
+	</select>
 </mapper>
