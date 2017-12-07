@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,9 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderTechRelationDao;
 @Service
 @Transactional(readOnly = true)
 public class OrderTechRelationService extends CrudService<OrderTechRelationDao, OrderTechRelation> {
+	
+	@Autowired
+	OrderTechRelationDao orderTechRelationDao;
 
 	public OrderTechRelation get(String id) {
 		return super.get(id);
@@ -42,6 +46,11 @@ public class OrderTechRelationService extends CrudService<OrderTechRelationDao, 
 	@Transactional(readOnly = false)
 	public void delete(OrderTechRelation orderTechRelation) {
 		super.delete(orderTechRelation);
+	}
+	
+	@Transactional(readOnly = false)
+	public void updateStatus(OrderTechRelation orderTechRelation) {
+		orderTechRelationDao.updateStatus(orderTechRelation);
 	}
 	
 }

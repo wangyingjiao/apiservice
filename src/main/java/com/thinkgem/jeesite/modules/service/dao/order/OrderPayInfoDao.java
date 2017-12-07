@@ -15,4 +15,6 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderPayInfo;
 @MyBatisDao
 public interface OrderPayInfoDao extends CrudDao<OrderPayInfo> {
 	
+	public OrderPayInfo getByOrderId(String orderId);
+	
 }

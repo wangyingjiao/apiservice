@@ -27,6 +27,14 @@
 		<include refid="orderPayInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
+    
+	<select id="getByOrderId" resultType="OrderPayInfo">
+		SELECT 
+			<include refid="orderPayInfoColumns"/>
+		FROM order_pay_info a
+		<include refid="orderPayInfoJoins"/>
+		WHERE a.order_id = #{orderId}
+	</select>
 	
 	<select id="findList" resultType="OrderPayInfo">
 		SELECT 

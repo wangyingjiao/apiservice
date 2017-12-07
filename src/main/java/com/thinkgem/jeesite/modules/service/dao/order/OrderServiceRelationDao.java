@@ -3,8 +3,11 @@
  */
 package com.thinkgem.jeesite.modules.service.dao.order;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderServiceRelation;
 
 /**
@@ -14,5 +17,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderServiceRelation;
  */
 @MyBatisDao
 public interface OrderServiceRelationDao extends CrudDao<OrderServiceRelation> {
+	
+	public List<OrderItemCommodity> findListByOffice(OrderServiceRelation orderServiceRelation);
 	
 }

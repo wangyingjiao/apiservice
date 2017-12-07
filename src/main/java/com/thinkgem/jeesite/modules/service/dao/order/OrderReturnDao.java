@@ -5,16 +5,15 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderTechRelation;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderPayInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderReturn;
 
 /**
- * 订单技师关联DAO接口
+ * 支付信息DAO接口
  * @author a
  * @version 2017-11-23
  */
 @MyBatisDao
-public interface OrderTechRelationDao extends CrudDao<OrderTechRelation> {
-	
-	public void updateStatus(OrderTechRelation orderTechRelation);
+public interface OrderReturnDao extends CrudDao<OrderReturn> {
 	
 }

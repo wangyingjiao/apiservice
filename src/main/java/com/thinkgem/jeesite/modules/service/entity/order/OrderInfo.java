@@ -51,8 +51,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String payStatus;		// 支付状态(1:待支付;2:已支付;)
 	private String returnStatus;	// 退款状态
 	private String itemName;		// 商品名称
-	private String serBegin;		// 服务时间开始
-	private String serEnd;			// 服务时间结束
+	private Date orderBegin;		// 服务时间开始
+	private Date orderEnd;			// 服务时间结束
 	
 	public OrderInfo() {
 		super();
@@ -295,20 +295,20 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.itemName = itemName;
 	}
 
-	public String getSerBegin() {
-		return serBegin;
+	public Date getOrderBegin() {
+		return orderBegin;
 	}
 
-	public void setSerBegin(String serBegin) {
-		this.serBegin = serBegin;
+	public void setOrderBegin(Date orderBegin) {
+		this.orderBegin = orderBegin;
 	}
 
-	public String getSerEnd() {
-		return serEnd;
+	public Date getOrderEnd() {
+		return orderEnd;
 	}
 
-	public void setSerEnd(String serEnd) {
-		this.serEnd = serEnd;
+	public void setOrderEnd(Date orderEnd) {
+		this.orderEnd = orderEnd;
 	}
 	
 }

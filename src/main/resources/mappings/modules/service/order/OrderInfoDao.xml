@@ -63,13 +63,19 @@ FROM
 			<!-- ${sqlMap.dsf}
 			OR a0.office_id = #{currentUser.office.id} -->)
 			<if test="orderNumber != null and orderNumber != ''">	
-				and a0.order_number = #{orderNumber}
+				and a0.order_number like concat('%',#{orderNumber},'%')
 			</if>
 			<if test="orderStatus != null and orderStatus != ''">	
 				and a0.order_status = #{orderStatus}
 			</if>
 			<if test="officeId != null and officeId != ''">	
 				and a0.office_id = #{officeId}
+			</if>
+			<if test="orderBegin != null and orderBegin != ''">	
+				and a0.order_time &gt; #{orderBegin}
+			</if>
+			<if test="orderEnd != null and orderEnd != ''">	
+				and a0.order_time &lt; #{orderEnd}
 			</if>
 			<if test="customName != null and customName != ''">	
 				and c.custom_name like concat('%',#{customName},'%')
@@ -87,20 +93,12 @@ FROM
 				and p.payStatus = #{payStatus}
 				and p.del_flag = #{DEL_FLAG_NORMAL}
 			</if>
-			<if test="serBegin != null and serBegin != ''">	
-				and r.ser_time &gt; #{serBegin}
-				and r.del_flag = #{DEL_FLAG_NORMAL}
-			</if>
-			<if test="serEnd != null and serEnd != ''">	
-				and r.ser_time &lt; #{serEnd}
-				and r.del_flag = #{DEL_FLAG_NORMAL}
-			</if>
 			<if test="returnStatus != null and returnStatus != ''">	
 				and r.return_status = #{returnStatus}
 				and r.del_flag = #{DEL_FLAG_NORMAL}
 			</if>
 			<if test="itemName != null and itemName != ''">	
-				and s.item_name = #{itemName}
+				and s.item_name like concat('%',#{itemName},'%')
 			</if>
 		</where> ) t1 )
 		<choose>
@@ -135,13 +133,19 @@ FROM
 		<where>
 			a0.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="orderNumber != null and orderNumber != ''">	
-				and a0.order_number = #{orderNumber}
+				and a0.order_number like concat('%',#{orderNumber},'%')
 			</if>
 			<if test="orderStatus != null and orderStatus != ''">	
 				and a0.order_status = #{orderStatus}
 			</if>
 			<if test="officeId != null and officeId != ''">	
 				and a0.office_id = #{officeId}
+			</if>
+			<if test="orderBegin != null and orderBegin != ''">	
+				and a0.order_time &gt; #{orderBegin}
+			</if>
+			<if test="orderEnd != null and orderEnd != ''">	
+				and a0.order_time &lt; #{orderEnd}
 			</if>
 			<if test="customName != null and customName != ''">	
 				and c.custom_name like concat('%',#{customName},'%')
@@ -159,20 +163,12 @@ FROM
 				and p.payStatus = #{payStatus}
 				and p.del_flag = #{DEL_FLAG_NORMAL}
 			</if>
-			<if test="serBegin != null and serBegin != ''">	
-				and r.ser_time &gt; #{serBegin}
-				and r.del_flag = #{DEL_FLAG_NORMAL}
-			</if>
-			<if test="serEnd != null and serEnd != ''">	
-				and r.ser_time &lt; #{serEnd}
-				and r.del_flag = #{DEL_FLAG_NORMAL}
-			</if>
 			<if test="returnStatus != null and returnStatus != ''">	
 				and r.return_status = #{returnStatus}
 				and r.del_flag = #{DEL_FLAG_NORMAL}
 			</if>
 			<if test="itemName != null and itemName != ''">	
-				and s.item_name = #{itemName}
+				and s.item_name like concat('%',#{itemName},'%')
 			</if>
 		</where> ) t1 )
 		<choose>

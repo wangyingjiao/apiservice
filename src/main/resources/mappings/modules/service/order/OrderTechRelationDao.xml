@@ -40,7 +40,9 @@
 		<include refid="orderTechRelationJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			and a.order_id = #{orderId}
+			<if test="orderId != null and orderId != ''">	
+				and a.order_id like concat('%',#{orderId},'%')
+			</if>
 			<if test="techName != null and techName != ''">	
 				and t.tech_name like concat('%',#{techName},'%')
 			</if>
@@ -116,6 +118,12 @@
 	<update id="delete">
 		UPDATE order_tech_relation SET 
 			del_flag = '1'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE order_tech_relation SET 
+			tech_status = #{techStatus}
 		WHERE id = #{id}
 	</update>
 	

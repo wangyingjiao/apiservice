@@ -21,6 +21,7 @@ public class OrderServiceRelation extends DataEntity<OrderServiceRelation> {
 	private String orderId;		// 订单ID
 	private String itemId;		// 服务项目商品ID
 	private long orderNum;	    // 服务项目商品数量
+	private String officeId;    //机构Id
 	
 	public OrderServiceRelation() {
 		super();
@@ -54,6 +55,14 @@ public class OrderServiceRelation extends DataEntity<OrderServiceRelation> {
 
 	public void setOrderNum(long orderNum) {
 		this.orderNum = orderNum;
+	}
+
+	public String getOfficeId() {
+		return officeId;
+	}
+
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
 	}
 	
 }
