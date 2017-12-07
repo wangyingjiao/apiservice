@@ -21,7 +21,8 @@ import java.util.List;
 public class AppServiceTechnicianInfo extends DataEntity<AppServiceTechnicianInfo> {
 
     private static final long serialVersionUID = 1L;
-
+    private String token;
+    private String stationName;//服务站名称
     private String imgUrlHead;//头像
     private String techPhone;//登陆账号
     private String techName;//姓名
@@ -37,6 +38,22 @@ public class AppServiceTechnicianInfo extends DataEntity<AppServiceTechnicianInf
     private String techNation;//民族
     private String experDesc;//经验描述
     private String imgUrlLife;//生活照
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
+    }
 
     public String getImgUrlHead() {
         return imgUrlHead;

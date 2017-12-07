@@ -483,6 +483,7 @@
 
 	<select id="getTechnicianByPhone" resultType="AppServiceTechnicianInfo">
 		SELECT
+			a.tech_station_name AS stationName,
 			c.img_url AS imgUrlHead,
 			a.tech_phone AS techPhone,
 			a.tech_name AS techName,

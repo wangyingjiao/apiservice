@@ -60,6 +60,7 @@ public class AppLoginController extends BaseController {
         if (entity == null) {
             return new FailResult("登陆失败");
         } else {
+            entity.setToken("token");
             return new SuccResult(entity);
         }
     }
