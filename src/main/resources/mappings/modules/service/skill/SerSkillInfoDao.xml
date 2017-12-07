@@ -115,7 +115,7 @@
 				code = #{code},
 			</if>
 			<if test="technicianNum != null and technicianNum != ''">
-				technician_num = #{technicianNum};
+				technician_num = #{technicianNum},
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},

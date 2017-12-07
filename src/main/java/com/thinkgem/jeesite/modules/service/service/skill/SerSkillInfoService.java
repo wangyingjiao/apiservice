@@ -76,6 +76,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 			for (SerSkillTechnician technician : technicians) {
 				technician.setSkillId(serSkillInfo.getId());
 				technician.setSkillName(serSkillInfo.getName());
+				technician.setDelFlag("0");
 				serSkillTechnicianService.save(technician);
 			}
 		}
