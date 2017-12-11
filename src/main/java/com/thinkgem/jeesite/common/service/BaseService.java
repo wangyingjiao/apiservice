@@ -218,7 +218,7 @@ public abstract class BaseService {
 			if (Role.DATA_ROLE_ALL.equals(dataRole)) {
 				sqlString = new StringBuilder();
 			} else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
-				sqlString.append(" AND " + tableAlias + ".office_id = '" + officeId + "'");
+				sqlString.append(" AND " + tableAlias + ".org_id = '" + officeId + "'");
 			} else if (Role.DATA_ROLE_STATION.equals(dataRole)) {
 				sqlString.append(" AND " + tableAlias + ".station_id = '" + stationId + "'");
 			}

@@ -237,7 +237,7 @@ public class OfficeController extends BaseController {
             office.setParent(new Office("1"));
         }
         //设置area
-        office.setArea(new Area(office.getAreaId()));
+        //office.setArea(new Area(office.getAreaId()));
         //默认为1级
         office.setGrade("1");
         //默认可用
@@ -338,7 +338,8 @@ public class OfficeController extends BaseController {
     	String idStr = office.getServiceCityId();
     	if (idStr.endsWith(","))
     		idStr = idStr.substring(0, idStr.length() - 1);
-    	List<Area> areas = areaService.findListByIds(idStr.split(","));
+    	//List<Area> areas = areaService.findListByIds(idStr.split(","));
+        List<Area> areas = null;
     	if (areas == null || areas.size() == 0)
     		return new FailResult("查询失败");
         return new SuccResult(areas);

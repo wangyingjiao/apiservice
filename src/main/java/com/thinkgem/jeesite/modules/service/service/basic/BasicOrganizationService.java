@@ -34,13 +34,8 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 
 	public Page<BasicOrganization> findPage(Page<BasicOrganization> page, BasicOrganization office){
 		office.setPage(page);
-		/*User user = UserUtils.getUser();
-		if (user.isAdmin()){
-			page.setList(dao.findAllList(new BasicOrganization()));
-		}else{
-			office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
-
-		}*/
+		User user = UserUtils.getUser();
+		office.getSqlMap().put("dsf", BaseService.dataRoleFilter(user, "a"));
 		page.setList(dao.findList(office));
 		return page;
 	}

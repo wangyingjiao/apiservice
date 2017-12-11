@@ -3,11 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.modules.sys.entity.AreaTree;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,11 +47,43 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Controller
 @RequestMapping(value = "${adminPath}/sys/area")
-@Api(tags = "区域类", description = "区域操作相关接口", value = "这是Api中value的位置！", position = 1)
+@Api(tags = "区域类", description = "区域操作相关接口")
 public class AreaController extends BaseController {
 
     @Autowired
     private AreaService areaService;
+
+    @ResponseBody
+    @RequestMapping(value = "listData", method = {RequestMethod.GET})
+    private Result listData() {
+        List<AreaTree> list = areaService.getAreaTree();
+        return new SuccResult<>(list);
+    }
+  /*  @ResponseBody
+    @RequestMapping(value = "listData1", method = {RequestMethod.GET})
+    private Result listData1() {
+        List<AreaTree> list1 = new ArrayList<AreaTree>();
+        AreaTree areaTree1 = new AreaTree();
+        areaTree1.setLabel("北京");
+        areaTree1.setValue("110000");
+        List<AreaTree> list2 = new ArrayList<AreaTree>();
+        AreaTree areaTree2 = new AreaTree();
+        areaTree2.setLabel("北京市");
+        areaTree2.setValue("010");
+        List<AreaTree> list3 = new ArrayList<AreaTree>();
+        AreaTree areaTree3 = new AreaTree();
+        areaTree3.setLabel("朝阳区");
+        areaTree3.setValue("110105");
+        list3.add(areaTree3);
+        areaTree2.setChildren(list3);
+        list2.add(areaTree2);
+        areaTree1.setChildren(list2);
+        list1.add(areaTree1);
+
+        return new SuccResult<>(list1);
+    }*/
+
+/*
 
     @ModelAttribute("area")
     public Area get(@RequestParam(required = false) String id) {
@@ -122,21 +156,21 @@ public class AreaController extends BaseController {
         List<Area> list = areaService.treeArea();
         TreeArea treeArea = new TreeArea();
         treeArea.setId("1");
-        List<TreeArea> result = subArea(treeArea, list/*, deep*/);
+        List<TreeArea> result = subArea(treeArea, list*//*, deep*//*);
         return new SuccResult(result);
     }
     
-    private List<TreeArea> subArea(TreeArea treeArea, List<Area> list/*, int deep*/) {
+    private List<TreeArea> subArea(TreeArea treeArea, List<Area> list*//*, int deep*//*) {
     	List<TreeArea> subs = Lists.newArrayList();
     	for (Area area : list) {
 //    		treeArea.setId(area.getId());
 //    		treeArea.setName(area.getName());
-    		if (/*treeArea.getDeep() < deep &&*/ area.getParentId().equals(treeArea.getId())) {
+    		if (*//*treeArea.getDeep() < deep &&*//* area.getParentId().equals(treeArea.getId())) {
     			TreeArea subArea = new TreeArea();
     			subArea.setDeep(treeArea.getDeep() + 1);
     			subArea.setId(area.getId());
     			subArea.setName(area.getName());
-    			List<TreeArea> subs0 = subArea(subArea, list/*, deep*/);
+    			List<TreeArea> subs0 = subArea(subArea, list*//*, deep*//*);
     			subArea.setSubs(subs0);
     			subs.add(subArea);
     		}
@@ -170,12 +204,15 @@ public class AreaController extends BaseController {
                         !extId.equals(e.getId()) &&
                         e.getParentIds().indexOf("," + extId + ",") == -1);
     }
+*//*
 
-    /**
+    *//*
+*//**
      * 取得所有区域数据
      *
      * @return
-     */
+     *//**//*
+
     @ResponseBody
 //    @RequiresPermissions("sys:area:view")
     @RequestMapping(value = "listData", method = {RequestMethod.GET, RequestMethod.POST})
@@ -184,6 +221,7 @@ public class AreaController extends BaseController {
         List<Area> areaList = UserUtils.getAreaList();
         return new SuccResult(areaList);
     }
+*//*
 
 
     @ResponseBody
@@ -233,7 +271,7 @@ public class AreaController extends BaseController {
     public Result getchildArea(@RequestParam(required = false) String id) {
         Area area = new Area();
         if (null == id || StringUtils.isBlank(id)) {
-            area = new Area("1");
+            //area = new Area("1");
             area.setParentIds("0,1,");
         } else {
             area = areaService.get(id);
@@ -246,5 +284,19 @@ public class AreaController extends BaseController {
             );
         }
         return new SuccResult(areas);
-    }
+    }*/
+
+/*
+    private List<AreaTree> genAreaTree(String id, List<AreaTree> areas) {
+        ArrayList<AreaTree> list = new ArrayList<>();
+        for (AreaTree area : areas) {
+            //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
+            if (area.getParentId().equals(id)) {
+                List<AreaTree> menus1 = genTreeMenu(menu.getId(), areas);
+                menu.setSubMenus(menus1);
+                list.add(menu);
+            }
+        }
+        return list;
+    }*/
 }

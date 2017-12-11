@@ -146,5 +146,11 @@
 					<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
 	</update>
-	
+
+	<select id="getListByLevel" resultType="Area">
+		SELECT * FROM sys_area a
+		WHERE a.level = #{level}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.code
+	</select>
 </mapper>
