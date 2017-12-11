@@ -102,33 +102,33 @@ public class AreaController extends BaseController {
         return "modules/sys/areaList";
     }
 
-    @ApiIgnore
-    @RequiresPermissions("sys:area:view")
-    @RequestMapping(value = "form")
-    public String form(Area area, Model model) {
-        if (area.getParent() == null || area.getParent().getId() == null) {
-            area.setParent(UserUtils.getUser().getOffice().getArea());
-        }
-        area.setParent(areaService.get(area.getParent().getId()));
-        model.addAttribute("area", area);
-        return "modules/sys/areaForm";
-    }
+//    @ApiIgnore
+//    @RequiresPermissions("sys:area:view")
+//    @RequestMapping(value = "form")
+//    public String form(Area area, Model model) {
+//        if (area.getParent() == null || area.getParent().getId() == null) {
+//            area.setParent(UserUtils.getUser().getOffice().getArea());
+//        }
+//        area.setParent(areaService.get(area.getParent().getId()));
+//        model.addAttribute("area", area);
+//        return "modules/sys/areaForm";
+//    }
 
-    @ApiIgnore
-    @RequiresPermissions("sys:area:edit")
-    @RequestMapping(value = "save")
-    public String save(Area area, Model model, RedirectAttributes redirectAttributes) {
-        if (Global.isDemoMode()) {
-            addMessage(redirectAttributes, "演示模式，不允许操作！");
-            return "redirect:" + adminPath + "/sys/area";
-        }
-        if (!beanValidator(model, area)) {
-            return form(area, model);
-        }
-        areaService.save(area);
-        addMessage(redirectAttributes, "保存区域'" + area.getName() + "'成功");
-        return "redirect:" + adminPath + "/sys/area/";
-    }
+//    @ApiIgnore
+//    @RequiresPermissions("sys:area:edit")
+//    @RequestMapping(value = "save")
+//    public String save(Area area, Model model, RedirectAttributes redirectAttributes) {
+//        if (Global.isDemoMode()) {
+//            addMessage(redirectAttributes, "演示模式，不允许操作！");
+//            return "redirect:" + adminPath + "/sys/area";
+//        }
+//        if (!beanValidator(model, area)) {
+//            return form(area, model);
+//        }
+//        areaService.save(area);
+//        addMessage(redirectAttributes, "保存区域'" + area.getName() + "'成功");
+//        return "redirect:" + adminPath + "/sys/area/";
+//    }
 
     @ApiIgnore
     @RequiresPermissions("sys:area:edit")

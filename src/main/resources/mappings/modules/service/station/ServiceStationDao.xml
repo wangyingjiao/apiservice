@@ -46,7 +46,7 @@
     <select id="get" resultType="ServiceStation">
         SELECT
         <include refid="serviceStationColumns"/>
-        FROM service_station a
+        FROM basic_service_station a
         <include refid="serviceStationJoins"/>
         WHERE a.id = #{id}
     </select>
@@ -54,7 +54,7 @@
     <select id="findList" resultType="ServiceStation">
         SELECT
         <include refid="serviceStationColumns"/>
-        FROM service_station a
+        FROM basic_service_station a
         <include refid="serviceStationJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -81,7 +81,7 @@
     <select id="findAllList" resultType="ServiceStation">
         SELECT
         <include refid="serviceStationColumns"/>
-        FROM service_station a
+        FROM basic_service_station a
         <include refid="serviceStationJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -96,14 +96,12 @@
         </choose>
     </select>
     <!--返回当前服务站下的员工列表-->
-
-    <select id="findStationByUser"
-            resultType="com.thinkgem.jeesite.modules.service.entity.station.ServiceStation">
-		SELECT * FROM service_station WHERE del_flag = 0 AND user_id = #{id}
+    <select id="findStationByUser" resultType="com.thinkgem.jeesite.modules.service.entity.station.ServiceStation">
+		SELECT * FROM basic_service_station WHERE del_flag = 0 AND user_id = #{id}
 	</select>
 
     <insert id="insert">
-		INSERT INTO service_station(
+		INSERT INTO basic_service_station(
 			id,
 			name,
 			type,
@@ -169,7 +167,7 @@
 	</insert>
 
     <!--<update id="update">-->
-    <!--UPDATE service_station set-->
+    <!--UPDATE basic_service_station set-->
     <!--<set>-->
     <!--<if test="office != null and office.id != null">office_id = #{office.id},</if>-->
 
@@ -180,7 +178,7 @@
     <!--WHERE id = #{id}-->
     <!--</update>-->
     <update id="update">
-        UPDATE service_station
+        UPDATE basic_service_station
         <set>
             <if test="updateBy != null and updateBy.id != null">update_by = #{updateBy.id},</if>
             <if test="office != null and office.id != null">office_id = #{office.id},</if>
@@ -214,7 +212,7 @@
 
 
     <update id="delete">
-		UPDATE service_station SET 
+		UPDATE basic_service_station SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

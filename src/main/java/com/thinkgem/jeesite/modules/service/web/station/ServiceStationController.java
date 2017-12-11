@@ -9,8 +9,9 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.SaveStationGroup;
-import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
+
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -39,14 +40,15 @@ public class ServiceStationController extends BaseController {
     @Autowired
     private ServiceStationService serviceStationService;
 
+
     @ModelAttribute
-    public ServiceStation get(@RequestParam(required = false) String id) {
-        ServiceStation entity = null;
+    public BasicServiceStation get(@RequestParam(required = false) String id) {
+        BasicServiceStation entity = null;
         if (StringUtils.isNotBlank(id)) {
             entity = serviceStationService.get(id);
         }
         if (entity == null) {
-            entity = new ServiceStation();
+            entity = new BasicServiceStation();
         }
         return entity;
     }
@@ -55,25 +57,25 @@ public class ServiceStationController extends BaseController {
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务站列表")
     //@RequiresPermissions("service:station:serviceStation:view")
-    public Result listData(@RequestBody(required = false) ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
-        Page<ServiceStation> stationPage = new Page<>(request, response);
-        Page<ServiceStation> page = serviceStationService.findPage(stationPage, serviceStation);
+    public Result listData(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
+        Page<BasicServiceStation> stationPage = new Page<>(request, response);
+        Page<BasicServiceStation> page = serviceStationService.findPage(stationPage, serviceStation);
         return new SuccResult(page);
     }
 
     @ResponseBody
     @RequestMapping(value = "listByOffice", method = {RequestMethod.POST, RequestMethod.GET})
     //@RequiresPermissions("service:station:serviceStation:view")
-    public Result listByOffice(@RequestBody(required = false) ServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
-        List<ServiceStation> list = serviceStationService.findList(serviceStation);
+    public Result listByOffice(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
+        List<BasicServiceStation> list = serviceStationService.findList(serviceStation);
         return new SuccResult(list);
     }
 
 
     @ResponseBody
     @RequestMapping(value = "getData", method = {RequestMethod.POST, RequestMethod.GET})
-    public Result getData(@RequestBody ServiceStation serviceStation) {
-        ServiceStation entity = null;
+    public Result getData(@RequestBody BasicServiceStation serviceStation) {
+        BasicServiceStation entity = null;
         if (StringUtils.isNotBlank(serviceStation.getId())) {
             entity = serviceStationService.get(serviceStation.getId());
         }
@@ -90,7 +92,7 @@ public class ServiceStationController extends BaseController {
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
     //@RequiresPermissions("service:station:serviceStation:edit")
     @ApiOperation("保存服务站")
-    public Result saveData(@RequestBody ServiceStation serviceStation) {
+    public Result saveData(@RequestBody BasicServiceStation serviceStation) {
 
         List<String> errors = errors(serviceStation, SaveStationGroup.class);
         if (errors.size() > 0) {
@@ -99,11 +101,12 @@ public class ServiceStationController extends BaseController {
         User user = UserUtils.getUser();
 
         if (user.getOffice() != null && user.getOffice().getId() != "0") {
-            serviceStation.setOffice(user.getOffice());
-            serviceStation.setOfficeId(user.getOffice().getId());
-            serviceStation.setOfficeName(user.getOffice().getName());
+//            serviceStation.setOffice(user.getOffice());
+//            serviceStation.setOfficeId(user.getOffice().getId());
+//            serviceStation.setOfficeName(user.getOffice().getName());
+            serviceStation.setOrgId(user.getOfficeId());
         } else {
-            return new FailResult("用户没有具体的所属机构(全平台)");
+            return new FailResult("用户没有具体的所属机构(全平台权限)");
         }
         serviceStationService.save(serviceStation);
         return new SuccResult("保存服务站" + serviceStation.getName() + "成功");
@@ -113,12 +116,12 @@ public class ServiceStationController extends BaseController {
     @RequestMapping(value = "setScope", method = {RequestMethod.POST, RequestMethod.GET})
     @RequiresPermissions("service:station:serviceStation:edit")
     @ApiOperation("设置座标范围")
-    public Result setScope(@RequestBody ServiceStation serviceStation) {
+    public Result setScope(@RequestBody BasicServiceStation serviceStation) {
 
         if (null == serviceStation.getId()) {
             return new FailResult("未指定设置的服务站ID。");
         }
-        ServiceStation station = serviceStationService.get(serviceStation.getId());
+        BasicServiceStation station = serviceStationService.get(serviceStation.getId());
         station.setServicePoint(serviceStation.getServicePoint());
         serviceStationService.save(station);
         return new SuccResult("保存服务站：" + station.getName() + " 座标信息成功。");
@@ -128,11 +131,11 @@ public class ServiceStationController extends BaseController {
     @RequestMapping(value = "setManager", method = {RequestMethod.POST, RequestMethod.GET})
     //@RequiresPermissions("service:station:serviceStation:edit")
     @ApiOperation("设置站长")
-    public Result setManager(@RequestBody ServiceStation serviceStation) {
+    public Result setManager(@RequestBody BasicServiceStation serviceStation) {
         if (null == serviceStation.getId()) {
             return new FailResult("未指定设置的服务站的ID。");
         }
-        //ServiceStation station = serviceStationService.get(serviceStation.getId());
+        //BasicServiceStation station = serviceStationService.get(serviceStation.getId());
         //station.setUser(serviceStation.getUser());
         serviceStationService.save(serviceStation);
         return new SuccResult("保存服务站：" + serviceStation.getName() + " 站长信息成功。");
@@ -143,7 +146,7 @@ public class ServiceStationController extends BaseController {
     @RequiresPermissions("service:station:serviceStation:edit")
     @RequestMapping(value = "deleteStation")
     @ApiOperation("删除服务站")
-    public Result deleteStation(@RequestBody ServiceStation serviceStation) {
+    public Result deleteStation(@RequestBody BasicServiceStation serviceStation) {
         serviceStationService.delete(serviceStation);
         return new SuccResult("删除服务站成功");
     }

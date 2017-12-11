@@ -52,17 +52,10 @@ public abstract class BaseService {
 							isDataScopeAll = true;
 						}
 						else if (Role.DATA_SCOPE_COMPANY_AND_CHILD.equals(r.getDataScope())){
-							sqlString.append(" OR " + oa + ".id = '" + user.getCompany().getId() + "'");
-							sqlString.append(" OR " + oa + ".parent_ids LIKE '" + user.getCompany().getParentIds() + user.getCompany().getId() + ",%'");
-						}
+							}
 						else if (Role.DATA_SCOPE_COMPANY.equals(r.getDataScope())){
-							sqlString.append(" OR " + oa + ".id = '" + user.getCompany().getId() + "'");
-							// 包括本公司下的部门 （type=1:公司；type=2：部门）
-							sqlString.append(" OR (" + oa + ".parent_id = '" + user.getCompany().getId() + "' AND " + oa + ".type = '2')");
-						}
+								}
 						else if (Role.DATA_SCOPE_OFFICE_AND_CHILD.equals(r.getDataScope())){
-							sqlString.append(" OR " + oa + ".id = '" + user.getOffice().getId() + "'");
-							sqlString.append(" OR " + oa + ".parent_ids LIKE '" + user.getOffice().getParentIds() + user.getOffice().getId() + ",%'");
 						}
 						else if (Role.DATA_SCOPE_OFFICE.equals(r.getDataScope())){
 							sqlString.append(" OR " + oa + ".id = '" + user.getOffice().getId() + "'");
@@ -147,20 +140,16 @@ public abstract class BaseService {
 				// 包括本公司下的部门 （type=1:公司；type=2：部门）
 				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
 				sqlString.append(" WHERE type='2'");
-				sqlString.append(" AND (id = '" + user.getCompany().getId() + "'");
-				sqlString.append(" OR parent_ids LIKE '" + user.getCompany().getParentIds() + user.getCompany().getId() + ",%')");
-				sqlString.append(" AND " + where +")");
+					sqlString.append(" AND " + where +")");
 			}
 			else if (Role.DATA_SCOPE_COMPANY.equals(dataScopeString)){
 				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
 				sqlString.append(" WHERE type='2'");
-				sqlString.append(" AND id = '" + user.getCompany().getId() + "'");
 				sqlString.append(" AND " + where +")");
 			}
 			else if (Role.DATA_SCOPE_OFFICE_AND_CHILD.equals(dataScopeString)){
 				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
 				sqlString.append(" WHERE (id = '" + user.getOffice().getId() + "'");
-				sqlString.append(" OR parent_ids LIKE '" + user.getOffice().getParentIds() + user.getOffice().getId() + ",%')");
 				sqlString.append(" AND " + where +")");
 			}
 			else if (Role.DATA_SCOPE_OFFICE.equals(dataScopeString)){

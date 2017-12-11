@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.modules.service.service.station;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,29 +24,36 @@ import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
  */
 @Service
 @Transactional(readOnly = true)
-public class ServiceStationService extends CrudService<ServiceStationDao, ServiceStation> {
-	@Autowired
-	ServiceStationDao stationDao;
+public class ServiceStationService extends CrudService<BasicServiceStationDao, BasicServiceStation> {
 
-	public ServiceStation get(String id) {
+	@Autowired
+	BasicServiceStationDao basicServiceStationDao;
+
+
+	@Override
+	public BasicServiceStation get(String id) {
 		return super.get(id);
 	}
 	
-	public List<ServiceStation> findList(ServiceStation serviceStation) {
+	@Override
+	public List<BasicServiceStation> findList(BasicServiceStation serviceStation) {
 		return super.findList(serviceStation);
 	}
 	
-	public Page<ServiceStation> findPage(Page<ServiceStation> page, ServiceStation serviceStation) {
+	@Override
+	public Page<BasicServiceStation> findPage(Page<BasicServiceStation> page, BasicServiceStation serviceStation) {
 		return super.findPage(page, serviceStation);
 	}
 	
+	@Override
 	@Transactional(readOnly = false)
-	public void save(ServiceStation serviceStation) {
+	public void save(BasicServiceStation serviceStation) {
 		super.save(serviceStation);
 	}
 	
+	@Override
 	@Transactional(readOnly = false)
-	public void delete(ServiceStation serviceStation) {
+	public void delete(BasicServiceStation serviceStation) {
 		super.delete(serviceStation);
 	}
 

@@ -41,7 +41,7 @@
 		a.del_flag AS "delFlag",
 		p.name AS "parent.name",
 		ar.name AS "area.name",
-		ar.parent_ids AS "area.parentIds",
+
 		pp.name AS "primaryPerson.name",
 		dp.name AS "deputyPerson.name"
 	</sql>
@@ -105,7 +105,7 @@
 			<include refid="officeColumns"/>
 		FROM sys_office a
 		<include refid="officeJoins"/>
-		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY a.create_date desc
 	</select>
 	<select id="getByName" resultType="com.thinkgem.jeesite.modules.sys.entity.Office">
@@ -116,7 +116,7 @@
 				INSERT INTO sys_office(
 			id,
 			parent_id,
-			parent_ids,
+
 			name,
 			sort,
 			area_id,
@@ -153,7 +153,7 @@
 		) VALUES (
 			#{id},
 			#{parent.id},
-			#{parentIds},
+
 			#{name},
 			#{sort},
 			#{area.id},
@@ -193,7 +193,7 @@
 	<update id="update">
 		UPDATE sys_office SET
 			parent_id = #{parent.id},
-			parent_ids = #{parentIds},
+
 			name = #{name},
 			sort = #{sort},
 			area_id = #{area.id},
@@ -230,17 +230,14 @@
 	<update id="updateParentIds">
 		UPDATE sys_office SET 
 			parent_id = #{parent.id}, 
-			parent_ids = #{parentIds}
+
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
 		UPDATE sys_office SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id} OR parent_ids LIKE 
-					<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
-					<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
-					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+		WHERE id = #{id}
 	</update>
 	
 </mapper>

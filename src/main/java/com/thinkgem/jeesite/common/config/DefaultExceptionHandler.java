@@ -12,8 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author x
@@ -28,13 +26,13 @@ public class DefaultExceptionHandler implements HandlerExceptionResolver {
                                          Object handler,
                                          Exception ex) {
         ModelAndView mv = new ModelAndView();
-         //使用FastJson提供的FastJsonJsonView视图返回，不需要捕获异常
+        //使用FastJson提供的FastJsonJsonView视图返回，不需要捕获异常
         FastJsonJsonView view = new FastJsonJsonView();
-        FailResult<String> failResult = new FailResult<>(ex.getClass()+":"+ex.getMessage());
+        FailResult<String> failResult = new FailResult<>("系统异常。");
         JSONObject viewMap = JSONObject.parseObject(JSON.toJSONString(failResult));
         view.setAttributesMap(viewMap);
         mv.setView(view);
-        logger.debug("异常:" + ex.getMessage());
+        logger.error("操作异常", ex);
         return mv;
     }
 }

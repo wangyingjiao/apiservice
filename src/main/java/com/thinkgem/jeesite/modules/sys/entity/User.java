@@ -13,7 +13,8 @@ import com.thinkgem.jeesite.common.utils.Collections3;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 import com.thinkgem.jeesite.common.utils.excel.fieldtype.RoleListType;
-import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -31,13 +32,12 @@ import java.util.List;
 public class User extends DataEntity<User> {
 
     private static final long serialVersionUID = 1L;
-    private Office company;    // 归属公司
     private String companyId;//公司id
     private String companyName;//公司名称
-    private Office office;    // 归属部门
+    private BasicOrganization office;    // 归属部门
     private String officeId; //机构id
     private String officeName; //机构名称
-    private ServiceStation station;//服务站
+    private BasicServiceStation station;//服务站
     private String stationId; //服务站id
     private String stationName; //服务站名称
     private String loginName;// 登录名
@@ -161,42 +161,32 @@ public class User extends DataEntity<User> {
         this.loginFlag = loginFlag;
     }
 
+    @Override
     @SupCol(isUnique = "true", isHide = "true")
     @ExcelField(title = "ID", type = 1, align = 2, sort = 1)
     public String getId() {
         return id;
     }
 
-    @JsonIgnore
-    //@NotNull(message = "归属公司不能为空")
-    @ExcelField(title = "归属公司", align = 2, sort = 20)
-    public Office getCompany() {
-        return company;
-    }
-
-    public void setCompany(Office company) {
-        this.company = company;
-    }
-
     //@JsonIgnore
     @NotNull(message = "归属部门不能为空")
     @ExcelField(title = "归属部门", align = 2, sort = 25)
-    public Office getOffice() {
+    public BasicOrganization getOffice() {
         return office;
     }
 
-    public void setOffice(Office office) {
+    public void setOffice(BasicOrganization office) {
         this.office = office;
     }
 
     @JsonIgnore
     //@NotNull(message = "归属服务站不能为空")
     @ExcelField(title = "归属服务站", align = 2, sort = 25)
-    public ServiceStation getStation() {
+    public BasicServiceStation getStation() {
         return station;
     }
 
-    public void setStation(ServiceStation station) {
+    public void setStation(BasicServiceStation station) {
         this.station = station;
     }
 
@@ -215,9 +205,11 @@ public class User extends DataEntity<User> {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     @NotBlank(message = "用户姓名不可为空。")
     @Length(min = 1, max = 100, message = "姓名长度必须介于 1 和 100 之间")
     @ExcelField(title = "姓名", align = 2, sort = 40)
@@ -271,6 +263,7 @@ public class User extends DataEntity<User> {
         this.mobile = mobile;
     }
 
+    @Override
     @ExcelField(title = "备注", align = 1, sort = 900)
     public String getRemarks() {
         return remarks;
@@ -286,6 +279,7 @@ public class User extends DataEntity<User> {
         this.userType = userType;
     }
 
+    @Override
     @ExcelField(title = "创建时间", type = 0, align = 1, sort = 90)
     public Date getCreateDate() {
         return createDate;

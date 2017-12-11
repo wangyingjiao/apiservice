@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.sys.entity;
 import java.beans.Transient;
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
@@ -35,7 +36,7 @@ public class Role extends DataEntity<Role> {
 	}
 
 	private String id;
-	private Office office;	// 归属机构
+	private BasicOrganization office;	// 归属机构
 	private String name; 	// 角色名称
 	private String enname;	// 英文名称
 	private String roleType;// 权限类型
@@ -50,7 +51,7 @@ public class Role extends DataEntity<Role> {
 
 //	private List<User> userList = Lists.newArrayList(); // 拥有用户列表
 	private List<Menu> menuList = Lists.newArrayList(); // 拥有菜单列表
-	private List<Office> officeList = Lists.newArrayList(); // 按明细设置数据范围
+	private List<BasicOrganization> officeList = Lists.newArrayList(); // 按明细设置数据范围
 
 	// 数据范围（1：所有数据；2：所在公司及以下数据；3：所在公司数据；4：所在部门及以下数据；5：所在部门数据；8：仅本人数据；9：按明细设置）
 	public static final String DATA_SCOPE_ALL = "1";
@@ -89,11 +90,11 @@ public class Role extends DataEntity<Role> {
 		this.sysData = sysData;
 	}
 
-	public Office getOffice() {
+	public BasicOrganization getOffice() {
 		return office;
 	}
 
-	public void setOffice(Office office) {
+	public void setOffice(BasicOrganization office) {
 		this.office = office;
 	}
 
@@ -208,17 +209,17 @@ public class Role extends DataEntity<Role> {
 		}
 	}
 	
-	public List<Office> getOfficeList() {
+	public List<BasicOrganization> getOfficeList() {
 		return officeList;
 	}
 
-	public void setOfficeList(List<Office> officeList) {
+	public void setOfficeList(List<BasicOrganization> officeList) {
 		this.officeList = officeList;
 	}
 
 	public List<String> getOfficeIdList() {
 		List<String> officeIdList = Lists.newArrayList();
-		for (Office office : officeList) {
+		for (BasicOrganization office : officeList) {
 			officeIdList.add(office.getId());
 		}
 		return officeIdList;
@@ -227,7 +228,7 @@ public class Role extends DataEntity<Role> {
 	public void setOfficeIdList(List<String> officeIdList) {
 		officeList = Lists.newArrayList();
 		for (String officeId : officeIdList) {
-			Office office = new Office();
+			BasicOrganization office = new BasicOrganization();
 			office.setId(officeId);
 			officeList.add(office);
 		}

@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.Collections3;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.sys.entity.*;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
@@ -188,7 +189,7 @@ public class RoleController extends BaseController {
     public List<Map<String, Object>> users(String officeId, HttpServletResponse response) {
         List<Map<String, Object>> mapList = Lists.newArrayList();
         User user = new User();
-        user.setOffice(new Office(officeId));
+        user.setOffice(new BasicOrganization(officeId));
         Page<User> page = systemService.findUser(new Page<User>(1, -1), user);
         for (User e : page.getList()) {
             Map<String, Object> map = Maps.newHashMap();

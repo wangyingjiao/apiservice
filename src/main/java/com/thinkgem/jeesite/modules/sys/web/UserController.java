@@ -17,6 +17,8 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.Menu;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
@@ -57,8 +59,10 @@ public class UserController extends BaseController {
     @Autowired
     private SystemService systemService;
 
+
     @Autowired
-    private OfficeService officeService;
+    private BasicOrganizationService organizationService;
+
 
     @ModelAttribute
     public User get(@RequestParam(required = false) String id) {
@@ -115,9 +119,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("sys:user:view")
     @RequestMapping(value = "form", method = RequestMethod.GET)
     public String form(User user, Model model) {
-        if (user.getCompany() == null || user.getCompany().getId() == null) {
-            user.setCompany(UserUtils.getUser().getCompany());
-        }
+
         if (user.getOffice() == null || user.getOffice().getId() == null) {
             user.setOffice(UserUtils.getUser().getOffice());
         }
@@ -136,8 +138,8 @@ public class UserController extends BaseController {
             return "redirect:" + adminPath + "/sys/user/list?repage";
         }
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
-        user.setCompany(new Office(request.getParameter("company.id")));
-        user.setOffice(new Office(request.getParameter("office.id")));
+
+        user.setOffice(new BasicOrganization(request.getParameter("office.id")));
         // 如果新密码为空，则不更换密码
         if (StringUtils.isNotBlank(user.getNewPassword())) {
             user.setPassword(SystemService.entryptPassword(user.getNewPassword()));
@@ -536,8 +538,7 @@ public class UserController extends BaseController {
     public Result saveData(@RequestBody User user) {
 
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
-        user.setCompany(new Office("1"));
-        user.setOffice(officeService.get(user.getOfficeId()));
+        user.setOffice(organizationService.get(user.getOfficeId()));
         user.setStation(stationService.get(user.getStationId()));
 
         if (StringUtils.isNotBlank(user.getNewPassword())) {
