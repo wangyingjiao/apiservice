@@ -164,13 +164,13 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 		this.remark = remark;
 	}
 
-	List<BasicServiceCity> cityCodes;
+	List<String> cityCodes;
 
-	public List<BasicServiceCity> getCityCodes() {
+	public List<String> getCityCodes() {
 		return cityCodes;
 	}
 
-	public void setCityCodes(List<BasicServiceCity> cityCodes) {
+	public void setCityCodes(List<String> cityCodes) {
 		this.cityCodes = cityCodes;
 	}
 }

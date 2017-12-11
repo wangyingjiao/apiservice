@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.service.basic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.service.BaseService;
@@ -59,10 +60,12 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 
 		super.save(basicOrganization);
 
-		List<BasicServiceCity> cityCodes = basicOrganization.getCityCodes();
+		List<String> cityCodes = basicOrganization.getCityCodes();
 		if(null != cityCodes){
-			for(BasicServiceCity city : cityCodes ){
+			for(String cityCode : cityCodes ){
+                BasicServiceCity city = new BasicServiceCity();
 				city.setOrgId(basicOrganization.getId());
+				city.setCityCode(cityCode);
 				basicServiceCityService.save(city);
 			}
 		}
@@ -80,13 +83,23 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		return super.findList(basicOrganization);
 	}
 
+	/**
+	 * 机构详情
+	 * @param basicOrganization
+	 * @return
+	 */
 	public BasicOrganization formData(BasicOrganization basicOrganization) {
 		if(null == basicOrganization){
 			return null;
 		}
 		BasicOrganization basicOrganizationRe = get(basicOrganization.getId());
-
-		List<BasicServiceCity> cityCodes = basicServiceCityService.getCityCodesByOrgId(basicOrganization.getId());
+        List<String> cityCodes = new ArrayList<String>();//服务城市
+		List<BasicServiceCity> cityCodeList = basicServiceCityService.getCityCodesByOrgId(basicOrganization.getId());
+		if(null != cityCodeList){
+            for(BasicServiceCity city : cityCodeList){
+                cityCodes.add(city.getCityCode());
+            }
+        }
 		basicOrganizationRe.setCityCodes(cityCodes);
 		return basicOrganizationRe;
 	}
