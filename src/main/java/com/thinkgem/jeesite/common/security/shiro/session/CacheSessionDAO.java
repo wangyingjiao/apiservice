@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.Servlets;
+
 
 /**
  * 系统安全认证实现类
@@ -32,61 +32,61 @@ import com.thinkgem.jeesite.common.web.Servlets;
 public class CacheSessionDAO extends EnterpriseCacheSessionDAO implements SessionDAO {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
+
     public CacheSessionDAO() {
         super();
     }
 
     @Override
     protected void doUpdate(Session session) {
-    	if (session == null || session.getId() == null) {  
+    	if (session == null || session.getId() == null) {
             return;
         }
-    	
-    	HttpServletRequest request = Servlets.getRequest();
-		if (request != null){
-			String uri = request.getServletPath();
-			// 如果是静态文件，则不更新SESSION
-			if (Servlets.isStaticFile(uri)){
-				return;
-			}
-			// 如果是视图文件，则不更新SESSION
-			if (StringUtils.startsWith(uri, Global.getConfig("web.view.prefix"))
-					&& StringUtils.endsWith(uri, Global.getConfig("web.view.suffix"))){
-				return;
-			}
-			// 手动控制不更新SESSION
-			String updateSession = request.getParameter("updateSession");
-			if (Global.FALSE.equals(updateSession) || Global.NO.equals(updateSession)){
-				return;
-			}
-		}
+
+//    	HttpServletRequest request = Servlets.getRequest();
+//		if (request != null){
+//			String uri = request.getServletPath();
+//			// 如果是静态文件，则不更新SESSION
+//			if (Servlets.isStaticFile(uri)){
+//				return;
+//			}
+//			// 如果是视图文件，则不更新SESSION
+//			if (StringUtils.startsWith(uri, Global.getConfig("web.view.prefix"))
+//					&& StringUtils.endsWith(uri, Global.getConfig("web.view.suffix"))){
+//				return;
+//			}
+//			// 手动控制不更新SESSION
+//			String updateSession = request.getParameter("updateSession");
+//			if (Global.FALSE.equals(updateSession) || Global.NO.equals(updateSession)){
+//				return;
+//			}
+//		}
     	super.doUpdate(session);
-    	logger.debug("update {} {}", session.getId(), request != null ? request.getRequestURI() : "");
+    	//logger.debug("update {} {}", session.getId(), request != null ? request.getRequestURI() : "");
     }
 
     @Override
     protected void doDelete(Session session) {
-    	if (session == null || session.getId() == null) {  
+    	if (session == null || session.getId() == null) {
             return;
         }
-    	
+
     	super.doDelete(session);
     	logger.debug("delete {} ", session.getId());
     }
 
     @Override
     protected Serializable doCreate(Session session) {
-		HttpServletRequest request = Servlets.getRequest();
-		if (request != null){
-			String uri = request.getServletPath();
-			// 如果是静态文件，则不创建SESSION
-			if (Servlets.isStaticFile(uri)){
-		        return null;
-			}
-		}
+//		HttpServletRequest request = Servlets.getRequest();
+//		if (request != null){
+//			String uri = request.getServletPath();
+//			// 如果是静态文件，则不创建SESSION
+//			if (Servlets.isStaticFile(uri)){
+//		        return null;
+//			}
+//		}
 		super.doCreate(session);
-		logger.debug("doCreate {} {}", session, request != null ? request.getRequestURI() : "");
+		//logger.debug("doCreate {} {}", session, request != null ? request.getRequestURI() : "");
     	return session.getId();
     }
 
@@ -94,31 +94,31 @@ public class CacheSessionDAO extends EnterpriseCacheSessionDAO implements Sessio
     protected Session doReadSession(Serializable sessionId) {
 		return super.doReadSession(sessionId);
     }
-    
+
     @Override
     public Session readSession(Serializable sessionId) throws UnknownSessionException {
     	try{
     		Session s = null;
-    		HttpServletRequest request = Servlets.getRequest();
-    		if (request != null){
-    			String uri = request.getServletPath();
-    			// 如果是静态文件，则不获取SESSION
-    			if (Servlets.isStaticFile(uri)){
-    				return null;
-    			}
-    			s = (Session)request.getAttribute("session_"+sessionId);
-    		}
-    		if (s != null){
-    			return s;
-    		}
+//    		HttpServletRequest request = Servlets.getRequest();
+//    		if (request != null){
+//    			String uri = request.getServletPath();
+//    			// 如果是静态文件，则不获取SESSION
+//    			if (Servlets.isStaticFile(uri)){
+//    				return null;
+//    			}
+//    			s = (Session)request.getAttribute("session_"+sessionId);
+//    		}
+//    		if (s != null){
+//    			return s;
+//    		}
 
     		Session session = super.readSession(sessionId);
-    		logger.debug("readSession {} {}", sessionId, request != null ? request.getRequestURI() : "");
-    		
-    		if (request != null && session != null){
-    			request.setAttribute("session_"+sessionId, session);
-    		}
-    		
+    		//logger.debug("readSession {} {}", sessionId, request != null ? request.getRequestURI() : "");
+
+//    		if (request != null && session != null){
+//    			request.setAttribute("session_"+sessionId, session);
+//    		}
+
     		return session;
     	}catch (UnknownSessionException e) {
 			return null;
@@ -134,7 +134,7 @@ public class CacheSessionDAO extends EnterpriseCacheSessionDAO implements Sessio
 	public Collection<Session> getActiveSessions(boolean includeLeave) {
 		return getActiveSessions(includeLeave, null, null);
 	}
-    
+
     /**
 	 * 获取活动会话
 	 * @param includeLeave 是否包括离线（最后访问时间大于3分钟为离线会话）
@@ -172,5 +172,5 @@ public class CacheSessionDAO extends EnterpriseCacheSessionDAO implements Sessio
 		}
 		return sessions;
 	}
-	
+
 }

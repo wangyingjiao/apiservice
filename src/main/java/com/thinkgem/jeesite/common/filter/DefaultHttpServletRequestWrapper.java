@@ -1,10 +1,13 @@
 package com.thinkgem.jeesite.common.filter;
 
+
 import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.mock.web.DelegatingServletInputStream;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -48,7 +51,7 @@ public class DefaultHttpServletRequestWrapper extends HttpServletRequestWrapper 
     @Override
     public ServletInputStream getInputStream() throws IOException {
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
-        return new ServletInputStream() {
+        return new DelegatingServletInputStream(byteArrayInputStream) {
             @Override
             public int read() throws IOException {
                 return byteArrayInputStream.read();

@@ -80,6 +80,11 @@
 
     <!-- 依赖项定义 -->
     <dependencies>
+        <dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>140</version>
+        </dependency>
         <!--cors filter-->
         <dependency>
             <groupId>com.thetransactioncompany</groupId>
@@ -110,7 +115,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.3.1</version>
+            <version>2.8.2</version>
         </dependency>
         <!--swagger   -->
 
@@ -206,15 +211,35 @@
         <!-- PERSISTENCE begin -->
 
         <!-- MyBatis -->
+        <!--<dependency>-->
+        <!--<groupId>org.mybatis</groupId>-->
+        <!--<artifactId>mybatis</artifactId>-->
+        <!--<version>${mybatis.version}</version>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>${mybatis.version}</version>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+            <version>2.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.5</version>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
             <artifactId>mybatis-spring</artifactId>
-            <version>${mybatis-spring.version}</version>
+            <version>1.3.1</version>
+            <!--<version>${mybatis-spring.version}</version>-->
         </dependency>
 
         <!-- connection pool -->
@@ -230,13 +255,6 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.driver.version}</version>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
-            <version>${oracle.driver.version}</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ojdbc14-10.2.0.4.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>
@@ -592,51 +610,51 @@
         </dependency>
 
         <!-- 中文分词 -->
-        <dependency>
-            <groupId>org.wltea</groupId>
-            <artifactId>analyzer</artifactId>
-            <version>2012_u6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/analyzer-2012_u6.jar</systemPath>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wltea</groupId>-->
+            <!--<artifactId>analyzer</artifactId>-->
+            <!--<version>2012_u6</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/analyzer-2012_u6.jar</systemPath>-->
+        <!--</dependency>-->
         <!-- GENERAL UTILS end -->
 
         <!-- CKFinder begin -->
-        <dependency>
-            <groupId>net.coobird</groupId>
-            <artifactId>thumbnailator</artifactId>
-            <version>0.4.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/thumbnailator-0.4.2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.ckfinder</groupId>
-            <artifactId>apache-ant-zip</artifactId>
-            <version>2.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/apache-ant-zip-2.3.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.ckfinder</groupId>
-            <artifactId>ckfinder</artifactId>
-            <version>2.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinder-2.3.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.ckfinder</groupId>
-            <artifactId>ckfinderplugin-fileeditor</artifactId>
-            <version>2.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinderplugin-fileeditor-2.3.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.ckfinder</groupId>
-            <artifactId>ckfinderplugin-imageresize</artifactId>
-            <version>2.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinderplugin-imageresize-2.3.jar</systemPath>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>net.coobird</groupId>-->
+            <!--<artifactId>thumbnailator</artifactId>-->
+            <!--<version>0.4.2</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/thumbnailator-0.4.2.jar</systemPath>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.ckfinder</groupId>-->
+            <!--<artifactId>apache-ant-zip</artifactId>-->
+            <!--<version>2.3</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/apache-ant-zip-2.3.jar</systemPath>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.ckfinder</groupId>-->
+            <!--<artifactId>ckfinder</artifactId>-->
+            <!--<version>2.3</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinder-2.3.jar</systemPath>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.ckfinder</groupId>-->
+            <!--<artifactId>ckfinderplugin-fileeditor</artifactId>-->
+            <!--<version>2.3</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinderplugin-fileeditor-2.3.jar</systemPath>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.ckfinder</groupId>-->
+            <!--<artifactId>ckfinderplugin-imageresize</artifactId>-->
+            <!--<version>2.3</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinderplugin-imageresize-2.3.jar</systemPath>-->
+        <!--</dependency>-->
         <!-- CKFinder end -->
 
         <!-- TEST begin -->
@@ -653,13 +671,7 @@
         <!-- TEST end -->
 
         <!-- User Agent -->
-        <dependency>
-            <groupId>bitwalker</groupId>
-            <artifactId>UserAgentUtils</artifactId>
-            <version>1.13</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/UserAgentUtils-1.13.jar</systemPath>
-        </dependency>
+
 
         <!-- 自定义jar依赖包
         <dependency>
@@ -968,81 +980,81 @@
 
     <profiles>
         <!-- 初始化数据库 -->
-        <profile>
-            <id>init-db</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.dbunit</groupId>
-                    <artifactId>dbunit</artifactId>
-                    <version>2.4.8</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi</artifactId>
-                    <version>3.2-FINAL</version>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
-                        <configuration>
-                            <target>
+        <!--<profile>-->
+            <!--<id>init-db</id>-->
+            <!--<dependencies>-->
+                <!--<dependency>-->
+                    <!--<groupId>org.dbunit</groupId>-->
+                    <!--<artifactId>dbunit</artifactId>-->
+                    <!--<version>2.4.8</version>-->
+                <!--</dependency>-->
+                <!--<dependency>-->
+                    <!--<groupId>org.apache.poi</groupId>-->
+                    <!--<artifactId>poi</artifactId>-->
+                    <!--<version>3.2-FINAL</version>-->
+                <!--</dependency>-->
+            <!--</dependencies>-->
+            <!--<build>-->
+                <!--<plugins>-->
+                    <!--&lt;!&ndash;<plugin>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<groupId>org.apache.maven.plugins</groupId>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<artifactId>maven-antrun-plugin</artifactId>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<version>1.7</version>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<configuration>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<target>&ndash;&gt;-->
 
-                                <!-- mysql -->
-                                <property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory"/>
+                                <!--&lt;!&ndash;&lt;!&ndash; mysql &ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory"/>&ndash;&gt;-->
 
-                                <!-- mssql
-                                <property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" /> -->
+                                <!--&lt;!&ndash;&lt;!&ndash; mssql&ndash;&gt;-->
+                                <!--&lt;!&ndash;<property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" /> &ndash;&gt;&ndash;&gt;-->
 
-                                <!-- oracle
-                                <property name="dbunit.datatype" value="org.dbunit.ext.oracle.Oracle10DataTypeFactory" /> -->
+                                <!--&lt;!&ndash;&lt;!&ndash; oracle&ndash;&gt;-->
+                                <!--&lt;!&ndash;<property name="dbunit.datatype" value="org.dbunit.ext.oracle.Oracle10DataTypeFactory" /> &ndash;&gt;&ndash;&gt;-->
 
-                                <property file="src/main/resources/jeesite.properties"/>
-                                <sql driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}"
-                                     password="${jdbc.password}"
-                                     onerror="continue" encoding="${project.build.sourceEncoding}">
-                                    <classpath refid="maven.test.classpath"/>
-                                    <transaction src="db/sys/jeesite_${jdbc.type}.sql"/>
-                                    <transaction src="db/cms/jeesite_${jdbc.type}.sql"/>
-                                    <transaction src="db/oa/jeesite_${jdbc.type}.sql"/>
-                                    <transaction src="db/gen/jeesite_${jdbc.type}.sql"/>
-                                    <transaction src="db/gen/example_${jdbc.type}.sql"/>
-                                    <transaction src="db/test/jeesite_${jdbc.type}.sql"/>
-                                    <transaction src="db/act/drop/activiti.${jdbc.type}.drop.engine.sql"/>
-                                    <transaction src="db/act/drop/activiti.${jdbc.type}.drop.history.sql"/>
-                                    <transaction src="db/act/drop/activiti.${jdbc.type}.drop.identity.sql"/>
-                                    <transaction src="db/act/create/activiti.${jdbc.type}.create.engine.sql"/>
-                                    <transaction src="db/act/create/activiti.${jdbc.type}.create.history.sql"/>
-                                    <transaction src="db/act/create/activiti.${jdbc.type}.create.identity.sql"/>
-                                </sql>
+                                <!--&lt;!&ndash;<property file="src/main/resources/jeesite.properties"/>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<sql driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}"&ndash;&gt;-->
+                                     <!--&lt;!&ndash;password="${jdbc.password}"&ndash;&gt;-->
+                                     <!--&lt;!&ndash;onerror="continue" encoding="${project.build.sourceEncoding}">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<classpath refid="maven.test.classpath"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/sys/jeesite_${jdbc.type}.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/cms/jeesite_${jdbc.type}.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/oa/jeesite_${jdbc.type}.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/gen/jeesite_${jdbc.type}.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/gen/example_${jdbc.type}.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/test/jeesite_${jdbc.type}.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/act/drop/activiti.${jdbc.type}.drop.engine.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/act/drop/activiti.${jdbc.type}.drop.history.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/act/drop/activiti.${jdbc.type}.drop.identity.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/act/create/activiti.${jdbc.type}.create.engine.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/act/create/activiti.${jdbc.type}.create.history.sql"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<transaction src="db/act/create/activiti.${jdbc.type}.create.identity.sql"/>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</sql>&ndash;&gt;-->
 
-                                <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask"
-                                         classpathref="maven.test.classpath"/>
+                                <!--&lt;!&ndash;<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask"&ndash;&gt;-->
+                                         <!--&lt;!&ndash;classpathref="maven.test.classpath"/>&ndash;&gt;-->
 
-                                <!-- mysql、mssql -->
-                                <dbunit driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}"
-                                        password="${jdbc.password}">
+                                <!--&lt;!&ndash;&lt;!&ndash; mysql、mssql &ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<dbunit driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}"&ndash;&gt;-->
+                                        <!--&lt;!&ndash;password="${jdbc.password}">&ndash;&gt;-->
 
-                                    <dbconfig>
-                                        <property name="datatypeFactory" value="${dbunit.datatype}"/>
-                                    </dbconfig>
-                                    <classpath refid="maven.test.classpath"/>
-                                    <operation type="INSERT" src="db/sys/jeesite_data.xls" format="xls"
-                                               transaction="true"/>
-                                    <operation type="INSERT" src="db/cms/jeesite_data.xls" format="xls"
-                                               transaction="true"/>
+                                    <!--&lt;!&ndash;<dbconfig>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<property name="datatypeFactory" value="${dbunit.datatype}"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</dbconfig>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<classpath refid="maven.test.classpath"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<operation type="INSERT" src="db/sys/jeesite_data.xls" format="xls"&ndash;&gt;-->
+                                               <!--&lt;!&ndash;transaction="true"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<operation type="INSERT" src="db/cms/jeesite_data.xls" format="xls"&ndash;&gt;-->
+                                               <!--&lt;!&ndash;transaction="true"/>&ndash;&gt;-->
 
-                                </dbunit>
+                                <!--&lt;!&ndash;</dbunit>&ndash;&gt;-->
 
-                            </target>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+                            <!--&lt;!&ndash;</target>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</configuration>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</plugin>&ndash;&gt;-->
+                <!--</plugins>-->
+            <!--</build>-->
+        <!--</profile>-->
         <profile>
             <id>devel</id>
             <properties>

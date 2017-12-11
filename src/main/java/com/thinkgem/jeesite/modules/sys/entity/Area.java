@@ -1,64 +1,83 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.thinkgem.jeesite.common.persistence.TreeEntity;
-import org.hibernate.validator.constraints.Length;
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.thinkgem.jeesite.modules.BaseEntity;
 
 /**
- * 区域Entity
- * @author ThinkGem
- * @version 2013-05-15
+ * <p>
+ * 区域表
+ * </p>
+ *
+ * @author X
+ * @since 2017-12-10
  */
-public class Area extends TreeEntity<Area> {
+@TableName("sys_area")
+public class Area extends BaseEntity<Area> {
 
-	private static final long serialVersionUID = 1L;
-//	private Area parent;	// 父级编号
-//	private String parentIds; // 所有父级编号
-	private String code;// 区域编码
-	@JsonInclude
-	private String name; 	// 区域名称
-	private Integer sort;		// 排序
-	private String type; 	// 区域类型（1：国家；2：省份、直辖市；3：地市；4：区县）
-	
-	public Area(){
-		super();
-		this.sort = 30;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public Area(String id){
-		super(id);
-	}
-	
-//	@JsonBackReference
-//	@NotNull
-	public Area getParent() {
-		return parent;
-	}
+    /**
+     * 名称
+     */
+	private String name;
+    /**
+     * 区域编码
+     */
+	private String code;
+    /**
+     * 邮政编码
+     */
+	@TableField("zip_code")
+	private String zipCode;
+    /**
+     * 级别
+     */
+	private Integer level;
+    /**
+     * 排序
+     */
+	private Integer sort;
+    /**
+     * 父级编码
+     */
+	@TableField("parent_code")
+	private String parentCode;
 
-	public void setParent(Area parent) {
-		this.parent = parent;
-	}
-//
-//	@Length(min=1, max=2000)
-//	public String getParentIds() {
-//		return parentIds;
-//	}
-//
-//	public void setParentIds(String parentIds) {
-//		this.parentIds = parentIds;
-//	}
-//
-	@JsonInclude
-	@Length(min=1, max=100)
+
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public Integer getLevel() {
+		return level;
+	}
+
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
 
 	public Integer getSort() {
@@ -69,30 +88,28 @@ public class Area extends TreeEntity<Area> {
 		this.sort = sort;
 	}
 
-	@Length(min=1, max=1)
-	public String getType() {
-		return type;
+	public String getParentCode() {
+		return parentCode;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setParentCode(String parentCode) {
+		this.parentCode = parentCode;
 	}
 
-	@Length(min=0, max=100)
-	public String getCode() {
-		return code;
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-//
-//	public String getParentId() {
-//		return parent != null && parent.getId() != null ? parent.getId() : "0";
-//	}
-	
 	@Override
 	public String toString() {
-		return name;
+		return "Area{" +
+			", name=" + name +
+			", code=" + code +
+			", zipCode=" + zipCode +
+			", level=" + level +
+			", sort=" + sort +
+			", parentCode=" + parentCode +
+			"}";
 	}
 }

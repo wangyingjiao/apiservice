@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.security;
 
 import com.alibaba.fastjson.JSON;
@@ -10,8 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.sys.entity.Role;
-import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,26 +16,62 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+///**
+// * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+// */
 
 /**
- * 表单验证（包含验证码）过滤类
- *
- * @author ThinkGem
- * @version 2014-5-19
- */
+ * @author x
+ */ //
+//import com.alibaba.fastjson.JSON;
+//import com.alibaba.fastjson.JSONObject;
+//import com.alibaba.fastjson.support.spring.FastJsonJsonView;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.thinkgem.jeesite.common.result.Result;
+//import com.thinkgem.jeesite.common.result.SuccResult;
+//import com.thinkgem.jeesite.common.utils.StringUtils;
+//import com.thinkgem.jeesite.modules.sys.entity.Role;
+//import com.thinkgem.jeesite.modules.sys.entity.User;
+//import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+//import org.apache.shiro.authc.AuthenticationException;
+//import org.apache.shiro.authc.AuthenticationToken;
+//import org.apache.shiro.authc.IncorrectCredentialsException;
+//import org.apache.shiro.authc.UnknownAccountException;
+//import org.apache.shiro.subject.Subject;
+//import org.apache.shiro.web.util.WebUtils;
+//import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+//import org.springframework.stereotype.Service;
+//
+//import javax.servlet.ServletRequest;
+//import javax.servlet.ServletResponse;
+//import javax.servlet.http.HttpServletRequest;
+//import java.io.BufferedReader;
+//import java.io.IOException;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+//
+///**
+// * 表单验证（包含验证码）过滤类
+// *
+// * @author ThinkGem
+// * @version 2014-5-19
+// */
 @Service
 public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.FormAuthenticationFilter {
+
 
     public static final String DEFAULT_CAPTCHA_PARAM = "validateCode";
     public static final String DEFAULT_MOBILE_PARAM = "mobileLogin";
@@ -49,15 +80,17 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
     private String captchaParam = DEFAULT_CAPTCHA_PARAM;
     private String mobileLoginParam = DEFAULT_MOBILE_PARAM;
     private String messageParam = DEFAULT_MESSAGE_PARAM;
-
+    //
     private Log logger = LogFactory.getLog(getClass());
 
+    //
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
         String json = new String();
         String temp;
         String username;
         String password;
+
         logger.info(request.getContentType());
         //如果用户提交使用的json body post 方式登录
         if (request.getContentType().indexOf(FastJsonJsonView.DEFAULT_CONTENT_TYPE) != -1) {
@@ -69,12 +102,14 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
                 JSONObject object = JSON.parseObject(json);
                 username = object.getString(getUsernameParam());
                 password = object.getString(getPasswordParam());
+
             } catch (IOException e) {
                 return new UsernamePasswordToken();
             }
         } else {
             username = getUsername(request);
             password = getPassword(request);
+
         }
 
         if (password == null) {
@@ -110,9 +145,9 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
         return password;
     }
 
-    /**
-     * 获取记住我
-     */
+    //    /**
+//     * 获取记住我
+//     */
     @Override
     protected boolean isRememberMe(ServletRequest request) {
         String isRememberMe = WebUtils.getCleanParam(request, getRememberMeParam());
@@ -142,14 +177,15 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
         return messageParam;
     }
 
-    /**
-     * 登录成功之后跳转URL
-     */
-    @Override
-    public String getSuccessUrl() {
-        return super.getSuccessUrl();
-    }
-
+    //
+//    /**
+//     * 登录成功之后跳转URL
+//     */
+//    @Override
+//    public String getSuccessUrl() {
+//        return super.getSuccessUrl();
+//    }
+//
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
 
@@ -196,6 +232,7 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
         }
         request.setAttribute(getFailureKeyAttribute(), className);
         request.setAttribute(getMessageParam(), message);
+
         return true;
     }
 

@@ -34,7 +34,7 @@ public class DefaultExceptionHandler implements HandlerExceptionResolver {
         JSONObject viewMap = JSONObject.parseObject(JSON.toJSONString(failResult));
         view.setAttributesMap(viewMap);
         mv.setView(view);
-        logger.debug("异常:" + ex.getMessage());
+        logger.error("error",ex);
         return mv;
     }
 }
