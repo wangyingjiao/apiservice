@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao">
+    
+	<sql id="basicOrganizationColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.telephone AS "telephone",
+		a.master_name AS "masterName",
+		a.master_phone AS "masterPhone",
+		a.province_code AS "provinceCode",
+		a.city_code AS "cityCode",
+		a.area_code AS "areaCode",
+		a.address AS "address",
+		a.scope_type AS "scopeType",
+		a.visable AS "visable",
+		a.url AS "url",
+		a.fax AS "fax",
+		a.tel_400 AS "tel400",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="basicOrganizationJoins">
+	</sql>
+    
+	<select id="get" resultType="BasicOrganization">
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.telephone AS "telephone",
+			a.master_name AS "masterName",
+			a.master_phone AS "masterPhone",
+			a.province_code AS "provinceCode",
+			a.city_code AS "cityCode",
+			a.area_code AS "areaCode",
+			a.address AS "address",
+			a.scope_type AS "scopeType",
+			a.visable AS "visable",
+			a.url AS "url",
+			a.fax AS "fax",
+			a.tel_400 AS "tel400",
+			a.remark AS "remark"
+		FROM basic_organization a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BasicOrganization">
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.telephone AS "telephone",
+			a.master_name AS "masterName",
+			a.master_phone AS "masterPhone",
+			a.address AS "address"
+		FROM basic_organization a
+		<include refid="basicOrganizationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name like concat('%',#{name},'%')
+			</if>
+			<if test="masterName != null and masterName != ''">
+				AND a.master_name like concat('%',#{masterName},'%')
+			</if>
+			<if test="masterPhone != null and masterPhone != ''">
+				AND a.master_phone like concat('%',#{masterPhone},'%')
+			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	
+	<insert id="insert">
+		INSERT INTO basic_organization(
+			id,
+			name,
+			telephone,
+			master_name,
+			master_phone,
+			province_code,
+			city_code,
+			area_code,
+			address,
+			scope_type,
+			visable,
+			url,
+			fax,
+			tel_400,
+			remark,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{telephone},
+			#{masterName},
+			#{masterPhone},
+			#{provinceCode},
+			#{cityCode},
+			#{areaCode},
+			#{address},
+			#{scopeType},
+			#{visable},
+			#{url},
+			#{fax},
+			#{tel400},
+			#{remark},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE basic_organization SET
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="telephone != null and telephone != ''">
+				telephone = #{telephone},
+			</if>
+			<if test="masterName != null and masterName != ''">
+				master_name = #{masterName},
+			</if>
+			<if test="masterPhone != null and masterPhone != ''">
+				master_phone = #{masterPhone},
+			</if>
+			<if test="provinceCode != null and provinceCode != ''">
+				province_code = #{provinceCode},
+			</if>
+			<if test="cityCode != null and cityCode != ''">
+				city_code = #{cityCode},
+			</if>
+			<if test="areaCode != null and areaCode != ''">
+				area_code = #{areaCode},
+			</if>
+			<if test="address != null and address != ''">
+				address = #{address},
+			</if>
+			<if test="scopeType != null and scopeType != ''">
+				scope_type = #{scopeType},
+			</if>
+			<if test="visable != null and visable != ''">
+				visable = #{visable},
+			</if>
+			<if test="url != null and url != ''">
+				url = #{url},
+			</if>
+			<if test="fax != null and fax != ''">
+				fax = #{fax},
+			</if>
+			<if test="tel400 != null and tel400 != ''">
+				tel_400 = #{tel400},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark},
+			</if>
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE basic_organization SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getByName" resultType="BasicOrganization">
+		select * from basic_organization WHERE 1=1 AND name = #{name};
+	</select>
+	<update id="deleteCitysByOrgId">
+		UPDATE basic_service_city SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE org_id = #{id}
+	</update>
+</mapper>
