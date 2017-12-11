@@ -387,6 +387,23 @@ public class UserController extends BaseController {
         return new SuccResult(menus);
     }
 
+
+    @RequiresPermissions("user")
+    @ResponseBody
+    @RequestMapping(value = "getButtons", method = RequestMethod.GET)
+    @ApiOperation(value = "获得用户的菜单列表")
+    public Result getButtons() {
+        List<String> buttons = new ArrayList<>();
+        List<Menu> menuList = UserUtils.getMenuList();
+        for (Menu menu : menuList) {
+            if (StringUtils.isNotBlank(menu.getPermission())) {
+                buttons.add(menu.getPermission());
+            }
+        }
+        return new SuccResult(buttons);
+    }
+
+
     private List<Menu> genTreeMenu(String id, List<Menu> menus) {
         ArrayList<Menu> list = new ArrayList<>();
         for (Menu menu : menus) {
@@ -399,6 +416,7 @@ public class UserController extends BaseController {
         }
         return list;
     }
+
 
     /**
      * genTreeMenu(menus.get(i).getId(),menus);
