@@ -20,4 +20,6 @@ public interface AreaDao extends TreeDao<Area> {
     List<Area> findchildArea(Area area);
     
     List<Area> findListByIds(String[] ids);
+
+    List<Area> getListByLevel(Area info);
 }
