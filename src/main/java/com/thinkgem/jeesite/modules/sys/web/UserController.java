@@ -72,14 +72,14 @@ public class UserController extends BaseController {
     }
 
     @ApiIgnore
-    @RequiresPermissions("sys:user:view")
+    @RequiresPermissions("user_view")
     @RequestMapping(value = {"index"}, method = RequestMethod.GET)
     public String index(User user, Model model) {
         return "modules/sys/userIndex";
     }
 
     @ApiIgnore
-    @RequiresPermissions("sys:user:view")
+    @RequiresPermissions("user_view")
     @RequestMapping(value = {"list", ""}, method = RequestMethod.GET)
     public String list(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<User> page = systemService.findUser(new Page<User>(request, response), user);
@@ -88,7 +88,7 @@ public class UserController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:user:view")
+    @RequiresPermissions("user_view")
     @ApiOperation(notes = "返回用户列表", value = "获取用户列表")
     @RequestMapping(value = {"listData"}, method = RequestMethod.POST)
     public Result listData(@RequestBody(required = false) User user, HttpServletRequest request, HttpServletResponse response) {
@@ -102,7 +102,7 @@ public class UserController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:user:view")
+    @RequiresPermissions("user_view")
     @ApiOperation(notes = "返回用户详情", value = "获取用户详情")
     @RequestMapping(value = {"getUserById"}, method = RequestMethod.GET)
     public Result getUserById(@RequestParam String id) {
