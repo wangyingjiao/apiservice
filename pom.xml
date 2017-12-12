@@ -563,7 +563,7 @@
             <version>1.1.1</version>
         </dependency>
 
-        <!-- poi office -->
+        <!-- poi organization -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>

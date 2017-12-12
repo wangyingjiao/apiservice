@@ -76,7 +76,7 @@ public class RoleController extends BaseController {
     @RequestMapping(value = "form")
     public String form(Role role, Model model) {
         if (role.getOffice() == null) {
-            role.setOffice(UserUtils.getUser().getOffice());
+            role.setOffice(UserUtils.getUser().getOrganization());
         }
         model.addAttribute("role", role);
         model.addAttribute("menuList", systemService.findAllMenu());
@@ -189,7 +189,7 @@ public class RoleController extends BaseController {
     public List<Map<String, Object>> users(String officeId, HttpServletResponse response) {
         List<Map<String, Object>> mapList = Lists.newArrayList();
         User user = new User();
-        user.setOffice(new BasicOrganization(officeId));
+        user.setOrganization(new BasicOrganization(officeId));
         Page<User> page = systemService.findUser(new Page<User>(1, -1), user);
         for (User e : page.getList()) {
             Map<String, Object> map = Maps.newHashMap();
@@ -347,7 +347,7 @@ public class RoleController extends BaseController {
             }
 
         }
-        role.setOffice(UserUtils.getUser().getOffice());
+        role.setOffice(UserUtils.getUser().getOrganization());
         systemService.saveRole(role);
 
         return new SuccResult(role);

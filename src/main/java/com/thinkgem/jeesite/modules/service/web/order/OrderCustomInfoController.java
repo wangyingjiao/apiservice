@@ -57,8 +57,8 @@ public class OrderCustomInfoController extends BaseController {
 			return new FailResult("保存客户" + orderCustomInfo.getCustomName() + "失败");
 		}
 		User user = UserUtils.getUser();
-		orderCustomInfo.setOfficeId(user.getOffice().getId());//机构ID
-		orderCustomInfo.setOfficeName(user.getOffice().getName());//机构名称
+		orderCustomInfo.setOfficeId(user.getOrganization().getId());//机构ID
+		orderCustomInfo.setOfficeName(user.getOrganization().getName());//机构名称
 		orderCustomInfo.setStationId(user.getStation().getId());//服务站ID
 		orderCustomInfo.setStationName(user.getStation().getName());//服务站名称
 		orderCustomInfoService.save(orderCustomInfo);

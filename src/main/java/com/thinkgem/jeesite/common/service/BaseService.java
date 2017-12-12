@@ -58,7 +58,7 @@ public abstract class BaseService {
 						else if (Role.DATA_SCOPE_OFFICE_AND_CHILD.equals(r.getDataScope())){
 						}
 						else if (Role.DATA_SCOPE_OFFICE.equals(r.getDataScope())){
-							sqlString.append(" OR " + oa + ".id = '" + user.getOffice().getId() + "'");
+							sqlString.append(" OR " + oa + ".id = '" + user.getOrganization().getId() + "'");
 						}
 						else if (Role.DATA_SCOPE_CUSTOM.equals(r.getDataScope())){
 //							String officeIds =  StringUtils.join(r.getOfficeIdList(), "','");
@@ -81,7 +81,7 @@ public abstract class BaseService {
 					}
 				}else {
 					for (String oa : StringUtils.split(officeAlias, ",")){
-						//sqlString.append(" OR " + oa + ".id  = " + user.getOffice().getId());
+						//sqlString.append(" OR " + oa + ".id  = " + user.getOrganization().getId());
 						sqlString.append(" OR " + oa + ".id IS NULL");
 					}
 				}
@@ -149,12 +149,12 @@ public abstract class BaseService {
 			}
 			else if (Role.DATA_SCOPE_OFFICE_AND_CHILD.equals(dataScopeString)){
 				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
-				sqlString.append(" WHERE (id = '" + user.getOffice().getId() + "'");
+				sqlString.append(" WHERE (id = '" + user.getOrganization().getId() + "'");
 				sqlString.append(" AND " + where +")");
 			}
 			else if (Role.DATA_SCOPE_OFFICE.equals(dataScopeString)){
 				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
-				sqlString.append(" WHERE id = '" + user.getOffice().getId() + "'");
+				sqlString.append(" WHERE id = '" + user.getOrganization().getId() + "'");
 				sqlString.append(" AND " + where +")");
 			}
 			else if (Role.DATA_SCOPE_CUSTOM.equals(dataScopeString)){
@@ -188,7 +188,7 @@ public abstract class BaseService {
 	 */
 	public static String dataRoleFilter(User user, String tableAlias) {
 		StringBuilder sqlString = new StringBuilder();
-		String officeId = user.getOffice().getId();//机构ID
+		String officeId = user.getOrganization().getId();//机构ID
 		String stationId = user.getStation().getId();//服务站ID
 
 		String dataRole = "";

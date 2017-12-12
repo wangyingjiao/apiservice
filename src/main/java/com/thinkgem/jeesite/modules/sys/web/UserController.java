@@ -21,10 +21,8 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.Menu;
-import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
@@ -95,7 +93,8 @@ public class UserController extends BaseController {
     @RequestMapping(value = {"listData"}, method = RequestMethod.POST)
     public Result listData(@RequestBody(required = false) User user, HttpServletRequest request, HttpServletResponse response) {
         Page<User> page = new Page<>(request, response);
-        if (request.getParameter("pageSize").equals("-1")) {
+        if (StringUtils.isNotBlank(request.getParameter("pageSize"))
+                && request.getParameter("pageSize").equals("-1")) {
             page = new Page<>(request, response, -1);
         }
         page = systemService.findUser(page, user);
@@ -120,8 +119,8 @@ public class UserController extends BaseController {
     @RequestMapping(value = "form", method = RequestMethod.GET)
     public String form(User user, Model model) {
 
-        if (user.getOffice() == null || user.getOffice().getId() == null) {
-            user.setOffice(UserUtils.getUser().getOffice());
+        if (user.getOrganization() == null || user.getOrganization().getId() == null) {
+            user.setOrganization(UserUtils.getUser().getOrganization());
         }
         model.addAttribute("user", user);
         model.addAttribute("allRoles", systemService.findAllRole());
@@ -139,7 +138,7 @@ public class UserController extends BaseController {
         }
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
 
-        user.setOffice(new BasicOrganization(request.getParameter("office.id")));
+        user.setOrganization(new BasicOrganization(request.getParameter("office.id")));
         // 如果新密码为空，则不更换密码
         if (StringUtils.isNotBlank(user.getNewPassword())) {
             user.setPassword(SystemService.entryptPassword(user.getNewPassword()));
@@ -538,7 +537,7 @@ public class UserController extends BaseController {
     public Result saveData(@RequestBody User user) {
 
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
-        user.setOffice(organizationService.get(user.getOfficeId()));
+        user.setOrganization(organizationService.get(user.getOfficeId()));
         user.setStation(stationService.get(user.getStationId()));
 
         if (StringUtils.isNotBlank(user.getNewPassword())) {

@@ -69,7 +69,7 @@
 		WHERE (a.del_flag = #{DEL_FLAG_NORMAL}
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-		OR a.id = #{currentUser.office.id})
+		OR a.id = #{currentUser.organization.id})
 		<if test="name != null and name != ''">
 			AND a.name like concat('%',#{name},'%')
 		</if>

@@ -64,8 +64,8 @@ public class SerItemInfoController extends BaseController {
                 return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
             }
             User user = UserUtils.getUser();
-            serItemInfo.setOfficeId(user.getOffice().getId());//机构ID
-            serItemInfo.setOfficeName(user.getOffice().getName());//机构名称
+            serItemInfo.setOfficeId(user.getOrganization().getId());//机构ID
+            serItemInfo.setOfficeName(user.getOrganization().getName());//机构名称
             serItemInfo.setStationId(user.getStation().getId());//服务站ID
             serItemInfo.setStationName(user.getStation().getName());//服务站名称
         }
@@ -140,8 +140,8 @@ public class SerItemInfoController extends BaseController {
     public List<SerItemInfo> getSerSortInfoList(HttpServletRequest request, HttpServletResponse response){
         SerItemInfo serItemInfo = new SerItemInfo();
         User user = UserUtils.getUser();
-        serItemInfo.setOfficeId(user.getOffice().getId());//机构ID
-        serItemInfo.setOfficeName(user.getOffice().getName());//机构名称
+        serItemInfo.setOfficeId(user.getOrganization().getId());//机构ID
+        serItemInfo.setOfficeName(user.getOrganization().getName());//机构名称
         serItemInfo.setStationId(user.getStation().getId());//服务站ID
         serItemInfo.setStationName(user.getStation().getName());//服务站名称
         return serItemInfoService.getSerSortInfoList(serItemInfo);

@@ -89,11 +89,11 @@ public class OfficeController extends BaseController {
     public String form(Office office, Model model) {
         User user = UserUtils.getUser();
         if (office.getParent() == null || office.getParent().getId() == null) {
-           // office.setParent(user.getOffice());
+           // office.setParent(user.getOrganization());
         }
         office.setParent(officeService.get(office.getParent().getId()));
         if (office.getArea() == null) {
-           // office.setArea(user.getOffice().getArea());
+           // office.setArea(user.getOrganization().getArea());
         }
         // 自动获取排序号
         if (StringUtils.isBlank(office.getId()) && office.getParent() != null) {
@@ -222,7 +222,7 @@ public class OfficeController extends BaseController {
     @ApiOperation(value = "获得机构列表")
     public Result listData(Office office) {
     	if (null == office) {
-    		//office = UserUtils.getUser().getOffice();
+    		//office = UserUtils.getUser().getOrganization();
     	}
     	List<Office> all = officeService.findAll();
     	return new SuccResult(all);
@@ -292,11 +292,11 @@ public class OfficeController extends BaseController {
         office = officeService.get(office);
         User user = UserUtils.getUser();
         if (office.getParent() == null || office.getParent().getId() == null) {
-            //office.setParent(user.getOffice());
+            //office.setParent(user.getOrganization());
         }
         office.setParent(officeService.get(office.getParent().getId()));
         if (office.getArea() == null) {
-            //office.setArea(user.getOffice().getArea());
+            //office.setArea(user.getOrganization().getArea());
         }
         // 自动获取排序号
         if (StringUtils.isBlank(office.getId()) && office.getParent() != null) {
@@ -323,7 +323,7 @@ public class OfficeController extends BaseController {
     	//校验参数
     	if (id == null || id.equals("")) {
     		User user = UserUtils.getUser();
-    		id = user.getOffice().getId();
+    		id = user.getOrganization().getId();
     		if (id.equals("0"))
     			return new FailResult("请输入机构编号");
     	}

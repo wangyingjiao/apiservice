@@ -8,7 +8,7 @@
 			u.id AS "createBy.id",
 			u.name AS "createBy.name",
 			c.name AS "createBy.company.name",
-			o.name AS "createBy.office.name"
+			o.name AS "createBy.organization.name"
 		FROM sys_log a
 		JOIN sys_user u ON u.id = a.create_by
 		JOIN sys_office c ON c.id = u.company_id

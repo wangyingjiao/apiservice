@@ -63,8 +63,8 @@ public class SerSortInfoController extends BaseController {
 
         if (!StringUtils.isNotBlank(serSortInfo.getId())) {//新增时验证重复
             User user = UserUtils.getUser();
-            serSortInfo.setOfficeId(user.getOffice().getId());//机构ID
-            serSortInfo.setOfficeName(user.getOffice().getName());//机构名称
+            serSortInfo.setOfficeId(user.getOrganization().getId());//机构ID
+            serSortInfo.setOfficeName(user.getOrganization().getName());//机构名称
             serSortInfo.setStationId(user.getStation().getId());//服务站ID
             serSortInfo.setStationName(user.getStation().getName());//服务站名称
 
@@ -131,7 +131,7 @@ public class SerSortInfoController extends BaseController {
     public Result getOfficeCitylist(HttpServletRequest request, HttpServletResponse response) {
         SerSortInfo serSortInfo = new SerSortInfo();
         User user = UserUtils.getUser();
-        serSortInfo.setOfficeId(user.getOffice().getId());//机构ID
+        serSortInfo.setOfficeId(user.getOrganization().getId());//机构ID
         List<OfficeSeviceAreaList> officeCitys = serSortInfoService.getOfficeCitylist(serSortInfo);
         return new SuccResult(officeCitys);
     }

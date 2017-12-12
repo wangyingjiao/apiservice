@@ -113,11 +113,11 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.customEmail = customEmail;
 	}
 	
-/*	public Office getOffice() {
+/*	public Office getOrganization() {
 		return office;
 	}
 
-	public void setOffice(Office office) {
+	public void setOrganization(Office office) {
 		this.office = office;
 	}*/
 	

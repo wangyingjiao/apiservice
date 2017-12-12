@@ -107,7 +107,7 @@ public class AreaController extends BaseController {
 //    @RequestMapping(value = "form")
 //    public String form(Area area, Model model) {
 //        if (area.getParent() == null || area.getParent().getId() == null) {
-//            area.setParent(UserUtils.getUser().getOffice().getArea());
+//            area.setParent(UserUtils.getUser().getOrganization().getArea());
 //        }
 //        area.setParent(areaService.get(area.getParent().getId()));
 //        model.addAttribute("area", area);

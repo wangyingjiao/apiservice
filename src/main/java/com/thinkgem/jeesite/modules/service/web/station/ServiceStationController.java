@@ -100,10 +100,10 @@ public class ServiceStationController extends BaseController {
         }
         User user = UserUtils.getUser();
 
-        if (user.getOffice() != null && user.getOffice().getId() != "0") {
-//            serviceStation.setOffice(user.getOffice());
-//            serviceStation.setOfficeId(user.getOffice().getId());
-//            serviceStation.setOfficeName(user.getOffice().getName());
+        if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
+//            serviceStation.setOrganization(user.getOrganization());
+//            serviceStation.setOfficeId(user.getOrganization().getId());
+//            serviceStation.setOfficeName(user.getOrganization().getName());
             serviceStation.setOrgId(user.getOfficeId());
         } else {
             return new FailResult("用户没有具体的所属机构(全平台权限)");

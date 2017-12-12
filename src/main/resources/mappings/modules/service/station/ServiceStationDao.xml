@@ -15,7 +15,7 @@
 		a.aunts AS "aunts",
 		a.service_point AS "servicePoint",
 		a.create_by AS "createBy.id",
-		a.office_id AS "office.id",
+		a.office_id AS "organization.id",
 		a.office_name AS "officeName",
 		a.create_date AS "createDate",
 		a.addr_province_id AS "addrProvinceId",
@@ -34,8 +34,8 @@
 		a.range_type AS "rangeType",
 		a.useable AS "useable",
 		u6.name AS "user.name",
-		o13.name AS "office.name",
-		o13.service_area_type as "office.serviceAreaType"
+		o13.name AS "organization.name",
+		o13.service_area_type as "organization.serviceAreaType"
 	</sql>
 
     <sql id="serviceStationJoins">
@@ -145,7 +145,7 @@
 			#{aunts},
 			#{servicePoint},
 			#{createBy.id},
-			#{office.id},
+			#{organization.id},
 			#{officeName},
 			#{createDate},
 			#{addrProvinceId},
@@ -169,7 +169,7 @@
     <!--<update id="update">-->
     <!--UPDATE basic_service_station set-->
     <!--<set>-->
-    <!--<if test="office != null and office.id != null">office_id = #{office.id},</if>-->
+    <!--<if test="organization != null and organization.id != null">office_id = #{organization.id},</if>-->
 
     <!--<if test="updateBy!=null and updateBy.id != null">update_by = #{updateBy.id},</if>-->
 
@@ -181,7 +181,7 @@
         UPDATE basic_service_station
         <set>
             <if test="updateBy != null and updateBy.id != null">update_by = #{updateBy.id},</if>
-            <if test="office != null and office.id != null">office_id = #{office.id},</if>
+            <if test="organization != null and organization.id != null">office_id = #{organization.id},</if>
             <if test="user != null and user.id != null">user_id = #{user.id},</if>
             <if test="userName != null">user_name = #{userName},</if>
             <if test="updateBy != null and updateBy.id != null">update_by = #{updateBy.id},</if>

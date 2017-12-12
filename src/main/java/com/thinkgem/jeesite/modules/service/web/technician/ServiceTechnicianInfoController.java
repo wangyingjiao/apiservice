@@ -10,7 +10,6 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -133,8 +132,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (null == techInfo) {
             User user = UserUtils.getUser();
             info.setSort("0");
-            info.setTechOfficeId(user.getOffice().getId());
-            info.setTechOfficeName(user.getOffice().getName());
+            info.setTechOfficeId(user.getOrganization().getId());
+            info.setTechOfficeName(user.getOrganization().getName());
             info.setTechStationId(user.getStation().getId());
             info.setTechStationName(user.getStation().getName());
             info.setAppLoginPassword(info.getTechPhone().substring(6,10));//APP端登录密码默认为手机号的后4位
@@ -168,8 +167,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (null == techInfo) {
             User user = UserUtils.getUser();
             info.setSort("0");
-            info.setTechOfficeId(user.getOffice().getId());
-            info.setTechOfficeName(user.getOffice().getName());
+            info.setTechOfficeId(user.getOrganization().getId());
+            info.setTechOfficeName(user.getOrganization().getName());
             info.setTechStationId(user.getStation().getId());
             info.setTechStationName(user.getStation().getName());
             serviceTechnicianInfoService.save(info);
@@ -284,8 +283,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         ServiceTechnicianInfo info = new ServiceTechnicianInfo();
         //选择城市
         User user = UserUtils.getUser();
-        info.setTechOfficeId(user.getOffice().getId());
-        info.setTechOfficeName(user.getOffice().getName());
+        info.setTechOfficeId(user.getOrganization().getId());
+        info.setTechOfficeName(user.getOrganization().getName());
         List<ServiceTechnicianInfo> list = serviceTechnicianInfoService.findOfficeSeviceAreaList(info);
         return new SuccResult(list);
     }

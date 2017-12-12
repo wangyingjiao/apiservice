@@ -315,7 +315,7 @@ public class OrderInfoController extends BaseController {
 		OrderServiceRelation orderServiceRelation = new OrderServiceRelation();
 		//获取当前用户的机构
 		User user = UserUtils.getUser();
-		orderServiceRelation.setOfficeId(user.getOffice().getId());
+		orderServiceRelation.setOfficeId(user.getOrganization().getId());
         List<OrderItemCommodity> items = orderServiceRelationService.findListByOffice(orderServiceRelation);
         return new SuccResult(items);
 	}

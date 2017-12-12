@@ -9,7 +9,7 @@
 		a.READ_FLAG AS "readFlag",
 		a.READ_DATE AS "readDate",
 		u.name AS "user.name",
-		o.name AS "user.office.name"
+		o.name AS "user.organization.name"
 	</sql>
 	
 	<sql id="oaNotifyRecordJoins">

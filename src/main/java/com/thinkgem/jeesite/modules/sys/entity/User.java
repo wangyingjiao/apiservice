@@ -34,7 +34,7 @@ public class User extends DataEntity<User> {
     private static final long serialVersionUID = 1L;
     private String companyId;//公司id
     private String companyName;//公司名称
-    private BasicOrganization office;    // 归属部门
+    private BasicOrganization organization;    // 归属部门
     private String officeId; //机构id
     private String officeName; //机构名称
     private BasicServiceStation station;//服务站
@@ -171,12 +171,12 @@ public class User extends DataEntity<User> {
     //@JsonIgnore
     @NotNull(message = "归属部门不能为空")
     @ExcelField(title = "归属部门", align = 2, sort = 25)
-    public BasicOrganization getOffice() {
-        return office;
+    public BasicOrganization getOrganization() {
+        return organization;
     }
 
-    public void setOffice(BasicOrganization office) {
-        this.office = office;
+    public void setOrganization(BasicOrganization organization) {
+        this.organization = organization;
     }
 
     @JsonIgnore

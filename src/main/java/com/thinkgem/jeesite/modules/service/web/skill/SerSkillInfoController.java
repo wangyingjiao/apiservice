@@ -9,12 +9,10 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -70,8 +68,8 @@ public class SerSkillInfoController extends BaseController {
                 return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
             }
             User user = UserUtils.getUser();
-            serSkillInfo.setOfficeId(user.getOffice().getId());//机构ID
-            serSkillInfo.setOfficeName(user.getOffice().getName());//机构名称
+            serSkillInfo.setOfficeId(user.getOrganization().getId());//机构ID
+            serSkillInfo.setOfficeName(user.getOrganization().getName());//机构名称
             serSkillInfo.setStationId(user.getStation().getId());//服务站ID
             serSkillInfo.setStationName(user.getStation().getName());//服务站名称
         }

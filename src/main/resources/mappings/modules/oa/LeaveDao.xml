@@ -6,8 +6,8 @@
 		a.*,
 		u.id AS "createBy.id",
 		u.name AS "createBy.name",
-		o.id AS "createBy.office.id",
-		o.name AS "createBy.office.name"
+		o.id AS "createBy.organization.id",
+		o.name AS "createBy.organization.name"
 	</sql>
 	
 	<sql id="leaveJoins">

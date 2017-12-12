@@ -190,4 +190,12 @@ public class DictController extends BaseController {
         dictService.delete(dict);
         return new SuccResult("删除字典成功");
     }
+
+    @ResponseBody
+    @RequestMapping("getDicts")
+    public Object getDicts(){
+        Object o = dictService.getAllDicts();
+        return o;
+    }
+
 }

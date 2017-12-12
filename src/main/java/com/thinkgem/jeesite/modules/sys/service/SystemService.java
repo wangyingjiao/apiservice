@@ -31,7 +31,6 @@ import com.thinkgem.jeesite.modules.sys.dao.MenuDao;
 import com.thinkgem.jeesite.modules.sys.dao.RoleDao;
 import com.thinkgem.jeesite.modules.sys.dao.UserDao;
 import com.thinkgem.jeesite.modules.sys.entity.Menu;
-import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
@@ -121,7 +120,7 @@ public class SystemService extends BaseService implements InitializingBean {
 		List<User> list = (List<User>)CacheUtils.get(UserUtils.USER_CACHE, UserUtils.USER_CACHE_LIST_BY_OFFICE_ID_ + officeId);
 		if (list == null){
 			User user = new User();
-			user.setOffice(new BasicOrganization(officeId));
+			user.setOrganization(new BasicOrganization(officeId));
 			list = userDao.findUserByOfficeId(user);
 			CacheUtils.put(UserUtils.USER_CACHE, UserUtils.USER_CACHE_LIST_BY_OFFICE_ID_ + officeId, list);
 		}
@@ -136,8 +135,8 @@ public class SystemService extends BaseService implements InitializingBean {
 		}else{
 			// 清除原用户机构用户缓存
 			User oldUser = userDao.get(user.getId());
-			if (oldUser.getOffice() != null && oldUser.getOffice().getId() != null){
-				CacheUtils.remove(UserUtils.USER_CACHE, UserUtils.USER_CACHE_LIST_BY_OFFICE_ID_ + oldUser.getOffice().getId());
+			if (oldUser.getOrganization() != null && oldUser.getOrganization().getId() != null){
+				CacheUtils.remove(UserUtils.USER_CACHE, UserUtils.USER_CACHE_LIST_BY_OFFICE_ID_ + oldUser.getOrganization().getId());
 			}
 			// 更新用户数据
 			user.preUpdate();

@@ -61,7 +61,7 @@ FROM
 			(a0.del_flag = #{DEL_FLAG_NORMAL}
 			<!-- 数据范围过滤 -->
 			<!-- ${sqlMap.dsf}
-			OR a0.office_id = #{currentUser.office.id} -->)
+			OR a0.office_id = #{currentUser.organization.id} -->)
 			<if test="orderNumber != null and orderNumber != ''">	
 				and a0.order_number like concat('%',#{orderNumber},'%')
 			</if>
