@@ -230,9 +230,9 @@
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
                 ORDER BY ${page.orderBy}
             </when>
-            <!--<otherwise>-->
-                <!--ORDER BY c.code, o.code, a.name-->
-            <!--</otherwise>-->
+            <otherwise>
+                ORDER BY a.create_date DESC
+            </otherwise>
         </choose>
     </select>
 
