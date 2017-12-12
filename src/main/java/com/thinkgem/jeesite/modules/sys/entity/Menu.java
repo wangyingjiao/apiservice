@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -80,6 +81,7 @@ public class Menu extends DataEntity<Menu> {
 		this.name = name;
 	}
 
+	@JsonInclude
 	@Length(min=0, max=2000)
 	public String getHref() {
 		return href;
@@ -97,7 +99,8 @@ public class Menu extends DataEntity<Menu> {
 	public void setTarget(String target) {
 		this.target = target;
 	}
-	
+
+	@JsonInclude
 	@Length(min=0, max=100)
 	public String getIcon() {
 		return icon;

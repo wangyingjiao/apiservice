@@ -113,7 +113,7 @@ public class RoleController extends BaseController {
     }
 
     @ApiIgnore
-    @RequiresPermissions("sys:role:edit")
+    //@RequiresPermissions("sys:role:edit")
     @RequestMapping(value = "delete", method = RequestMethod.GET)
     public String delete(String id, RedirectAttributes redirectAttributes) {
 
@@ -325,7 +325,7 @@ public class RoleController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:role:edit")
+    @RequiresPermissions("role_insert")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
@@ -345,9 +345,11 @@ public class RoleController extends BaseController {
             if (roleByName != null) {
                 return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
             }
-
         }
-        role.setOffice(UserUtils.getUser().getOrganization());
+        User user = UserUtils.getUser();
+        BasicOrganization organization = user.getOrganization();
+
+        role.setOffice(organization);
         systemService.saveRole(role);
 
         return new SuccResult(role);
@@ -355,7 +357,7 @@ public class RoleController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:user:delete")
+    @RequiresPermissions("role_delete")
     @RequestMapping(value = "deleteRole", method = RequestMethod.POST)
     @ApiOperation(value = "删除角色（岗位）")
     public Result deleteRole(@RequestBody Role role) {
@@ -381,7 +383,7 @@ public class RoleController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:role:view")
+    //@RequiresPermissions("sys:role:view")
     @RequestMapping(value = "listData", method = RequestMethod.GET)
     @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
     public Result listData(Role role) {
@@ -390,7 +392,7 @@ public class RoleController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:role:view")
+    //@RequiresPermissions("sys:role:view")
     @RequestMapping(value = "listPageData", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
     public Result listPageData(@RequestBody(required = false) Role role, HttpServletRequest request, HttpServletResponse response) {
