@@ -107,7 +107,7 @@ public class BasicOrganizationController extends BaseController {
 	public Result getOrgCityCodes(HttpServletRequest request, HttpServletResponse response) {
 		User user = UserUtils.getUser();
 		String orgId = user.getOrganization().getId();//机构ID
-		List<String> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
+		List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
 		return new SuccResult(cityCodes);
 	}
 

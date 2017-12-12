@@ -101,6 +101,35 @@ public class SerSortInfoController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "formDataWithItem", method = {RequestMethod.POST})
+    @ApiOperation("服务分类编辑")
+    public Result formDataWithItem(@RequestBody SerSortInfo serSortInfo) {
+        SerSortInfo entity = null;
+        if (StringUtils.isNotBlank(serSortInfo.getId())) {
+            entity = serSortInfoService.getDataWithItem(serSortInfo);
+        }
+        if (entity == null) {
+            return new FailResult("未找到此id：" + serSortInfo.getId() + "对应的服务分类。");
+        } else {
+            return new SuccResult(entity);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "formData1", method = {RequestMethod.POST})
+    @ApiOperation("服务分类编辑")
+    public Result formData1(@RequestBody SerSortInfo serSortInfo) {
+        SerSortInfo entity = new SerSortInfo();
+        if (StringUtils.isNotBlank(serSortInfo.getId())) {
+            entity = serSortInfoService.getData1(serSortInfo);
+        }
+        if (entity == null) {
+            return new FailResult("未找到此id：" + serSortInfo.getId() + "对应的服务分类。");
+        } else {
+            return new SuccResult(entity);
+        }
+    }
+
+    @ResponseBody
     //@RequiresPermissions("service:station:serSortInfo:edit")
     @RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("删除服务分类")

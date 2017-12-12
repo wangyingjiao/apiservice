@@ -99,10 +99,12 @@
 
 	<select id="getCityCodesByOrgId" resultType="BasicServiceCity">
 		SELECT
-		city_code AS cityCode
-		FROM
-		basic_service_city
+			a.city_code AS cityCode,
+			b.`name` AS cityName
+		FROM basic_service_city a
+		INNER JOIN sys_area b on a.city_code = b.`code` AND b.del_flag='0'
 		WHERE
-		org_id = #{orgId}
+		a.org_id = #{orgId}
+		AND a.del_flag = '0'
 	</select>
 </mapper>

@@ -114,6 +114,53 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         return sortInfo;
     }
 
+    public SerSortInfo getDataWithItem(SerSortInfo serSortInfo) {
+        SerSortInfo sortInfo = super.get(serSortInfo.getId());
+        //获取分类的定向城市
+        List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(serSortInfo.getId());
+        if(null != citys){
+            //当前分类下的项目是全部城市的件数
+            int itemAllCity = dao.getItemAllCityNum(serSortInfo.getId());
+            //当前分类下的项目定向城市
+            List<String> itemCitys = dao.getItemCitys(serSortInfo.getId());
+            for(SerCityScope city : citys){
+                if(itemAllCity > 0){
+                    city.setHaveItem(true);
+                }else{
+                    if(itemCitys != null && itemCitys.contains(city.getCityCode())){
+                        city.setHaveItem(true);
+                    }else{
+                        city.setHaveItem(false);
+                    }
+                }
+            }
+        }
+        sortInfo.setCitys(citys);
+        return sortInfo;
+    }
+    /**
+     * 根据ID获取服务分类
+     *
+     * @param serSortInfo
+     * @return
+     */
+    public SerSortInfo getData1(SerSortInfo serSortInfo) {
+        SerSortInfo sortInfo = super.get(serSortInfo.getId());
+        //获取分类的定向城市
+        List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(serSortInfo.getId());
+        if(null != citys){
+            for(SerCityScope city : citys){
+                if("010".equals(city.getCityCode())){
+                    city.setHaveItem(true);
+                }else{
+                    city.setHaveItem(false);
+                }
+            }
+        }
+        sortInfo.setCitys(citys);
+        return sortInfo;
+    }
+
     @Transactional(readOnly = false)
     public void delete(SerSortInfo serSortInfo) {
         //删除定向城市
