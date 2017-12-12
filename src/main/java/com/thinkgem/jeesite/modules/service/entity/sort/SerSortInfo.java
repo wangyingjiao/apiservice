@@ -26,7 +26,6 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     private String allCity;   //是否是全部城市
     private String orgId;//机构ID
     private String cityCode;        // 城市编号 查询用
-    private List<String> cityNames; // 城市 列表显示用
     private List<String> cityCodes; // 城市 编辑选中用
 
     public SerSortInfo() {
@@ -64,14 +63,6 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
         this.allCity = allCity;
     }
 
-    public List<String> getCityNames() {
-        return cityNames;
-    }
-
-    public void setCityNames(List<String> cityNames) {
-        this.cityNames = cityNames;
-    }
-
     public String getOrgId() {
         return orgId;
     }
@@ -95,5 +86,16 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     public void setCityCodes(List<String> cityCodes) {
         this.cityCodes = cityCodes;
+    }
+
+    private List<SerCityScope> citys;
+
+    @JsonInclude
+    public List<SerCityScope> getCitys() {
+        return citys;
+    }
+
+    public void setCitys(List<SerCityScope> citys) {
+        this.citys = citys;
     }
 }

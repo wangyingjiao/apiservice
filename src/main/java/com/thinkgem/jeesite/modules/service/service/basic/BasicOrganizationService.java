@@ -109,14 +109,8 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 	 * @param orgId
 	 * @return
 	 */
-    public List<String> getOrgCityCodes(String orgId) {
-		List<String> cityCodes = new ArrayList<String>();//服务城市
+    public List<BasicServiceCity> getOrgCityCodes(String orgId) {
 		List<BasicServiceCity> cityCodeList = basicServiceCityService.getCityCodesByOrgId(orgId);
-		if(null != cityCodeList){
-			for(BasicServiceCity city : cityCodeList){
-				cityCodes.add(city.getCityCode());
-			}
-		}
-		return cityCodes;
+		return cityCodeList;
     }
 }

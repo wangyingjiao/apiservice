@@ -43,5 +43,14 @@ public class BasicServiceCity extends DataEntity<BasicServiceCity> {
 	public void setCityCode(String cityCode) {
 		this.cityCode = cityCode;
 	}
-	
+
+	private String cityName;
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
 }

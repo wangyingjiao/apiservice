@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.sort;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.Length;
 
@@ -48,5 +50,25 @@ public class SerCityScope extends DataEntity<SerCityScope> {
 
 	public void setCityCode(String cityCode) {
 		this.cityCode = cityCode;
+	}
+
+
+	private boolean haveItem;
+	private String cityName;		// 市
+
+	public boolean getHaveItem() {
+		return haveItem;
+	}
+
+	public void setHaveItem(boolean haveItem) {
+		this.haveItem = haveItem;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
 	}
 }
