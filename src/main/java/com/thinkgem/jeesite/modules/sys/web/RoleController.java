@@ -75,8 +75,8 @@ public class RoleController extends BaseController {
     @RequiresPermissions("sys:role:view")
     @RequestMapping(value = "form")
     public String form(Role role, Model model) {
-        if (role.getOffice() == null) {
-            role.setOffice(UserUtils.getUser().getOrganization());
+        if (role.getOrganization() == null) {
+            role.setOrganization(UserUtils.getUser().getOrganization());
         }
         model.addAttribute("role", role);
         model.addAttribute("menuList", systemService.findAllMenu());
@@ -349,7 +349,7 @@ public class RoleController extends BaseController {
         User user = UserUtils.getUser();
         BasicOrganization organization = user.getOrganization();
 
-        role.setOffice(organization);
+        role.setOrganization(organization);
         systemService.saveRole(role);
 
         return new SuccResult(role);

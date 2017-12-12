@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import com.google.common.collect.Lists;
-import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -36,7 +35,7 @@ public class Role extends DataEntity<Role> {
 	}
 
 	private String id;
-	private BasicOrganization office;	// 归属机构
+	private BasicOrganization organization;	// 归属机构
 	private String name; 	// 角色名称
 	private String enname;	// 英文名称
 	private String roleType;// 权限类型
@@ -90,12 +89,12 @@ public class Role extends DataEntity<Role> {
 		this.sysData = sysData;
 	}
 
-	public BasicOrganization getOffice() {
-		return office;
+	public BasicOrganization getOrganization() {
+		return organization;
 	}
 
-	public void setOffice(BasicOrganization office) {
-		this.office = office;
+	public void setOrganization(BasicOrganization organization) {
+		this.organization = organization;
 	}
 
 	@NotBlank(message = "岗位名称不可为空",groups = SaveRoleGroup.class)
