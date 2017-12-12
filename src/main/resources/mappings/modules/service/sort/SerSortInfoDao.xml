@@ -37,7 +37,7 @@
 				AND a.major_sort= #{majorSort}
 			</if>
 			<if test="cityCode != null and cityCode !=''">
-				AND (b.city_code = #{cityCode} OR a.all_city = '1')
+				AND (b.city_code = #{cityCode} OR a.all_city = 'yes')
 			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
