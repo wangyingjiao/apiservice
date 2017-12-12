@@ -53,30 +53,30 @@ public class LoginController extends BaseController {
     /**
      * 管理登录
      */
-    @ApiIgnore
-    @RequestMapping(value = "${adminPath}/login", method = RequestMethod.GET)
-    public String login(HttpServletRequest request, HttpServletResponse response, Model model) {
-        Principal principal = UserUtils.getPrincipal();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("login, active session size: {}", sessionDAO.getActiveSessions(false).size());
-        }
-
-        // 如果已登录，再次访问主页，则退出原账号。
-        if (Global.TRUE.equals(Global.getConfig("notAllowRefreshIndex"))) {
-            CookieUtils.setCookie(response, "LOGINED", "false");
-        }
-
-        // 如果已经登录，则跳转到管理首页
-        if (principal != null && !principal.isMobileLogin()) {
-            return "redirect:" + adminPath;
-        }
-
-        model.addAttribute("code", 0);
-        model.addAttribute("data", "需要登录，请登录系统！");
-
-        return renderString(response, model);
-    }
+//    @ApiIgnore
+//    @RequestMapping(value = "${adminPath}/login", method = RequestMethod.GET)
+//    public String login(HttpServletRequest request, HttpServletResponse response, Model model) {
+//        Principal principal = UserUtils.getPrincipal();
+//
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("login, active session size: {}", sessionDAO.getActiveSessions(false).size());
+//        }
+//
+//        // 如果已登录，再次访问主页，则退出原账号。
+//        if (Global.TRUE.equals(Global.getConfig("notAllowRefreshIndex"))) {
+//            CookieUtils.setCookie(response, "LOGINED", "false");
+//        }
+//
+//        // 如果已经登录，则跳转到管理首页
+//        if (principal != null && !principal.isMobileLogin()) {
+//            return "redirect:" + adminPath;
+//        }
+//
+//        model.addAttribute("code", 0);
+//        model.addAttribute("data", "需要登录，请登录系统！");
+//
+//        return renderString(response, model);
+//    }
 
     /**
      * 登录失败，真正登录的POST请求由Filter完成
@@ -87,14 +87,16 @@ public class LoginController extends BaseController {
     @RequestMapping(value = "${adminPath}/login")
     @ApiOperation(value = "登入系统", notes = "用户登录")
     public Object login(LoginUser user) {
+        Principal principal = UserUtils.getPrincipal();
 
-        if (null == UserUtils.getUser()) {
-            return new FailResult("未登录用户！");
+        if (null == principal){
+            UserUtils.getSubject().logout();
+            return new FailResult("登录失败");
         }
 
         Result<HashMap<String, Object>> result = new SuccResult<>();
         HashMap<String, Object> map = new HashMap<>();
-        map.put("message", "登录成功！");
+        map.put("message", "已经登录成功，请先退出，再请求登录接口");
         map.put("JSESSIONID", WebUtils.toHttp(request).getSession().getId());
         ObjectMapper mapper = new ObjectMapper();
         String s = null;
