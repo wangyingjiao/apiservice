@@ -36,7 +36,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 	public Page<BasicOrganization> findPage(Page<BasicOrganization> page, BasicOrganization office){
 		office.setPage(page);
 		User user = UserUtils.getUser();
-		office.getSqlMap().put("dsf", BaseService.dataRoleFilter(user, "a"));
+		//office.getSqlMap().put("dsf", BaseService.dataRoleFilter(user, "a"));
 		page.setList(dao.findList(office));
 		return page;
 	}
@@ -103,4 +103,20 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		basicOrganizationRe.setCityCodes(cityCodes);
 		return basicOrganizationRe;
 	}
+
+	/**
+	 * 获取当前机构下所有城市
+	 * @param orgId
+	 * @return
+	 */
+    public List<String> getOrgCityCodes(String orgId) {
+		List<String> cityCodes = new ArrayList<String>();//服务城市
+		List<BasicServiceCity> cityCodeList = basicServiceCityService.getCityCodesByOrgId(orgId);
+		if(null != cityCodeList){
+			for(BasicServiceCity city : cityCodeList){
+				cityCodes.add(city.getCityCode());
+			}
+		}
+		return cityCodes;
+    }
 }

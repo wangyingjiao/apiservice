@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -85,7 +86,7 @@ public class BasicOrganizationController extends BaseController {
 	@ResponseBody
 	//@RequiresPermissions("sys:office:view")
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
-	@ApiOperation(value = "机构详情!")
+	@ApiOperation(value = "机构详情")
 	public Result formData(@RequestBody BasicOrganization basicOrganization) {
 		BasicOrganization basicOrganizationRs = basicOrganizationService.formData(basicOrganization);
 		return new SuccResult<>(basicOrganizationRs);
@@ -98,6 +99,16 @@ public class BasicOrganizationController extends BaseController {
 		} else {
 			return new BasicOrganization();
 		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getOrgCityCodes", method = {RequestMethod.GET})
+	@ApiOperation("获取当前机构下所有城市")
+	public Result getOrgCityCodes(HttpServletRequest request, HttpServletResponse response) {
+		User user = UserUtils.getUser();
+		String orgId = user.getOrganization().getId();//机构ID
+		List<String> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
+		return new SuccResult(cityCodes);
 	}
 
 }

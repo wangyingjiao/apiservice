@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.sort;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import org.hibernate.validator.constraints.Length;
 
@@ -23,43 +24,10 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     private String majorSort;        // 分类：保洁、家修
     private String name;        // 服务分类名称
     private String allCity;   //是否是全部城市
-    private String stationId;//服务站ID
-    private String officeId;//机构ID
-    private String stationName;//服务站名称
-    private String officeName;//机构名称
-
-    public String getStationName() {
-        return stationName;
-    }
-
-    public void setStationName(String stationName) {
-        this.stationName = stationName;
-    }
-
-    public String getOfficeName() {
-        return officeName;
-    }
-
-    public void setOfficeName(String officeName) {
-        this.officeName = officeName;
-    }
-
-
-    public String getStationId() {
-        return stationId;
-    }
-
-    public void setStationId(String stationId) {
-        this.stationId = stationId;
-    }
-
-    public String getOfficeId() {
-        return officeId;
-    }
-
-    public void setOfficeId(String officeId) {
-        this.officeId = officeId;
-    }
+    private String orgId;//机构ID
+    private String cityCode;        // 城市编号 查询用
+    private List<String> cityNames; // 城市 列表显示用
+    private List<String> cityCodes; // 城市 编辑选中用
 
     public SerSortInfo() {
         super();
@@ -70,7 +38,6 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     }
 
     @NotBlank(message = "服务分类：保洁、家修不可为空")
-    @Length(min = 0, max = 1, message = "分类：保洁、家修长度必须介于 0 和 1 之间")
     public String getMajorSort() {
         return majorSort;
     }
@@ -97,11 +64,6 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
         this.allCity = allCity;
     }
 
-    private String cityId;        // 城市编号 查询用
-    private List<String> cityNames; // 城市 列表显示用
-    private List<String> cityIds; // 城市 编辑选中用
-    private List<SerSortCity> citys; // 城市 保存用
-
     public List<String> getCityNames() {
         return cityNames;
     }
@@ -110,27 +72,28 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
         this.cityNames = cityNames;
     }
 
-    public List<String> getCityIds() {
-        return cityIds;
+    public String getOrgId() {
+        return orgId;
     }
 
-    public void setCityIds(List<String> cityIds) {
-        this.cityIds = cityIds;
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
-    public String getCityId() {
-        return cityId;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public void setCityId(String cityId) {
-        this.cityId = cityId;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
     }
 
-    public List<SerSortCity> getCitys() {
-        return citys;
+    @JsonInclude
+    public List<String> getCityCodes() {
+        return cityCodes;
     }
 
-    public void setCitys(List<SerSortCity> citys) {
-        this.citys = citys;
+    public void setCityCodes(List<String> cityCodes) {
+        this.cityCodes = cityCodes;
     }
 }

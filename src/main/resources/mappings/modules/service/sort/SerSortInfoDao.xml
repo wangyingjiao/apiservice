@@ -4,39 +4,11 @@
     
 	<sql id="serSortInfoColumns">
 		a.id AS "id",
-		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		a.office_id AS "officeId",
-		a.office_name AS "officeName",
+		a.org_id AS "orgId",
 		a.major_sort AS "majorSort",
 		a.name AS "name",
-		a.all_city AS "allCity",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.all_city AS "allCity"
 	</sql>
-	<sql id="serSortCityColumns">
-		a.id AS "id",
-		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		a.office_id AS "officeId",
-		a.office_name AS "officeName",
-		a.major_sort AS "majorSort",
-		a.name AS "name",
-		a.all_city AS "allCity",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag",
-		b.city_id AS "cityId",
-		b.city_name AS "cityName"
-	</sql>
-	
 	<sql id="serSortInfoJoins">
 	</sql>
     
@@ -52,23 +24,20 @@
 		SELECT
 		<include refid="serSortCityNamesColumns"/>
 		FROM ser_sort_info a
-		<if test="cityId != null and cityId !=''">
-			LEFT JOIN ser_sort_city b ON a.id = b.sort_id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="cityCode != null and cityCode !=''">
+			LEFT JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		</if>
 		<include refid="serSortInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				AND a.name LIKE concat('%',#{name},'%')
 			</if>
-			<if test="majorSort != null and majorSort !='' and majorSort !='0'.toString()">
+			<if test="majorSort != null and majorSort !='' and majorSort !='all'.toString()">
 				AND a.major_sort= #{majorSort}
 			</if>
-			<if test="cityId != null and cityId !=''">
-				AND (b.city_id = #{cityId} OR a.all_city = '1')
+			<if test="cityCode != null and cityCode !=''">
+				AND (b.city_code = #{cityCode} OR a.all_city = '1')
 			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
@@ -87,27 +56,25 @@
 		a.id AS "id",
 		a.major_sort AS "majorSort",
 		a.name AS "name",
-		a.all_city AS "allCity",
-		a.remarks AS "remarks"
+		a.all_city AS "allCity"
 	</sql>
 	<resultMap type="SerSortInfo" id="SerSortResultMap">
 		<id column="id" property="id"/>
 		<result column="major_sort" property="majorSort"/>
 		<result column="name" property="name"/>
 		<result column="all_city" property="allCity"/>
-		<result column="remarks" property="remarks"/>
 		<!-- 定向城市 -->
 		<association property="cityNames" column="{reqId=id}" select="selectCityNameById"></association>
-		<association property="cityIds" column="{reqId=id}" select="selectCityIdById"></association>
+		<association property="cityCodes" column="{reqId=id}" select="selectCityIdById"></association>
 	</resultMap>
 	<select id="selectCityNameById" parameterType="java.util.Map" resultType="string">
-		select city_name as cityName from ser_sort_city
-		where sort_id=#{reqId}
+		select city_code as cityName from ser_city_scope
+		where master_id=#{reqId}
 		and del_flag = '0'
 	</select>
 	<select id="selectCityIdById" parameterType="java.util.Map" resultType="string">
-		select city_id as cityId from ser_sort_city
-		where sort_id=#{reqId}
+		select city_code as cityCode from ser_city_scope
+		where master_id=#{reqId}
 		and del_flag = '0'
 	</select>
 
@@ -115,7 +82,7 @@
 	<select id="checkDataName" resultType="int">
 		SELECT COUNT(*) FROM ser_sort_info
 		WHERE name = #{name}
-		AND  office_id = #{officeId}
+		AND  org_id = #{orgId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	<!-- 验证此分类下是否有服务项目 -->
@@ -134,31 +101,11 @@
 		AND i.del_flag = #{DEL_FLAG_NORMAL}
 		AND ic.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
-	<select id="findAllList" resultType="SerSortInfo">
-		SELECT 
-			<include refid="serSortInfoColumns"/>
-		FROM ser_sort_info a
-		<include refid="serSortInfoJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
+
 	<insert id="insert">
 		INSERT INTO ser_sort_info(
 			id,
-			station_id,
-			station_name,
-			office_id,
-			office_name,
+			org_id,
 			major_sort,
 			name,
 			all_city,
@@ -166,14 +113,10 @@
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
-			#{stationId},
-			#{stationName},
-			#{officeId},
-			#{officeName},
+			#{orgId},
 			#{majorSort},
 			#{name},
 			#{allCity},
@@ -181,7 +124,6 @@
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
@@ -198,8 +140,7 @@
 				all_city = #{allCity},
 			</if>
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	

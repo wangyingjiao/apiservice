@@ -3,13 +3,16 @@
  */
 package com.thinkgem.jeesite.modules.service.service.sort;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
 import com.thinkgem.jeesite.modules.service.dao.office.OfficeSeviceAreaListDao;
-import com.thinkgem.jeesite.modules.service.dao.sort.SerSortCityDao;
+import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
-import com.thinkgem.jeesite.modules.service.entity.sort.SerSortCity;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +34,22 @@ import com.thinkgem.jeesite.modules.service.dao.sort.SerSortInfoDao;
 @Transactional(readOnly = true)
 public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo> {
     @Autowired
-    SerSortInfoDao serSortInfoDao;
+    SerCityScopeDao serCityScopeDao;
     @Autowired
-    SerSortCityDao serSortCityDao;
-    @Autowired
-    OfficeSeviceAreaListDao officeSeviceAreaListDao;
-    @Autowired
-    private SerSortCityService serSortCityService;
+    SerCityScopeService serCityScopeService;
 
     public SerSortInfo get(String id) {
         return super.get(id);
+    }
+
+    /**
+     * 检查同一机构下服务分类名称是否相同
+     *
+     * @param serSortInfo
+     * @return
+     */
+    public int checkDataName(SerSortInfo serSortInfo) {
+        return dao.checkDataName(serSortInfo);
     }
 
     /**
@@ -48,35 +57,39 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      *
      * @param serSortInfo
      */
+
     @Transactional(readOnly = false)
     public void save(SerSortInfo serSortInfo) {
         if (StringUtils.isNotBlank(serSortInfo.getId())) {
             //更新时，删除定向城市
-            serSortCityDao.delSerSortCityBySort(serSortInfo);
+            serCityScopeDao.delSerCityScopeByMaster(serSortInfo.getId());
         }
-        List<SerSortCity> citys = serSortInfo.getCitys();
-        if(citys==null || 0==citys.size()){
-            serSortInfo.setAllCity("1");
+        List<String> cityCodes = serSortInfo.getCityCodes();
+        if(cityCodes==null || 0==cityCodes.size()){
+            serSortInfo.setAllCity("yes");
         }else{
-            serSortInfo.setAllCity("0");
+            serSortInfo.setAllCity("no");
         }
         super.save(serSortInfo);
         //批量插入定向城市
-        if(citys != null){
-            for(SerSortCity city : citys){
-                city.setSortId(serSortInfo.getId());
-                city.setSortName(serSortInfo.getName());
-                serSortCityService.save(city);
+        if(cityCodes != null){
+            for(String cityCode : cityCodes){
+                SerCityScope serCityScope = new SerCityScope();
+                serCityScope.setMasterId(serSortInfo.getId());
+                serCityScope.setType("0");//0:服务分类 1:服务项目
+                serCityScope.setCityCode(cityCode);//市_区号
+                serCityScopeService.save(serCityScope);
             }
         }
     }
+
 
     public List<SerSortInfo> findList(SerSortInfo serSortInfo) {
         return super.findList(serSortInfo);
     }
 
     public Page<SerSortInfo> findPage(Page<SerSortInfo> page, SerSortInfo serSortInfo) {
-        serSortInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
+        //serSortInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
         return super.findPage(page, serSortInfo);
     }
 
@@ -89,15 +102,22 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
     public SerSortInfo getData(SerSortInfo serSortInfo) {
         SerSortInfo sortInfo = super.get(serSortInfo.getId());
         //获取分类的定向城市
-        List<SerSortCity> citys = serSortCityDao.getCitys(serSortInfo);
-        sortInfo.setCitys(citys);
+        List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(serSortInfo.getId());
+        List<String> cityCodes = null;
+        if(null != citys){
+            cityCodes = new ArrayList<String>();
+            for(SerCityScope city : citys){
+                cityCodes.add(city.getCityCode());
+            }
+        }
+        sortInfo.setCityCodes(cityCodes);
         return sortInfo;
     }
 
     @Transactional(readOnly = false)
     public void delete(SerSortInfo serSortInfo) {
         //删除定向城市
-        serSortCityDao.delSerSortCityBySort(serSortInfo);
+        serCityScopeDao.delSerCityScopeByMaster(serSortInfo.getId());
         super.delete(serSortInfo);
     }
 
@@ -109,17 +129,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      */
     public int checkedSortItem(SerSortInfo serSortInfo) {
         // 此分类下是否有服务项目
-        return serSortInfoDao.checkedSortItem(serSortInfo);
-    }
-
-    /**
-     * 检查同一机构下服务分类名称是否相同
-     *
-     * @param serSortInfo
-     * @return
-     */
-    public int checkDataName(SerSortInfo serSortInfo) {
-        return serSortInfoDao.checkDataName(serSortInfo);
+        return dao.checkedSortItem(serSortInfo);
     }
 
     /**
@@ -129,10 +139,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
      * @return
      */
     public int checkCityItem(SerSortInfo serSortInfo) {
-        return serSortInfoDao.checkCityItem(serSortInfo);
+        return dao.checkCityItem(serSortInfo);
     }
 
-    public List<OfficeSeviceAreaList> getOfficeCitylist(SerSortInfo serSortInfo) {
-        return officeSeviceAreaListDao.getOfficeCitys(serSortInfo);
-    }
 }

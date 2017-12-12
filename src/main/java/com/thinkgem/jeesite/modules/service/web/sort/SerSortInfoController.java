@@ -63,10 +63,7 @@ public class SerSortInfoController extends BaseController {
 
         if (!StringUtils.isNotBlank(serSortInfo.getId())) {//新增时验证重复
             User user = UserUtils.getUser();
-            serSortInfo.setOfficeId(user.getOrganization().getId());//机构ID
-            serSortInfo.setOfficeName(user.getOrganization().getName());//机构名称
-            serSortInfo.setStationId(user.getStation().getId());//服务站ID
-            serSortInfo.setStationName(user.getStation().getName());//服务站名称
+            serSortInfo.setOrgId(user.getOrganization().getId());//机构ID
 
             if (0 != serSortInfoService.checkDataName(serSortInfo)) {
                 return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
@@ -89,9 +86,9 @@ public class SerSortInfoController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "getData", method = {RequestMethod.POST})
-    @ApiOperation("根据ID查找服务分类")
-    public Result getData(@RequestBody SerSortInfo serSortInfo) {
+    @RequestMapping(value = "formData", method = {RequestMethod.POST})
+    @ApiOperation("服务分类编辑")
+    public Result formData(@RequestBody SerSortInfo serSortInfo) {
         SerSortInfo entity = null;
         if (StringUtils.isNotBlank(serSortInfo.getId())) {
             entity = serSortInfoService.getData(serSortInfo);
@@ -113,27 +110,6 @@ public class SerSortInfoController extends BaseController {
         }
         serSortInfoService.delete(serSortInfo);
         return new SuccResult("删除服务分类成功");
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "checkCityItem", method = {RequestMethod.POST})
-    @ApiOperation("验证定向城市是否设置服务项目")
-    public Result checkCityItem(@RequestBody SerSortInfo serSortInfo) {
-        if (0 != serSortInfoService.checkCityItem(serSortInfo)) {
-            return new FailResult("该城市已关联服务项目，不可移除其选中状态");
-        }
-        return new SuccResult("success");
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/getOfficeCitylist", method = {RequestMethod.GET})
-    @ApiOperation("获取机构下所有城市")
-    public Result getOfficeCitylist(HttpServletRequest request, HttpServletResponse response) {
-        SerSortInfo serSortInfo = new SerSortInfo();
-        User user = UserUtils.getUser();
-        serSortInfo.setOfficeId(user.getOrganization().getId());//机构ID
-        List<OfficeSeviceAreaList> officeCitys = serSortInfoService.getOfficeCitylist(serSortInfo);
-        return new SuccResult(officeCitys);
     }
 
 }
