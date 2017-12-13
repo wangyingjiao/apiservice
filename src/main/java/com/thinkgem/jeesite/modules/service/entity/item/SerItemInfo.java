@@ -132,6 +132,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String cityCode;        // 城市编号 查询用
 	private List<String> cityCodes; // 城市 编辑选中用
 	private List<SerCityScope> citys;
+	private List<SerCityScope> allCitys;
 	private List<SerItemCommodity> commoditys;
 	private String sortName;		// 所属分类
 
@@ -160,6 +161,15 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setCitys(List<SerCityScope> citys) {
 		this.citys = citys;
 	}
+
+	public List<SerCityScope> getAllCitys() {
+		return allCitys;
+	}
+
+	public void setAllCitys(List<SerCityScope> allCitys) {
+		this.allCitys = allCitys;
+	}
+
 	@JsonInclude
 	public List<SerItemCommodity> getCommoditys() {return commoditys;}
 	public void setCommoditys(List<SerItemCommodity> commoditys) {this.commoditys = commoditys;}

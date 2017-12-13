@@ -111,40 +111,6 @@ public class SerItemInfoController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "getSerItemInfoPic", method = {RequestMethod.POST})
-    @ApiOperation("根据ID查找服务项目图文详情")
-    public Result getSerItemInfoPic(@RequestBody SerItemInfo serItemInfo) {
-        SerItemInfo entity = null;
-        if (StringUtils.isNotBlank(serItemInfo.getId())) {
-            entity = serItemInfoService.getSerItemInfoPic(serItemInfo);
-        }
-        if (entity == null) {
-            return new FailResult("未找到此id对应的图文详情");
-        } else {
-            return new SuccResult(entity);
-        }
-    }
-
-    @ResponseBody
-    //@RequiresPermissions("service:station:serItemInfo:edit")
-    @RequestMapping(value = "updateSerItemPicNum", method = {RequestMethod.POST})
-    @ApiOperation("更新服务项目图文详情和排序号")
-    public Result updateSerItemPicNum(@RequestBody SerItemInfo serItemInfo) {
-        serItemInfoService.updateSerItemPicNum(serItemInfo);
-        return new SuccResult("保存成功");
-    }
-
-    @ResponseBody
-    @RequestMapping(value="getSerSortInfoList",method={RequestMethod.GET})
-    @ApiOperation("所属分类下拉列表")
-    public List<Dict> getSerSortInfoList(HttpServletRequest request, HttpServletResponse response){
-        SerItemInfo serItemInfo = new SerItemInfo();
-        User user = UserUtils.getUser();
-        serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
-        return serItemInfoService.getSerSortInfoList(serItemInfo);
-    }
-
-    @ResponseBody
     @RequestMapping(value = "getAllCityCodes", method = {RequestMethod.POST})
     @ApiOperation("机构或分类下定向城市")
     public List<SerCityScope> getAllCityCodes(@RequestBody SerItemInfo serItemInfo) {
