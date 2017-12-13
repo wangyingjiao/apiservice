@@ -4,25 +4,16 @@
     
 	<sql id="serItemInfoColumns">
 		a.id AS "id",
-		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		a.office_id AS "officeId",
-		a.office_name AS "officeName",
+		a.org_id AS "orgId",
 		a.major_sort AS "majorSort",
 		a.sort_id AS "sortId",
-		a.sort_name AS "sortName",
 		a.name AS "name",
-		a.all_city AS "allCity",
 		a.picture AS "picture",
+		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
 		a.sale AS "sale",
 		a.sort_num AS "sortNum",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.all_city AS "allCity"
 	</sql>
 	
 	<sql id="serItemInfoJoins">
@@ -40,17 +31,15 @@
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
 		FROM ser_item_info a
-		<if test="cityId != null and cityId !=''">
-			LEFT JOIN ser_item_city b ON a.id = b.item_id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_sort_info s ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="cityCode != null and cityCode !=''">
+			LEFT JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		</if>
 		<include refid="serItemInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				AND a.name LIKE ('%',#{name},'%')
 			</if>
 			<if test="majorSort != null and majorSort !='' and majorSort !='0'.toString()">
 				AND a.major_sort= #{majorSort}
@@ -58,8 +47,8 @@
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
 			</if>
-			<if test="cityId != null and cityId !=''">
-				AND (b.city_id = #{cityId} OR a.all_city = '1')
+			<if test="cityCode != null and cityCode !=''">
+				AND (b.city_code = #{cityCode} OR a.all_city = 'yes')
 			</if>
 		</where>
 		<choose>
@@ -74,16 +63,14 @@
 
 	<sql id="serItemCommodityColumns">
 		a.id AS "id",
-		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		a.office_id AS "officeId",
-		a.office_name AS "officeName",
+		a.org_id AS "orgId",
 		a.major_sort AS "majorSort",
 		a.sort_id AS "sortId",
-		a.sort_name AS "sortName",
+		s.name AS "sortName",
 		a.name AS "name",
 		a.all_city AS "allCity",
 		a.picture AS "picture",
+		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
 		a.sale AS "sale",
 		a.sort_num AS "sortNum"
@@ -92,6 +79,7 @@
 		<id column="id" property="id"/>
 		<result column="sort_num" property="sortNum"/>
 		<result column="picture" property="picture"/>
+		<result column="picture_detail" property="pictureDetail"/>
 		<result column="major_sort" property="majorSort"/>
 		<result column="sort_id" property="sortId"/>
 		<result column="sort_name" property="sortName"/>
@@ -101,18 +89,21 @@
 		<!-- 项目关联商品 -->
 		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
 		<!-- 定向城市 -->
-		<association property="cityNames" column="{reqId=id}" select="selectCityById"></association>
+		<association property="citys" column="{reqId=id}" select="selectCitysById"></association>
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
-		select id,name,unit,meterage,price from ser_item_commodity
+		select id,name,unit,type,price from ser_item_info_goods
 		where item_id=#{reqId}
 		and del_flag = '0'
 	</select>
-
-	<select id="selectCityById" parameterType="java.util.Map" resultType="string">
-		select city_name as cityName from ser_item_city
-		where item_id=#{reqId}
-		and del_flag = '0'
+	<select id="selectCitysById" parameterType="java.util.Map" resultType="SerCityScope">
+		select
+		a.city_code AS cityCode,
+		b.`name` AS cityName
+		from ser_city_scope a
+		INNER JOIN sys_area b on a.city_code = b.`code` AND b.del_flag='0'
+		where a.master_id=#{reqId}
+		and a.del_flag = '0'
 	</select>
 
 	<select id="findAllList" resultType="SerItemInfo">
@@ -136,16 +127,13 @@
 	<insert id="insert">
 		INSERT INTO ser_item_info(
 			id,
-			station_id,
-			station_name,
-			office_id,
-			office_name,
+			org_id,
 			major_sort,
 			sort_id,
-			sort_name,
 			name,
 			all_city,
 			picture,
+			picture_detail,
 			description,
 			sale,
 			sort_num,
@@ -153,20 +141,16 @@
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
-			#{stationId},
-			#{stationName},
-			#{officeId},
-			#{officeName},
+			#{orgId},
 			#{majorSort},
 			#{sortId},
-			#{sortName},
 			#{name},
 			#{allCity},
 			#{picture},
+			#{pictureDetail},
 			#{description},
 			#{sale},
 			#{sortNum},
@@ -174,7 +158,6 @@
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
@@ -185,10 +168,7 @@
 				major_sort = #{majorSort},
 			</if>
 			<if test="sortId != null and sortId != ''">
-			sort_id = #{sortId},
-			</if>
-			<if test="sortName != null and sortName != ''">
-				sort_name = #{sortName},
+				sort_id = #{sortId},
 			</if>
 			<if test="name != null and name != ''">
 				name = #{name},
@@ -212,8 +192,7 @@
 				sort_num = #{sortNum},
 			</if>
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
@@ -227,11 +206,11 @@
 	<select id="checkDataName" resultType="int">
 		SELECT COUNT(*) FROM ser_item_info
 		WHERE name = #{name}
-		AND office_id = #{officeId}
+		AND org_id = #{orgId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	<select id="getSerItemCommoditys" resultType="SerItemCommodity">
-		SELECT id FROM ser_item_commodity WHERE item_id = #{id}
+		SELECT id FROM ser_item_info_goods WHERE item_id = #{id}
 	</select>
 
 	<select id="getSerItemInfoPic" resultType="SerItemInfo">
@@ -251,10 +230,12 @@
 		WHERE id = #{id}
 	</update>
 
-	<select id="getSerSortInfoList" resultType="SerItemInfo">
-		select a.id AS sortId, a.name as sortName
+	<select id="getSerSortInfoList" resultType="Dict">
+		select a.id AS value, a.name as label
 		from ser_sort_info a
-		where del_flag = #{DEL_FLAG_NORMAL}
+		where
+		org_id = #{orgId}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 </mapper>

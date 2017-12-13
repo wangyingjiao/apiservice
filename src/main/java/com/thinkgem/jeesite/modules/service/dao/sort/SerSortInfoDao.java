@@ -21,8 +21,6 @@ public interface SerSortInfoDao extends CrudDao<SerSortInfo> {
 
     int checkedSortItem(SerSortInfo serSortInfo);
 
-    int checkCityItem(SerSortInfo serSortInfo);
-
     int getItemAllCityNum(String id);
 
     List<String> getItemCitys(String id);

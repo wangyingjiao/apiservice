@@ -3,13 +3,18 @@
  */
 package com.thinkgem.jeesite.modules.service.service.item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.dao.item.SerItemCityDao;
+import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
-import com.thinkgem.jeesite.modules.service.entity.item.SerItemCity;
+import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
+import com.thinkgem.jeesite.modules.service.service.sort.SerCityScopeService;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +34,17 @@ import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
 @Service
 @Transactional(readOnly = true)
 public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo> {
-	@Autowired
-	SerItemInfoDao serItemInfoDao;
-	@Autowired
-	SerItemCityDao serItemCityDao;
-	@Autowired
-	SerItemCommodityDao serItemCommodityDao;
 
 	@Autowired
-	SerItemCityService serItemCityService;
+	SerItemCommodityDao serItemCommodityDao;
 	@Autowired
 	SerItemCommodityService serItemCommodityService;
+	@Autowired
+	SerCityScopeDao serCityScopeDao;
+	@Autowired
+	SerCityScopeService serCityScopeService;
+	@Autowired
+	BasicServiceCityDao basicServiceCityDao;
 
 	public SerItemInfo get(String id) {
 		return super.get(id);
@@ -53,34 +58,35 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	public void save(SerItemInfo serItemInfo) {
 		if (StringUtils.isNotBlank(serItemInfo.getId())) {
 			//更新时，删除定向城市
-			serItemCityDao.delSerItemCityByItem(serItemInfo);
+			serCityScopeDao.delSerCityScopeByMaster(serItemInfo.getId());
+
 			//删除商品信息
 			serItemCommodityDao.delSerItemCommodity(serItemInfo);
 		}
-
-		List<SerItemCity> citys = serItemInfo.getCitys();
-		if(citys==null || 0==citys.size()){
-			serItemInfo.setAllCity("1");//全部城市
+		List<String> cityCodes = serItemInfo.getCityCodes();
+		if(cityCodes==null || 0==cityCodes.size()){
+			serItemInfo.setAllCity("yes");
 		}else{
-			serItemInfo.setAllCity("0");
+			serItemInfo.setAllCity("no");
 		}
 
 		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
 
 		super.save(serItemInfo);
-		if(citys != null){
-			//批量插入定向城市
-			for(SerItemCity city:citys){
-				city.setItemId(serItemInfo.getId());
-				city.setItemName(serItemInfo.getName());
-				serItemCityService.save(city);
+		//批量插入定向城市
+		if(cityCodes != null){
+			for(String cityCode : cityCodes){
+				SerCityScope serCityScope = new SerCityScope();
+				serCityScope.setMasterId(serItemInfo.getId());
+				serCityScope.setType("1");//0:服务分类 1:服务项目
+				serCityScope.setCityCode(cityCode);//市_区号
+				serCityScopeService.save(serCityScope);
 			}
 		}
 		if(commoditys != null) {
 			//批量插入商品信息
 			for (SerItemCommodity commodity : commoditys) {
 				commodity.setItemId(serItemInfo.getId());
-				commodity.setItemName(serItemInfo.getName());
 				serItemCommodityService.save(commodity);
 			}
 		}
@@ -100,17 +106,31 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 * @return
 	 */
 	public SerItemInfo getData(String id) {
-		return super.get(id);
+		SerItemInfo serItemInfo = super.get(id);
+		//获取定向城市
+		List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(id);
+		List<String> cityCodes = null;
+		if(null != citys){
+			cityCodes = new ArrayList<String>();
+			for(SerCityScope city : citys){
+				cityCodes.add(city.getCityCode());
+			}
+		}
+		serItemInfo.setCityCodes(cityCodes);
+
+		List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+		serItemInfo.setCommoditys(commoditys);
+		return serItemInfo;
 	}
 
 	
 	@Transactional(readOnly = false)
 	public void delete(SerItemInfo serItemInfo) {
 		//删除定向城市
-		serItemCityDao.delSerItemCityByItem(serItemInfo);
+		serCityScopeDao.delSerCityScopeByMaster(serItemInfo.getId());
 
 		//删除商品信息
-		List<SerItemCommodity> commoditys = serItemInfoDao.getSerItemCommoditys(serItemInfo);
+		List<SerItemCommodity> commoditys = dao.getSerItemCommoditys(serItemInfo);
 		for(SerItemCommodity commodity : commoditys){
 			serItemCommodityService.delete(commodity);
 		}
@@ -123,20 +143,38 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 * @return
 	 */
 	public int checkDataName(SerItemInfo serItemInfo) {
-		return serItemInfoDao.checkDataName(serItemInfo);
+		return dao.checkDataName(serItemInfo);
 	}
 
 	@Transactional(readOnly = false)
     public void updateSerItemPicNum(SerItemInfo serItemInfo) {
 		serItemInfo.preUpdate();
-		serItemInfoDao.updateSerItemPicNum(serItemInfo);
+		dao.updateSerItemPicNum(serItemInfo);
     }
 
 	public SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo) {
-		return serItemInfoDao.getSerItemInfoPic(serItemInfo);
+		return dao.getSerItemInfoPic(serItemInfo);
 	}
 
-    public List<SerItemInfo> getSerSortInfoList(SerItemInfo serItemInfo) {
-		return serItemInfoDao.getSerSortInfoList(serItemInfo);
+    public List<Dict> getSerSortInfoList(SerItemInfo serItemInfo) {
+		return dao.getSerSortInfoList(serItemInfo);
     }
+
+	public List<SerCityScope> getAllCityCodes(SerItemInfo serItemInfo) {
+		List<SerCityScope> citys = new ArrayList<SerCityScope>();
+		if(StringUtils.isNotBlank(serItemInfo.getSortId())){
+			citys = serCityScopeDao.getSerCityScopeByMaster(serItemInfo.getSortId());
+		}else{
+			List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
+			if(null != list){
+				for(BasicServiceCity city : list){
+					SerCityScope cityScope = new SerCityScope();
+					cityScope.setCityCode(city.getCityCode());
+					cityScope.setCityName(city.getCityName());
+					citys.add(cityScope);
+				}
+			}
+		}
+		return  citys;
+	}
 }

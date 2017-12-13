@@ -50,8 +50,7 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		if(persons != null){
 			//批量插入派人数量
 			for(SerItemCommodityPersons person : persons){
-				person.setCommodityId(serItemCommodity.getId());
-				person.setCommodityName(serItemCommodity.getName());
+				person.setGoodsId(serItemCommodity.getId());
 				serItemCommodityPersonsService.save(person);
 			}
 		}

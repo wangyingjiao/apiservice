@@ -9,8 +9,11 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import com.thinkgem.jeesite.modules.service.service.item.SerItemInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
@@ -60,14 +63,12 @@ public class SerItemInfoController extends BaseController {
         }
 
         if (!StringUtils.isNotBlank(serItemInfo.getId())) {//新增时验证重复
+            User user = UserUtils.getUser();
+            serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
+
             if (0 != serItemInfoService.checkDataName(serItemInfo)) {
                 return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
             }
-            User user = UserUtils.getUser();
-            serItemInfo.setOfficeId(user.getOrganization().getId());//机构ID
-            serItemInfo.setOfficeName(user.getOrganization().getName());//机构名称
-            serItemInfo.setStationId(user.getStation().getId());//服务站ID
-            serItemInfo.setStationName(user.getStation().getName());//服务站名称
         }
         serItemInfoService.save(serItemInfo);
         return new SuccResult("保存成功");
@@ -86,9 +87,9 @@ public class SerItemInfoController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "getData", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "formData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("根据ID查找服务项目")
-    public Result getData(@RequestBody SerItemInfo serItemInfo) {
+    public Result formData(@RequestBody SerItemInfo serItemInfo) {
         SerItemInfo entity = null;
         if (StringUtils.isNotBlank(serItemInfo.getId())) {
             entity = serItemInfoService.getData(serItemInfo.getId());
@@ -102,9 +103,9 @@ public class SerItemInfoController extends BaseController {
 
     @ResponseBody
     //@RequiresPermissions("service:station:serItemInfo:edit")
-    @RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "deleteData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("删除服务项目")
-    public Result deleteSortInfo(@RequestBody SerItemInfo serItemInfo) {
+    public Result deleteData(@RequestBody SerItemInfo serItemInfo) {
         serItemInfoService.delete(serItemInfo);
         return new SuccResult("删除成功");
     }
@@ -133,17 +134,26 @@ public class SerItemInfoController extends BaseController {
         return new SuccResult("保存成功");
     }
 
-
     @ResponseBody
     @RequestMapping(value="getSerSortInfoList",method={RequestMethod.GET})
     @ApiOperation("所属分类下拉列表")
-    public List<SerItemInfo> getSerSortInfoList(HttpServletRequest request, HttpServletResponse response){
+    public List<Dict> getSerSortInfoList(HttpServletRequest request, HttpServletResponse response){
         SerItemInfo serItemInfo = new SerItemInfo();
         User user = UserUtils.getUser();
-        serItemInfo.setOfficeId(user.getOrganization().getId());//机构ID
-        serItemInfo.setOfficeName(user.getOrganization().getName());//机构名称
-        serItemInfo.setStationId(user.getStation().getId());//服务站ID
-        serItemInfo.setStationName(user.getStation().getName());//服务站名称
+        serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
         return serItemInfoService.getSerSortInfoList(serItemInfo);
     }
+
+    @ResponseBody
+    @RequestMapping(value = "getAllCityCodes", method = {RequestMethod.POST})
+    @ApiOperation("机构或分类下定向城市")
+    public List<SerCityScope> getAllCityCodes(@RequestBody SerItemInfo serItemInfo) {
+        if(null == serItemInfo){
+            serItemInfo = new SerItemInfo();
+        }
+        User user = UserUtils.getUser();
+        serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
+        return serItemInfoService.getAllCityCodes(serItemInfo);
+    }
+
 }

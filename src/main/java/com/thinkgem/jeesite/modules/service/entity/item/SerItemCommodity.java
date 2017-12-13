@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,15 +21,12 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	
 	private static final long serialVersionUID = 1L;
 	private String itemId;		// 服务项目编号
-	private String itemName;		// 服务项目名称
-	public String getItemName() {return itemName;}
-	public void setItemName(String itemName) {this.itemName = itemName;}
 	private String name;		// 商品名称
 	private String unit;		// 商品单位
-	private String meterage;		// 计量方式
-	private String price;		// 价格
-	private String convertTime;		// 折算时长
-	private Long minimum;		// 起购数量
+	private String type;		// 计量方式(num：按数量 area：按面积 house：按居室)
+	private BigDecimal price;		// 价格
+	private Double convertHours;		// 折算时长
+	private int minPurchase;		// 起购数量
 	private List<SerItemCommodityPersons> persons;//派人数量
 
 	@NotNull(message = "派人数量不可为空")
@@ -73,39 +71,38 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	}
 
 	@NotBlank(message = "计量方式不可为空")
-	@Length(min=0, max=64, message="计量方式长度必须介于 0 和 64 之间")
-	public String getMeterage() {
-		return meterage;
+	public String getType() {
+		return type;
 	}
 
-	public void setMeterage(String meterage) {
-		this.meterage = meterage;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@NotBlank(message = "价格不可为空")
-	public String getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 
 	@NotBlank(message = "折算时长不可为空")
-	public String getConvertTime() {
-		return convertTime;
+	public Double getConvertHours() {
+		return convertHours;
 	}
 
-	public void setConvertTime(String convertTime) {
-		this.convertTime = convertTime;
+	public void setConvertHours(Double convertHours) {
+		this.convertHours = convertHours;
 	}
 	
-	public Long getMinimum() {
-		return minimum;
+	public int getMinPurchase() {
+		return minPurchase;
 	}
 
-	public void setMinimum(Long minimum) {
-		this.minimum = minimum;
+	public void setMinPurchase(int minPurchase) {
+		this.minPurchase = minPurchase;
 	}
 	
 }

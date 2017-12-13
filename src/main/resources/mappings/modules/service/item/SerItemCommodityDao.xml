@@ -5,18 +5,16 @@
 	<sql id="serItemCommodityColumns">
 		a.id AS "id",
 		a.item_id AS "itemId",
-		a.item_name AS "itemName",
 		a.name AS "name",
 		a.unit AS "unit",
-		a.meterage AS "meterage",
+		a.type AS "type",
 		a.price AS "price",
-		a.convert_time AS "convertTime",
-		a.minimum AS "minimum",
+		a.convert_hours AS "convertHours",
+		a.min_purchase AS "minPurchase",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
@@ -26,7 +24,7 @@
 	<select id="get" resultType="SerItemCommodity">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
-		FROM ser_item_commodity a
+		FROM ser_item_info_goods a
 		<include refid="serItemCommodityJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -34,15 +32,12 @@
 	<select id="findList" resultType="SerItemCommodity">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
-		FROM ser_item_commodity a
+		FROM ser_item_info_goods a
 		<include refid="serItemCommodityJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				AND a.name LIKE concat('%',#{name},'%')
 			</if>
 		</where>
 		<choose>
@@ -58,7 +53,7 @@
 	<select id="findAllList" resultType="SerItemCommodity">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
-		FROM ser_item_commodity a
+		FROM ser_item_info_goods a
 		<include refid="serItemCommodityJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -74,80 +69,125 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO ser_item_commodity(
+		INSERT INTO ser_item_info_goods(
 			id,
 			item_id,
-			item_name,
 			name,
 			unit,
-			meterage,
+			type,
 			price,
-			convert_time,
-			minimum,
+			convert_hours,
+			min_purchase,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
 			#{itemId},
-			#{itemName},
 			#{name},
 			#{unit},
-			#{meterage},
+			#{type},
 			#{price},
-			#{convertTime},
-			#{minimum},
+			#{convertHours},
+			#{minPurchase},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
 	
 	<update id="update">
-		UPDATE ser_item_commodity SET 	
-			item_id = #{itemId},
-			item_name = #{itemName},
-			name = #{name},
-			unit = #{unit},
-			meterage = #{meterage},
-			price = #{price},
-			convert_time = #{convertTime},
-			minimum = #{minimum},
+		UPDATE ser_item_info_goods SET 	
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="unit != null and unit != ''">
+				unit = #{unit},
+			</if>
+			<if test="type != null and type != ''">
+				type = #{type},
+			</if>
+			<if test="price != null and price != ''">
+				price = #{price},
+			</if>
+			<if test="convertHours != null and convertHours != ''">
+				convert_hours = #{convertHours},
+			</if>
+			<if test="minPurchase != null and minPurchase != ''">
+				min_purchase = #{minPurchase},
+			</if>
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE ser_item_commodity SET 
+		UPDATE ser_item_info_goods SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<select id="getSerItemCommodityByItem">
 		SELECT id
-		FROM ser_item_commodity
+		FROM ser_item_info_goods
 		WHERE item_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	<update id="delSerItemCommodityPersons">
-		UPDATE ser_item_commodity_persons SET
+		UPDATE ser_item_info_goods_persons SET
 		del_flag = #{DEL_FLAG_DELETE}
-		WHERE commodity_id = #{id}
+		WHERE goods_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
 	<update id="delSerItemCommodity">
-		UPDATE ser_item_commodity SET
+		UPDATE ser_item_info_goods SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE item_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</update>
+
+
+
+	<select id="findListByItemId" resultMap="SerItemGoodsResultMap">
+		SELECT
+		<include refid="serItemGoodsColumns"/>
+		FROM ser_item_info_goods a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.item_id= #{id}
+		</where>
+	</select>
+
+	<sql id="serItemGoodsColumns">
+		a.id AS "id",
+		a.item_id AS "itemId",
+		a.name AS "name",
+		a.unit AS "unit",
+		a.type AS "type",
+		a.price AS "price",
+		a.convert_hours AS "convertHours",
+		a.min_purchase AS "minPurchase"
+	</sql>
+	<resultMap type="SerItemCommodity" id="SerItemGoodsResultMap">
+		<id column="id" property="id"/>
+		<result column="item_id" property="itemId"/>
+		<result column="name" property="name"/>
+		<result column="unit" property="unit"/>
+		<result column="type" property="type"/>
+		<result column="price" property="price"/>
+		<result column="convert_hours" property="convertHours"/>
+		<result column="min_purchase" property="minPurchase"/>
+		<!-- 派人数量 -->
+		<association property="persons" column="{reqId=id}" select="selectPersonsById"></association>
+	</resultMap>
+	<select id="selectPersonsById" parameterType="java.util.Map" resultType="SerItemCommodityPersons">
+		select id,critical,sort,quantity from ser_item_info_goods_persons
+		where goods_id=#{reqId}
+		and del_flag = '0'
+	</select>
 </mapper>

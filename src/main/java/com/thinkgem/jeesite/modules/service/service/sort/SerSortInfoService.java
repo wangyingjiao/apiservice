@@ -179,14 +179,4 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         return dao.checkedSortItem(serSortInfo);
     }
 
-    /**
-     * 检查定向城市是否设置服务项目
-     *
-     * @param serSortInfo
-     * @return
-     */
-    public int checkCityItem(SerSortInfo serSortInfo) {
-        return dao.checkCityItem(serSortInfo);
-    }
-
 }

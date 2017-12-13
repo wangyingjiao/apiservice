@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.item;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -18,63 +20,16 @@ import java.util.List;
 public class SerItemInfo extends DataEntity<SerItemInfo> {
 	
 	private static final long serialVersionUID = 1L;
-	private String majorSort;		// 分类：保洁、家修
+	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
 	private String sortId;		// 所属分类编号
-
-	private String sortName;		// 所属分类名称
 	private String name;		// 服务项目名称
 	private String picture;		// 服务图片缩略图
 	private String pictureDetail; //图文详情
 	private String description;		// 服务描述
-	private String sale;		// 是否上架
-	private Long sortNum;		// 排序号
-	private String allCity;
-
-	private String stationId;//服务站ID
-	private String officeId;//机构ID
-	private String stationName;//服务站名称
-	private String officeName;//机构名称
-
-	public String getStationName() {
-		return stationName;
-	}
-
-	public void setStationName(String stationName) {
-		this.stationName = stationName;
-	}
-
-	public String getOfficeName() {
-		return officeName;
-	}
-
-	public void setOfficeName(String officeName) {
-		this.officeName = officeName;
-	}
-
-
-	public String getStationId() {
-		return stationId;
-	}
-
-	public void setStationId(String stationId) {
-		this.stationId = stationId;
-	}
-
-	public String getOfficeId() {
-		return officeId;
-	}
-
-	public void setOfficeId(String officeId) {
-		this.officeId = officeId;
-	}
-
-	public String getSortName() {
-		return sortName;
-	}
-
-	public void setSortName(String sortName) {
-		this.sortName = sortName;
-	}
+	private String sale;		// 是否上架(yes:是，no:否)
+	private int sortNum;		// 排序号
+	private String allCity;//全部城市(yes:是，no:否)
+	private String orgId;//机构ID
 
 	public SerItemInfo() {
 		super();
@@ -150,11 +105,11 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.sale = sale;
 	}
 	
-	public Long getSortNum() {
+	public int getSortNum() {
 		return sortNum;
 	}
 
-	public void setSortNum(Long sortNum) {
+	public void setSortNum(int sortNum) {
 		this.sortNum = sortNum;
 	}
 
@@ -166,44 +121,54 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.allCity = allCity;
 	}
 
-	private String cityId;        // 城市编号
-	private String cityName;        // 城市名称
-
-	public String getCityId() {
-		return cityId;
+	public String getOrgId() {
+		return orgId;
 	}
 
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
 	}
 
-	public String getCityName() {
-		return cityName;
+	private String cityCode;        // 城市编号 查询用
+	private List<String> cityCodes; // 城市 编辑选中用
+	private List<SerCityScope> citys;
+	private List<SerItemCommodity> commoditys;
+	private String sortName;		// 所属分类
+
+	public String getCityCode() {
+		return cityCode;
 	}
 
-	public void setCityName(String cityName) {
-		this.cityName = cityName;
+	public void setCityCode(String cityCode) {
+		this.cityCode = cityCode;
 	}
 
-	private List<SerItemCity> citys;
-	public List<SerItemCity> getCitys() {
+	@JsonInclude
+	public List<String> getCityCodes() {
+		return cityCodes;
+	}
+
+	public void setCityCodes(List<String> cityCodes) {
+		this.cityCodes = cityCodes;
+	}
+
+	@JsonInclude
+	public List<SerCityScope> getCitys() {
 		return citys;
 	}
-	public void setCitys(List<SerItemCity> citys) {
+
+	public void setCitys(List<SerCityScope> citys) {
 		this.citys = citys;
 	}
-
-	private List<SerItemCommodity> commoditys;
+	@JsonInclude
 	public List<SerItemCommodity> getCommoditys() {return commoditys;}
 	public void setCommoditys(List<SerItemCommodity> commoditys) {this.commoditys = commoditys;}
 
-	private List<String> cityNames;
-
-	public List<String> getCityNames() {
-		return cityNames;
+	public String getSortName() {
+		return sortName;
 	}
 
-	public void setCityNames(List<String> cityNames) {
-		this.cityNames = cityNames;
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
 	}
 }

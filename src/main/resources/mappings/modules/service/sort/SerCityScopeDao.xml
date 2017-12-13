@@ -108,10 +108,13 @@
 	</update>
 	<select id="getSerCityScopeByMaster" resultType="SerCityScope">
 		SELECT
-			city_code
-		FROM ser_city_scope
-		WHERE master_id = #{id}
-		AND del_flag = '0'
+			a.city_code AS cityCode,
+			b.name AS cityName
+		FROM ser_city_scope a
+		INNER JOIN sys_area b on a.city_code = b.code AND b.del_flag='0'
+		WHERE
+		a.master_id = #{id}
+		AND a.del_flag = '0'
 	</select>
 
 </mapper>
