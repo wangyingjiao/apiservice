@@ -6,8 +6,8 @@
 		a.id AS "id",
 		a.name AS "name",
 		a.type AS "type",
-		a.province_code AS "provinceCode",
-		a.city_code AS "cityCode",
+		a.provinceCode AS "provinceCode",
+		a.cityCode AS "cityCode",
 		a.area_code AS "areaCode",
 		a.address AS "address",
 		a.user_id AS "user.id",
@@ -51,10 +51,10 @@
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
 			<if test="provinceCode != null and provinceCode != ''">
-				AND a.province_code = #{provinceCode}
+				AND a.provinceCode = #{provinceCode}
 			</if>
 			<if test="cityCode != null and cityCode != ''">
-				AND a.city_code = #{cityCode}
+				AND a.cityCode = #{cityCode}
 			</if>
 			<if test="areaCode != null and areaCode != ''">
 				AND a.area_code = #{areaCode}
@@ -93,8 +93,8 @@
 			id,
 			name,
 			type,
-			province_code,
-			city_code,
+			provinceCode,
+			cityCode,
 			area_code,
 			address,
 			user_id,
@@ -136,8 +136,8 @@
 		UPDATE basic_service_station SET 	
 			name = #{name},
 			type = #{type},
-			province_code = #{provinceCode},
-			city_code = #{cityCode},
+			provinceCode = #{provinceCode},
+			cityCode = #{cityCode},
 			area_code = #{areaCode},
 			address = #{address},
 			user_id = #{user.id},

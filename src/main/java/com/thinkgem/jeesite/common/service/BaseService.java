@@ -3,219 +3,110 @@
  */
 package com.thinkgem.jeesite.common.service;
 
-import java.util.List;
-
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.sys.entity.Role;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
-import com.thinkgem.jeesite.common.persistence.BaseEntity;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.sys.entity.Role;
-import com.thinkgem.jeesite.modules.sys.entity.User;
-
 /**
  * Service基类
+ *
  * @author ThinkGem
  * @version 2014-05-16
  */
 @Transactional(readOnly = true)
 public abstract class BaseService {
-	
-	/**
-	 * 日志对象
-	 */
-	protected Logger logger = LoggerFactory.getLogger(getClass());
 
-	/**
-	 * 数据范围过滤
-	 * @param user 当前用户对象，通过“entity.getCurrentUser()”获取
-	 * @param officeAlias 机构表别名，多个用“,”逗号隔开。
-	 * @param userAlias 用户表别名，多个用“,”逗号隔开，传递空，忽略此参数
-	 * @return 标准连接条件对象
-	 */
-	public static String dataScopeFilter(User user, String officeAlias, String userAlias) {
+    /**
+     * 日志对象
+     */
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
-		StringBuilder sqlString = new StringBuilder();
-		
-		// 进行权限过滤，多个角色权限范围之间为或者关系。
-		List<String> dataScope = Lists.newArrayList();
-		
-		// 超级管理员，跳过权限过滤
-		if (!user.isAdmin()){
-			boolean isDataScopeAll = false;
-			for (Role r : user.getRoleList()){
-				for (String oa : StringUtils.split(officeAlias, ",")){
-					if (!dataScope.contains(r.getDataScope()) && StringUtils.isNotBlank(oa)){
-						if (Role.DATA_SCOPE_ALL.equals(r.getDataScope())){
-							isDataScopeAll = true;
-						}
-						else if (Role.DATA_SCOPE_COMPANY_AND_CHILD.equals(r.getDataScope())){
-							}
-						else if (Role.DATA_SCOPE_COMPANY.equals(r.getDataScope())){
-								}
-						else if (Role.DATA_SCOPE_OFFICE_AND_CHILD.equals(r.getDataScope())){
-						}
-						else if (Role.DATA_SCOPE_OFFICE.equals(r.getDataScope())){
-							sqlString.append(" OR " + oa + ".id = '" + user.getOrganization().getId() + "'");
-						}
-						else if (Role.DATA_SCOPE_CUSTOM.equals(r.getDataScope())){
-//							String officeIds =  StringUtils.join(r.getOfficeIdList(), "','");
-//							if (StringUtils.isNotEmpty(officeIds)){
-//								sqlString.append(" OR " + oa + ".id IN ('" + officeIds + "')");
-//							}
-							sqlString.append(" OR EXISTS (SELECT 1 FROM sys_role_office WHERE role_id = '" + r.getId() + "'");
-							sqlString.append(" AND office_id = " + oa +".id)");
-						}
-						//else if (Role.DATA_SCOPE_SELF.equals(r.getDataScope())){
-						dataScope.add(r.getDataScope());
-					}
-				}
-			}
-			// 如果没有全部数据权限，并设置了用户别名，则当前权限为本人；如果未设置别名，当前无权限为已植入权限
-			if (!isDataScopeAll){
-				if (StringUtils.isNotBlank(userAlias)){
-					for (String ua : StringUtils.split(userAlias, ",")){
-						sqlString.append(" OR " + ua + ".id = '" + user.getId() + "'");
-					}
-				}else {
-					for (String oa : StringUtils.split(officeAlias, ",")){
-						//sqlString.append(" OR " + oa + ".id  = " + user.getOrganization().getId());
-						sqlString.append(" OR " + oa + ".id IS NULL");
-					}
-				}
-			}else{
-				// 如果包含全部权限，则去掉之前添加的所有条件，并跳出循环。
-				sqlString = new StringBuilder();
-			}
-		}
-		if (StringUtils.isNotBlank(sqlString.toString())){
-			return " AND (" + sqlString.substring(4) + ")";
-		}
-		return "";
-	}
+    private static Logger log = LoggerFactory.getLogger(BaseService.class);
 
-	/**
-	 * 数据范围过滤（符合业务表字段不同的时候使用，采用exists方法）
-	 * @param entity 当前过滤的实体类
-	 * @param sqlMapKey sqlMap的键值，例如设置“dsf”时，调用方法：${sqlMap.sdf}
-	 * @param officeWheres office表条件，组成：部门表字段=业务表的部门字段
-	 * @param userWheres user表条件，组成：用户表字段=业务表的用户字段
-	 * @example
-	 * 		dataScopeFilter(user, "dsf", "id=a.office_id", "id=a.create_by");
-	 * 		dataScopeFilter(entity, "dsf", "code=a.jgdm", "no=a.cjr"); // 适应于业务表关联不同字段时使用，如果关联的不是机构id是code。
-	 */
-	public static void dataScopeFilter(BaseEntity<?> entity, String sqlMapKey, String officeWheres, String userWheres) {
+    /**
+     * @param user       用户信息
+     * @param tableAlias 关联表别名
+     * @param userAlias  用户别名
+     * @return
+     */
+    public static String dataScopeFilter(User user, String organAlias, String stationAlias) {
 
-		User user = entity.getCurrentUser();
-		
-		// 如果是超级管理员，则不过滤数据
-		if (user.isAdmin()) {
-			return;
-		}
+        StringBuilder sql = new StringBuilder();
 
-		// 数据范围（1：所有数据；2：所在公司及以下数据；3：所在公司数据；4：所在部门及以下数据；5：所在部门数据；8：仅本人数据；9：按明细设置）
-		StringBuilder sqlString = new StringBuilder();
-		
-		// 获取到最大的数据权限范围
-		String roleId = "";
-		int dataScopeInteger = 8;
-		for (Role r : user.getRoleList()){
-			int ds = Integer.valueOf(r.getDataScope());
-			if (ds == 9){
-				roleId = r.getId();
-				dataScopeInteger = ds;
-				break;
-			}else if (ds < dataScopeInteger){
-				roleId = r.getId();
-				dataScopeInteger = ds;
-			}
-		}
-		String dataScopeString = String.valueOf(dataScopeInteger);
-		
-		// 生成部门权限SQL语句
-		for (String where : StringUtils.split(officeWheres, ",")){
-			if (Role.DATA_SCOPE_COMPANY_AND_CHILD.equals(dataScopeString)){
-				// 包括本公司下的部门 （type=1:公司；type=2：部门）
-				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
-				sqlString.append(" WHERE type='2'");
-					sqlString.append(" AND " + where +")");
-			}
-			else if (Role.DATA_SCOPE_COMPANY.equals(dataScopeString)){
-				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
-				sqlString.append(" WHERE type='2'");
-				sqlString.append(" AND " + where +")");
-			}
-			else if (Role.DATA_SCOPE_OFFICE_AND_CHILD.equals(dataScopeString)){
-				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
-				sqlString.append(" WHERE (id = '" + user.getOrganization().getId() + "'");
-				sqlString.append(" AND " + where +")");
-			}
-			else if (Role.DATA_SCOPE_OFFICE.equals(dataScopeString)){
-				sqlString.append(" AND EXISTS (SELECT 1 FROM SYS_OFFICE");
-				sqlString.append(" WHERE id = '" + user.getOrganization().getId() + "'");
-				sqlString.append(" AND " + where +")");
-			}
-			else if (Role.DATA_SCOPE_CUSTOM.equals(dataScopeString)){
-				sqlString.append(" AND EXISTS (SELECT 1 FROM sys_role_office ro123456, sys_office o123456");
-				sqlString.append(" WHERE ro123456.office_id = o123456.id");
-				sqlString.append(" AND ro123456.role_id = '" + roleId + "'");
-				sqlString.append(" AND o123456." + where +")");
-			}
-		}
-		// 生成个人权限SQL语句
-		for (String where : StringUtils.split(userWheres, ",")){
-			if (Role.DATA_SCOPE_SELF.equals(dataScopeString)){
-				sqlString.append(" AND EXISTS (SELECT 1 FROM sys_user");
-				sqlString.append(" WHERE id='" + user.getId() + "'");
-				sqlString.append(" AND " + where + ")");
-			}
-		}
+        User u = UserUtils.get(user.getId());
+        BasicOrganization organization = u.getOrganization();
+        BasicServiceStation station = u.getStation();
+        if (null != organization &&
+                StringUtils.isNotBlank(organization.getId()) &&
+                organization.getId().trim().equals("0")) {
+            log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全平台 ");
+        } else if (null != organization
+                && StringUtils.isNotBlank(organization.getId())
+                && !organization.getId().trim().equals("0")
+                && null != station
+                && StringUtils.isNotBlank(station.getId())
+                && station.getId().trim().equals("0")) {
+            log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全机构权限 ");
+            sql.append("AND " + organAlias + ".id = " + "'" + organization.getId() + "'");
+        } else if (null != organization
+                && null != station
+                && StringUtils.isNotBlank(organization.getId())
+                && StringUtils.isNotBlank(station.getId())
+                && !organization.getId().trim().equals("0")
+                && !station.getId().trim().equals("0")) {
+            sql.append(" AND " + organAlias + ".id = '" + organization.getId() + "' ");
+            sql.append(" AND " + stationAlias + ".id = '" + station.getId() + "' ");
+            log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 本服务站权限 ");
+        } else {
+            log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 权限不明 ");
+            sql.append(" AND a.id is null");
+            log.info("附加sql：" + sql.toString() + " 不返回任何数据");
+        }
+        log.info("SQL:" + sql.toString());
+        return sql.toString();
+    }
 
-//		System.out.println("dataScopeFilter: " + sqlString.toString());
 
-		// 设置到自定义SQL对象
-		entity.getSqlMap().put(sqlMapKey, sqlString.toString());
-		
-	}
+    /**
+     * @param user
+     * @param tableAlias
+     * @return
+     */
+    public static String dataRoleFilter(User user, String tableAlias) {
+        StringBuilder sqlString = new StringBuilder();
+        String officeId = user.getOrganization().getId();//机构ID
+        String stationId = user.getStation().getId();//服务站ID
 
-	/**
-	 *
-	 * @param user
-	 * @param tableAlias
-	 * @return
-	 */
-	public static String dataRoleFilter(User user, String tableAlias) {
-		StringBuilder sqlString = new StringBuilder();
-		String officeId = user.getOrganization().getId();//机构ID
-		String stationId = user.getStation().getId();//服务站ID
+        String dataRole = "";
+        if ("0".equals(officeId)) {
+            dataRole = Role.DATA_ROLE_ALL;//机构ID为0 代表全平台
+        } else {
+            if ("0".equals(stationId)) {
+                dataRole = Role.DATA_ROLE_OFFICE;//服务站ID为0 代表全机构
+            } else {
+                dataRole = Role.DATA_ROLE_STATION;//本服务站
+            }
+        }
+        // 超级管理员，跳过权限过滤
+        if (!user.isAdmin()) {
+            boolean isDataScopeAll = false;
+            if (Role.DATA_ROLE_ALL.equals(dataRole)) {
+                sqlString = new StringBuilder();
+            } else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
+                sqlString.append(" AND " + tableAlias + ".org_id = '" + officeId + "'");
+            }
 
-		String dataRole = "";
-		if("0".equals(officeId)){
-			dataRole = Role.DATA_ROLE_ALL;//机构ID为0 代表全平台
-		}else{
-			if("0".equals(stationId)){
-				dataRole = Role.DATA_ROLE_OFFICE;//服务站ID为0 代表全机构
-			}else{
-				dataRole = Role.DATA_ROLE_STATION;//本服务站
-			}
-		}
-		// 超级管理员，跳过权限过滤
-		if (!user.isAdmin()) {
-			boolean isDataScopeAll = false;
-			if (Role.DATA_ROLE_ALL.equals(dataRole)) {
-				sqlString = new StringBuilder();
-			} else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
-				sqlString.append(" AND " + tableAlias + ".org_id = '" + officeId + "'");
-			} else if (Role.DATA_ROLE_STATION.equals(dataRole)) {
-				sqlString.append(" AND " + tableAlias + ".station_id = '" + stationId + "'");
-			}
-		}
-		if (StringUtils.isNotBlank(sqlString.toString())){
-			return sqlString.toString();
-		}
-		return "";
-	}
+        }
+        if (StringUtils.isNotBlank(sqlString.toString())) {
+            return sqlString.toString();
+        }
+        return "";
+    }
 
 }

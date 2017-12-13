@@ -8,8 +8,8 @@
 		a.telephone AS "telephone",
 		a.master_name AS "masterName",
 		a.master_phone AS "masterPhone",
-		a.province_code AS "provinceCode",
-		a.city_code AS "cityCode",
+		a.provinceCode AS "provinceCode",
+		a.cityCode AS "cityCode",
 		a.area_code AS "areaCode",
 		a.address AS "address",
 		a.scope_type AS "scopeType",
@@ -35,8 +35,8 @@
 			a.telephone AS "telephone",
 			a.master_name AS "masterName",
 			a.master_phone AS "masterPhone",
-			a.province_code AS "provinceCode",
-			a.city_code AS "cityCode",
+			a.provinceCode AS "provinceCode",
+			a.cityCode AS "cityCode",
 			a.area_code AS "areaCode",
 			a.address AS "address",
 			a.scope_type AS "scopeType",
@@ -91,8 +91,8 @@
 			telephone,
 			master_name,
 			master_phone,
-			province_code,
-			city_code,
+			provinceCode,
+			cityCode,
 			area_code,
 			address,
 			scope_type,
@@ -145,10 +145,10 @@
 				master_phone = #{masterPhone},
 			</if>
 			<if test="provinceCode != null and provinceCode != ''">
-				province_code = #{provinceCode},
+				provinceCode = #{provinceCode},
 			</if>
 			<if test="cityCode != null and cityCode != ''">
-				city_code = #{cityCode},
+				cityCode = #{cityCode},
 			</if>
 			<if test="areaCode != null and areaCode != ''">
 				area_code = #{areaCode},

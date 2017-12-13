@@ -91,7 +91,7 @@ public class LoginController extends BaseController {
 
         if (null == principal){
             UserUtils.getSubject().logout();
-            return new FailResult("登录失败");
+            return new FailResult("未登录或失败");
         }
 
         Result<HashMap<String, Object>> result = new SuccResult<>();

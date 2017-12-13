@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.sys.dao;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -43,4 +44,7 @@ public interface RoleDao extends CrudDao<Role> {
 	List<Role> searchRoleByName(Role role);
 
     List<Role> findPageList(Role role);
+
+    List<Role> findRoleListByUser(User user);
+
 }

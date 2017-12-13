@@ -90,7 +90,7 @@ public class SystemService extends BaseService implements InitializingBean {
 	
 	public Page<User> findUser(Page<User> page, User user) {
 		// 生成数据权限过滤条件（dsf为dataScopeFilter的简写，在xml中使用 ${sqlMap.dsf}调用权限SQL）
-		user.getSqlMap().put("dsf", dataScopeFilter(user.getCurrentUser(), "o", "a"));
+		user.getSqlMap().put("dsf", dataScopeFilter(user.getCurrentUser(), "org", "ss"));
 		// 设置分页参数
 		user.setPage(page);
 		// 执行分页查询
@@ -157,7 +157,7 @@ public class SystemService extends BaseService implements InitializingBean {
 //			// 清除权限缓存
 //			systemRealm.clearAllCachedAuthorizationInfo();
 		}
-	}
+ 	}
 	
 	@Transactional(readOnly = false)
 	public void updateUserInfo(User user) {
@@ -554,7 +554,7 @@ public class SystemService extends BaseService implements InitializingBean {
 
 	public Page<Role> findRole(Page<Role> page, Role role) {
 
-		//role.getSqlMap().put("dsf", dataScopeFilter(role.getCurrentUser(), "o", "a"));
+		role.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(),"org"));
 		// 设置分页参数
 		role.setPage(page);
 		// 执行分页查询
@@ -566,6 +566,7 @@ public class SystemService extends BaseService implements InitializingBean {
 
 		//return page;
 	}
+
 
 //	public Page<Role> findRolePage(Page){
 //

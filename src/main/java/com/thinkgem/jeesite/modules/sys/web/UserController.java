@@ -113,9 +113,8 @@ public class UserController extends BaseController {
         return new SuccResult(u);
     }
 
-
     @ApiIgnore
-    @RequiresPermissions("sys:user:view")
+    @RequiresPermissions("user_view")
     @RequestMapping(value = "form", method = RequestMethod.GET)
     public String form(User user, Model model) {
 
@@ -129,14 +128,14 @@ public class UserController extends BaseController {
 
 
     @ApiIgnore
-    @RequiresPermissions("sys:user:edit")
+    @RequiresPermissions("user_insert")
     @RequestMapping(value = "save", method = RequestMethod.POST)
     public String save(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
         if (Global.isDemoMode()) {
             addMessage(redirectAttributes, "演示模式，不允许操作！");
             return "redirect:" + adminPath + "/sys/user/list?repage";
         }
-        // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
+
 
         user.setOrganization(new BasicOrganization(request.getParameter("office.id")));
         // 如果新密码为空，则不更换密码
@@ -171,7 +170,7 @@ public class UserController extends BaseController {
     }
 
     @ApiIgnore
-    @RequiresPermissions("sys:user:edit")
+    @RequiresPermissions("user_insert")
     @RequestMapping(value = "delete", method = RequestMethod.GET)
     public String delete(User user, RedirectAttributes redirectAttributes) {
         if (Global.isDemoMode()) {
@@ -199,7 +198,7 @@ public class UserController extends BaseController {
      * @return
      */
     @ApiIgnore
-    @RequiresPermissions("sys:user:view")
+    @RequiresPermissions("user_view")
     @RequestMapping(value = "export", method = RequestMethod.POST)
     public String exportFile(User user, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
         try {
@@ -221,7 +220,7 @@ public class UserController extends BaseController {
      * @return
      */
     @ApiIgnore
-    @RequiresPermissions("sys:user:edit")
+    @RequiresPermissions("user_insert")
     @RequestMapping(value = "import", method = RequestMethod.POST)
     public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
         if (Global.isDemoMode()) {
@@ -274,7 +273,7 @@ public class UserController extends BaseController {
      * @return
      */
     @ApiIgnore
-    @RequiresPermissions("sys:user:view")
+    @RequiresPermissions("user_view")
     @RequestMapping(value = "import/template", method = RequestMethod.GET)
     public String importFileTemplate(HttpServletResponse response, RedirectAttributes redirectAttributes) {
         try {
@@ -298,7 +297,7 @@ public class UserController extends BaseController {
      */
     @ApiIgnore
     @ResponseBody
-    @RequiresPermissions("sys:user:edit")
+    @RequiresPermissions("user_insert")
     @RequestMapping(value = "checkLoginName", method = {RequestMethod.POST, RequestMethod.GET})
     public String checkLoginName(String oldLoginName, String loginName) {
         if (loginName != null && loginName.equals(oldLoginName)) {
@@ -310,7 +309,7 @@ public class UserController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:user:edit")
+    @RequiresPermissions("user_insert")
     @ApiOperation(notes = "查询用户名是否有重复",
             value = "重名检查", nickname = "这里是nickName的值")
     @RequestMapping(value = "isDUPofName", method = {RequestMethod.POST, RequestMethod.GET})
@@ -513,7 +512,7 @@ public class UserController extends BaseController {
 
     @ResponseBody
     @ApiOperation(value = "删除用户！")
-    @RequiresPermissions("sys:user:edit")
+    @RequiresPermissions("user_insert")
     @RequestMapping(value = "deleteUser", method = RequestMethod.POST)
     public Result deleteUser(@RequestBody User user) {
 
@@ -531,7 +530,7 @@ public class UserController extends BaseController {
     private ServiceStationService stationService;
 
     @ResponseBody
-    //@RequiresPermissions("sys:user:edit")
+    //@RequiresPermissions("user_insert")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "保存用户！")
     public Result saveData(@RequestBody User user) {

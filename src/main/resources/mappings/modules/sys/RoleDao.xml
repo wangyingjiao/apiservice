@@ -10,7 +10,10 @@
         <result property="dataScope" column="dataScope"/>
         <result property="remarks" column="remarks"/>
 
-        <result property="sysData" column="sysData"/><!--
+        <result property="sysData" column="sysData"/>
+        <result property="organization.id" column="organization.id"/>
+        <result property="organization.name" column="organization.name"/>
+        <!--
 		<collection property="userList" ofType="User">
 			<id property="id" column="userList.id" />
 			<id property="loginName" column="userList.loginName" />
@@ -31,7 +34,6 @@
 
     <sql id="roleColumns">
     	a.id,
-    	a.office_id AS "organization.id",
     	a.name,
     	a.enname,
     	a.role_type AS roleType,
@@ -42,8 +44,10 @@
 		a.update_by AS "updateBy.id",
 		a.update_date,
 		a.del_flag,
+		a.is_sys AS sysData,
     	o.name AS "organization.name",
-    	a.is_sys AS sysData
+    	o.id AS "organization.id"
+
     </sql>
 
     <select id="get" resultMap="roleResult">
@@ -108,16 +112,13 @@
     </select>
 
 
-
-
-
     <select id="findAllList" resultType="Role">
         SELECT
         <include refid="roleColumns"/>
         FROM sys_role a
         LEFT JOIN basic_organization o ON o.id = a.office_id
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-        ORDER BY  a.name
+        ORDER BY a.name
     </select>
 
     <insert id="insert">
@@ -219,7 +220,7 @@
 
     <select id="findPageList" resultMap="roleResult">
         SELECT
-        <include refid="roleColumns" />
+        <include refid="roleColumns"/>
         FROM sys_role a
         INNER JOIN basic_organization o ON o.id = a.office_id
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
@@ -234,6 +235,16 @@
                 ORDER BY a.create_date DESC
             </otherwise>
         </choose>
+    </select>
+    <select id="findRoleListByUser" resultMap="roleResult">
+        SELECT
+        <include refid="roleColumns"></include>
+        FROM sys_role a
+        JOIN sys_user_role sur ON a.id = sur.role_id
+        JOIN basic_organization o ON o.id = a.office_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        AND sur.user_id = #{id}
+
     </select>
 
 </mapper>

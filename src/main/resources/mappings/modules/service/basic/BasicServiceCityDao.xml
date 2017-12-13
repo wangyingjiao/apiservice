@@ -5,7 +5,7 @@
 	<sql id="basicServiceCityColumns">
 		a.id AS "id",
 		a.org_id AS "orgId",
-		a.city_code AS "cityCode",
+		a.cityCode AS "cityCode",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -64,7 +64,7 @@
 		INSERT INTO basic_service_city(
 			id,
 			org_id,
-			city_code,
+			cityCode,
 			create_by,
 			create_date,
 			update_by,
@@ -85,7 +85,7 @@
 	<update id="update">
 		UPDATE basic_service_city SET 	
 			org_id = #{orgId},
-			city_code = #{cityCode},
+			cityCode = #{cityCode},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
@@ -99,10 +99,10 @@
 
 	<select id="getCityCodesByOrgId" resultType="BasicServiceCity">
 		SELECT
-			a.city_code AS cityCode,
+			a.cityCode AS cityCode,
 			b.`name` AS cityName
 		FROM basic_service_city a
-		INNER JOIN sys_area b on a.city_code = b.`code` AND b.del_flag='0'
+		INNER JOIN sys_area b on a.cityCode = b.`code` AND b.del_flag='0'
 		WHERE
 		a.org_id = #{orgId}
 		AND a.del_flag = '0'
