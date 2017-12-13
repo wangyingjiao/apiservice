@@ -179,7 +179,6 @@ public class User extends DataEntity<User> {
         this.organization = organization;
     }
 
-    @JsonIgnore
     //@NotNull(message = "归属服务站不能为空")
     @ExcelField(title = "归属服务站", align = 2, sort = 25)
     public BasicServiceStation getStation() {

@@ -47,7 +47,6 @@
 		a.is_sys AS sysData,
     	o.name AS "organization.name",
     	o.id AS "organization.id"
-
     </sql>
 
     <select id="get" resultMap="roleResult">
@@ -244,7 +243,6 @@
         JOIN basic_organization o ON o.id = a.office_id
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
         AND sur.user_id = #{id}
-
     </select>
 
 </mapper>

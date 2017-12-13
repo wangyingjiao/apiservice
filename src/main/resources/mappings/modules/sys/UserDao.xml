@@ -95,7 +95,6 @@
         LEFT JOIN basic_service_station ss ON a.station_id = ss.id
         LEFT JOIN sys_user_role sur ON sur.user_id = a.id
         LEFT JOIN sys_role sr ON sur.role_id = sr.id
-
         <!--
             LEFT JOIN sys_user_role ur ON ur.user_id = a.id
             LEFT JOIN sys_role r ON r.id = ur.role_id -->
