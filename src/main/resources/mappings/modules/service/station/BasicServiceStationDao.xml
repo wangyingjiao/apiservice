@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao">
-    
-	<sql id="basicServiceStationColumns">
+
+    <sql id="basicServiceStationColumns">
 		a.id AS "id",
 		a.name AS "name",
 		a.type AS "type",
-		a.provinceCode AS "provinceCode",
-		a.cityCode AS "cityCode",
+		a.province_code AS "provinceCode",
+		a.city_code AS "cityCode",
 		a.area_code AS "areaCode",
 		a.address AS "address",
 		a.user_id AS "user.id",
@@ -24,77 +24,77 @@
 		a.del_flag AS "delFlag",
 		u8.name AS "user.name"
 	</sql>
-	
-	<sql id="basicServiceStationJoins">
+
+    <sql id="basicServiceStationJoins">
 		LEFT JOIN sys_user u8 ON u8.id = a.user_id
 	</sql>
-    
-	<select id="get" resultType="BasicServiceStation">
-		SELECT 
-			<include refid="basicServiceStationColumns"/>
-		FROM basic_service_station a
-		<include refid="basicServiceStationJoins"/>
-		WHERE a.id = #{id}
-	</select>
-	
-	<select id="findList" resultType="BasicServiceStation">
-		SELECT 
-			<include refid="basicServiceStationColumns"/>
-		FROM basic_service_station a
-		<include refid="basicServiceStationJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-			<if test="provinceCode != null and provinceCode != ''">
-				AND a.provinceCode = #{provinceCode}
-			</if>
-			<if test="cityCode != null and cityCode != ''">
-				AND a.cityCode = #{cityCode}
-			</if>
-			<if test="areaCode != null and areaCode != ''">
-				AND a.area_code = #{areaCode}
-			</if>
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="BasicServiceStation">
-		SELECT 
-			<include refid="basicServiceStationColumns"/>
-		FROM basic_service_station a
-		<include refid="basicServiceStationJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<insert id="insert">
+
+    <select id="get" resultType="BasicServiceStation">
+        SELECT
+        <include refid="basicServiceStationColumns"/>
+        FROM basic_service_station a
+        <include refid="basicServiceStationJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="BasicServiceStation">
+        SELECT
+        <include refid="basicServiceStationColumns"/>
+        FROM basic_service_station a
+        <include refid="basicServiceStationJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="name != null and name != ''">
+                AND a.name LIKE
+                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                AND a.province_code = #{provinceCode}
+            </if>
+            <if test="cityCode != null and cityCode != ''">
+                AND a.city_code = #{cityCode}
+            </if>
+            <if test="areaCode != null and areaCode != ''">
+                AND a.area_code = #{areaCode}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="BasicServiceStation">
+        SELECT
+        <include refid="basicServiceStationColumns"/>
+        FROM basic_service_station a
+        <include refid="basicServiceStationJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
 		INSERT INTO basic_service_station(
 			id,
 			name,
 			type,
-			provinceCode,
-			cityCode,
+				province_code,
+			city_code,
 			area_code,
 			address,
 			user_id,
@@ -131,13 +131,13 @@
 			#{delFlag}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE basic_service_station SET 	
 			name = #{name},
 			type = #{type},
-			provinceCode = #{provinceCode},
-			cityCode = #{cityCode},
+			province_code = #{provinceCode},
+			city_code = #{cityCode},
 			area_code = #{areaCode},
 			address = #{address},
 			user_id = #{user.id},
@@ -151,11 +151,11 @@
 			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE basic_service_station SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
 </mapper>
