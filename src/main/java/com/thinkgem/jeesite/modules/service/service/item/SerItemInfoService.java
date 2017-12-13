@@ -120,6 +120,13 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 
 		List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
 		serItemInfo.setCommoditys(commoditys);
+
+		SerItemInfo serItemInfoForAllCity = new SerItemInfo();
+		User user = UserUtils.getUser();
+		serItemInfoForAllCity.setOrgId(user.getOrganization().getId());//机构ID
+		serItemInfoForAllCity.setSortId(serItemInfo.getSortId());
+		List<SerCityScope>  allCitys = getAllCityCodes(serItemInfoForAllCity);
+		serItemInfo.setAllCitys(allCitys);
 		return serItemInfo;
 	}
 
