@@ -11,7 +11,6 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.SaveStationGroup;
-
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,6 +59,7 @@ public class ServiceStationController extends BaseController {
     //@RequiresPermissions("service:station:serviceStation:view")
     public Result listData(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
         Page<BasicServiceStation> stationPage = new Page<>(request, response);
+
         Page<BasicServiceStation> page = serviceStationService.findPage(stationPage, serviceStation);
         return new SuccResult(page);
     }
@@ -67,7 +68,10 @@ public class ServiceStationController extends BaseController {
     @RequestMapping(value = "listByOffice", method = {RequestMethod.POST, RequestMethod.GET})
     //@RequiresPermissions("service:station:serviceStation:view")
     public Result listByOffice(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
-        List<BasicServiceStation> list = serviceStationService.findList(serviceStation);
+        List<BasicServiceStation> list = new ArrayList<>();
+        if (StringUtils.isNotBlank(serviceStation.getOrgId())) {
+            list = serviceStationService.findList(serviceStation);
+        }
         return new SuccResult(list);
     }
 
@@ -143,7 +147,7 @@ public class ServiceStationController extends BaseController {
 
 
     @ResponseBody
-    @RequiresPermissions("service:station:serviceStation:edit")
+    @RequiresPermissions("station_delete")
     @RequestMapping(value = "deleteStation")
     @ApiOperation("删除服务站")
     public Result deleteStation(@RequestBody BasicServiceStation serviceStation) {

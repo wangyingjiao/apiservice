@@ -8,6 +8,7 @@ import java.util.List;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	
 	@Override
 	public Page<BasicServiceStation> findPage(Page<BasicServiceStation> page, BasicServiceStation serviceStation) {
+		serviceStation.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
 		return super.findPage(page, serviceStation);
 	}
 	

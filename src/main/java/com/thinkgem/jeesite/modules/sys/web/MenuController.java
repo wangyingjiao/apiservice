@@ -48,7 +48,7 @@ public class MenuController extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("sys:menu:view")
+	//@RequiresPermissions("sys:menu:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Model model) {
 		List<Menu> list = Lists.newArrayList();
@@ -58,7 +58,7 @@ public class MenuController extends BaseController {
 		return "modules/sys/menuList";
 	}
 
-	@RequiresPermissions("sys:menu:view")
+	//@RequiresPermissions("sys:menu:view")
 	@RequestMapping(value = "form")
 	public String form(Menu menu, Model model) {
 		if (menu.getParent()==null||menu.getParent().getId()==null){
@@ -78,7 +78,7 @@ public class MenuController extends BaseController {
 		return "modules/sys/menuForm";
 	}
 	
-	@RequiresPermissions("sys:menu:edit")
+	//@RequiresPermissions("sys:menu:edit")
 	@RequestMapping(value = "save")
 	public String save(Menu menu, Model model, RedirectAttributes redirectAttributes) {
 		if(!UserUtils.getUser().isAdmin()){
@@ -97,7 +97,7 @@ public class MenuController extends BaseController {
 		return "redirect:" + adminPath + "/sys/menu/";
 	}
 	
-	@RequiresPermissions("sys:menu:edit")
+	//@RequiresPermissions("sys:menu:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Menu menu, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
@@ -129,7 +129,7 @@ public class MenuController extends BaseController {
 	/**
 	 * 批量修改菜单排序
 	 */
-	@RequiresPermissions("sys:menu:edit")
+	//@RequiresPermissions("sys:menu:edit")
 	@RequestMapping(value = "updateSort")
 	public String updateSort(String[] ids, Integer[] sorts, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
