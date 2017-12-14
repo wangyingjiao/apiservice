@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -53,8 +54,8 @@ public class SerSortInfoController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
-    //@RequiresPermissions("service:station:serSortInfo:edit")
-    @ApiOperation(value="保存服务分类" ,produces = MediaType.APPLICATION_JSON_VALUE+";charset=utf8",consumes =MediaType.APPLICATION_JSON_VALUE+";charset=utf8" )
+    @RequiresPermissions("class_insert")
+    @ApiOperation(value="新增保存服务分类")
     public Result saveData(@RequestBody SerSortInfo serSortInfo) {
         List<String> errList = errors(serSortInfo);
         if (errList != null && errList.size() > 0) {
@@ -74,7 +75,22 @@ public class SerSortInfoController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "upData", method = {RequestMethod.POST})
+    @RequiresPermissions("class_update")
+    @ApiOperation(value="更新保存服务分类")
+    public Result upData(@RequestBody SerSortInfo serSortInfo) {
+        List<String> errList = errors(serSortInfo);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }
+
+        serSortInfoService.save(serSortInfo);
+        return new SuccResult("保存服务分类" + serSortInfo.getName() + "成功");
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/listData", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequiresPermissions("class_view")
     @ApiOperation("获取服务分类列表")
     public Result listData(@RequestBody(required=false) SerSortInfo serSortInfo, HttpServletRequest request, HttpServletResponse response) {
         if(serSortInfo == null){
@@ -91,21 +107,6 @@ public class SerSortInfoController extends BaseController {
     public Result formData(@RequestBody SerSortInfo serSortInfo) {
         SerSortInfo entity = null;
         if (StringUtils.isNotBlank(serSortInfo.getId())) {
-            entity = serSortInfoService.getData(serSortInfo);
-        }
-        if (entity == null) {
-            return new FailResult("未找到此id：" + serSortInfo.getId() + "对应的服务分类。");
-        } else {
-            return new SuccResult(entity);
-        }
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "formDataWithItem", method = {RequestMethod.POST})
-    @ApiOperation("服务分类编辑")
-    public Result formDataWithItem(@RequestBody SerSortInfo serSortInfo) {
-        SerSortInfo entity = null;
-        if (StringUtils.isNotBlank(serSortInfo.getId())) {
             entity = serSortInfoService.getDataWithItem(serSortInfo);
         }
         if (entity == null) {
@@ -114,23 +115,9 @@ public class SerSortInfoController extends BaseController {
             return new SuccResult(entity);
         }
     }
-    @ResponseBody
-    @RequestMapping(value = "formData1", method = {RequestMethod.POST})
-    @ApiOperation("服务分类编辑")
-    public Result formData1(@RequestBody SerSortInfo serSortInfo) {
-        SerSortInfo entity = new SerSortInfo();
-        if (StringUtils.isNotBlank(serSortInfo.getId())) {
-            entity = serSortInfoService.getData1(serSortInfo);
-        }
-        if (entity == null) {
-            return new FailResult("未找到此id：" + serSortInfo.getId() + "对应的服务分类。");
-        } else {
-            return new SuccResult(entity);
-        }
-    }
 
     @ResponseBody
-    //@RequiresPermissions("service:station:serSortInfo:edit")
+    @RequiresPermissions("class_delete")
     @RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("删除服务分类")
     public Result deleteSortInfo(@RequestBody SerSortInfo serSortInfo) {

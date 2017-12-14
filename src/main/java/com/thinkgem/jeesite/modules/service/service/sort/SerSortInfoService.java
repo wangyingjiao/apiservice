@@ -111,6 +111,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
             }
         }
         sortInfo.setCityCodes(cityCodes);
+        sortInfo.setCitys(citys);
         return sortInfo;
     }
 
@@ -138,29 +139,6 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         sortInfo.setCitys(citys);
         return sortInfo;
     }
-    /**
-     * 根据ID获取服务分类
-     *
-     * @param serSortInfo
-     * @return
-     */
-    public SerSortInfo getData1(SerSortInfo serSortInfo) {
-        SerSortInfo sortInfo = super.get(serSortInfo.getId());
-        //获取分类的定向城市
-        List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(serSortInfo.getId());
-        if(null != citys){
-            for(SerCityScope city : citys){
-                if("010".equals(city.getCityCode())){
-                    city.setHaveItem(true);
-                }else{
-                    city.setHaveItem(false);
-                }
-            }
-        }
-        sortInfo.setCitys(citys);
-        return sortInfo;
-    }
-
     @Transactional(readOnly = false)
     public void delete(SerSortInfo serSortInfo) {
         //删除定向城市

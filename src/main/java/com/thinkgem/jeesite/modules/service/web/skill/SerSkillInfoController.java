@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -55,10 +56,9 @@ public class SerSkillInfoController extends BaseController {
         return entity;
     }
 
-
     @ResponseBody
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
-    //@RequiresPermissions("service:station:serSkillInfo:edit")
+    @RequiresPermissions("skill_insert")
     @ApiOperation("保存技能")
     public Result saveData(@RequestBody SerSkillInfo serSkillInfo) {
         List<String> errList = errors(serSkillInfo);
@@ -78,6 +78,21 @@ public class SerSkillInfoController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "upData", method = {RequestMethod.POST})
+    @RequiresPermissions("skill_update")
+    @ApiOperation("保存技能")
+    public Result upData(@RequestBody SerSkillInfo serSkillInfo) {
+        List<String> errList = errors(serSkillInfo);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }
+
+        serSkillInfoService.save(serSkillInfo);
+        return new SuccResult("保存成功");
+    }
+
+    @ResponseBody
+    @RequiresPermissions("skill_view")
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取技能列表")
     public Result listData(@RequestBody(required=false) SerSkillInfo serSkillInfo, HttpServletRequest request, HttpServletResponse response) {
@@ -130,44 +145,11 @@ public class SerSkillInfoController extends BaseController {
     }
 
     @ResponseBody
-    //@RequiresPermissions("service:station:serSkillInfo:edit")
+    @RequiresPermissions("skill_delete")
     @RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("删除技能")
     public Result deleteSortInfo(@RequestBody SerSkillInfo serSkillInfo) {
         serSkillInfoService.delete(serSkillInfo);
         return new SuccResult("删除成功");
     }
-/*
-    @ResponseBody
-    @RequestMapping(value = "choiceSerlistData", method = {RequestMethod.POST})
-    @ApiOperation("选择服务")
-    public Result choiceSerlistData(@RequestBody(required = false) SerItemInfo serInfo, HttpServletRequest request, HttpServletResponse response) {
-        if(null == serInfo){
-            serInfo = new SerItemInfo();
-        }
-        List<SerItemInfo> page = serSkillInfoService.findSerPage(serInfo);
-        return new SuccResult(page);
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "choiceTechnicianlistData", method = {RequestMethod.POST})
-    @ApiOperation("选择技师")
-    public Result choiceTechnicianlistData(@RequestBody(required = false) SerSkillTechnician technicianInfo, HttpServletRequest request, HttpServletResponse response) {
-        if(null == technicianInfo){
-            technicianInfo = new SerSkillTechnician();
-        }
-        List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(technicianInfo);
-        List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList();
-        HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
-        objectObjectHashMap.put("list",techs);
-        objectObjectHashMap.put("stations",stations);
-        return new SuccResult(objectObjectHashMap);
-    }
-
-    @ResponseBody
-    @RequestMapping(value="getServiceStationList",method={RequestMethod.GET})
-    @ApiOperation("服务站下拉列表")
-    public List<BasicServiceStation> getServiceStationList(HttpServletRequest request, HttpServletResponse response){
-        return serSkillInfoService.getServiceStationList();
-    }*/
 }

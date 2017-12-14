@@ -18,6 +18,7 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,7 @@ public class SerItemInfoController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
-    //@RequiresPermissions("service:station:serItemInfo:edit")
+    @RequiresPermissions("project_insert")
     @ApiOperation("保存服务项目")
     public Result saveData(@RequestBody SerItemInfo serItemInfo) {
         List<String> errList = errors(serItemInfo);
@@ -75,8 +76,22 @@ public class SerItemInfoController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "upData", method = {RequestMethod.POST})
+    @RequiresPermissions("project_update")
+    @ApiOperation("保存服务项目")
+    public Result upData(@RequestBody SerItemInfo serItemInfo) {
+        List<String> errList = errors(serItemInfo);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }
+
+        serItemInfoService.save(serItemInfo);
+        return new SuccResult("保存成功");
+    }
+    @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务项目列表")
+    @RequiresPermissions("project_view")
     public Result listData(@RequestBody(required = false) SerItemInfo serItemInfo, HttpServletRequest request, HttpServletResponse response) {
         if(null == serItemInfo){
             serItemInfo = new SerItemInfo();
@@ -102,7 +117,7 @@ public class SerItemInfoController extends BaseController {
     }
 
     @ResponseBody
-    //@RequiresPermissions("service:station:serItemInfo:edit")
+    @RequiresPermissions("project_delete")
     @RequestMapping(value = "deleteData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("删除服务项目")
     public Result deleteData(@RequestBody SerItemInfo serItemInfo) {
