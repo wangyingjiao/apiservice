@@ -51,7 +51,7 @@ public class GenSchemeController extends BaseController {
 		}
 	}
 	
-	@RequiresPermissions("gen:genScheme:view")
+
 	@RequestMapping(value = {"list", ""})
 	public String list(GenScheme genScheme, HttpServletRequest request, HttpServletResponse response, Model model) {
 		User user = UserUtils.getUser();
@@ -64,7 +64,7 @@ public class GenSchemeController extends BaseController {
 		return "modules/gen/genSchemeList";
 	}
 
-	@RequiresPermissions("gen:genScheme:view")
+
 	@RequestMapping(value = "form")
 	public String form(GenScheme genScheme, Model model) {
 		if (StringUtils.isBlank(genScheme.getPackageName())){
@@ -79,7 +79,7 @@ public class GenSchemeController extends BaseController {
 		return "modules/gen/genSchemeForm";
 	}
 
-	@RequiresPermissions("gen:genScheme:edit")
+
 	@RequestMapping(value = "save")
 	public String save(GenScheme genScheme, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, genScheme)){
@@ -91,7 +91,7 @@ public class GenSchemeController extends BaseController {
 		return "redirect:" + adminPath + "/gen/genScheme/?repage";
 	}
 	
-	@RequiresPermissions("gen:genScheme:edit")
+
 	@RequestMapping(value = "delete")
 	public String delete(GenScheme genScheme, RedirectAttributes redirectAttributes) {
 		genSchemeService.delete(genScheme);

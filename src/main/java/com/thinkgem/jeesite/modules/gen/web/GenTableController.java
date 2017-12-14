@@ -49,7 +49,7 @@ public class GenTableController extends BaseController {
 		}
 	}
 	
-	@RequiresPermissions("gen:genTable:view")
+
 	@RequestMapping(value = {"list", ""})
 	public String list(GenTable genTable, HttpServletRequest request, HttpServletResponse response, Model model) {
 		User user = UserUtils.getUser();
@@ -61,7 +61,7 @@ public class GenTableController extends BaseController {
 		return "modules/gen/genTableList";
 	}
 
-	@RequiresPermissions("gen:genTable:view")
+
 	@RequestMapping(value = "form")
 	public String form(GenTable genTable, Model model) {
 		// 获取物理表列表
@@ -81,7 +81,7 @@ public class GenTableController extends BaseController {
 		return "modules/gen/genTableForm";
 	}
 
-	@RequiresPermissions("gen:genTable:edit")
+
 	@RequestMapping(value = "save")
 	public String save(GenTable genTable, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, genTable)){
@@ -98,7 +98,7 @@ public class GenTableController extends BaseController {
 		return "redirect:" + adminPath + "/gen/genTable/?repage";
 	}
 	
-	@RequiresPermissions("gen:genTable:edit")
+
 	@RequestMapping(value = "delete")
 	public String delete(GenTable genTable, RedirectAttributes redirectAttributes) {
 		genTableService.delete(genTable);

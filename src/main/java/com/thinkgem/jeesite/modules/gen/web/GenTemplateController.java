@@ -46,7 +46,7 @@ public class GenTemplateController extends BaseController {
 		}
 	}
 	
-	@RequiresPermissions("gen:genTemplate:view")
+
 	@RequestMapping(value = {"list", ""})
 	public String list(GenTemplate genTemplate, HttpServletRequest request, HttpServletResponse response, Model model) {
 		User user = UserUtils.getUser();
@@ -58,14 +58,14 @@ public class GenTemplateController extends BaseController {
 		return "modules/gen/genTemplateList";
 	}
 
-	@RequiresPermissions("gen:genTemplate:view")
+
 	@RequestMapping(value = "form")
 	public String form(GenTemplate genTemplate, Model model) {
 		model.addAttribute("genTemplate", genTemplate);
 		return "modules/gen/genTemplateForm";
 	}
 
-	@RequiresPermissions("gen:genTemplate:edit")
+
 	@RequestMapping(value = "save")
 	public String save(GenTemplate genTemplate, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, genTemplate)){
@@ -76,7 +76,7 @@ public class GenTemplateController extends BaseController {
 		return "redirect:" + adminPath + "/gen/genTemplate/?repage";
 	}
 	
-	@RequiresPermissions("gen:genTemplate:edit")
+
 	@RequestMapping(value = "delete")
 	public String delete(GenTemplate genTemplate, RedirectAttributes redirectAttributes) {
 		genTemplateService.delete(genTemplate);

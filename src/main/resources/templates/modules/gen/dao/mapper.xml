@@ -174,7 +174,7 @@ ${insertJavaField?substring(0, insertJavaField?last_index_of(","))}
 			<#assign updateField>		
 				<#list table.columnList as c>
 					<#if c.isEdit?? && c.isEdit == "1">
-			${c.name} = ${"#"}{${c.javaFieldId}},
+			<if test="${c.javaFieldId} !=null and ${c.javaFieldId} != ''">${c.name} = ${"#"}{${c.javaFieldId}},</if>
 					</#if>
 				</#list>
 			</#assign>
