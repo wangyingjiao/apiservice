@@ -3,10 +3,14 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.skill;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianServiceInfo;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+
+import java.util.List;
 
 /**
  * 技师技能关联Entity
@@ -14,17 +18,16 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
  * @version 2017-11-15
  */
 public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
-	
-	private static final long serialVersionUID = 1L;
-	private String skillId;		// 技能编号
-	private String skillName;		// 技能
-	private String technicianId;		// 技师编号
-	private String technicianName;		// 技师
 
+	private static final long serialVersionUID = 1L;
+	private String skillId;		// 技能ID
+	private String techId;		// 技师ID
+
+	private String techName;		// 技师
 	private String techSex;
 	private String techStationId;
 	private String techStationName;
-	private String imgUrl;
+	private String headPic;
 
 
 	public SerSkillTechnician() {
@@ -35,14 +38,11 @@ public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
 		super(id);
 	}
 
-    public SerSkillTechnician(ServiceTechnicianServiceInfo serviceInfo, SerSkillInfo skill) {
+	public SerSkillTechnician(ServiceTechnicianServiceInfo serviceInfo, SerSkillInfo skill) {
 		this.setSkillId(skill.getId());
-		this.setSkillName(skill.getName());
-		this.setTechnicianId(serviceInfo.getTechId());
-		this.setTechnicianName(serviceInfo.getTechName());
-    }
-
-    @Length(min=0, max=64, message="技能编号长度必须介于 0 和 64 之间")
+		this.setTechId(serviceInfo.getTechId());
+	}
+	@Length(min=0, max=64, message="技能编号长度必须介于 0 和 64 之间")
 	public String getSkillId() {
 		return skillId;
 	}
@@ -50,30 +50,21 @@ public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
 	public void setSkillId(String skillId) {
 		this.skillId = skillId;
 	}
-	
-	@Length(min=0, max=64, message="技师编号长度必须介于 0 和 64 之间")
-	public String getTechnicianId() {
-		return technicianId;
+
+	public String getTechId() {
+		return techId;
 	}
 
-	public void setTechnicianId(String technicianId) {
-		this.technicianId = technicianId;
+	public void setTechId(String techId) {
+		this.techId = techId;
 	}
 
-	public String getSkillName() {
-		return skillName;
+	public String getTechName() {
+		return techName;
 	}
 
-	public void setSkillName(String skillName) {
-		this.skillName = skillName;
-	}
-
-	public String getTechnicianName() {
-		return technicianName;
-	}
-
-	public void setTechnicianName(String technicianName) {
-		this.technicianName = technicianName;
+	public void setTechName(String techName) {
+		this.techName = techName;
 	}
 
 	public String getTechSex() {
@@ -100,11 +91,31 @@ public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
 		this.techStationName = techStationName;
 	}
 
-	public String getImgUrl() {
-		return imgUrl;
+	public String getHeadPic() {
+		return headPic;
 	}
 
-	public void setImgUrl(String imgUrl) {
-		this.imgUrl = imgUrl;
+	public void setHeadPic(String headPic) {
+		this.headPic = headPic;
+	}
+
+	private Boolean techChecked = false;
+	@JsonInclude
+	public Boolean getTechChecked() {
+		return techChecked;
+	}
+
+	public void setTechChecked(Boolean techChecked) {
+		this.techChecked = techChecked;
+	}
+
+	List<BasicServiceStation> stations;
+
+	public List<BasicServiceStation> getStations() {
+		return stations;
+	}
+
+	public void setStations(List<BasicServiceStation> stations) {
+		this.stations = stations;
 	}
 }

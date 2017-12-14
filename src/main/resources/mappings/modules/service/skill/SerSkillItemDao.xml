@@ -5,14 +5,12 @@
 	<sql id="serSkillItemColumns">
 		a.id AS "id",
 		a.skill_id AS "skillId",
-		a.skill_name AS "skillName",
 		a.item_id AS "itemId",
-		a.item_name AS "itemName",
+		a.goods_id AS "goodsId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
@@ -22,7 +20,7 @@
 	<select id="get" resultType="SerSkillItem">
 		SELECT 
 			<include refid="serSkillItemColumns"/>
-		FROM ser_skill_item a
+		FROM ser_skill_goods a
 		<include refid="serSkillItemJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -30,7 +28,7 @@
 	<select id="findList" resultType="SerSkillItem">
 		SELECT 
 			<include refid="serSkillItemColumns"/>
-		FROM ser_skill_item a
+		FROM ser_skill_goods a
 		<include refid="serSkillItemJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -48,7 +46,7 @@
 	<select id="findAllList" resultType="SerSkillItem">
 		SELECT 
 			<include refid="serSkillItemColumns"/>
-		FROM ser_skill_item a
+		FROM ser_skill_goods a
 		<include refid="serSkillItemJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -64,58 +62,76 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO ser_skill_item(
+		INSERT INTO ser_skill_goods(
 			id,
 			skill_id,
-			skill_name,
 			item_id,
-			item_name,
+			goods_id,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
 			#{skillId},
-			#{skillName},
 			#{itemId},
-			#{itemName},
+			#{goodsId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
 	
 	<update id="update">
-		UPDATE ser_skill_item SET 	
+		UPDATE ser_skill_goods SET 	
 			skill_id = #{skillId},
-			skill_name = #{skillName},
 			item_id = #{itemId},
-			item_name = #{itemName},
+			goods_id = #{goodsId},
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE ser_skill_item SET 
+		UPDATE ser_skill_goods SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="delSerSkillItemBySkill">
-		UPDATE ser_skill_item SET
+		UPDATE ser_skill_goods SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE skill_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</update>
+	<select id="getSerSkillItemBySkill" resultType="SerSkillItem">
+		SELECT
+		a.item_id AS "itemId",
+		b.name AS "itemName"
+		FROM
+		ser_skill_goods a
+		LEFT JOIN ser_item_info b ON a.item_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.skill_id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+		GROUP BY a.item_id,b.name
+	</select>
+	<select id="getSerSkillGoodsBySkill" resultType="SerSkillItem">
+		SELECT
+		a.item_id AS "itemId",
+		b.name AS "itemName",
+		a.goods_id AS "goodsId",
+		c.name AS "goodsName"
+		FROM
+		ser_skill_goods a
+		LEFT JOIN ser_item_info b ON a.item_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info_goods c ON a.goods_id = c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.skill_id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 	<select id="getSerItems" resultType="SerSkillItem">
-		select id from ser_skill_item where skill_id = #{id}
+		select id from ser_skill_goods where skill_id = #{id}
 	</select>
 </mapper>

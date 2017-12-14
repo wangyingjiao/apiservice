@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.skill;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -15,15 +17,12 @@ import java.util.List;
  * @version 2017-12-04
  */
 public class SerSkillItem extends DataEntity<SerSkillItem> {
-	
+
 	private static final long serialVersionUID = 1L;
 	private String skillId;		// 技能编号
-	private String skillName;		// 技能名称
 	private String itemId;		// 项目编号
-	private String itemName;		// 项目名称
+	private String goodsId;
 
-	private List<SerSkillItemCommodity> serItemCommoditys;
-	
 	public SerSkillItem() {
 		super();
 	}
@@ -40,16 +39,7 @@ public class SerSkillItem extends DataEntity<SerSkillItem> {
 	public void setSkillId(String skillId) {
 		this.skillId = skillId;
 	}
-	
-	@Length(min=0, max=64, message="技能名称长度必须介于 0 和 64 之间")
-	public String getSkillName() {
-		return skillName;
-	}
 
-	public void setSkillName(String skillName) {
-		this.skillName = skillName;
-	}
-	
 	@Length(min=0, max=64, message="项目编号长度必须介于 0 和 64 之间")
 	public String getItemId() {
 		return itemId;
@@ -58,8 +48,19 @@ public class SerSkillItem extends DataEntity<SerSkillItem> {
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
 	}
-	
-	@Length(min=0, max=64, message="项目名称长度必须介于 0 和 64 之间")
+
+	public String getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	private String itemName;		// 项目编号
+	private String goodsName;
+
+
 	public String getItemName() {
 		return itemName;
 	}
@@ -68,11 +69,12 @@ public class SerSkillItem extends DataEntity<SerSkillItem> {
 		this.itemName = itemName;
 	}
 
-	public List<SerSkillItemCommodity> getSerItemCommoditys() {
-		return serItemCommoditys;
+	public String getGoodsName() {
+		return goodsName;
 	}
 
-	public void setSerItemCommoditys(List<SerSkillItemCommodity> serItemCommoditys) {
-		this.serItemCommoditys = serItemCommoditys;
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
 	}
+
 }

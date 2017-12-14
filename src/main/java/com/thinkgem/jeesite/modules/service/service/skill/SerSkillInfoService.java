@@ -3,14 +3,17 @@
  */
 package com.thinkgem.jeesite.modules.service.service.skill;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillItemDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,30 +57,37 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 			//更新时，删除技师关系
 			serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
 		}
-		List<SerSkillItem> serItems = serSkillInfo.getSerItems();
+		List<SerItemInfo> serItems = serSkillInfo.getItems();
 		List<SerSkillTechnician> technicians = serSkillInfo.getTechnicians();
 		if(technicians != null){
-			serSkillInfo.setTechnicianNum(technicians.size());
+			serSkillInfo.setTechNum(technicians.size());
 		}else{
-			serSkillInfo.setTechnicianNum(0);
+			serSkillInfo.setTechNum(0);
 		}
 
 		super.save(serSkillInfo);
 		if(serItems != null) {
 			//批量插入商品信息
-			for (SerSkillItem item : serItems) {
-				item.setSkillId(serSkillInfo.getId());
-				item.setSkillName(serSkillInfo.getName());
-				serSkillItemService.save(item);
+			for (SerItemInfo item : serItems) {
+				List<SerItemCommodity> commoditys = item.getCommoditys();
+				if(null != commoditys){
+					for(SerItemCommodity commodity : commoditys){
+						SerSkillItem goods = new SerSkillItem();
+						goods.setSkillId(serSkillInfo.getId());
+						goods.setItemId(item.getId());
+						goods.setGoodsId(commodity.getId());
+						goods.preInsert();
+						serSkillItemDao.insert(goods);
+					}
+				}
 			}
 		}
 		if(technicians != null) {
 			//批量插入技师信息
 			for (SerSkillTechnician technician : technicians) {
 				technician.setSkillId(serSkillInfo.getId());
-				technician.setSkillName(serSkillInfo.getName());
-				technician.setDelFlag("0");
-				serSkillTechnicianService.save(technician);
+				technician.preInsert();
+				serSkillTechnicianDao.insert(technician);
 			}
 		}
 	}
@@ -91,7 +101,38 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	}
 
 	public SerSkillInfo getData(String id) {
-		return serSkillInfoDao.getSkillInfoById(id);
+		SerSkillInfo serSkillInfo = super.get(id);
+		//商品信息
+		List<SerSkillItem> serItems = serSkillItemDao.getSerSkillItemBySkill(serSkillInfo);
+		List<SerSkillItem> serGoods = serSkillItemDao.getSerSkillGoodsBySkill(serSkillInfo);
+		List<SerItemInfo> itemList = new ArrayList<SerItemInfo>();
+		if(null != serItems){
+			for(SerSkillItem item : serItems){
+				SerItemInfo itemInfo = new SerItemInfo();
+				itemInfo.setId(item.getItemId());
+				itemInfo.setName(item.getItemName());
+				List<SerItemCommodity> commodityList = new ArrayList<SerItemCommodity>();
+				if(null != serGoods){
+					for(SerSkillItem goods : serGoods){
+						if(item.getItemId().equals(goods.getItemId())){
+							SerItemCommodity commodityInfo = new SerItemCommodity();
+							commodityInfo.setId(goods.getGoodsId());
+							commodityInfo.setName(goods.getGoodsName());
+							commodityList.add(commodityInfo);
+						}
+					}
+				}
+				itemInfo.setCommoditys(commodityList);
+				itemList.add(itemInfo);
+			}
+		}
+		serSkillInfo.setItems(itemList);
+
+		//技师关系
+		List<SerSkillTechnician> technicians = serSkillTechnicianDao.getSerSkillTechnicianBySkill(serSkillInfo);
+		serSkillInfo.setTechnicians(technicians);
+
+		return serSkillInfo;
 	}
 
 	@Transactional(readOnly = false)
@@ -119,19 +160,15 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		return serSkillInfoDao.checkDataName(serSkillInfo);
 	}
 
-    public Page<SerSkillItem> findSerPage(Page<SerSkillItem> objectPage, SerSkillItem serInfo) {
-		serInfo.setPage(objectPage);
-		objectPage.setList(serSkillInfoDao.choiceSerlist(serInfo));
-		return objectPage;
+    public List<SerItemInfo> findSerPage(SerSkillInfo serInfo) {
+		return serSkillInfoDao.choiceSerlist(serInfo);
     }
 
-	public Page<SerSkillTechnician> findTechnicianPage(Page<SerSkillTechnician> objectPage, SerSkillTechnician technicianInfo) {
-		technicianInfo.setPage(objectPage);
-		objectPage.setList(serSkillInfoDao.choiceTechnicianlist(technicianInfo));
-		return objectPage;
+	public List<SerSkillTechnician>  findTechnicianPage(SerSkillInfo technicianInfo) {
+		return serSkillInfoDao.choiceTechnicianlist(technicianInfo);
 	}
 
-    public List<ServiceStation> getServiceStationList() {
+    public List<BasicServiceStation> getServiceStationList() {
 		return serSkillInfoDao.getServiceStationList();
     }
 }

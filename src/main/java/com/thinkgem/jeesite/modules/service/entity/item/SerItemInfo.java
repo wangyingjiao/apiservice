@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,7 +41,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	}
 
 	@NotBlank(message = "服务分类：保洁、家修不可为空")
-	@Length(min=0, max=1, message="分类：保洁、家修长度必须介于 0 和 1 之间")
 	public String getMajorSort() {
 		return majorSort;
 	}
@@ -96,7 +96,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.description = description;
 	}
 	
-	@Length(min=0, max=1, message="是否上架长度必须介于 0 和 1 之间")
 	public String getSale() {
 		return sale;
 	}
@@ -180,5 +179,25 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	public void setSortName(String sortName) {
 		this.sortName = sortName;
+	}
+
+	private Boolean itemChecked = false;
+	@JsonInclude
+	public Boolean getItemChecked() {
+		return itemChecked;
+	}
+
+	public void setItemChecked(Boolean itemChecked) {
+		this.itemChecked = itemChecked;
+	}
+
+	private List<Object> checkedCities = new ArrayList<Object>();
+	@JsonInclude
+	public List<Object> getCheckedCities() {
+		return checkedCities;
+	}
+
+	public void setCheckedCities(List<Object> checkedCities) {
+		this.checkedCities = checkedCities;
 	}
 }

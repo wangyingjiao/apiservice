@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 
@@ -26,9 +27,9 @@ public interface SerSkillInfoDao extends CrudDao<SerSkillInfo> {
 
     SerSkillInfo getSkillInfoById(String id);
 
-    List<SerSkillItem> choiceSerlist(SerSkillItem serSkillInfo);
+    List<SerItemInfo> choiceSerlist(SerSkillInfo serSkillInfo);
 
-    List<SerSkillTechnician> choiceTechnicianlist(SerSkillTechnician serSkillInfo);
+    List<SerSkillTechnician> choiceTechnicianlist(SerSkillInfo serSkillInfo);
 
-    List<ServiceStation> getServiceStationList();
+    List<BasicServiceStation> getServiceStationList();
 }

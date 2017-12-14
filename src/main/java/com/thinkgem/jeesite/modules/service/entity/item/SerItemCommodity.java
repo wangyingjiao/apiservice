@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.item;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -104,5 +105,14 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	public void setMinPurchase(int minPurchase) {
 		this.minPurchase = minPurchase;
 	}
-	
+
+	private Boolean commodityChecked = false;
+	@JsonInclude
+	public Boolean getCommodityChecked() {
+		return commodityChecked;
+	}
+
+	public void setCommodityChecked(Boolean commodityChecked) {
+		this.commodityChecked = commodityChecked;
+	}
 }
