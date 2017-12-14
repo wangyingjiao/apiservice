@@ -5,7 +5,7 @@
 	<sql id="basicServiceCityColumns">
 		a.id AS "id",
 		a.org_id AS "orgId",
-		a.cityCode AS "cityCode",
+		a.city_code AS "cityCode",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -64,7 +64,7 @@
 		INSERT INTO basic_service_city(
 			id,
 			org_id,
-			cityCode,
+			city_code,
 			create_by,
 			create_date,
 			update_by,
@@ -85,7 +85,7 @@
 	<update id="update">
 		UPDATE basic_service_city SET 	
 			org_id = #{orgId},
-			cityCode = #{cityCode},
+			city_code = #{cityCode},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
