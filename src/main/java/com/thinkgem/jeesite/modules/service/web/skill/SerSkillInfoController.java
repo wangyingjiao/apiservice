@@ -9,9 +9,11 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -64,14 +67,11 @@ public class SerSkillInfoController extends BaseController {
         }
 
         if (!StringUtils.isNotBlank(serSkillInfo.getId())) {//新增时验证重复
+            User user = UserUtils.getUser();
+            serSkillInfo.setOrgId(user.getOrganization().getId());//机构ID
             if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
                 return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
             }
-            User user = UserUtils.getUser();
-            serSkillInfo.setOfficeId(user.getOrganization().getId());//机构ID
-            serSkillInfo.setOfficeName(user.getOrganization().getName());//机构名称
-            serSkillInfo.setStationId(user.getStation().getId());//服务站ID
-            serSkillInfo.setStationName(user.getStation().getName());//服务站名称
         }
         serSkillInfoService.save(serSkillInfo);
         return new SuccResult("保存成功");
@@ -90,9 +90,9 @@ public class SerSkillInfoController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "getData", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "formData", method = {RequestMethod.POST})
     @ApiOperation("根据ID查找技能")
-    public Result getData(@RequestBody SerSkillInfo serSkillInfo) {
+    public Result formData(@RequestBody SerSkillInfo serSkillInfo) {
         SerSkillInfo entity = null;
         if (StringUtils.isNotBlank(serSkillInfo.getId())) {
             entity = serSkillInfoService.getData(serSkillInfo.getId());
@@ -100,8 +100,33 @@ public class SerSkillInfoController extends BaseController {
         if (entity == null) {
             return new FailResult("未找到此id对应的技能。");
         } else {
-            return new SuccResult(entity);
+
+            List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
+            List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
+            List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList();
+            HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
+            objectObjectHashMap.put("info",entity);
+            objectObjectHashMap.put("items",items);
+            objectObjectHashMap.put("techs",techs);
+            objectObjectHashMap.put("stations",stations);
+
+            return new SuccResult(objectObjectHashMap);
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "insertData", method = {RequestMethod.POST})
+    @ApiOperation("新增技能")
+    public Result insertData(@RequestBody SerSkillInfo serSkillInfo) {
+            List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
+            List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
+            List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList();
+            HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
+            objectObjectHashMap.put("items",items);
+            objectObjectHashMap.put("techs",techs);
+            objectObjectHashMap.put("stations",stations);
+
+            return new SuccResult(objectObjectHashMap);
     }
 
     @ResponseBody
@@ -112,16 +137,15 @@ public class SerSkillInfoController extends BaseController {
         serSkillInfoService.delete(serSkillInfo);
         return new SuccResult("删除成功");
     }
-
+/*
     @ResponseBody
     @RequestMapping(value = "choiceSerlistData", method = {RequestMethod.POST})
     @ApiOperation("选择服务")
-    public Result choiceSerlistData(@RequestBody(required = false) SerSkillItem serInfo, HttpServletRequest request, HttpServletResponse response) {
+    public Result choiceSerlistData(@RequestBody(required = false) SerItemInfo serInfo, HttpServletRequest request, HttpServletResponse response) {
         if(null == serInfo){
-            serInfo = new SerSkillItem();
+            serInfo = new SerItemInfo();
         }
-        Page<SerSkillItem> serPage = new Page<>(request, response);
-        Page<SerSkillItem> page = serSkillInfoService.findSerPage(serPage, serInfo);
+        List<SerItemInfo> page = serSkillInfoService.findSerPage(serInfo);
         return new SuccResult(page);
     }
 
@@ -132,15 +156,18 @@ public class SerSkillInfoController extends BaseController {
         if(null == technicianInfo){
             technicianInfo = new SerSkillTechnician();
         }
-        Page<SerSkillTechnician> technicianPage = new Page<>(request, response);
-        Page<SerSkillTechnician> page = serSkillInfoService.findTechnicianPage(technicianPage, technicianInfo);
-        return new SuccResult(page);
+        List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(technicianInfo);
+        List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList();
+        HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
+        objectObjectHashMap.put("list",techs);
+        objectObjectHashMap.put("stations",stations);
+        return new SuccResult(objectObjectHashMap);
     }
 
     @ResponseBody
     @RequestMapping(value="getServiceStationList",method={RequestMethod.GET})
     @ApiOperation("服务站下拉列表")
-    public List<ServiceStation> getServiceStationList(HttpServletRequest request, HttpServletResponse response){
+    public List<BasicServiceStation> getServiceStationList(HttpServletRequest request, HttpServletResponse response){
         return serSkillInfoService.getServiceStationList();
-    }
+    }*/
 }

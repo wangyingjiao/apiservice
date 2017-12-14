@@ -5,14 +5,11 @@
 	<sql id="serSkillTechnicianColumns">
 		a.id AS "id",
 		a.skill_id AS "skillId",
-		a.skill_name AS "skillName",
-		a.technician_id AS "technicianId",
-		a.technician_name AS "technicianName",
+		a.tech_id AS "techId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
@@ -22,7 +19,7 @@
 	<select id="get" resultType="SerSkillTechnician">
 		SELECT 
 			<include refid="serSkillTechnicianColumns"/>
-		FROM ser_skill_technician a
+		FROM ser_skill_tech a
 		<include refid="serSkillTechnicianJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -30,7 +27,7 @@
 	<select id="findList" resultType="SerSkillTechnician">
 		SELECT 
 			<include refid="serSkillTechnicianColumns"/>
-		FROM ser_skill_technician a
+		FROM ser_skill_tech a
 		<include refid="serSkillTechnicianJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -48,7 +45,7 @@
 	<select id="findAllList" resultType="SerSkillTechnician">
 		SELECT 
 			<include refid="serSkillTechnicianColumns"/>
-		FROM ser_skill_technician a
+		FROM ser_skill_tech a
 		<include refid="serSkillTechnicianJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -65,10 +62,10 @@
     <select id="findByTech" resultType="SerSkillInfo">
 		SELECT
 		<include refid="serSkillTechnicianColumns"/>
-		FROM ser_skill_technician a
+		FROM ser_skill_tech a
 		<include refid="serSkillTechnicianJoins"/>
 		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL} and a.technician_id = #{id}
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.tech_id = #{id}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -81,57 +78,57 @@
 	</select>
 
     <insert id="insert">
-		INSERT INTO ser_skill_technician(
+		INSERT INTO ser_skill_tech(
 			id,
 			skill_id,
-			skill_name,
-			technician_id,
-			technician_name,
+			tech_id,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
 			#{skillId},
-			#{skillName},
-			#{technicianId},
-			#{technicianName},
+			#{techId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
 	
 	<update id="update">
-		UPDATE ser_skill_technician SET 	
+		UPDATE ser_skill_tech SET 	
 			skill_id = #{skillId},
-			skill_name = #{skillName},
-			technician_id = #{technicianId},
-			technician_name = #{technicianName},
+			tech_id = #{techId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks},
 			del_flag = #{delFlag}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE ser_skill_technician SET 
+		UPDATE ser_skill_tech SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="delSerSkillTechnicianBySkill">
-		UPDATE ser_skill_technician SET
+		UPDATE ser_skill_tech SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE skill_id = #{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
+	<select id="getSerSkillTechnicianBySkill" resultType="SerSkillTechnician">
+		SELECT
+		a.tech_id AS "techId",
+		b.name AS "techName"
+		FROM ser_skill_tech a
+		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.skill_id = #{id}
+		AND  a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 
 </mapper>

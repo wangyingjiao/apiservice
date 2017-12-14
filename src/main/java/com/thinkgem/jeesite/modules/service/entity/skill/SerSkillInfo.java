@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.skill;
 
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -18,16 +19,11 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;		// 技能名称
-	private String code;		// 技能编码
-	private int technicianNum;  // 技师数量
-	private String stationId;//服务站ID
-	private String officeId;//机构ID
-	private String stationName;//服务站名称
-	private String officeName;//机构名称
+	private int techNum;  // 技师数量
+	private String orgId;//机构ID
 
 	private List<SerSkillTechnician> technicians;
-	private List<SerSkillItem> serItems;
-
+	private List<SerSkillItem> goodsList;
 
 	public SerSkillInfo() {
 		super();
@@ -45,54 +41,21 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	@Length(min=0, max=64, message="技能编码长度必须介于 0 和 64 之间")
-	public String getCode() {
-		return code;
+
+	public int getTechNum() {
+		return techNum;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setTechNum(int techNum) {
+		this.techNum = techNum;
 	}
 
-	public String getStationId() {
-		return stationId;
+	public String getOrgId() {
+		return orgId;
 	}
 
-	public void setStationId(String stationId) {
-		this.stationId = stationId;
-	}
-
-	public String getOfficeId() {
-		return officeId;
-	}
-
-	public void setOfficeId(String officeId) {
-		this.officeId = officeId;
-	}
-
-	public String getStationName() {
-		return stationName;
-	}
-
-	public void setStationName(String stationName) {
-		this.stationName = stationName;
-	}
-
-	public String getOfficeName() {
-		return officeName;
-	}
-
-	public void setOfficeName(String officeName) {
-		this.officeName = officeName;
-	}
-
-	public int getTechnicianNum() {
-		return technicianNum;
-	}
-
-	public void setTechnicianNum(int technicianNum) {
-		this.technicianNum = technicianNum;
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
 	}
 
 	public List<SerSkillTechnician> getTechnicians() {
@@ -103,11 +66,49 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 		this.technicians = technicians;
 	}
 
-	public List<SerSkillItem> getSerItems() {
-		return serItems;
+	public List<SerSkillItem> getGoodsList() {
+		return goodsList;
 	}
 
-	public void setSerItems(List<SerSkillItem> serItems) {
-		this.serItems = serItems;
+	public void setGoodsList(List<SerSkillItem> goodsList) {
+		this.goodsList = goodsList;
+	}
+
+	private List<SerItemInfo> items;
+
+	public List<SerItemInfo> getItems() {
+		return items;
+	}
+
+	public void setItems(List<SerItemInfo> items) {
+		this.items = items;
+	}
+
+	private String itemName;
+	private String techName;
+	private String techStationId;
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public String getTechName() {
+		return techName;
+	}
+
+	public void setTechName(String techName) {
+		this.techName = techName;
+	}
+
+	public String getTechStationId() {
+		return techStationId;
+	}
+
+	public void setTechStationId(String techStationId) {
+		this.techStationId = techStationId;
 	}
 }

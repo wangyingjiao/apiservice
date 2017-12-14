@@ -21,4 +21,8 @@ public interface SerSkillItemDao extends CrudDao<SerSkillItem> {
     void delSerSkillItemBySkill(SerSkillInfo serSkillInfo);
 
     List<SerSkillItem> getSerItems(SerSkillInfo serSkillInfo);
+
+    List<SerSkillItem> getSerSkillItemBySkill(SerSkillInfo serSkillInfo);
+
+    List<SerSkillItem> getSerSkillGoodsBySkill(SerSkillInfo serSkillInfo);
 }
