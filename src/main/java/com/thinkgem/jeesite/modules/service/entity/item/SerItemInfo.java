@@ -129,9 +129,9 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	}
 
 	private String cityCode;        // 城市编号 查询用
-	private List<String> cityCodes; // 城市 编辑选中用
-	private List<SerCityScope> citys;
-	private List<SerCityScope> allCitys;
+	private List<String> cityCodes = new ArrayList<String>(); // 城市 编辑选中用
+	private List<SerCityScope> citys = new ArrayList<SerCityScope>();
+	private List<SerCityScope> allCitys = new ArrayList<SerCityScope>();
 	private List<SerItemCommodity> commoditys;
 	private String sortName;		// 所属分类
 

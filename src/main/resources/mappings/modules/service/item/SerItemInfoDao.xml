@@ -39,7 +39,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
-				AND a.name LIKE ('%',#{name},'%')
+				AND a.name LIKE concat('%',#{name},'%')
 			</if>
 			<if test="majorSort != null and majorSort !='' and majorSort !='all'.toString()">
 				AND a.major_sort= #{majorSort}

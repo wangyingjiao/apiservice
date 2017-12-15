@@ -20,7 +20,13 @@
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultMap="SerSkillInfoResultMap">
+	<sql id="serSkillInfoColumnsAll">
+		a.id AS "id",
+		a.org_id AS "orgId",
+		a.name AS "name",
+		a.tech_num AS "techNum"
+	</sql>
+	<select id="findList" resultType="SerSkillInfo">
 		SELECT
 		<include refid="serSkillInfoColumnsAll"/>
 		FROM ser_skill_info a
@@ -40,7 +46,7 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findAllList" resultType="SerSkillInfo">
 		SELECT 
 			<include refid="serSkillInfoColumns"/>
@@ -109,52 +115,6 @@
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
-
-
-	<select id="getSkillInfoById" resultMap="SerSkillInfoResultMap">
-		SELECT
-		<include refid="serSkillInfoColumnsAll"/>
-		FROM ser_skill_info a
-		<where>
-			a.id = #{id}
-		</where>
-	</select>
-
-	<sql id="serSkillInfoColumnsAll">
-		a.id AS "id",
-		a.org_id AS "orgId",
-		a.name AS "name",
-		a.tech_num AS "techNum"
-	</sql>
-	<resultMap type="SerSkillInfo" id="SerSkillInfoResultMap">
-		<id column="id" property="id"/>
-		<result column="org_id" property="orgId"/>
-		<result column="name" property="name"/>
-		<result column="tech_num" property="techNum"/>
-		<!-- 关联商品 -->
-		<association property="goodsList" column="{reqId=id}" select="selectSerItemsById"></association>
-		<!-- 关联技师 -->
-		<association property="technicians" column="{reqId=id}" select="selectTechnicianById"></association>
-	</resultMap>
-	<select id="selectTechnicianById" parameterType="java.util.Map" resultType="SerSkillTechnician">
-		select a.id,a.tech_id AS techId,
-		b.name AS techName
-		from ser_skill_tech a
-		LEFT JOIN  tech_info b ON a.tech_id = b.id AND b.del_flag = '0'
-		LEFT JOIN  basic_service_station c ON b.station_id = c.id AND c.del_flag = '0'
-		where a.skill_id=#{reqId}
-		and a.del_flag = '0'
-	</select>
-	<select id="selectSerItemsById" parameterType="java.util.Map" resultType="SerSkillItem">
-		select id,
-		item_id AS itemId,item_name AS itemName,
-		item_id AS reqId
-		from ser_skill_goods
-		where skill_id=#{reqId}
-		and del_flag = '0'
-	</select>
-
-
 	<select id="choiceSerlist" resultMap="SerItemCommodityResultMap">
 		SELECT
 		a.id AS "id",
@@ -162,8 +122,8 @@
 		FROM ser_item_info a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE concat('%',#{name},'%')
+			<if test="itemName != null and itemName != ''">
+				AND a.name LIKE concat('%',#{itemName},'%')
 			</if>
 		</where>
 		<choose>

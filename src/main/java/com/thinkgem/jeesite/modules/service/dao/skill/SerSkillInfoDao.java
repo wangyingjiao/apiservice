@@ -25,8 +25,6 @@ public interface SerSkillInfoDao extends CrudDao<SerSkillInfo> {
 
     int checkDataName(SerSkillInfo serSkillInfo);
 
-    SerSkillInfo getSkillInfoById(String id);
-
     List<SerItemInfo> choiceSerlist(SerSkillInfo serSkillInfo);
 
     List<SerSkillTechnician> choiceTechnicianlist(SerSkillInfo serSkillInfo);
