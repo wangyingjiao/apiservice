@@ -38,6 +38,7 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	
 	@Override
 	public List<BasicServiceStation> findList(BasicServiceStation serviceStation) {
+
 		return super.findList(serviceStation);
 	}
 	

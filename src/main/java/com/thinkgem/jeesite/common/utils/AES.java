@@ -73,7 +73,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 
 
@@ -182,7 +181,6 @@ public class AES {
 
     private byte[] encrypt(String cmp, SecretKey sk, IvParameterSpec IV, byte[] msg) {
         try {
-            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
             Cipher c = Cipher.getInstance(cmp);
             c.init(Cipher.ENCRYPT_MODE, sk, IV);
             return c.doFinal(msg);
@@ -204,7 +202,6 @@ public class AES {
 
     private byte[] decrypt(String cmp, SecretKey sk, IvParameterSpec IV, byte[] ciphertext) {
         try {
-            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
             Cipher c = Cipher.getInstance(cmp);
             c.init(Cipher.DECRYPT_MODE, sk, IV);
             return c.doFinal(ciphertext);
@@ -226,7 +223,6 @@ public class AES {
     }
 
     public static void main(String[] args) throws UnsupportedEncodingException {
-
         AES aes = new AES();
         String s = new String("1111111".getBytes("UTF8"));
         System.out.println(s);

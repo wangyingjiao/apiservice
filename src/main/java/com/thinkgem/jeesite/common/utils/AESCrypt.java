@@ -74,7 +74,7 @@ public class AESCrypt {
 
     public static void main(String[] args) throws Exception {
 
-        AESCrypt crypt = new AESCrypt("123456");
+        AESCrypt crypt = new AESCrypt("1234567812345678");
         String encrypt = crypt.encrypt("111111");
         System.out.println(encrypt);
 

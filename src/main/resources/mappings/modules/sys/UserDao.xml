@@ -131,7 +131,7 @@
         <include refid="userJoins"/>
 
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-
+        AND sr.data_scope  &lt;= #{currentUser.role.dataScope}
         <if test="organization != null and organization.id != null and organization.id != ''">
             AND (o.id = #{organization.id}
         </if>

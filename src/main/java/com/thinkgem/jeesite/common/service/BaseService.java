@@ -139,4 +139,43 @@ public abstract class BaseService {
         return "";
     }
 
+    /**
+     * @param user
+     * @param tableAlias
+     * @return
+     */
+    public static String dataRoleFilter(User user) {
+        StringBuilder sqlString = new StringBuilder();
+        String officeId = user.getOrganization().getId();//机构ID
+        String stationId = user.getStation().getId();//服务站ID
+
+        String dataRole = "";
+        if ("0".equals(officeId)) {
+            dataRole = Role.DATA_ROLE_ALL;//机构ID为0 代表全平台
+        } else {
+            // if ("0".equals(stationId)) {
+            dataRole = Role.DATA_ROLE_OFFICE;//服务站ID为0 代表全机构
+//            } else {
+//                dataRole = Role.DATA_ROLE_STATION;//本服务站
+//            }
+        }
+        // 超级管理员，跳过权限过滤
+        if (!user.isAdmin()) {
+            boolean isDataScopeAll = false;
+            if (Role.DATA_ROLE_ALL.equals(dataRole)) {
+                sqlString = new StringBuilder();
+            } else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
+                sqlString.append(" AND " + "a" + ".office_id = '" + officeId + "'");
+            }
+//            else if (Role.DATA_ROLE_STATION.equals(dataRole)) {
+//                sqlString.append(" AND " + tableAlias + ".station_id = '" + stationId + "'");
+//            }
+
+        }
+        if (StringUtils.isNotBlank(sqlString.toString())) {
+            return sqlString.toString();
+        }
+        return "";
+    }
+
 }

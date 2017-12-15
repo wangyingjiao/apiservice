@@ -63,7 +63,7 @@ public class RoleController extends BaseController {
     }
 
     @ApiIgnore
-    @RequiresPermissions("sys:role:view")
+    @RequiresPermissions("role_view")
     @RequestMapping(value = {"list", ""})
     public String list(Role role, Model model) {
         List<Role> list = systemService.findAllRole();
@@ -85,7 +85,7 @@ public class RoleController extends BaseController {
     }
 
     @ApiIgnore
-    @RequiresPermissions("sys:role:edit")
+    @RequiresPermissions("role_insert")
     @RequestMapping(value = "save")
     public String save(Role role, Model model, RedirectAttributes redirectAttributes) {
         if (!UserUtils.getUser().isAdmin() && role.getSysData().equals(Global.YES)) {
@@ -113,7 +113,7 @@ public class RoleController extends BaseController {
     }
 
     @ApiIgnore
-    //@RequiresPermissions("sys:role:edit")
+    @RequiresPermissions("role_delete")
     @RequestMapping(value = "delete", method = RequestMethod.GET)
     public String delete(String id, RedirectAttributes redirectAttributes) {
 
@@ -165,7 +165,7 @@ public class RoleController extends BaseController {
      * @return
      */
     @ApiIgnore
-    @RequiresPermissions("sys:role:view")
+    @RequiresPermissions("role_view")
     @RequestMapping(value = "usertorole")
     public String selectUserToRole(Role role, Model model) {
         List<User> userList = systemService.findUser(new User(new Role(role.getId())));
@@ -183,7 +183,7 @@ public class RoleController extends BaseController {
      * @param response
      * @return
      */
-    @RequiresPermissions("sys:role:view")
+    @RequiresPermissions("role_view")
     @ResponseBody
     @RequestMapping(value = "users", method = {RequestMethod.POST, RequestMethod.GET})
     public List<Map<String, Object>> users(String officeId, HttpServletResponse response) {
@@ -382,17 +382,18 @@ public class RoleController extends BaseController {
         }
     }
 
+
     @ResponseBody
-    //@RequiresPermissions("sys:role:view")
+    @RequiresPermissions("role_view")
     @RequestMapping(value = "listData", method = RequestMethod.GET)
     @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
     public Result listData(Role role) {
-        List<Role> list = systemService.findAllRole();
+        List<Role> list = systemService.findRole(UserUtils.getUser());
         return new SuccResult(list);
     }
 
     @ResponseBody
-    //@RequiresPermissions("sys:role:view")
+    @RequiresPermissions("role_view")
     @RequestMapping(value = "listPageData", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
     public Result listPageData(@RequestBody(required = false) Role role, HttpServletRequest request, HttpServletResponse response) {
@@ -403,7 +404,7 @@ public class RoleController extends BaseController {
 
 
     @ResponseBody
-    //@RequiresPermissions("sys:role:view")
+    @RequiresPermissions("user")
     @RequestMapping(value = "search", method = RequestMethod.POST)
     @ApiOperation("岗位搜索")
     public Result search(@RequestBody Role role) {
@@ -423,6 +424,7 @@ public class RoleController extends BaseController {
      * @return
      */
     @ResponseBody
+    @RequiresPermissions("user")
     @RequestMapping(value = "getRoleDetail", method = RequestMethod.GET)
     public Result getRoleDetail(@RequestParam String id) {
         Role role = systemService.getRole(id);

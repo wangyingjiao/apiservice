@@ -223,6 +223,7 @@
         FROM sys_role a
         INNER JOIN basic_organization o ON o.id = a.office_id
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ${sqlMap.dsf}
         <if test="name != null">
             AND a.name LIKE concat( '%' , #{name} , '%' )
         </if>

@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -56,7 +57,7 @@ public class ServiceStationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务站列表")
-    //@RequiresPermissions("service:station:serviceStation:view")
+    @RequiresPermissions("station_view")
     public Result listData(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
         Page<BasicServiceStation> stationPage = new Page<>(request, response);
 
@@ -67,6 +68,7 @@ public class ServiceStationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "listByOffice", method = {RequestMethod.POST, RequestMethod.GET})
     //@RequiresPermissions("service:station:serviceStation:view")
+    @RequiresPermissions("user")
     public Result listByOffice(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
         List<BasicServiceStation> list = new ArrayList<>();
         if (StringUtils.isNotBlank(serviceStation.getOrgId())) {
@@ -77,6 +79,7 @@ public class ServiceStationController extends BaseController {
 
 
     @ResponseBody
+    @RequiresPermissions("station_view")
     @RequestMapping(value = "getData", method = {RequestMethod.POST, RequestMethod.GET})
     public Result getData(@RequestBody BasicServiceStation serviceStation) {
         BasicServiceStation entity = null;
@@ -94,7 +97,7 @@ public class ServiceStationController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
-    //@RequiresPermissions("service:station:serviceStation:edit")
+    @RequiresPermissions("station_insert")
     @ApiOperation("保存服务站")
     public Result saveData(@RequestBody BasicServiceStation serviceStation) {
 
@@ -117,8 +120,33 @@ public class ServiceStationController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "upData", method = {RequestMethod.POST})
+    @RequiresPermissions("station_update")
+    @ApiOperation("保存服务站")
+    public Result upData(@RequestBody BasicServiceStation serviceStation) {
+
+        List<String> errors = errors(serviceStation, SaveStationGroup.class);
+        if (errors.size() > 0) {
+            return new FailResult(errors);
+        }
+        User user = UserUtils.getUser();
+
+        if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
+//            serviceStation.setOrganization(user.getOrganization());
+//            serviceStation.setOfficeId(user.getOrganization().getId());
+//            serviceStation.setOfficeName(user.getOrganization().getName());
+            serviceStation.setOrgId(user.getOfficeId());
+        } else {
+            return new FailResult("用户没有具体的所属机构(全平台权限)");
+        }
+        serviceStationService.save(serviceStation);
+        return new SuccResult("保存服务站" + serviceStation.getName() + "成功");
+    }
+
+
+    @ResponseBody
     @RequestMapping(value = "setScope", method = {RequestMethod.POST, RequestMethod.GET})
-    @RequiresPermissions("service:station:serviceStation:edit")
+    @RequiresPermissions("station_scope")
     @ApiOperation("设置座标范围")
     public Result setScope(@RequestBody BasicServiceStation serviceStation) {
 
@@ -133,7 +161,7 @@ public class ServiceStationController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "setManager", method = {RequestMethod.POST, RequestMethod.GET})
-    //@RequiresPermissions("service:station:serviceStation:edit")
+    @RequiresPermissions("station_manager")
     @ApiOperation("设置站长")
     public Result setManager(@RequestBody BasicServiceStation serviceStation) {
         if (null == serviceStation.getId()) {

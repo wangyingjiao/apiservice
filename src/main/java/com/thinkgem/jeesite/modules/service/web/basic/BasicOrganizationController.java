@@ -59,8 +59,10 @@ public class BasicOrganizationController extends BaseController {
 		if(basicOrganization == null){
 			basicOrganization = new BasicOrganization();
 		}
-		Page<BasicOrganization> officePage = new Page<>(request, response);
-		Page<BasicOrganization> page = basicOrganizationService.findPage(officePage, basicOrganization);
+		String size = request.getParameter("pageSize");
+		System.out.println(size);
+		Page<BasicOrganization> organizationPage = new Page<>(request, response, Integer.parseInt(size));
+		Page<BasicOrganization> page = basicOrganizationService.findPage(organizationPage, basicOrganization);
 		return new SuccResult(page);
 	}
 
