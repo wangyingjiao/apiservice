@@ -37,6 +37,8 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
     SerCityScopeDao serCityScopeDao;
     @Autowired
     SerCityScopeService serCityScopeService;
+    @Autowired
+    BasicServiceCityDao basicServiceCityDao;
 
     public SerSortInfo get(String id) {
         return super.get(id);
@@ -123,7 +125,18 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
             //当前分类下的项目是全部城市的件数
             int itemAllCity = dao.getItemAllCityNum(serSortInfo.getId());
             //当前分类下的项目定向城市
-            List<String> itemCitys = dao.getItemCitys(serSortInfo.getId());
+            List<String> itemCitys = new ArrayList<String>();
+            if("yes".equals(serSortInfo.getAllCity())){
+                List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serSortInfo.getOrgId());
+                if(null != list){
+                    for(BasicServiceCity basicServiceCity : list){
+                        itemCitys.add(basicServiceCity.getCityCode());
+                    }
+                }
+            }else{
+                itemCitys = dao.getItemCitys(serSortInfo.getId());
+            }
+
             for(SerCityScope city : citys){
                 if(itemAllCity > 0){
                     city.setHaveItem(true);
