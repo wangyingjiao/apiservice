@@ -5,17 +5,9 @@
     <sql id="serviceTechnicianWorkTimeColumns">
 		a.id AS "id",
 		a.tech_id AS "techId",
-		a.tech_name AS "techName",
-		a.work_date AS "workDate",
+		a.week AS "week",
 		a.start_time AS "startTime",
-		a.end_time AS "endTime",
-		a.sort AS "sort",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.end_time AS "endTime"
 	</sql>
 
     <sql id="serviceTechnicianWorkTimeJoins">
@@ -24,7 +16,7 @@
     <select id="get" resultType="ServiceTechnicianWorkTime">
         SELECT
         <include refid="serviceTechnicianWorkTimeColumns"/>
-        FROM service_technician_work_time a
+        FROM tech_work_time a
         <include refid="serviceTechnicianWorkTimeJoins"/>
         WHERE a.id = #{id}
     </select>
@@ -32,7 +24,7 @@
     <select id="findList" resultType="ServiceTechnicianWorkTime">
         SELECT
         <include refid="serviceTechnicianWorkTimeColumns"/>
-        FROM service_technician_work_time a
+        FROM tech_work_time a
         <include refid="serviceTechnicianWorkTimeJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -47,30 +39,11 @@
         </choose>
     </select>
 
-    <!--<select id="findListByTech" resultType="ServiceTechnicianWorkTime">-->
-    <!--SELECT-->
-    <!--<include refid="serviceTechnicianWorkTimeColumns"/>-->
-    <!--FROM service_technician_work_time a-->
-    <!--<include refid="serviceTechnicianWorkTimeJoins"/>-->
-    <!--<where>-->
-    <!--a.del_flag = #{DEL_FLAG_NORMAL}-->
-    <!--</where>-->
-
-    <!--<choose>-->
-    <!--<when test="page !=null and page.orderBy != null and page.orderBy != ''">-->
-    <!--ORDER BY ${page.orderBy}-->
-    <!--</when>-->
-    <!--<otherwise>-->
-    <!--ORDER BY a.update_date DESC-->
-    <!--</otherwise>-->
-    <!--</choose>-->
-    <!--</select>-->
-
 
     <select id="findAllList" resultType="ServiceTechnicianWorkTime">
         SELECT
         <include refid="serviceTechnicianWorkTimeColumns"/>
-        FROM service_technician_work_time a
+        FROM tech_work_time a
         <include refid="serviceTechnicianWorkTimeJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -88,7 +61,7 @@
             resultType="com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime">
         SELECT
         <include refid="serviceTechnicianWorkTimeColumns"/>
-        FROM service_technician_work_time a
+        FROM tech_work_time a
         <include refid="serviceTechnicianWorkTimeJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -99,53 +72,44 @@
     </select>
 
     <insert id="insert">
-		INSERT INTO service_technician_work_time(
+		INSERT INTO tech_work_time(
 			id,
 			tech_id,
-			tech_name,
-			work_date,
+			week,
 			start_time,
 			end_time,
-			sort,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
 			#{techId},
-			#{techName},
-			#{workDate},
+			#{week},
 			#{startTime},
 			#{endTime},
-			#{sort},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
 
     <update id="update">
-		UPDATE service_technician_work_time SET 	
+		UPDATE tech_work_time SET 	
 			tech_id = #{techId},
-			tech_name = #{techName},
-			work_date = #{workDate},
+			week = #{week},
 			start_time = #{startTime},
 			end_time = #{endTime},
-			sort = #{sort},
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 
     <update id="delete">
-		UPDATE service_technician_work_time SET 
+		UPDATE tech_work_time SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

@@ -5,19 +5,11 @@
 	<sql id="serviceTechnicianFamilyMembersColumns">
 		a.id AS "id",
 		a.tech_id AS "techId",
-		a.tech_name AS "techName",
 		a.relation AS "relation",
 		a.member_name AS "memberName",
 		a.member_phone AS "memberPhone",
-		a.member_unit AS "memberUnit",
-		a.member_job AS "memberJob",
-		a.sort AS "sort",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.member_company AS "memberCompany",
+		a.member_job AS "memberJob"
 	</sql>
 	
 	<sql id="serviceTechnicianFamilyMembersJoins">
@@ -26,7 +18,7 @@
 	<select id="get" resultType="ServiceTechnicianFamilyMembers">
 		SELECT 
 			<include refid="serviceTechnicianFamilyMembersColumns"/>
-		FROM service_technician_family_members a
+		FROM tech_family_members a
 		<include refid="serviceTechnicianFamilyMembersJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -34,7 +26,7 @@
 	<select id="findList" resultType="ServiceTechnicianFamilyMembers">
 		SELECT 
 			<include refid="serviceTechnicianFamilyMembersColumns"/>
-		FROM service_technician_family_members a
+		FROM tech_family_members a
 		<include refid="serviceTechnicianFamilyMembersJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -52,7 +44,7 @@
 	<select id="findAllList" resultType="ServiceTechnicianFamilyMembers">
 		SELECT 
 			<include refid="serviceTechnicianFamilyMembersColumns"/>
-		FROM service_technician_family_members a
+		FROM tech_family_members a
 		<include refid="serviceTechnicianFamilyMembersJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -68,65 +60,56 @@
 	</select>
 	<select id="findListByTech"
 			resultType="ServiceTechnicianFamilyMembers">
-		select * from service_technician_family_members
+		select * from tech_family_members
 		WHERE tech_id = #{id}
 		and del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<insert id="insert">
-		INSERT INTO service_technician_family_members(
+		INSERT INTO tech_family_members(
 			id,
 			tech_id,
-			tech_name,
 			relation,
 			member_name,
 			member_phone,
-			member_unit,
+			member_company,
 			member_job,
-			sort,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
 			#{techId},
-			#{techName},
 			#{relation},
 			#{memberName},
 			#{memberPhone},
-			#{memberUnit},
+			#{memberCompany},
 			#{memberJob},
-			#{sort},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
 	
 	<update id="update">
-		UPDATE service_technician_family_members SET 	
+		UPDATE tech_family_members SET 	
 			tech_id = #{techId},
-			tech_name = #{techName},
 			relation = #{relation},
 			member_name = #{memberName},
 			member_phone = #{memberPhone},
-			member_unit = #{memberUnit},
+			member_company = #{memberCompany},
 			member_job = #{memberJob},
-			sort = #{sort},
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE service_technician_family_members SET 
+		UPDATE tech_family_members SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

@@ -20,9 +20,8 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 	private String relation;		// 与服务技师关系
 	private String memberName;		// 成员名字
 	private String memberPhone;		// 成员手机号
-	private String memberUnit;		// 成员单位
+	private String memberCompany;		// 成员单位
 	private String memberJob;		// 成员职务
-	private String sort;		// 排序
 	
 	public ServiceTechnicianFamilyMembers() {
 		super();
@@ -76,16 +75,15 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 	public void setMemberPhone(String memberPhone) {
 		this.memberPhone = memberPhone;
 	}
-	
-	@Length(min=0, max=64, message="成员单位长度必须介于 0 和 64 之间")
-	public String getMemberUnit() {
-		return memberUnit;
+
+	public String getMemberCompany() {
+		return memberCompany;
 	}
 
-	public void setMemberUnit(String memberUnit) {
-		this.memberUnit = memberUnit;
+	public void setMemberCompany(String memberCompany) {
+		this.memberCompany = memberCompany;
 	}
-	
+
 	@Length(min=0, max=64, message="成员职务长度必须介于 0 和 64 之间")
 	public String getMemberJob() {
 		return memberJob;
@@ -94,13 +92,5 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 	public void setMemberJob(String memberJob) {
 		this.memberJob = memberJob;
 	}
-	
-	public String getSort() {
-		return sort;
-	}
 
-	public void setSort(String sort) {
-		this.sort = sort;
-	}
-	
 }

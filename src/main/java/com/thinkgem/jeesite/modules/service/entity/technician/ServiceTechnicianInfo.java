@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.entity.technician;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -21,61 +22,39 @@ import java.util.List;
 public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     private static final long serialVersionUID = 1L;
-    private String id;
-    private String techOfficeId;        // 技师所属机构id
-    private String techOfficeName;        // 技师所属机构名称
-    private String techStationId;        // 技师所属服务站
-    private String techStationName;        // 技师所属服务站名称
-    private String techName;        // 技师姓名
-    private String techIdCard;        // 身份证号
-    private String techPhone;        // 手机号
-    private String status;           //是否可用
-    private String appLoginPassword;        // app登录密码
-    private String bankType;        // 银行卡类型
-    private String bankCardNo;        // 银行卡号
-    private String addrProvinceId;        // 现住地址_省_id
-    private String addrCityId;        // 现住地址_市_id
-    private String addrDistrictId;        // 现地地址_区_id
-    private String addrProvinceName;        // 现住地址_省_名称
-    private String addrCityName;        // 现住地址_市_名称
-    private String addrDistrictName;        // 现住地址_区_名称
-    private String addrDetailInfo;        // 现住地址_详细信息
-    private String techSex;        // 性别
-    private String techNation;        // 民族
-    private Date techBirthDate;        // 出生日期
-    private String techEmail;        // 邮箱
-    private String techEducation;        // 学历
-    private String techHeight;        // 身高
-    private String techWeight;        // 体重
-    private String techMatrimony;        // 婚姻状况
-    private String techNativePlace;        // 籍贯
-    private String sort;        // 排序
-    private String imgUrl; //头像
-    private String jobNatrue;//岗位性质
-    private String age; //年龄
-    private List<String> skillIds;//技能List
+    private String orgId;		// 技师所属机构id
+    private String stationId;		// 技师所属服务站
+    private String name;		// 技师姓名
+    private String headPic;		// 头像
+    private String idCard;		// 身份证号
+    private String idCardPic;		// 身份证照片(正反)
+    private String lifePic;		// 生活照
+    private String jobPic;		// 证件照
+    private String phone;		// 手机号
+    private String provinceCode;		// 省_区号
+    private String cityCode;		// 市_区号
+    private String areaCode;		// 区_区号
+    private String address;		// 详细地址
+    private String sex;		// 性别（male：男 female：女）
+    private String nation;		// 民族
+    private Date birthDate;		// 出生日期
+    private int age;            // 年龄
+    private String status;		// 状态(yes:上线，no:暂停)
+    private String appLoginPassword;		// app登录密码
+    private String jobNature;		// 岗位性质（full_time:全职，part_time:兼职）
+    private String jobStatus;		// 岗位状态(online:在职，leave:离职)
+    private String workTime;		// 工作年限
+    private String email;		// 邮箱
+    private String education;		// 学历(primary：小学 middle：初中 high：高中 special：中专 junior：大专 university：本科及以上)
+    private String height;		// 身高
+    private String weight;		// 体重
+    private String marryStatus;		// 婚姻状况(married：已婚 unmarried：未婚 widowed：丧偶 divorce：离婚)
+    private String nativeProvinceCode;		// 籍贯
+    private Date inJobTime;		// 入职日期
+    private String jobLevel;		// 级别
+    private String description;		// 经验描述
+    private String remark;		// 备注信息
 
-    //技师服务信息
-    private ServiceTechnicianServiceInfo serviceInfo;
-    //技师图片信息
-    private List<ServiceTechnicianImages> images;
-
-    //技师工作时间
-    private List<ServiceTechnicianWorkTime> workTimes;
-
-    //技师家庭成员信息
-    private List<ServiceTechnicianFamilyMembers> familyMembers;
-
-    @Override
-    @NotBlank(message = "技师id不可为空",groups = SaveMoreGroup.class)
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public ServiceTechnicianInfo() {
         super();
@@ -85,73 +64,164 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         super(id);
     }
 
-    @Length(min = 0, max = 64, message = "技师所属机构id长度必须介于 0 和 64 之间")
-    public String getTechOfficeId() {
-        return techOfficeId;
+    @Length(min=0, max=32, message="技师所属机构id长度必须介于 0 和 32 之间")
+    public String getOrgId() {
+        return orgId;
     }
 
-    public void setTechOfficeId(String techOfficeId) {
-        this.techOfficeId = techOfficeId;
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
-    @Length(min = 0, max = 64, message = "技师所属机构名称长度必须介于 0 和 64 之间")
-    public String getTechOfficeName() {
-        return techOfficeName;
+    @Length(min=0, max=32, message="技师所属服务站长度必须介于 0 和 32 之间")
+    public String getStationId() {
+        return stationId;
     }
 
-    public void setTechOfficeName(String techOfficeName) {
-        this.techOfficeName = techOfficeName;
+    public void setStationId(String stationId) {
+        this.stationId = stationId;
     }
 
-    @Length(min = 0, max = 64, message = "技师所属服务站长度必须介于 0 和 64 之间")
-    public String getTechStationId() {
-        return techStationId;
+    @Length(min=0, max=32, message="技师姓名长度必须介于 0 和 32 之间")
+    public String getName() {
+        return name;
     }
 
-    public void setTechStationId(String techStationId) {
-        this.techStationId = techStationId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Length(min = 0, max = 64, message = "技师所属服务站名称长度必须介于 0 和 64 之间")
-    public String getTechStationName() {
-        return techStationName;
+    @Length(min=0, max=255, message="头像长度必须介于 0 和 255 之间")
+    public String getHeadPic() {
+        return headPic;
     }
 
-    public void setTechStationName(String techStationName) {
-        this.techStationName = techStationName;
+    public void setHeadPic(String headPic) {
+        this.headPic = headPic;
     }
 
-    @NotBlank(message = "技师名称不可为空",groups = SavePersonalGroup.class)
-    @Length(min = 0, max = 255, message = "技师姓名长度必须介于 0 和 255 之间")
-    public String getTechName() {
-        return techName;
+    @Length(min=0, max=32, message="身份证号长度必须介于 0 和 32 之间")
+    public String getIdCard() {
+        return idCard;
     }
 
-    public void setTechName(String techName) {
-        this.techName = techName;
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
     }
 
-    @NotBlank(message = "技师身份证号不可为空。",groups = SavePersonalGroup.class)
-    @Length(min = 15, max = 18, message = "身份证号长度必须介于 15 和 18 之间")
-    public String getTechIdCard() {
-        return techIdCard;
+    @Length(min=0, max=1000, message="身份证照片(正反)长度必须介于 0 和 1000 之间")
+    public String getIdCardPic() {
+        return idCardPic;
     }
 
-    public void setTechIdCard(String techIdCard) {
-        this.techIdCard = techIdCard;
+    public void setIdCardPic(String idCardPic) {
+        this.idCardPic = idCardPic;
     }
 
-    @NotBlank(message = "技师手机号不可为空！",groups = SavePersonalGroup.class)
-    @Length(min = 0, max = 32, message = "手机号长度必须介于 0 和 32 之间")
-    public String getTechPhone() {
-        return techPhone;
+    public String getLifePic() {
+        return lifePic;
     }
 
-    public void setTechPhone(String techPhone) {
-        this.techPhone = techPhone;
+    public void setLifePic(String lifePic) {
+        this.lifePic = lifePic;
     }
 
-    @Length(min = 0, max = 255, message = "app登录密码长度必须介于 0 和 255 之间")
+    public String getJobPic() {
+        return jobPic;
+    }
+
+    public void setJobPic(String jobPic) {
+        this.jobPic = jobPic;
+    }
+
+    @Length(min=0, max=11, message="手机号长度必须介于 0 和 11 之间")
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @Length(min=0, max=20, message="省_区号长度必须介于 0 和 20 之间")
+    public String getProvinceCode() {
+        return provinceCode;
+    }
+
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
+    @Length(min=0, max=20, message="市_区号长度必须介于 0 和 20 之间")
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    @Length(min=0, max=20, message="区_区号长度必须介于 0 和 20 之间")
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    @Length(min=0, max=100, message="详细地址长度必须介于 0 和 100 之间")
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    @Length(min=0, max=2, message="民族长度必须介于 0 和 2 之间")
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Length(min=0, max=255, message="app登录密码长度必须介于 0 和 255 之间")
     public String getAppLoginPassword() {
         return appLoginPassword;
     }
@@ -160,197 +230,124 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.appLoginPassword = appLoginPassword;
     }
 
-    @Length(min = 0, max = 2, message = "银行卡类型长度必须介于 0 和 2 之间")
-    public String getBankType() {
-        return bankType;
+    public String getJobNature() {
+        return jobNature;
     }
 
-    public void setBankType(String bankType) {
-        this.bankType = bankType;
+    public void setJobNature(String jobNature) {
+        this.jobNature = jobNature;
     }
 
-    @Length(min = 0, max = 64, message = "银行卡号长度必须介于 0 和 64 之间")
-    public String getBankCardNo() {
-        return bankCardNo;
+    public String getJobStatus() {
+        return jobStatus;
     }
 
-    public void setBankCardNo(String bankCardNo) {
-        this.bankCardNo = bankCardNo;
+    public void setJobStatus(String jobStatus) {
+        this.jobStatus = jobStatus;
     }
 
-    @NotBlank(message = "技师省id为空",groups = SavePersonalGroup.class)
-    @Length(min = 0, max = 64, message = "现住地址_省_id长度必须介于 0 和 64 之间")
-    public String getAddrProvinceId() {
-        return addrProvinceId;
+    @Length(min=0, max=11, message="工作年限长度必须介于 0 和 11 之间")
+    public String getWorkTime() {
+        return workTime;
     }
 
-    public void setAddrProvinceId(String addrProvinceId) {
-        this.addrProvinceId = addrProvinceId;
+    public void setWorkTime(String workTime) {
+        this.workTime = workTime;
     }
 
-    @NotBlank(message = "技师市id为空",groups = SavePersonalGroup.class)
-    @Length(min = 0, max = 64, message = "现住地址_市_id长度必须介于 0 和 64 之间")
-    public String getAddrCityId() {
-        return addrCityId;
+    @Length(min=0, max=64, message="邮箱长度必须介于 0 和 64 之间")
+    public String getEmail() {
+        return email;
     }
 
-    public void setAddrCityId(String addrCityId) {
-        this.addrCityId = addrCityId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    @NotBlank(message = "技师区id为空",groups = SavePersonalGroup.class)
-    @Length(min = 0, max = 64, message = "现地地址_区_id长度必须介于 0 和 64 之间")
-    public String getAddrDistrictId() {
-        return addrDistrictId;
+    public String getEducation() {
+        return education;
     }
 
-    public void setAddrDistrictId(String addrDistrictId) {
-        this.addrDistrictId = addrDistrictId;
+    public void setEducation(String education) {
+        this.education = education;
     }
 
-    @Length(min = 0, max = 255, message = "现住地址_省_名称长度必须介于 0 和 255 之间")
-    public String getAddrProvinceName() {
-        return addrProvinceName;
+    @Length(min=0, max=11, message="身高长度必须介于 0 和 11 之间")
+    public String getHeight() {
+        return height;
     }
 
-    public void setAddrProvinceName(String addrProvinceName) {
-        this.addrProvinceName = addrProvinceName;
+    public void setHeight(String height) {
+        this.height = height;
     }
 
-    @Length(min = 0, max = 255, message = "现住地址_市_名称长度必须介于 0 和 255 之间")
-    public String getAddrCityName() {
-        return addrCityName;
+    @Length(min=0, max=11, message="体重长度必须介于 0 和 11 之间")
+    public String getWeight() {
+        return weight;
     }
 
-    public void setAddrCityName(String addrCityName) {
-        this.addrCityName = addrCityName;
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
-    @Length(min = 0, max = 255, message = "现住地址_区_名称长度必须介于 0 和 255 之间")
-    public String getAddrDistrictName() {
-        return addrDistrictName;
+    public String getMarryStatus() {
+        return marryStatus;
     }
 
-    public void setAddrDistrictName(String addrDistrictName) {
-        this.addrDistrictName = addrDistrictName;
+    public void setMarryStatus(String marryStatus) {
+        this.marryStatus = marryStatus;
     }
 
-    @Length(min = 0, max = 255, message = "现住地址_详细信息长度必须介于 0 和 255 之间")
-    public String getAddrDetailInfo() {
-        return addrDetailInfo;
+    @Length(min=0, max=20, message="籍贯长度必须介于 0 和 20 之间")
+    public String getNativeProvinceCode() {
+        return nativeProvinceCode;
     }
 
-    public void setAddrDetailInfo(String addrDetailInfo) {
-        this.addrDetailInfo = addrDetailInfo;
+    public void setNativeProvinceCode(String nativeProvinceCode) {
+        this.nativeProvinceCode = nativeProvinceCode;
     }
 
-    @NotBlank(message = "性别不可为空",groups = SavePersonalGroup.class)
-    @Length(min = 0, max = 2, message = "性别长度必须介于 0 和 2 之间")
-    public String getTechSex() {
-        return techSex;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public Date getInJobTime() {
+        return inJobTime;
     }
 
-    public void setTechSex(String techSex) {
-        this.techSex = techSex;
+    public void setInJobTime(Date inJobTime) {
+        this.inJobTime = inJobTime;
     }
 
-    @Length(min = 0, max = 2, message = "民族长度必须介于 0 和 2 之间")
-    public String getTechNation() {
-        return techNation;
+    @Length(min=0, max=11, message="级别长度必须介于 0 和 11 之间")
+    public String getJobLevel() {
+        return jobLevel;
     }
 
-    public void setTechNation(String techNation) {
-        this.techNation = techNation;
+    public void setJobLevel(String jobLevel) {
+        this.jobLevel = jobLevel;
     }
 
-    //@NotEmpty(message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
-    //@NotEmpty(groups = SavePersonalGroup.class,message = "技师出生日期不可为空")
-    //@Pattern(regexp="[0-9]{4}-[0-9]{2}-[0-9]{2}",message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
-    @NotNull(message = "技师出生日期不可为空",groups = SavePersonalGroup.class)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    public Date getTechBirthDate() {
-        return techBirthDate;
+    @Length(min=0, max=255, message="经验描述长度必须介于 0 和 255 之间")
+    public String getDescription() {
+        return description;
     }
 
-    public void setTechBirthDate(Date techBirthDate) {
-        this.techBirthDate = techBirthDate;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    @Length(min = 0, max = 63, message = "邮箱长度必须介于 0 和 63 之间")
-    public String getTechEmail() {
-        return techEmail;
+    @Length(min=0, max=255, message="备注信息长度必须介于 0 和 255 之间")
+    public String getRemark() {
+        return remark;
     }
 
-    public void setTechEmail(String techEmail) {
-        this.techEmail = techEmail;
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
-    @Length(min = 0, max = 2, message = "学历长度必须介于 0 和 2 之间")
-    public String getTechEducation() {
-        return techEducation;
-    }
-
-    public void setTechEducation(String techEducation) {
-        this.techEducation = techEducation;
-    }
-
-    public String getTechHeight() {
-        return techHeight;
-    }
-
-    public void setTechHeight(String techHeight) {
-        this.techHeight = techHeight;
-    }
-
-    public String getTechWeight() {
-        return techWeight;
-    }
-
-    public void setTechWeight(String techWeight) {
-        this.techWeight = techWeight;
-    }
-
-    @Length(min = 0, max = 2, message = "婚姻状况长度必须介于 0 和 2 之间")
-    public String getTechMatrimony() {
-        return techMatrimony;
-    }
-
-    public void setTechMatrimony(String techMatrimony) {
-        this.techMatrimony = techMatrimony;
-    }
-
-    @Length(min = 0, max = 2, message = "籍贯长度必须介于 0 和 2 之间")
-    public String getTechNativePlace() {
-        return techNativePlace;
-    }
-
-    public void setTechNativePlace(String techNativePlace) {
-        this.techNativePlace = techNativePlace;
-    }
-
-    public String getSort() {
-        return sort;
-    }
-
-    public void setSort(String sort) {
-        this.sort = sort;
-    }
-
-    public ServiceTechnicianServiceInfo getServiceInfo() {
-        return serviceInfo;
-    }
-
-    public void setServiceInfo(ServiceTechnicianServiceInfo serviceInfo) {
-        this.serviceInfo = serviceInfo;
-    }
-
-    public List<ServiceTechnicianImages> getImages() {
-        return images;
-    }
-
-    public void setImages(List<ServiceTechnicianImages> images) {
-        this.images = images;
-    }
+    //技师工作时间
+    private List<ServiceTechnicianWorkTime> workTimes;
+    //技师家庭成员信息
+    private List<ServiceTechnicianFamilyMembers> familyMembers;
+    private List<String> skillIds;//技能List
 
     public List<ServiceTechnicianWorkTime> getWorkTimes() {
         return workTimes;
@@ -368,30 +365,6 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.familyMembers = familyMembers;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    public String getJobNatrue() {
-        return jobNatrue;
-    }
-
-    public void setJobNatrue(String jobNatrue) {
-        this.jobNatrue = jobNatrue;
-    }
-
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
-    }
-
     public List<String> getSkillIds() {
         return skillIds;
     }
@@ -400,11 +373,4 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.skillIds = skillIds;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

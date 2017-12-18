@@ -10,9 +10,14 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
+import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,10 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 服务技师基础信息Controller
@@ -42,7 +44,10 @@ public class ServiceTechnicianInfoController extends BaseController {
 
     @Autowired
     private ServiceTechnicianInfoService serviceTechnicianInfoService;
-
+    @Autowired
+    private BasicOrganizationService basicOrganizationService;
+    @Autowired
+    private SystemService systemService;
 
     @ModelAttribute
     public ServiceTechnicianInfo get(@RequestParam(required = false) String id) {
@@ -59,42 +64,41 @@ public class ServiceTechnicianInfoController extends BaseController {
     //@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
     @ResponseBody
     @ApiOperation("获取技师列表")
-    @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "listData", method = {RequestMethod.POST})
     public Result listData(@RequestBody(required = false) ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
         if(null == serviceTechnicianInfo){
             serviceTechnicianInfo = new ServiceTechnicianInfo();
         }
         Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.findPage(new Page<ServiceTechnicianInfo>(request, response), serviceTechnicianInfo);
 
-        return new SuccResult(page);
+        User user = UserUtils.getUser();
+        String orgId = user.getOrganization().getId();//机构ID
+        List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
+
+        List<BasicServiceStation> stations = serviceTechnicianInfoService.getStationsByOrgId(orgId);
+        List<SerSkillInfo> skillInfos = serviceTechnicianInfoService.getSkillInfosByOrgId(orgId);
+
+        HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
+        objectObjectHashMap.put("page",page);
+        objectObjectHashMap.put("cityCodes",cityCodes);
+        objectObjectHashMap.put("stations",stations);
+        objectObjectHashMap.put("skillInfos",skillInfos);
+        return new SuccResult(objectObjectHashMap);
     }
 
     @ResponseBody
-    @RequestMapping(value = "getData", method = {RequestMethod.POST})
+    @RequestMapping(value = "formData", method = {RequestMethod.POST})
     @ApiOperation("根据ID查找技师")
-    public Result getData(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
+    public Result formData(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
         ServiceTechnicianInfo entity = null;
         if (StringUtils.isNotBlank(serviceTechnicianInfo.getId())) {
-            entity = serviceTechnicianInfoService.getData(serviceTechnicianInfo);
+            entity = serviceTechnicianInfoService.formData(serviceTechnicianInfo);
         }
         if (entity == null) {
-            return new FailResult("未找到此id：" + serviceTechnicianInfo.getId() + "对应的服务分类。");
+            return new FailResult("未找到此id对应的服务分类。");
         } else {
             return new SuccResult(entity);
         }
-    }
-
-
-    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
-    @ResponseBody
-    @RequestMapping(value = "form", method = RequestMethod.GET)
-    public Result form(ServiceTechnicianInfo serviceTechnicianInfo, Model model) {
-        ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoService.get(serviceTechnicianInfo.getId());
-        technicianInfo.setImages(serviceTechnicianInfoService.getImages(technicianInfo));
-        technicianInfo.setServiceInfo(serviceTechnicianInfoService.getServiceInfo(technicianInfo));
-        technicianInfo.setWorkTimes(serviceTechnicianInfoService.findWorkTimeByTech(technicianInfo));
-
-        return new SuccResult(serviceTechnicianInfo);
     }
 
     //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
@@ -114,16 +118,16 @@ public class ServiceTechnicianInfoController extends BaseController {
 
 
     /**
-     * 保存创建个人资料和服务信息
+     * 新增保存
      *
      * @param info
      * @return
      */
     @ResponseBody
-    @ApiOperation("保存创建个人资料和服务信息")
-    @RequestMapping(value = "savePersonalAndServiceData", method = RequestMethod.POST)
-    public Result savePersonalAndServiceData(@RequestBody ServiceTechnicianInfo info) {
-        List<String> errList = errors(info, SavePersonalGroup.class);
+    @ApiOperation("新增保存")
+    @RequestMapping(value = "saveData", method = RequestMethod.POST)
+    public Result saveData(@RequestBody ServiceTechnicianInfo info) {
+        List<String> errList = errors(info);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
@@ -131,105 +135,58 @@ public class ServiceTechnicianInfoController extends BaseController {
         ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
         if (null == techInfo) {
             User user = UserUtils.getUser();
-            info.setSort("0");
-            info.setTechOfficeId(user.getOrganization().getId());
-            info.setTechOfficeName(user.getOrganization().getName());
-            info.setTechStationId(user.getStation().getId());
-            info.setTechStationName(user.getStation().getName());
-            info.setAppLoginPassword(info.getTechPhone().substring(6,10));//APP端登录密码默认为手机号的后4位
-            serviceTechnicianInfoService.save(info);
-            serviceTechnicianInfoService.saveImages(info);
-            serviceTechnicianInfoService.saveServiceInfo(info);
-            serviceTechnicianInfoService.saveWorkTimes(info);
+            info.setOrgId(user.getOrganization().getId());
 
-            return new SuccResult(info);
+            String appPwd = systemService.entryptPassword(info.getPhone().substring(6,10));//APP端登录密码默认为手机号的后4位
+            info.setAppLoginPassword(appPwd);
+            serviceTechnicianInfoService.save(info);
+
+            return new SuccResult("保存成功");
         } else {
             return new FailResult("技师名称重复");
         }
     }
 
     /**
-     * 保存个人资料
+     * 更新保存
      *
      * @param info
      * @return
      */
     @ResponseBody
-    @ApiOperation("保存个人资料")
-    @RequestMapping(value = "savePersonalData", method = RequestMethod.POST)
-    public Result savePersonalData(@RequestBody ServiceTechnicianInfo info) {
-        List<String> errList = errors(info, SavePersonalGroup.class);
+    @ApiOperation("更新保存")
+    @RequestMapping(value = "upData", method = RequestMethod.POST)
+    public Result upData(@RequestBody ServiceTechnicianInfo info) {
+        List<String> errList = errors(info);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-
-        ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
-        if (null == techInfo) {
-            User user = UserUtils.getUser();
-            info.setSort("0");
-            info.setTechOfficeId(user.getOrganization().getId());
-            info.setTechOfficeName(user.getOrganization().getName());
-            info.setTechStationId(user.getStation().getId());
-            info.setTechStationName(user.getStation().getName());
-            serviceTechnicianInfoService.save(info);
-            serviceTechnicianInfoService.saveImages(info);
-            return new SuccResult(info);
-        } else {
-            return new FailResult("技师名称重复");
-        }
-    }
-
-    /**
-     * 保存更多信息,保存手机号密码，保存其它信息
-     *
-     * @param info
-     * @return
-     */
-    @ResponseBody
-    @ApiOperation("保存补充个人资料,保存APP密码,保存其它信息")
-    @RequestMapping(value = "saveMoreData", method = RequestMethod.POST)
-    public Result saveMoreData(@RequestBody ServiceTechnicianInfo info) {
-
-        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveMoreGroup.class);
-        if (validate != null && validate.size() > 0) {
-            ArrayList<String> errs = new ArrayList<>();
-            for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
-                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
-            }
-            return new FailResult(errs);
-        }
-        ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoService.get(info.getId());
-        BeanUtils.cloneProperties(info, technicianInfo);
-        technicianInfo.setImages(info.getImages());
-        serviceTechnicianInfoService.saveMoreData(technicianInfo);
-       // serviceTechnicianInfoService.saveImages(info);
-       // return new SuccResult(info);
+        serviceTechnicianInfoService.save(info);
         return new SuccResult("保存成功");
     }
 
     /**
-     * 保存服务信息
+     * App保存
      *
      * @param info
      * @return
      */
     @ResponseBody
-    @ApiOperation("保存服务信息")
-    @RequestMapping(value = "saveServiceInfoData", method = RequestMethod.POST)
-    public Result saveServiceInfoData(@RequestBody ServiceTechnicianInfo info) {
-        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
-        if (validate != null && validate.size() > 0) {
-            ArrayList<String> errs = new ArrayList<>();
-            for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
-                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
-            }
-            return new FailResult(errs);
+    @ApiOperation("APP保存")
+    @RequestMapping(value = "saveAppPassWordData", method = RequestMethod.POST)
+    public Result saveAppPassWordData(@RequestBody ServiceTechnicianInfo info) {
+        List<String> errList = errors(info);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
         }
-        serviceTechnicianInfoService.saveServiceInfo(info);
-        serviceTechnicianInfoService.saveWorkTimes(info);
+        if(StringUtils.isBlank(info.getAppLoginPassword())){
+            return new FailResult("保存失败");
+        }
+        String appPwd = systemService.entryptPassword(info.getAppLoginPassword());//APP端登录密码默认为手机号的后4位
+        info.setAppLoginPassword(appPwd);
+        serviceTechnicianInfoService.saveApp(info);
 
-       // serviceTechnicianInfoService.updateStatus(info.getId());
-        return new SuccResult("保存服务信息成功");
+        return new SuccResult("保存成功");
     }
 
     /**
@@ -266,60 +223,4 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult("删除家庭成员成功");
     }
 
-    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
-    @ResponseBody
-    @ApiOperation("得到技师的所有家庭成员")
-    @RequestMapping(value = "findFamilyMember", method = RequestMethod.POST)
-    public Result findFamilyMember(@RequestBody ServiceTechnicianInfo info) {
-        //得到技师的所有家庭成员
-        List<ServiceTechnicianFamilyMembers> members = serviceTechnicianInfoService.findFamilyMember(info);
-        return new SuccResult(members);
-    }
-
-    @ResponseBody
-    @ApiOperation("选择城市")
-    @RequestMapping(value = "findOfficeSeviceAreaList", method = RequestMethod.GET)
-    public Result findOfficeSeviceAreaList() {
-        ServiceTechnicianInfo info = new ServiceTechnicianInfo();
-        //选择城市
-        User user = UserUtils.getUser();
-        info.setTechOfficeId(user.getOrganization().getId());
-        info.setTechOfficeName(user.getOrganization().getName());
-        List<ServiceTechnicianInfo> list = serviceTechnicianInfoService.findOfficeSeviceAreaList(info);
-        return new SuccResult(list);
-    }
-
-    @ResponseBody
-    @ApiOperation("选择城市所属服务站")
-    @RequestMapping(value = "findServiceStationByArea", method = RequestMethod.POST)
-    public Result findServiceStationByArea(@RequestBody ServiceTechnicianInfo info) {
-        //addr_city_id
-        //List<OfficeSeviceAreaList> list = serviceTechnicianInfoService.findOfficeSeviceAreaList(info);
-        List<ServiceTechnicianInfo> list = new ArrayList<ServiceTechnicianInfo>();
-
-        ServiceTechnicianInfo o1 = new ServiceTechnicianInfo();
-        o1.setTechStationId("1");
-        o1.setTechStationName("服务站1");
-        ServiceTechnicianInfo o2 = new ServiceTechnicianInfo();
-        o2.setTechStationId("2");
-        o2.setTechStationName("服务站2");
-        ServiceTechnicianInfo o3 = new ServiceTechnicianInfo();
-        o3.setTechStationId("3");
-        o3.setTechStationName("服务站3");
-        Random random = new Random();
-
-        int s = random.nextInt(3);
-        switch(s){
-            case 1:
-                list.add(o1);
-                break;
-            case 2:
-                list.add(o2);
-                break;
-            default:
-                list.add(o3);
-                break;
-        }
-        return new SuccResult(list);
-    }
 }

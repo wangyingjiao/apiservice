@@ -5,7 +5,7 @@ package com.thinkgem.jeesite.modules.service.entity.skill;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianServiceInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -38,9 +38,9 @@ public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
 		super(id);
 	}
 
-	public SerSkillTechnician(ServiceTechnicianServiceInfo serviceInfo, SerSkillInfo skill) {
+	public SerSkillTechnician(ServiceTechnicianInfo serviceInfo, SerSkillInfo skill) {
 		this.setSkillId(skill.getId());
-		this.setTechId(serviceInfo.getTechId());
+		this.setTechId(serviceInfo.getId());
 	}
 	@Length(min=0, max=64, message="技能编号长度必须介于 0 和 64 之间")
 	public String getSkillId() {

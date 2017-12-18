@@ -21,11 +21,10 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	private static final long serialVersionUID = 1L;
 	private String techId;		// tech_id
 	private String techName;		// 名称
-	private String workDate;		// 工作日期（周一，周二。。。）
+	private String week;		// 工作日期（周一，周二。。。）
 	private Timestamp startTime;		// 起始时段
 	private Timestamp endTime;		// 结束时段
-	private String sort;		// 排序
-	
+
 	public ServiceTechnicianWorkTime() {
 		super();
 	}
@@ -52,13 +51,12 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 		this.techName = techName;
 	}
 
-	@Length(min=0, max=2, message="工作日期长度必须介于 0 和 2 之间")
-	public String getWorkDate() {
-		return workDate;
+	public String getWeek() {
+		return week;
 	}
 
-	public void setWorkDate(String workDate) {
-		this.workDate = workDate;
+	public void setWeek(String week) {
+		this.week = week;
 	}
 
 	@JsonFormat(pattern = "HH:mm:ss")
@@ -78,13 +76,5 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	public void setEndTime(Timestamp endTime) {
 		this.endTime = endTime;
 	}
-	
-	public String getSort() {
-		return sort;
-	}
 
-	public void setSort(String sort) {
-		this.sort = sort;
-	}
-	
 }
