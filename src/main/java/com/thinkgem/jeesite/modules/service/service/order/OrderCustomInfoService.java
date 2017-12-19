@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +44,8 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	public void delete(OrderCustomInfo orderCustomInfo) {
 		super.delete(orderCustomInfo);
 	}
-	
+
+    public List<BasicOrganization> findOrganizationList() {
+		return dao.findOrganizationList();
+    }
 }

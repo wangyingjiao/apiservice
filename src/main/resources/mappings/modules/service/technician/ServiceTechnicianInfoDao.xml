@@ -53,63 +53,63 @@
         WHERE a.id = #{id}
     </select>
 
-    <select id="findList" resultType="ServiceTechnicianInfo">
-        SELECT
-        a.id AS "id",
-        a.head_pic AS "headPic",
-        a.name AS "name",
-        a.sex AS "sex",
-        a.birth_date AS "birthDate",
-        year( from_days( datediff( now( ), a.birth_date))) as age,
-        a.org_id AS "orgId",
-        b.name AS "orgName",
-        a.station_id AS "stationId",
-        c.name AS "stationName",
-        a.work_time AS "workTime",
-        a.job_nature AS "jobNature",
-        a.job_status AS "jobStatus",
-        a.phone AS "phone"
-        FROM tech_info a
-        LEFT JOIN basic_organization b ON a.org_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
-        LEFT JOIN basic_service_station c ON a.station_id = c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
-        <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="stationId != null and stationId != ''">
-                AND a.station_id = #{stationId}
-            </if>
-            <if test="jobNature != null and jobNature != ''">
-                AND a.job_nature = #{jobNature}
-            </if>
-            <if test="name != null and name !=''">
-                AND a.name LIKE concat('%',#{name},'%')
-            </if>
-            <if test="phone != null and phone != ''">
-                AND a.phone = #{phone}
-            </if>
-            <if test="skillIds != null and skillIds != ''">
-                AND a.id IN(
-                SELECT t1.id from tech_info t1
-                INNER JOIN ser_skill_tech t2 on t1.id = t2.tech_id
-                WHERE t1.del_flag= #{DEL_FLAG_NORMAL} AND t2.del_flag= #{DEL_FLAG_NORMAL}
-                and t2.skill_id in
-                <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-                    #{skillIds}
-                </foreach>
-                )
-            </if>
-        </where>
-        <choose>
-            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
-                ORDER BY ${page.orderBy}
-            </when>
-            <otherwise>
-                ORDER BY a.update_date DESC
-            </otherwise>
-        </choose>
-    </select>
+	<select id="findList" resultType="ServiceTechnicianInfo">
+		SELECT
+		a.id AS "id",
+		a.head_pic AS "headPic",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.birth_date AS "birthDate",
+		year( from_days( datediff( now( ), a.birth_date))) as age,
+		a.org_id AS "orgId",
+		b.name AS "orgName",
+		a.station_id AS "stationId",
+		c.name AS "stationName",
+		a.work_time AS "workTime",
+		a.job_nature AS "jobNature",
+		a.job_status AS "jobStatus",
+		a.phone AS "phone"
+		FROM tech_info a
+		LEFT JOIN basic_organization b ON a.org_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station c ON a.station_id = c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="stationId != null and stationId != ''">
+				AND a.station_id = #{stationId}
+			</if>
+			<if test="jobNature != null and jobNature != ''">
+				AND a.job_nature = #{jobNature}
+			</if>
+			<if test="name != null and name !=''">
+				AND a.name LIKE concat('%',#{name},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone = #{phone}
+			</if>
+			<if test="skillIds != null and skillIds != ''">
+				AND a.id IN(
+				SELECT t1.id from tech_info t1
+				INNER JOIN ser_skill_tech t2 on t1.id = t2.tech_id
+				WHERE  t1.del_flag= #{DEL_FLAG_NORMAL} AND  t2.del_flag= #{DEL_FLAG_NORMAL}
+				and t2.skill_id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+					#{skillIds}
+				</foreach>
+				)
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
 
 
-    <select id="getSkillInfosByOrgId" resultType="SerSkillInfo">
+	<select id="getSkillInfosByOrgId" resultType="SerSkillInfo">
 		SELECT a.id,a.name
 		FROM ser_skill_info a
 		WHERE
@@ -117,7 +117,7 @@
 		AND a.org_id = #{orgId}
 	</select>
 
-    <select id="getStationsByOrgId" resultType="BasicServiceStation">
+	<select id="getStationsByOrgId" resultType="BasicServiceStation">
 		SELECT a.id,a.name
 		FROM basic_service_station a
 		WHERE
@@ -125,15 +125,16 @@
 		AND a.org_id = #{orgId}
 	</select>
 
-    <select id="formData" resultMap="ServiceTechnicianInfoResultMap">
-        SELECT
-        <include refid="serviceTechnicianInfoColumnsAll"/>
-        FROM tech_info a
-        <where>
-            a.id = #{id}
-        </where>
-    </select>
-    <sql id="serviceTechnicianInfoColumnsAll">
+	<select id="formData" resultMap="ServiceTechnicianInfoResultMap">
+		SELECT
+		<include refid="serviceTechnicianInfoColumnsAll"/>
+		FROM tech_info a
+		LEFT  JOIN basic_service_station b ON a.station_id = b.id AND b.del_flag = '0'
+		<where>
+			a.id = #{id}
+		</where>
+	</select>
+	<sql id="serviceTechnicianInfoColumnsAll">
 		a.id AS "id",
 		a.org_id AS "orgId",
 		a.station_id AS "stationId",
@@ -167,55 +168,56 @@
 		a.description AS "description",
 		a.remark AS "remark"
 	</sql>
-    <resultMap type="ServiceTechnicianInfo" id="ServiceTechnicianInfoResultMap">
-        <result column="id" property="id"/>
-        <result column="org_id" property="orgId"/>
-        <result column="station_id" property="stationId"/>
-        <result column="name" property="name"/>
-        <result column="head_pic" property="headPic"/>
-        <result column="id_card" property="idCard"/>
-        <result column="id_card_pic" property="idCardPic"/>
-        <result column="life_pic" property="lifePic"/>
-        <result column="job_pic" property="jobPic"/>
-        <result column="phone" property="phone"/>
-        <result column="province_code" property="provinceCode"/>
-        <result column="city_code" property="cityCode"/>
-        <result column="area_code" property="areaCode"/>
-        <result column="address" property="address"/>
-        <result column="sex" property="sex"/>
-        <result column="nation" property="nation"/>
-        <result column="birth_date" property="birthDate"/>
-        <result column="status" property="status"/>
-        <result column="app_login_password" property="appLoginPassword"/>
-        <result column="job_nature" property="jobNature"/>
-        <result column="job_status" property="jobStatus"/>
-        <result column="work_time" property="workTime"/>
-        <result column="email" property="email"/>
-        <result column="education" property="education"/>
-        <result column="height" property="height"/>
-        <result column="weight" property="weight"/>
-        <result column="marry_status" property="marryStatus"/>
-        <result column="native_province_code" property="nativeProvinceCode"/>
-        <result column="in_job_time" property="inJobTime"/>
-        <result column="job_level" property="jobLevel"/>
-        <result column="description" property="description"/>
-        <result column="remark" property="remark"/>
+	<resultMap type="ServiceTechnicianInfo" id="ServiceTechnicianInfoResultMap">
+		<result column="id" property="id"/>
+		<result column="org_id" property="orgId"/>
+		<result column="station_id" property="stationId"/>
+		<result column="name" property="name"/>
+		<result column="head_pic" property="headPic"/>
+		<result column="id_card" property="idCard"/>
+		<result column="id_card_pic" property="idCardPic"/>
+		<result column="life_pic" property="lifePic"/>
+		<result column="job_pic" property="jobPic"/>
+		<result column="phone" property="phone"/>
+		<result column="province_code" property="provinceCode"/>
+		<result column="city_code" property="cityCode"/>
+		<result column="area_code" property="areaCode"/>
+		<result column="address" property="address"/>
+		<result column="sex" property="sex"/>
+		<result column="nation" property="nation"/>
+		<result column="birth_date" property="birthDate"/>
+		<result column="status" property="status"/>
+		<result column="app_login_password" property="appLoginPassword"/>
+		<result column="job_nature" property="jobNature"/>
+		<result column="job_status" property="jobStatus"/>
+		<result column="work_time" property="workTime"/>
+		<result column="email" property="email"/>
+		<result column="education" property="education"/>
+		<result column="height" property="height"/>
+		<result column="weight" property="weight"/>
+		<result column="marry_status" property="marryStatus"/>
+		<result column="native_province_code" property="nativeProvinceCode"/>
+		<result column="in_job_time" property="inJobTime"/>
+		<result column="job_level" property="jobLevel"/>
+		<result column="description" property="description"/>
+		<result column="remark" property="remark"/>
 
-        <!-- 技能 -->
-        <association property="skillIds" column="{reqId=id}" select="selectSkillsByTechId"></association>
-        <!-- 工作时间 -->
-        <association property="workTimes" column="{reqId=id}" select="selectWorkTimeByTechId"></association>
-        <!-- 家庭成员 -->
-        <association property="familyMembers" column="{reqId=id}" select="selectFamilyMembersByTechId"></association>
+		<!-- 技能 -->
+		<association property="skillIds" column="{reqId=id}" select="selectSkillsByTechId"></association>
+		<!-- 工作时间 -->
+		<association property="workTimes" column="{reqId=id}" select="selectWorkTimeByTechId"></association>
+		<!-- 家庭成员 -->
+		<association property="familyMembers" column="{reqId=id}" select="selectFamilyMembersByTechId"></association>
+		<association property="stations" column="{reqId=stationId}" select="selectStationsByTechId"></association>
 
-    </resultMap>
-    <select id="selectSkillsByTechId" parameterType="java.util.Map" resultType="SerSkillInfo">
+	</resultMap>
+	<select id="selectSkillsByTechId" parameterType="java.util.Map" resultType="SerSkillInfo">
 		select skill_id AS id
 		from ser_skill_tech
 		where tech_id=#{reqId}
 		AND del_flag = '0'
 	</select>
-    <select id="selectWorkTimeByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianWorkTime">
+	<select id="selectWorkTimeByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianWorkTime">
 		select
 		tech_id AS techId,
 		DATE_FORMAT(start_time,'%T') AS startTime, DATE_FORMAT(end_time,'%T') AS endTime,
@@ -225,7 +227,7 @@
 		AND del_flag = '0'
 		GROUP BY tech_id,start_time,end_time
 	</select>
-    <select id="selectFamilyMembersByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianFamilyMembers">
+	<select id="selectFamilyMembersByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianFamilyMembers">
 		select
 		relation AS relation,member_name AS memberName,
 		member_phone AS memberPhone,member_company AS memberCompany,
@@ -234,8 +236,15 @@
 		where tech_id=#{reqId}
 		AND del_flag = '0'
 	</select>
+	<select id="selectStationsByTechId" parameterType="java.util.Map" resultType="BasicServiceStation">
+		SELECT
+			id,name
+		FROM basic_service_station
+		WHERE city_code = (SELECT city_code from basic_service_station WHERE id= #{reqId})
+		AND del_flag = '0'
+	</select>
 
-    <select id="getOrderTechRelation" resultType="int">
+	<select id="getOrderTechRelation" resultType="int">
 		select count(*)
 		from order_info a
 		left join order_dispatch b on a.id = b.order_id
@@ -245,50 +254,42 @@
 	</select>
 
 
-    <update id="deleteTechnicianWorkTime">
+	<update id="deleteTechnicianWorkTime">
 		UPDATE tech_work_time SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE tech_id = #{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-    <update id="deleteTechnicianHoliday">
+	<update id="deleteTechnicianHoliday">
 		UPDATE tech_holiday SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE tech_id = #{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-    <update id="deleteFamilyMembers">
+	<update id="deleteFamilyMembers">
 		UPDATE tech_family_members SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE tech_id = #{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-    <update id="delSerSkillTechnicianByTechnician">
+	<update id="delSerSkillTechnicianByTechnician">
 		UPDATE ser_skill_tech SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE tech_id = #{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-    <select id="findTech" resultType="ServiceTechnicianInfo">
-        SELECT
-        <include refid="serviceTechnicianInfoColumns"/>
-        FROM tech_info a
-        <where>
-            <if test="true">
-                a.del_flag = #{DEL_FLAG_NORMAL}
-            </if>
-            <if test="phone != null">
-                AND a.phone = #{phone}
-            </if>
-            <if test="name != null">
-                AND a.name = #{name}
-            </if>
-        </where>
-    </select>
+	<select id="findTech"  resultType="ServiceTechnicianInfo">
+		SELECT
+		<include refid="serviceTechnicianInfoColumns"/>
+		FROM tech_info a
+		WHERE
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.phone = #{phone}
+	</select>
 
     <select id="findAllList" resultType="ServiceTechnicianInfo">
         SELECT
@@ -309,7 +310,7 @@
     </select>
 
 
-    <insert id="insert">
+	<insert id="insert">
 		INSERT INTO tech_info(
 		id,
 		org_id,
@@ -389,78 +390,75 @@
 		)
 	</insert>
 
-    <update id="update">
-        UPDATE tech_info SET
-        <if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
-        <if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
-        <if test="name !=null and name != ''">name = #{name},</if>
-        <if test="headPic !=null and headPic != ''">head_pic = #{headPic},</if>
-        <if test="idCard !=null and idCard != ''">id_card = #{idCard},</if>
-        <if test="idCardPic !=null and idCardPic != ''">id_card_pic = #{idCardPic},</if>
-        <if test="lifePic !=null and lifePic != ''">life_pic = #{lifePic},</if>
-        <if test="jobPic !=null and jobPic != ''">job_pic = #{jobPic},</if>
-        <if test="phone !=null and phone != ''">phone = #{phone},</if>
-        <if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
-        <if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
-        <if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
-        <if test="address !=null and address != ''">address = #{address},</if>
-        <if test="sex !=null and sex != ''">sex = #{sex},</if>
-        <if test="nation !=null and nation != ''">nation = #{nation},</if>
-        <if test="birthDate !=null and birthDate != ''">birth_date = #{birthDate},</if>
-        <if test="status !=null and status != ''">status = #{status},</if>
-        <if test="appLoginPassword !=null and appLoginPassword != ''">app_login_password = #{appLoginPassword},</if>
-        <if test="jobNature !=null and jobNature != ''">job_nature = #{jobNature},</if>
-        <if test="jobStatus !=null and jobStatus != ''">job_status = #{jobStatus},</if>
-        <if test="workTime !=null and workTime != ''">work_time = #{workTime},</if>
-        <if test="email !=null and email != ''">email = #{email},</if>
-        <if test="education !=null and education != ''">education = #{education},</if>
-        <if test="height !=null and height != ''">height = #{height},</if>
-        <if test="weight !=null and weight != ''">weight = #{weight},</if>
-        <if test="marryStatus !=null and marryStatus != ''">marry_status = #{marryStatus},</if>
-        <if test="nativeProvinceCode !=null and nativeProvinceCode != ''">native_province_code =
-            #{nativeProvinceCode},
-        </if>
-        <if test="inJobTime !=null and inJobTime != ''">in_job_time = #{inJobTime},</if>
-        <if test="jobLevel !=null and jobLevel != ''">job_level = #{jobLevel},</if>
-        <if test="description !=null and description != ''">description = #{description},</if>
-        <if test="remark !=null and remark != ''">remark = #{remark},</if>
-        <if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
-        <if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
-        WHERE id = #{id}
-    </update>
+	<update id="update">
+		UPDATE tech_info SET
+		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
+		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
+		<if test="name !=null and name != ''">name = #{name},</if>
+		<if test="headPic !=null and headPic != ''">head_pic = #{headPic},</if>
+		<if test="idCard !=null and idCard != ''">id_card = #{idCard},</if>
+		<if test="idCardPic !=null and idCardPic != ''">id_card_pic = #{idCardPic},</if>
+		<if test="lifePic !=null and lifePic != ''">life_pic = #{lifePic},</if>
+		<if test="jobPic !=null and jobPic != ''">job_pic = #{jobPic},</if>
+		<if test="phone !=null and phone != ''">phone = #{phone},</if>
+		<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
+		<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
+		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
+		<if test="address !=null and address != ''">address = #{address},</if>
+		<if test="sex !=null and sex != ''">sex = #{sex},</if>
+		<if test="nation !=null and nation != ''">nation = #{nation},</if>
+		<if test="birthDate !=null and birthDate != ''">birth_date = #{birthDate},</if>
+		<if test="status !=null and status != ''">status = #{status},</if>
+		<if test="appLoginPassword !=null and appLoginPassword != ''">app_login_password = #{appLoginPassword},</if>
+		<if test="jobNature !=null and jobNature != ''">job_nature = #{jobNature},</if>
+		<if test="jobStatus !=null and jobStatus != ''">job_status = #{jobStatus},</if>
+		<if test="workTime !=null and workTime != ''">work_time = #{workTime},</if>
+		<if test="email !=null and email != ''">email = #{email},</if>
+		<if test="education !=null and education != ''">education = #{education},</if>
+		<if test="height !=null and height != ''">height = #{height},</if>
+		<if test="weight !=null and weight != ''">weight = #{weight},</if>
+		<if test="marryStatus !=null and marryStatus != ''">marry_status = #{marryStatus},</if>
+		<if test="nativeProvinceCode !=null and nativeProvinceCode != ''">native_province_code = #{nativeProvinceCode},</if>
+		<if test="inJobTime !=null and inJobTime != ''">in_job_time = #{inJobTime},</if>
+		<if test="jobLevel !=null and jobLevel != ''">job_level = #{jobLevel},</if>
+		<if test="description !=null and description != ''">description = #{description},</if>
+		<if test="remark !=null and remark != ''">remark = #{remark},</if>
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
 
 
-    <update id="delete">
+	<update id="delete">
 		UPDATE tech_info SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 
-    <select id="getTechnicianByPhone" resultType="AppServiceTechnicianInfo">
+	<select id="getTechnicianByPhone" resultType="AppServiceTechnicianInfo">
 		SELECT
-			bss.name AS stationName,
+			a.tech_station_name AS stationName,
 			a.head_pic AS imgUrlHead,
-			a.phone AS techPhone,
-			a.app_login_password AS password,
-			a.name AS techName,
-			a.sex AS techSex,
-			a.birth_date AS techBirthDate,
-			a.address AS addrDetailInfo,
-			a.id_card AS techIdCard,
+			a.tech_phone AS techPhone,
+			a.tech_name AS techName,
+			a.tech_sex AS techSex,
+			a.tech_birth_date AS techBirthDate,
+			a.addr_detail_info AS addrDetailInfo,
+			a.tech_id_card AS techIdCard,
 			a.id_card_pic AS imgUrlCard,
-			a.email AS techEmail,
-			a.height AS techHeight,
-			a.weight AS techWeight,
-			a.native_province_code AS techNativePlace,
-			a.nation AS techNation,
+			a.tech_email AS techEmail,
+			a.tech_height AS techHeight,
+			a.tech_weight AS techWeight,
+			a.tech_native_place AS techNativePlace,
+			a.tech_nation AS techNation,
 			a.description AS experDesc,
 			a.life_pic AS imgUrlLife
 		FROM
 			tech_info a
-		LEFT JOIN basic_service_station bss ON a.station_id = bss.id
 		WHERE
 			a.del_flag = '0'
 			AND a.phone = #{username}
+			AND a.app_login_password = #{password}
 	</select>
 </mapper>

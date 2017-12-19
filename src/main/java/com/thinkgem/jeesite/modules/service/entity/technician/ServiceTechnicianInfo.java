@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.entity.technician;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -24,6 +25,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private static final long serialVersionUID = 1L;
     private String orgId;		// 技师所属机构id
     private String stationId;		// 技师所属服务站
+    private String stationCityCode;		// 技师所属服务站
     private String name;		// 技师姓名
     private String headPic;		// 头像
     private String idCard;		// 身份证号
@@ -80,6 +82,14 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setStationId(String stationId) {
         this.stationId = stationId;
+    }
+
+    public String getStationCityCode() {
+        return stationCityCode;
+    }
+
+    public void setStationCityCode(String stationCityCode) {
+        this.stationCityCode = stationCityCode;
     }
 
     @Length(min=0, max=32, message="技师姓名长度必须介于 0 和 32 之间")
@@ -348,6 +358,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     //技师家庭成员信息
     private List<ServiceTechnicianFamilyMembers> familyMembers;
     private List<String> skillIds;//技能List
+    private List<BasicServiceStation> stations;
 
     public List<ServiceTechnicianWorkTime> getWorkTimes() {
         return workTimes;
@@ -373,4 +384,11 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.skillIds = skillIds;
     }
 
+    public List<BasicServiceStation> getStations() {
+        return stations;
+    }
+
+    public void setStations(List<BasicServiceStation> stations) {
+        this.stations = stations;
+    }
 }

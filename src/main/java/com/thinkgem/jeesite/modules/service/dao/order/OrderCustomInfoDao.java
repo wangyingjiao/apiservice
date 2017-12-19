@@ -5,7 +5,10 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
+
+import java.util.List;
 
 /**
  * 客户信息DAO接口
@@ -14,5 +17,6 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
  */
 @MyBatisDao
 public interface OrderCustomInfoDao extends CrudDao<OrderCustomInfo> {
-	
+
+    List<BasicOrganization> findOrganizationList();
 }

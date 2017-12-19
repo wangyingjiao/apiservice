@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderCustomInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -58,7 +60,7 @@ public class OrderCustomInfoController extends BaseController {
 		if (errList != null && errList.size() > 0) {
 			return new FailResult(errList);
 		}
-		if(StringUtils.isNotBlank(orderCustomInfo.getId())) {
+		if(StringUtils.isBlank(orderCustomInfo.getId())) {
 			User user = UserUtils.getUser();
 			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
 			orderCustomInfo.setStationId(user.getStation().getId());//服务站ID
@@ -105,7 +107,11 @@ public class OrderCustomInfoController extends BaseController {
 		}
 		Page<OrderCustomInfo> stationPage = new Page<>(request, response);
 		Page<OrderCustomInfo> page = orderCustomInfoService.findPage(stationPage, orderCustomInfo);
-		return new SuccResult(page);
+		HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
+		objectObjectHashMap.put("page",page);
+		List<BasicOrganization> basicOrganizationList = orderCustomInfoService.findOrganizationList();
+		objectObjectHashMap.put("orgList",basicOrganizationList);
+		return new SuccResult(objectObjectHashMap);
 	}
 
 	@ResponseBody

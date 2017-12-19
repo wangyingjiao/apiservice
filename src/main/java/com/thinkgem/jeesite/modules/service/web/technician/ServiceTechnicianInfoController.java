@@ -94,6 +94,7 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (StringUtils.isNotBlank(serviceTechnicianInfo.getId())) {
             entity = serviceTechnicianInfoService.formData(serviceTechnicianInfo);
         }
+
         if (entity == null) {
             return new FailResult("未找到此id对应的服务分类。");
         } else {
@@ -136,8 +137,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (null == techInfo) {
             User user = UserUtils.getUser();
             info.setOrgId(user.getOrganization().getId());
-
-            String appPwd = systemService.entryptPassword(info.getPhone().substring(6,10));//APP端登录密码默认为手机号的后4位
+            String phoneSub = info.getPhone().substring(7,11);
+            String appPwd = systemService.entryptPassword(phoneSub);//APP端登录密码默认为手机号的后4位
             info.setAppLoginPassword(appPwd);
             serviceTechnicianInfoService.save(info);
 
