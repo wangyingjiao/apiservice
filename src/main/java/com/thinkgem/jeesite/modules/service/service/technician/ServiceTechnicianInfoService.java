@@ -117,19 +117,23 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
 
         List<ServiceTechnicianWorkTime> times = serviceTechnicianInfo.getWorkTimes();
-        for (ServiceTechnicianWorkTime time : times) {
-            time.setTechId(serviceTechnicianInfo.getId());
-            time.preInsert();
-            workTimeDao.insert(time);
+        if(null != times) {
+            for (ServiceTechnicianWorkTime time : times) {
+                time.setTechId(serviceTechnicianInfo.getId());
+                time.preInsert();
+                workTimeDao.insert(time);
+            }
         }
 
         List<String> skillIds = serviceTechnicianInfo.getSkillIds();
-        for (String skillId : skillIds) {
-            SerSkillTechnician serSkillTechnician = new SerSkillTechnician();
-            serSkillTechnician.setSkillId(skillId);
-            serSkillTechnician.setTechId(serviceTechnicianInfo.getId());
-            serSkillTechnician.preInsert();
-            serSkillTechnicianDao.insert(serSkillTechnician);
+        if(null != skillIds){
+            for (String skillId : skillIds) {
+                SerSkillTechnician serSkillTechnician = new SerSkillTechnician();
+                serSkillTechnician.setSkillId(skillId);
+                serSkillTechnician.setTechId(serviceTechnicianInfo.getId());
+                serSkillTechnician.preInsert();
+                serSkillTechnicianDao.insert(serSkillTechnician);
+            }
         }
     }
 
@@ -191,8 +195,6 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             familyMembersDao.delete(member);
         }
     }
-
-
 
     public AppServiceTechnicianInfo appLogin(LoginUser user) {
         return technicianInfoDao.getTechnicianByPhone(user);
