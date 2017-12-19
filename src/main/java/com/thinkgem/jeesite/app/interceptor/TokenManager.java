@@ -1,9 +1,11 @@
 package com.thinkgem.jeesite.app.interceptor;
 
+import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.JedisCluster;
@@ -31,10 +33,15 @@ public class TokenManager {
         this.expire = Integer.parseInt(expire);
     }
 
-    public Token createToken() {
+    public Token createToken(AppServiceTechnicianInfo entity) {
+        String phone = entity.getTechPhone();
         String uuid = IdGen.uuid();
         Token token = new Token(uuid);
+        token.setPhone(phone);
+
         cluster.setex(tokenKey + uuid, expire, token.toString());
+        cluster.lpush(tokenKey + phone,uuid);
+
         return token;
     }
 
@@ -57,4 +64,5 @@ public class TokenManager {
     public void deleteToken(String token) {
         cluster.del(tokenKey + token);
     }
+
 }

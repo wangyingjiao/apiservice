@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class Token {
     private String token;
-    private String mobile;
+    private String phone;
     private Map map;
 
     public Token() {
@@ -27,12 +27,12 @@ public class Token {
         this.token = token;
     }
 
-    public String getMobile() {
-        return mobile;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public Map getMap() {

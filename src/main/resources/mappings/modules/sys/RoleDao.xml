@@ -177,9 +177,6 @@
         INSERT INTO sys_role_menu(role_id, menu_id)
         <foreach collection="menuList" item="menu" separator=" union all ">
             SELECT #{id}, #{menu.id}
-            <if test="dbName != 'mssql'">
-                FROM dual
-            </if>
         </foreach>
     </insert>
 
@@ -191,9 +188,7 @@
         INSERT INTO sys_role_office(role_id, office_id)
         <foreach collection="officeList" item="organization" separator=" union all ">
             SELECT #{id}, #{organization.id}
-            <if test="dbName != 'mssql'">
-                FROM dual
-            </if>
+
         </foreach>
     </insert>
 

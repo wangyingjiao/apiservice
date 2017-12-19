@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.service.entity.technician;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -38,6 +39,18 @@ public class AppServiceTechnicianInfo extends DataEntity<AppServiceTechnicianInf
     private String techNation;//民族
     private String experDesc;//经验描述
     private String imgUrlLife;//生活照
+
+    @JsonIgnore
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String password;
+
 
     public String getToken() {
         return token;

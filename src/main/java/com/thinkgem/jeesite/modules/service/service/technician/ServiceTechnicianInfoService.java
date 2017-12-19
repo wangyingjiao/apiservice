@@ -6,23 +6,23 @@ package com.thinkgem.jeesite.modules.service.service.technician;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
-import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
-import com.thinkgem.jeesite.modules.service.dao.technician.*;
-import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianFamilyMembersDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianWorkTimeDao;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
-import com.thinkgem.jeesite.modules.service.entity.technician.*;
-import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
-import com.thinkgem.jeesite.modules.service.service.skill.SerSkillTechnicianService;
+import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianFamilyMembers;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,8 +69,10 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public ServiceTechnicianInfo formData(ServiceTechnicianInfo serviceTechnicianInfo) {
         return technicianInfoDao.formData(serviceTechnicianInfo);
     }
+
     /**
      * 服务人员有未完成订单
+     *
      * @param serviceTechnicianInfo
      * @return
      */
@@ -95,14 +97,17 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public void deleteTechnicianWorkTime(ServiceTechnicianInfo serviceTechnicianInfo) {
         technicianInfoDao.deleteTechnicianWorkTime(serviceTechnicianInfo);
     }
+
     @Transactional(readOnly = false)
     public void deleteTechnicianHoliday(ServiceTechnicianInfo serviceTechnicianInfo) {
         technicianInfoDao.deleteTechnicianHoliday(serviceTechnicianInfo);
     }
+
     @Transactional(readOnly = false)
     public void deleteFamilyMembers(ServiceTechnicianInfo serviceTechnicianInfo) {
         technicianInfoDao.deleteFamilyMembers(serviceTechnicianInfo);
     }
+
     @Transactional(readOnly = false)
     public void delSerSkillTechnicianByTechnician(ServiceTechnicianInfo serviceTechnicianInfo) {
         technicianInfoDao.delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
@@ -117,7 +122,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
 
         List<ServiceTechnicianWorkTime> times = serviceTechnicianInfo.getWorkTimes();
-        if(null != times) {
+        if (null != times) {
             for (ServiceTechnicianWorkTime time : times) {
                 time.setTechId(serviceTechnicianInfo.getId());
                 time.preInsert();
@@ -126,7 +131,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         }
 
         List<String> skillIds = serviceTechnicianInfo.getSkillIds();
-        if(null != skillIds){
+        if (null != skillIds) {
             for (String skillId : skillIds) {
                 SerSkillTechnician serSkillTechnician = new SerSkillTechnician();
                 serSkillTechnician.setSkillId(skillId);
@@ -187,6 +192,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     /**
      * 删除家庭成员
+     *
      * @param member
      */
     @Transactional(readOnly = false)
@@ -196,7 +202,14 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         }
     }
 
+
     public AppServiceTechnicianInfo appLogin(LoginUser user) {
-        return technicianInfoDao.getTechnicianByPhone(user);
+        AppServiceTechnicianInfo technician = technicianInfoDao.getTechnicianByPhone(user);
+        String s = SystemService.entryptPassword(user.getPassword());
+        boolean b = SystemService.validatePassword(user.getPassword(), s);
+        if (SystemService.validatePassword(user.getPassword(), technician.getPassword())) {
+            return technician;
+        }
+        return null;
     }
 }
