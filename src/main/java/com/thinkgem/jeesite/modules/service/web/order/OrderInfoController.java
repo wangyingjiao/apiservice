@@ -113,10 +113,10 @@ public class OrderInfoController extends BaseController {
 		}
 		OrderCustomInfo entity = new OrderCustomInfo(orderInfo.getCustomId());
 		OrderCustomInfo customInfo = orderCustomInfoService.get(entity);
-		orderInfo.setOfficeId(customInfo.getOfficeId());//机构ID
-		orderInfo.setOfficeName(customInfo.getOfficeName());//机构名称
-		orderInfo.setStationId(customInfo.getStationId());//服务站ID
-		orderInfo.setStationName(customInfo.getStationName());//服务站名称
+//		orderInfo.setOfficeId(customInfo.getOfficeId());//机构ID
+//		orderInfo.setOfficeName(customInfo.getOfficeName());//机构名称
+//		orderInfo.setStationId(customInfo.getStationId());//服务站ID
+//		orderInfo.setStationName(customInfo.getStationName());//服务站名称
 		orderInfo.setOrderTime(new Date());
 		orderInfo.setOrderStatus("2");//订单状态:已派单
 		orderInfoService.save(orderInfo);
