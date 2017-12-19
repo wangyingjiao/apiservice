@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.entity.station;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 服务站Entity
@@ -38,6 +39,7 @@ public class BasicServiceStation extends DataEntity<BasicServiceStation> {
     public BasicServiceStation(String id) {
         super(id);
     }
+
 
     @Length(min = 0, max = 32, message = "服务站名称长度必须介于 0 和 32 之间")
     public String getName() {

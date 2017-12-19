@@ -16,7 +16,6 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -132,9 +131,6 @@ public class ServiceStationController extends BaseController {
         User user = UserUtils.getUser();
 
         if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
-//            serviceStation.setOrganization(user.getOrganization());
-//            serviceStation.setOfficeId(user.getOrganization().getId());
-//            serviceStation.setOfficeName(user.getOrganization().getName());
             serviceStation.setOrgId(user.getOfficeId());
         } else {
             return new FailResult("用户没有具体的所属机构(全平台权限)");
@@ -182,4 +178,22 @@ public class ServiceStationController extends BaseController {
         serviceStationService.delete(serviceStation);
         return new SuccResult("删除服务站成功");
     }
+
+    @ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "getStationByArea")
+    public Result getStationByArea(@RequestBody BasicServiceStation serviceStation) {
+        if (StringUtils.isBlank(serviceStation.getCityCode())) {
+            return new FailResult("城市code 不能为空！");
+        } else {
+            BasicServiceStation basicServiceStation = new BasicServiceStation();
+            basicServiceStation.setCityCode(serviceStation.getCityCode());
+            basicServiceStation.setOrgId(UserUtils.getUser().getOrganization().getId());
+            List<BasicServiceStation> list = serviceStationService.findList(basicServiceStation);
+            return new SuccResult(list);
+        }
+
+
+    }
+
 }
