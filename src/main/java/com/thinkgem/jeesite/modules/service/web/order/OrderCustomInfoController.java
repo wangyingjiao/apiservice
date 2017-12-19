@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 客户信息Controller
@@ -51,20 +52,50 @@ public class OrderCustomInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "saveData", method = {RequestMethod.POST})
 	//@RequiresPermissions("service:station:orderCustomInfo:edit")
-	@ApiOperation("保存客户")
+	@ApiOperation("新增保存客户")
 	public Result saveData(@RequestBody OrderCustomInfo orderCustomInfo) {
-		if (!beanValidator(orderCustomInfo)) {
-			return new FailResult("保存客户" + orderCustomInfo.getCustomName() + "失败");
+		List<String> errList = errors(orderCustomInfo);
+		if (errList != null && errList.size() > 0) {
+			return new FailResult(errList);
 		}
-		User user = UserUtils.getUser();
-		orderCustomInfo.setOfficeId(user.getOrganization().getId());//机构ID
-		orderCustomInfo.setOfficeName(user.getOrganization().getName());//机构名称
-		orderCustomInfo.setStationId(user.getStation().getId());//服务站ID
-		orderCustomInfo.setStationName(user.getStation().getName());//服务站名称
+		if(StringUtils.isNotBlank(orderCustomInfo.getId())) {
+			User user = UserUtils.getUser();
+			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
+			orderCustomInfo.setStationId(user.getStation().getId());//服务站ID
+			orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
+		}
 		orderCustomInfoService.save(orderCustomInfo);
-		return new SuccResult("保存客户" + orderCustomInfo.getCustomName() + "成功");
+		return new SuccResult("保存成功");
 	}
 
+	@ResponseBody
+	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	@RequestMapping(value = "formData", method = {RequestMethod.POST})
+	@ApiOperation("编辑客户")
+	public Result formData(@RequestBody OrderCustomInfo orderCustomInfo) {
+		OrderCustomInfo entity = null;
+		if (StringUtils.isNotBlank(orderCustomInfo.getId())) {
+			entity = orderCustomInfoService.get(orderCustomInfo.getId());
+		}
+		if (entity == null) {
+			return new FailResult("未找到此id对应的客户。");
+		} else {
+			return new SuccResult(entity);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "upData", method = {RequestMethod.POST})
+	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	@ApiOperation("编辑保存客户")
+	public Result upData(@RequestBody OrderCustomInfo orderCustomInfo) {
+		List<String> errList = errors(orderCustomInfo);
+		if (errList != null && errList.size() > 0) {
+			return new FailResult(errList);
+		}
+		orderCustomInfoService.save(orderCustomInfo);
+		return new SuccResult("保存成功");
+	}
 	@ResponseBody
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取客户列表")

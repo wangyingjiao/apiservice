@@ -13,27 +13,23 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
  * @version 2017-11-23
  */
 public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
-	
+
 	private static final long serialVersionUID = 1L;
-	private String customName;		// 客户姓名
-	private String customSex;		// 客户性别
-	private String customPhone;		// 客户电话
-	private String customArea;		// 客户所在区域
-	private String customAddr;		// 客户详细地址
+	private String name;		// 客户姓名
+	private String sex;		// 性别（male：男 female：女）
+	private String phone;		// 客户电话
+	private String provinceCode;		// 省_区号
+	private String cityCode;		// 市_区号
+	private String areaCode;		// 区_区号
+	private String address;		// 详细地址
 	private String addrLongitude;		// 经度
 	private String addrLatitude;		// 纬度
-	private String customEmail;		// 客户邮箱
-	private String officeId;
-	private String officeName;		// 所属服务机构名称
+	private String email;		// 客户邮箱
+	private String orgId;		// 所属服务机构ID
+	private String source;		// 来源   本机构:own    第三方:other
 	private String stationId;		// 所属服务站ID
-	private String stationName;		// 所属服务站名称
-	private String cusProvId;		// 客户所在省ID
-	private String cusProvName;		// 客户所在省名称
-	private String cusCityId;		// 客户所在市ID
-	private String cusCityName;		// 客户所在市名称
-	private String cusTownId;		// 客户所在县ID
-	private String cusTownName;		// 客户所在县名称
-	
+	private String orgName;
+
 	public OrderCustomInfo() {
 		super();
 	}
@@ -42,50 +38,68 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		super(id);
 	}
 
-	@Length(min=0, max=255, message="客户姓名长度必须介于 0 和 255 之间")
-	public String getCustomName() {
-		return customName;
+	@Length(min=0, max=32, message="客户姓名长度必须介于 0 和 32 之间")
+	public String getName() {
+		return name;
 	}
 
-	public void setCustomName(String customName) {
-		this.customName = customName;
-	}
-	
-	@Length(min=0, max=1, message="客户性别长度必须介于 0 和 1 之间")
-	public String getCustomSex() {
-		return customSex;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setCustomSex(String customSex) {
-		this.customSex = customSex;
-	}
-	
-	@Length(min=0, max=32, message="客户电话长度必须介于 0 和 32 之间")
-	public String getCustomPhone() {
-		return customPhone;
+	public String getSex() {
+		return sex;
 	}
 
-	public void setCustomPhone(String customPhone) {
-		this.customPhone = customPhone;
-	}
-	
-	public String getCustomArea() {
-		return customArea;
+	public void setSex(String sex) {
+		this.sex = sex;
 	}
 
-	public void setCustomArea(String customArea) {
-		this.customArea = customArea;
+	@Length(min=0, max=11, message="客户电话长度必须介于 0 和 11 之间")
+	public String getPhone() {
+		return phone;
 	}
 
-	@Length(min=0, max=255, message="客户地址长度必须介于 0 和 255 之间")
-	public String getCustomAddr() {
-		return customAddr;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
-	public void setCustomAddr(String customAddr) {
-		this.customAddr = customAddr;
+	@Length(min=0, max=20, message="省_区号长度必须介于 0 和 20 之间")
+	public String getProvinceCode() {
+		return provinceCode;
 	}
-	
+
+	public void setProvinceCode(String provinceCode) {
+		this.provinceCode = provinceCode;
+	}
+
+	@Length(min=0, max=20, message="市_区号长度必须介于 0 和 20 之间")
+	public String getCityCode() {
+		return cityCode;
+	}
+
+	public void setCityCode(String cityCode) {
+		this.cityCode = cityCode;
+	}
+
+	@Length(min=0, max=20, message="区_区号长度必须介于 0 和 20 之间")
+	public String getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(String areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	@Length(min=0, max=100, message="详细地址长度必须介于 0 和 100 之间")
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
 	@Length(min=0, max=64, message="经度长度必须介于 0 和 64 之间")
 	public String getAddrLongitude() {
 		return addrLongitude;
@@ -94,7 +108,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	public void setAddrLongitude(String addrLongitude) {
 		this.addrLongitude = addrLongitude;
 	}
-	
+
 	@Length(min=0, max=64, message="纬度长度必须介于 0 和 64 之间")
 	public String getAddrLatitude() {
 		return addrLatitude;
@@ -103,34 +117,34 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	public void setAddrLatitude(String addrLatitude) {
 		this.addrLatitude = addrLatitude;
 	}
-	
+
 	@Length(min=0, max=64, message="客户邮箱长度必须介于 0 和 64 之间")
-	public String getCustomEmail() {
-		return customEmail;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setCustomEmail(String customEmail) {
-		this.customEmail = customEmail;
-	}
-	
-/*	public Office getOrganization() {
-		return office;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public void setOrganization(Office office) {
-		this.office = office;
-	}*/
-	
-	@Length(min=0, max=255, message="所属服务机构名称长度必须介于 0 和 255 之间")
-	public String getOfficeName() {
-		return officeName;
+	@Length(min=0, max=32, message="所属服务机构ID长度必须介于 0 和 32 之间")
+	public String getOrgId() {
+		return orgId;
 	}
 
-	public void setOfficeName(String officeName) {
-		this.officeName = officeName;
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
 	}
-	
-	@Length(min=0, max=64, message="所属服务站ID长度必须介于 0 和 64 之间")
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	@Length(min=0, max=32, message="所属服务站ID长度必须介于 0 和 32 之间")
 	public String getStationId() {
 		return stationId;
 	}
@@ -138,69 +152,12 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	public void setStationId(String stationId) {
 		this.stationId = stationId;
 	}
-	
-	@Length(min=0, max=255, message="所属服务站名称长度必须介于 0 和 255 之间")
-	public String getStationName() {
-		return stationName;
+
+	public String getOrgName() {
+		return orgName;
 	}
 
-	public void setStationName(String stationName) {
-		this.stationName = stationName;
-	}
-
-	public String getOfficeId() {
-		return officeId;
-	}
-
-	public void setOfficeId(String officeId) {
-		this.officeId = officeId;
-	}
-
-	public String getCusProvId() {
-		return cusProvId;
-	}
-
-	public void setCusProvId(String cusProvId) {
-		this.cusProvId = cusProvId;
-	}
-
-	public String getCusProvName() {
-		return cusProvName;
-	}
-
-	public void setCusProvName(String cusProvName) {
-		this.cusProvName = cusProvName;
-	}
-
-	public String getCusCityId() {
-		return cusCityId;
-	}
-
-	public void setCusCityId(String cusCityId) {
-		this.cusCityId = cusCityId;
-	}
-
-	public String getCusCityName() {
-		return cusCityName;
-	}
-
-	public void setCusCityName(String cusCityName) {
-		this.cusCityName = cusCityName;
-	}
-
-	public String getCusTownId() {
-		return cusTownId;
-	}
-
-	public void setCusTownId(String cusTownId) {
-		this.cusTownId = cusTownId;
-	}
-
-	public String getCusTownName() {
-		return cusTownName;
-	}
-
-	public void setCusTownName(String cusTownName) {
-		this.cusTownName = cusTownName;
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
 	}
 }
