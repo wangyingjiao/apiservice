@@ -74,43 +74,13 @@ public class AESCrypt {
 
     public static void main(String[] args) throws Exception {
 
-        AESCrypt crypt = new AESCrypt("1234567812345678");
+        AESCrypt crypt = new AESCrypt("seed");
         String encrypt = crypt.encrypt("111111");
         System.out.println(encrypt);
 
-//        JsonObject jsonObject = new JsonObject();
-//        jsonObject.addProperty("loginName","13716663777");
-//        jsonObject.addProperty("password","21232f297a57a5a743894a0e4a801fc3");
-//        jsonObject.addProperty("requestTimestamp","1494913897272");
-//
-//        String json = "{\"loginName\":\"13716663777\",\"password\":\"21232f297a57a5a743894a0e4a801fc3\",\"requestTimestamp\":\"1494915513101\"}";
-//       // String encode = Base64Encoder.encode(jsonObject.toString().getBytes("UTF-8"));
-//        String encode = Base64Encoder.encode(json.getBytes("UTF-8"));
-//
-//        System.out.println(encode);
-//
-//        //String jsonRequest ="{\"loginName\":\"13716663777\",\"password\":\"21232f297a57a5a743894a0e4a801fc3\",\"requestTimestamp\":\"1494908307760\"}";
-////        AESCrypt aesCrypt = new AESCrypt(AppTypeKeyEnum.ANDROID_CUSTOMER.getSeed());
-////        String encrypt = aesCrypt.encrypt(encode);
-////        System.out.println(encrypt);
-//
-//
-//
-//        String aaa = "bzV1ZjhSRjZ5bGo4K1lYNkxMSnhEQWJKalB1WlF2d0xZTnRaZ0tOYm52cSt3TEpmbWYvNWw5bVFxRmNpeVhITTFFVDd6eWc5UGZhSzEwa28vYXFTaHVENy9qTXV2UUR1R0I5c0J0K05WVER1bEZXZ2Z1VzVncWI5TEFYbFpPTU05OVNXTVYzL1BiTTFYT3ozZkR2MjRXaDVUSTZVd3MvWThTVVBKT2hCRk5zPQ==";
-//
-////        System.out.println(AppTypeKeyEnum.ANDROID_CUSTOMER.getMd5Key());
-////        String stringMD5 = MD5Util.getStringMD5(aaa + AppTypeKeyEnum.ANDROID_CUSTOMER.getMd5Key());
-////        System.out.println("md555555555555:"+stringMD5);
-//
-////        String decrypt = aesCrypt.decrypt(encrypt);
-////        System.out.println(":::::"+decrypt);
-//
-//
-//        String bbb = "NlMvSldiTlh3b2JNRFFZYzZPakx3VFVUa2ppajBOc3lVVU80RThpdW8zTXgycDhTbWJROVN4SzE1bENXOFRjSzVtWXMwa2lteno4bmhEenJROUFPeGQ5bXNZdFZ6S0xyVVZoMUthK2pTZjhDVzcwcFp0RnVRZmlRZXJMbm1TRmc=";
-//
-////        String decryptBBB = aesCrypt.decrypt(bbb);
-////        System.out.println(":::::2"+decryptBBB);
-//
+        String s ="+8GdDMXX3UU392sllC7+1qYvGtHwoQBR9obfLRF2yj4Q67LbfObCMrJ9m4fBFrZD/5+BO4gI9kMZ4i7fi7UK2kV3oZ+1IT+gQmZ6AzKoCbmNGpwNos1l0augz2IgSeFbOU2LhuDFZcNqjUBOhRDFxGwx5JKlQXNlpp3MjSIwa+DYdP5vxXakYffzpVOVdjTei7xZ+U4PleHDQ6qpEhyqMpIjw2t/jh7m50xRxp9QCcq42T1GFEGuKjXM12UnDSAeKWZu4ZkQE8Q94UHFLEg5ccqJnszQjsdBptoEv+srsP/o5KaVF6d725jC82nsKArvqoLYFOWIwDSVxE7zQSYUlF+Pin88tM99rGpwylpRnqtvejQ7N0aZnhCraSx4hq8k9QJkuFucwT00CxtOgZuh7A==";
+        String decrypt = crypt.decrypt(s);
+        System.out.println(decrypt);
 
     }
 

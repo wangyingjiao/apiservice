@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.app.interceptor.TokenManager;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
@@ -49,10 +50,13 @@ public class AppLoginController extends BaseController {
     @Autowired
     ServiceTechnicianInfoService serviceTechnicianInfoService;
 
+    @Autowired
+    private TokenManager tokenManager;
+
     @ResponseBody
     @RequestMapping(value = "${appPath}/appLogin", method = RequestMethod.POST)
     @ApiOperation(value = "登入系统", notes = "用户登录")
-    public Object appLogin(@RequestBody LoginUser user) {
+    public Object appLogin(@RequestBody LoginUser user,HttpServletRequest request,HttpServletResponse response) {
         AppServiceTechnicianInfo entity = null;
         if (StringUtils.isNotBlank(user.getUsername()) && StringUtils.isNotBlank(user.getPassword())){
             entity = serviceTechnicianInfoService.appLogin(user);
