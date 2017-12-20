@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +98,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	}
 	
 	public Page<SerSkillInfo> findPage(Page<SerSkillInfo> page, SerSkillInfo serSkillInfo) {
+		serSkillInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 		return super.findPage(page, serSkillInfo);
 	}
 

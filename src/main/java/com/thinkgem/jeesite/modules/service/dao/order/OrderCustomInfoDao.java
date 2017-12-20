@@ -19,4 +19,6 @@ import java.util.List;
 public interface OrderCustomInfoDao extends CrudDao<OrderCustomInfo> {
 
     List<BasicOrganization> findOrganizationList();
+
+    OrderCustomInfo findCustomInfo(OrderCustomInfo orderCustomInfo);
 }

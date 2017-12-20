@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -50,10 +51,9 @@ public class OrderCustomInfoController extends BaseController {
 		return entity;
 	}
 
-
 	@ResponseBody
 	@RequestMapping(value = "saveData", method = {RequestMethod.POST})
-	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	@RequiresPermissions("customer_insert")
 	@ApiOperation("新增保存客户")
 	public Result saveData(@RequestBody OrderCustomInfo orderCustomInfo) {
 		List<String> errList = errors(orderCustomInfo);
@@ -63,15 +63,20 @@ public class OrderCustomInfoController extends BaseController {
 		if(StringUtils.isBlank(orderCustomInfo.getId())) {
 			User user = UserUtils.getUser();
 			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
-			orderCustomInfo.setStationId(user.getStation().getId());//服务站ID
 			orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
+
+			OrderCustomInfo custInfo = orderCustomInfoService.findCustomInfo(orderCustomInfo);
+			if(null != custInfo){
+				return new FailResult("客户重复");
+			}
 		}
+
 		orderCustomInfoService.save(orderCustomInfo);
 		return new SuccResult("保存成功");
 	}
 
-	@ResponseBody
-	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	/*@ResponseBody
+	@RequiresPermissions("customer_update")
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
 	@ApiOperation("编辑客户")
 	public Result formData(@RequestBody OrderCustomInfo orderCustomInfo) {
@@ -88,7 +93,7 @@ public class OrderCustomInfoController extends BaseController {
 
 	@ResponseBody
 	@RequestMapping(value = "upData", method = {RequestMethod.POST})
-	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	@RequiresPermissions("customer_update")
 	@ApiOperation("编辑保存客户")
 	public Result upData(@RequestBody OrderCustomInfo orderCustomInfo) {
 		List<String> errList = errors(orderCustomInfo);
@@ -97,9 +102,10 @@ public class OrderCustomInfoController extends BaseController {
 		}
 		orderCustomInfoService.save(orderCustomInfo);
 		return new SuccResult("保存成功");
-	}
+	}*/
 	@ResponseBody
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequiresPermissions("customer_view")
 	@ApiOperation("获取客户列表")
 	public Result listData(@RequestBody(required=false)  OrderCustomInfo orderCustomInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(orderCustomInfo == null){
@@ -115,7 +121,7 @@ public class OrderCustomInfoController extends BaseController {
 	}
 
 	@ResponseBody
-	//@RequiresPermissions("service:station:orderCustomInfo:edit")
+	@RequiresPermissions("customer_delete")
 	@RequestMapping(value = "deleteSortInfo", method = {RequestMethod.POST})
 	@ApiOperation("删除客户")
 	public Result deleteSortInfo(@RequestBody OrderCustomInfo orderCustomInfo) {

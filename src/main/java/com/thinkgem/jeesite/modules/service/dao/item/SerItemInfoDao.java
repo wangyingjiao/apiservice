@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 
 import java.util.List;
@@ -28,4 +29,6 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
     SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo);
 
     List<Dict> getSerSortInfoList(SerItemInfo serItemInfo);
+
+    SerSortInfo getSerSortInfo(String sortId);
 }

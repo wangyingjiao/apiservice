@@ -31,8 +31,8 @@ public abstract class BaseService {
 
     /**
      * @param user       用户信息
-     * @param tableAlias 关联表别名
-     * @param userAlias  用户别名
+     * @param organAlias 关联表别名
+     * @param stationAlias  用户别名
      * @return
      */
     public static String dataScopeFilter(User user, String organAlias, String stationAlias) {
@@ -100,6 +100,23 @@ public abstract class BaseService {
     }
 
 
+    public static String dataStatioRoleFilter(User user, String alias) {
+        BasicOrganization org = user.getOrganization();
+        BasicServiceStation sts = user.getStation();
+        if (null != org && org.getId().trim().equals("0")) {
+            log.info("机构权限过滤：当前用户为 |全平台| 用户 " + user.getId() + ":" + user.getName());
+            return "";
+        } else if (null != sts && sts.getId().trim().equals("0")) {
+            log.info("机构权限过滤：当前用户为 |全机构| 用户 " + user.getId() + ":" + user.getName());
+
+            return " AND " + alias + ".org_id = '" + org.getId() + "'";
+        } else {
+            log.info("机构权限过滤：当前用户为 |本服务站| 用户 " + user.getId() + ":" + user.getName());
+            return " AND " + alias + ".org_id = '" + org.getId() + "'" + "AND " + alias + ".station_id = '" + sts.getId() + "'";
+        }
+    }
+
+
     /**
      * @param user
      * @param tableAlias
@@ -114,11 +131,7 @@ public abstract class BaseService {
         if ("0".equals(officeId)) {
             dataRole = Role.DATA_ROLE_ALL;//机构ID为0 代表全平台
         } else {
-            // if ("0".equals(stationId)) {
             dataRole = Role.DATA_ROLE_OFFICE;//服务站ID为0 代表全机构
-//            } else {
-//                dataRole = Role.DATA_ROLE_STATION;//本服务站
-//            }
         }
         // 超级管理员，跳过权限过滤
         if (!user.isAdmin()) {
@@ -128,10 +141,6 @@ public abstract class BaseService {
             } else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
                 sqlString.append(" AND " + tableAlias + ".org_id = '" + officeId + "'");
             }
-//            else if (Role.DATA_ROLE_STATION.equals(dataRole)) {
-//                sqlString.append(" AND " + tableAlias + ".station_id = '" + stationId + "'");
-//            }
-
         }
         if (StringUtils.isNotBlank(sqlString.toString())) {
             return sqlString.toString();
@@ -141,7 +150,6 @@ public abstract class BaseService {
 
     /**
      * @param user
-     * @param tableAlias
      * @return
      */
     public static String dataRoleFilter(User user) {

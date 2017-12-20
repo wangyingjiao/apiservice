@@ -50,6 +50,8 @@
 			<if test="cityCode != null and cityCode !=''">
 				AND (b.city_code = #{cityCode} OR a.all_city = 'yes')
 			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -238,4 +240,11 @@
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
+	<select id="getSerSortInfo" resultType="SerSortInfo">
+		select a.all_city AS allCity
+		from ser_sort_info a
+		where
+		a.id = #{id}
+		AND  a.del_flag = '0'
+	</select>
 </mapper>

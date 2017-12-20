@@ -20,4 +20,6 @@ public interface ServiceTechnicianHolidayDao extends CrudDao<ServiceTechnicianHo
     int getOrderTechRelationHoliday(ServiceTechnicianHoliday info);
 
     List<ServiceTechnicianHoliday> getServiceTechnicianWorkTime(ServiceTechnicianHoliday serviceTechnicianHoliday);
+
+    int getHolidayHistory(ServiceTechnicianHoliday info);
 }
