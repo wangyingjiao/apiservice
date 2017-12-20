@@ -5,19 +5,13 @@
 	<sql id="serviceTechnicianHolidayColumns">
 		a.id AS "id",
 		a.tech_id AS "techId",
-		a.tech_name AS "techName",
-		a.tech_phone AS "techPhone",
-		a.tech_station_id AS "techStationId",
-		a.tech_station_name AS "techStationName",
-		a.holiday AS "holiday",
 		a.start_time AS "startTime",
 		a.end_time AS "endTime",
-		a.sort AS "sort",
+		a.remark AS "remark",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
@@ -27,26 +21,31 @@
 	<select id="get" resultType="ServiceTechnicianHoliday">
 		SELECT 
 			<include refid="serviceTechnicianHolidayColumns"/>
-		FROM service_technician_holiday a
+		FROM tech_holiday a
 		<include refid="serviceTechnicianHolidayJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="ServiceTechnicianHoliday">
-		SELECT 
-			<include refid="serviceTechnicianHolidayColumns"/>
-		FROM service_technician_holiday a
-		<include refid="serviceTechnicianHolidayJoins"/>
+		SELECT
+			a.id AS "id",
+			a.tech_id AS "techId",
+			b.name AS "techName",
+			b.phone AS "techPhone",
+			c.name AS "techStationName",
+			a.start_time AS "startTime",
+			a.end_time AS "endTime",
+			a.remark AS "remark"
+		FROM tech_holiday a
+		LEFT JOIN tech_info b ON a.tech_id = b.id
+		LEFT JOIN basic_service_station c ON c.id = b.station_id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="techName != null and techName != ''">
-				AND a.tech_name LIKE
-				<if test="dbName == 'oracle'">'%'||#{techName}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{techName}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{techName},'%')</if>
+				AND b.name LIKE concat('%',#{techName},'%')
 			</if>
 			<if test="techPhone != null and techPhone != ''">
-				AND a.tech_phone = #{techPhone}
+				AND b.phone = #{techPhone}
 			</if>
 			<if test="startTime != null and startTime != ''">
 				AND a.start_time &gt;= #{startTime}
@@ -68,7 +67,7 @@
 	<select id="findAllList" resultType="ServiceTechnicianHoliday">
 		SELECT 
 			<include refid="serviceTechnicianHolidayColumns"/>
-		FROM service_technician_holiday a
+		FROM tech_holiday a
 		<include refid="serviceTechnicianHolidayJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -84,62 +83,44 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO service_technician_holiday(
+		INSERT INTO tech_holiday(
 			id,
 			tech_id,
-			tech_name,
-			tech_phone,
-			tech_station_id,
-			tech_station_name,
-			holiday,
 			start_time,
 			end_time,
-			sort,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
+			remark,
 			del_flag
 		) VALUES (
 			#{id},
 			#{techId},
-			#{techName},
-			#{techPhone},
-			#{techStationId},
-			#{techStationName},
-			#{holiday},
 			#{startTime},
 			#{endTime},
-			#{sort},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
+			#{remark},
 			#{delFlag}
 		)
 	</insert>
 	
 	<update id="update">
-		UPDATE service_technician_holiday SET 	
+		UPDATE tech_holiday SET 	
 			tech_id = #{techId},
-			tech_name = #{techName},
-			tech_phone = #{techPhone},
-			tech_station_id = #{techStationId},
-			tech_station_name = #{techStationName},
-			holiday = #{holiday},
 			start_time = #{startTime},
 			end_time = #{endTime},
-			sort = #{sort},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remark = #{remark}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE service_technician_holiday SET 
+		UPDATE tech_holiday SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
@@ -147,20 +128,28 @@
 	<select id="getOrderTechRelationHoliday" resultType="int">
 		select count(*)
 		from order_info a
-		left join order_tech_relation b on a.id = b.order_id
+		left join order_dispatch b on a.id = b.order_id
 		where a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
 		and b.tech_id = #{techId}
-		and a.ser_time BETWEEN #{startTime} AND #{endTime}
-		and (a.order_status = '2' or a.order_status = '4')
+		and a.service_time BETWEEN #{startTime} AND #{endTime}
+		and (a.order_status = 'dispatched' or a.order_status = 'started')
+	</select>
+	<select id="getHolidayHistory" resultType="int">
+		select count(*)
+		from tech_holiday a
+		where a.del_flag = #{DEL_FLAG_NORMAL}
+		and a.tech_id = #{techId}
+		and (a.start_time BETWEEN #{startTime} AND #{endTime} OR
+		a.end_time BETWEEN #{startTime} AND #{endTime} )
 	</select>
 	<select id="getServiceTechnicianWorkTime" resultType="ServiceTechnicianHoliday">
 		SELECT
 			a.id AS "id",
-			a.work_date AS "holiday",
+			a.week AS "holiday",
 			a.start_time AS "startTime",
 			a.end_time AS "endTime"
-		FROM service_technician_work_time a
+		FROM tech_work_time a
 		WHERE a.tech_id = #{techId}
-		order by a.work_date
+		order by a.week
 	</select>
 </mapper>

@@ -13,16 +13,14 @@ import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianWork
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
-import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianFamilyMembers;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -122,10 +120,28 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
 
         List<ServiceTechnicianWorkTime> times = serviceTechnicianInfo.getWorkTimes();
+        List<ServiceTechnicianWorkTime> timesList = new ArrayList<ServiceTechnicianWorkTime>();
+
+
         if (null != times) {
             for (ServiceTechnicianWorkTime time : times) {
-                time.setTechId(serviceTechnicianInfo.getId());
-                time.preInsert();
+                List<ServiceTechnicianWorkTimeWeek> weeks = time.getWeeks();
+                if(null != weeks){
+                    for(ServiceTechnicianWorkTimeWeek week : weeks){
+                        ServiceTechnicianWorkTime technicianWorkTime = new ServiceTechnicianWorkTime();
+                        technicianWorkTime.setTechId(serviceTechnicianInfo.getId());
+                        technicianWorkTime.setStartTime(time.getStartTime());
+                        technicianWorkTime.setEndTime(time.getEndTime());
+                        technicianWorkTime.setWeek(week.getId());
+                        technicianWorkTime.preInsert();
+                        timesList.add(technicianWorkTime);
+                    }
+                }
+            }
+        }
+
+        if (null != timesList) {
+            for (ServiceTechnicianWorkTime time : timesList) {
                 workTimeDao.insert(time);
             }
         }

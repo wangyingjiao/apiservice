@@ -60,9 +60,10 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
+	@RequiresPermissions("holiday_insert")
 	@ApiOperation("保存服务技师休假时间")
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	public Result save(@RequestBody ServiceTechnicianHoliday info) {
+	@RequestMapping(value = "saveData", method = RequestMethod.POST)
+	public Result saveData(@RequestBody ServiceTechnicianHoliday info) {
 		List<String> errList = errors(info, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new FailResult(errList);
@@ -71,12 +72,17 @@ public class ServiceTechnicianHolidayController extends BaseController {
 		if(serviceTechnicianHolidayService.getOrderTechRelationHoliday(info) > 0){
 			return new FailResult("服务人员有未完成订单,不可请假.");
 		}
+		//服务人员在请假时间内是否有请假
+		if(serviceTechnicianHolidayService.getHolidayHistory(info) > 0){
+			return new FailResult("请假时间冲突");
+		}
 
 		serviceTechnicianHolidayService.save(info);
-		return new SuccResult(info);
+		return new SuccResult("保存成功");
 	}
 
 	@ResponseBody
+	@RequiresPermissions("holiday_view")
 	@RequestMapping(value = "/listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取休假列表")
 	public Result listData(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday, HttpServletRequest request, HttpServletResponse response) {
@@ -89,6 +95,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	}
 
 	@ResponseBody
+	@RequiresPermissions("holiday_delete")
 	@RequestMapping(value = "delete", method = {RequestMethod.POST})
 	@ApiOperation("删除休假")
 	public Result delete(@RequestBody ServiceTechnicianHoliday serviceTechnicianHoliday) {

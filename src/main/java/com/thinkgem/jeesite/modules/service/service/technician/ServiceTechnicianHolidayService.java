@@ -65,12 +65,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 				info = getLastHolidays(weekDayWorkTime, holiday);
 				if (null != info) {//请假时间在工作时间内
 					info.setTechId(serviceTechnicianHoliday.getTechId());//技师ID
-					info.setTechName(serviceTechnicianHoliday.getTechName());//姓名
-					info.setTechPhone(serviceTechnicianHoliday.getTechPhone());//电话
-					info.setTechStationId(serviceTechnicianHoliday.getTechStationId());//服务站ID
-					info.setTechStationName(serviceTechnicianHoliday.getTechStationName());//服务站名称
-					info.setRemarks(serviceTechnicianHoliday.getRemarks());//备注
-					info.setSort("0");
+					info.setRemark(serviceTechnicianHoliday.getRemark());//备注
 					list.add(info);
 				}
 			}
@@ -201,6 +196,9 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		return serviceTechnicianHolidayDao.getOrderTechRelationHoliday(info);
 	}
 
+	public int getHolidayHistory(ServiceTechnicianHoliday info) {
+		return serviceTechnicianHolidayDao.getHolidayHistory(info);
+	}
 	/**
 	 * 获取传入时间是周几
 	 *
@@ -216,4 +214,5 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		return weekday;
 	}
+
 }

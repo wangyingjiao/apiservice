@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -61,9 +62,9 @@ public class ServiceTechnicianInfoController extends BaseController {
         return entity;
     }
 
-    //@RequiresPermissions("service:technician:serviceTechnicianInfo:view")
     @ResponseBody
     @ApiOperation("获取技师列表")
+    @RequiresPermissions("techni_view")
     @RequestMapping(value = "listData", method = {RequestMethod.POST})
     public Result listData(@RequestBody(required = false) ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
         if(null == serviceTechnicianInfo){
@@ -102,8 +103,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         }
     }
 
-    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
     @ResponseBody
+    @RequiresPermissions("techni_delete")
     @ApiOperation("删除技师")
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     public Result delete(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
@@ -126,6 +127,7 @@ public class ServiceTechnicianInfoController extends BaseController {
      */
     @ResponseBody
     @ApiOperation("新增保存")
+    @RequiresPermissions("techni_insert")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     public Result saveData(@RequestBody ServiceTechnicianInfo info) {
         List<String> errList = errors(info);
@@ -156,6 +158,7 @@ public class ServiceTechnicianInfoController extends BaseController {
      */
     @ResponseBody
     @ApiOperation("更新保存")
+    @RequiresPermissions("techni_update")
     @RequestMapping(value = "upData", method = RequestMethod.POST)
     public Result upData(@RequestBody ServiceTechnicianInfo info) {
         List<String> errList = errors(info);
@@ -198,6 +201,7 @@ public class ServiceTechnicianInfoController extends BaseController {
      */
     @ResponseBody
     @ApiOperation("保存家庭成员")
+    @RequiresPermissions("techni_update")
     @RequestMapping(value = "saveFamilyMembers", method = RequestMethod.POST)
     public Result saveFamilyMembers(@RequestBody ServiceTechnicianInfo info) {
         Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
@@ -214,9 +218,9 @@ public class ServiceTechnicianInfoController extends BaseController {
     }
 
 
-    //	@RequiresPermissions("service:technician:serviceTechnicianInfo:edit")
     @ResponseBody
     @ApiOperation("删除家庭成员")
+    @RequiresPermissions("techni_update")
     @RequestMapping(value = "deleteFamilyMembers", method = RequestMethod.POST)
     public Result deleteFamilyMembers(@RequestBody ServiceTechnicianFamilyMembers member) {
         //删除家庭成员

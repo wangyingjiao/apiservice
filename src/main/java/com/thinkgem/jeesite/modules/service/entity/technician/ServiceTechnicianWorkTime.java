@@ -7,6 +7,8 @@ import org.hibernate.validator.constraints.Length;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -24,6 +26,7 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	private String week;		// 工作日期（周一，周二。。。）
 	private Timestamp startTime;		// 起始时段
 	private Timestamp endTime;		// 结束时段
+	private List<ServiceTechnicianWorkTimeWeek> weeks;		// 工作日期（周一，周二。。。）
 
 	public ServiceTechnicianWorkTime() {
 		super();
@@ -77,4 +80,11 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 		this.endTime = endTime;
 	}
 
+	public List<ServiceTechnicianWorkTimeWeek> getWeeks() {
+		return weeks;
+	}
+
+	public void setWeeks(List<ServiceTechnicianWorkTimeWeek> weeks) {
+		this.weeks = weeks;
+	}
 }

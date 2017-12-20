@@ -28,7 +28,8 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	private String techPhone; //手机号
 	private String techStationId;//服务站ID
 	private String techStationName;//服务站名称
-	
+	private String remark;
+
 	public ServiceTechnicianHoliday() {
 		super();
 	}
@@ -111,5 +112,13 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 
 	public void setTechStationName(String techStationName) {
 		this.techStationName = techStationName;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 }

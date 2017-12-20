@@ -168,4 +168,15 @@
 	a.del_flag = '0'
 	</where>
 	</select>
+
+	<select id="findCustomInfo"  resultType="OrderCustomInfo">
+		SELECT
+		a.id AS "id"
+		FROM customer_info a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			AND a.phone = #{phone}
+		</where>
+	</select>
 </mapper>
