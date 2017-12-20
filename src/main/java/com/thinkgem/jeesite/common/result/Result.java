@@ -4,6 +4,7 @@ package com.thinkgem.jeesite.common.result;
 public class Result<T extends Object> {
     private int code;
     private T data;
+    private String message;
 
     public Result() {
     }
@@ -27,5 +28,13 @@ public class Result<T extends Object> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.station;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStore;
 
 /**
@@ -14,5 +15,8 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStore;
  */
 @MyBatisDao
 public interface BasicServiceStoreDao extends CrudDao<BasicServiceStore> {
-	
+
+    void deletebyStation(BasicServiceStation station);
+
+    void saveStationStore(BasicServiceStation station);
 }
