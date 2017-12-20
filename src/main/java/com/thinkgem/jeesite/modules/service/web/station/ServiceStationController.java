@@ -10,7 +10,9 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 import com.thinkgem.jeesite.modules.service.entity.station.SaveStationGroup;
+import com.thinkgem.jeesite.modules.service.service.station.BasicStoreService;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -39,6 +41,9 @@ public class ServiceStationController extends BaseController {
 
     @Autowired
     private ServiceStationService serviceStationService;
+
+    @Autowired
+    private BasicStoreService basicStoreService;
 
 
     @ModelAttribute
@@ -188,8 +193,17 @@ public class ServiceStationController extends BaseController {
             List<BasicServiceStation> list = serviceStationService.findList(basicServiceStation);
             return new SuccResult(list);
         }
+    }
 
-
+    @ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "getStoreList")
+    public Result getStoreList(@RequestBody BasicStore basicStore) {
+        List<BasicStore> list = basicStoreService.findList(basicStore);
+        if (list.size() > 0) {
+            return new SuccResult(list);
+        }
+        return new FailResult("未找到数据");
     }
 
 }
