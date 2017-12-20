@@ -22,7 +22,10 @@
 
     <aop:aspectj-autoproxy />
 
-    <bean class="com.thinkgem.jeesite.common.aspect.ReqResAop" name="reqResAop"></bean>
+    <bean class="com.thinkgem.jeesite.common.aspect.ReqResAop" name="reqResAop" />
+
+    <bean class="com.thinkgem.jeesite.app.aop.AppAop" name="appAop"/>
+
 
     <!-- 默认的注解映射的支持，org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping -->
     <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
@@ -112,6 +115,11 @@
             <mvc:mapping path="${appPath}/**"/>
             <mvc:exclude-mapping path="${appPath}/appLogin"/>
             <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
+        </mvc:interceptor>
+
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.thinkgem.jeesite.modules.sys.interceptor.SameUrlDataInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 

@@ -105,12 +105,8 @@ public class ServiceStationController extends BaseController {
             return new FailResult(errors);
         }
         User user = UserUtils.getUser();
-
         if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
-//            serviceStation.setOrganization(user.getOrganization());
-//            serviceStation.setOfficeId(user.getOrganization().getId());
-//            serviceStation.setOfficeName(user.getOrganization().getName());
-            serviceStation.setOrgId(user.getOfficeId());
+            serviceStation.setOrgId(user.getOrganization().getId());
         } else {
             return new FailResult("用户没有具体的所属机构(全平台权限)");
         }
@@ -157,7 +153,7 @@ public class ServiceStationController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "setManager", method = {RequestMethod.POST, RequestMethod.GET})
-    @RequiresPermissions("station_manager")
+    //@RequiresPermissions("station_manager")
     @ApiOperation("设置站长")
     public Result setManager(@RequestBody BasicServiceStation serviceStation) {
         if (null == serviceStation.getId()) {

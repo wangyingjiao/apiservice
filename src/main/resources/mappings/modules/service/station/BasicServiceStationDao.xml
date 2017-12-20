@@ -10,7 +10,7 @@
 		a.city_code AS "cityCode",
 		a.area_code AS "areaCode",
 		a.address AS "address",
-		a.user_id AS "user.id",
+
 		a.phone AS "phone",
 		a.employees AS "employees",
 		a.tech_num AS "techNum",
@@ -22,7 +22,8 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.del_flag AS "delFlag",
-		u8.id AS  "user.id",
+
+		a.user_id AS "user.id",
 		u8.name AS "user.name"
 	</sql>
 
@@ -41,8 +42,12 @@
     <select id="findList" resultType="BasicServiceStation">
         SELECT
         <include refid="basicServiceStationColumns"/>
+        ,bo.scope_type AS "organ.scopeType"
+        ,sa.name AS "cityName"
         FROM basic_service_station a
         <include refid="basicServiceStationJoins"/>
+        LEFT JOIN basic_organization bo on a.org_id = bo.id
+        LEFT JOIN sys_area sa ON sa.code = a.city_code
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             ${sqlMap.dsf}
@@ -67,7 +72,7 @@
                 ORDER BY ${page.orderBy}
             </when>
             <otherwise>
-                ORDER BY a.update_date DESC
+                ORDER BY a.create_date DESC
             </otherwise>
         </choose>
     </select>

@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -76,11 +78,22 @@ public class AESCrypt {
 
         AESCrypt crypt = new AESCrypt("seed");
         String encrypt = crypt.encrypt("111111");
-        System.out.println(encrypt);
-
+        System.out.println(crypt.decrypt(encrypt));
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("username","13489890909");
+//        jsonObject.put("password","0909");
+//        String encrypt = crypt.encrypt("111111");
+//        System.out.println(encrypt);
+//
         String s ="+8GdDMXX3UU392sllC7+1qYvGtHwoQBR9obfLRF2yj4Q67LbfObCMrJ9m4fBFrZD/5+BO4gI9kMZ4i7fi7UK2kV3oZ+1IT+gQmZ6AzKoCbmNGpwNos1l0augz2IgSeFbOU2LhuDFZcNqjUBOhRDFxGwx5JKlQXNlpp3MjSIwa+DYdP5vxXakYffzpVOVdjTei7xZ+U4PleHDQ6qpEhyqMpIjw2t/jh7m50xRxp9QCcq42T1GFEGuKjXM12UnDSAeKWZu4ZkQE8Q94UHFLEg5ccqJnszQjsdBptoEv+srsP/o5KaVF6d725jC82nsKArvqoLYFOWIwDSVxE7zQSYUlF+Pin88tM99rGpwylpRnqtvejQ7N0aZnhCraSx4hq8k9QJkuFucwT00CxtOgZuh7A==";
         String decrypt = crypt.decrypt(s);
         System.out.println(decrypt);
+//        String plainText = jsonObject.toJSONString();
+//        System.out.println(plainText);
+//        String encrypt = crypt.encrypt(plainText);
+//        System.out.println(encrypt);
+//        String decrypt = crypt.decrypt(encrypt);
+//        System.out.println(decrypt);
 
     }
 

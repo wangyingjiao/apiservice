@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.service.service.station.ServiceStationServic
 import com.thinkgem.jeesite.modules.sys.entity.Menu;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.interceptor.SameUrlData;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
@@ -269,6 +270,7 @@ public class UserController extends BaseController {
     private ServiceStationService stationService;
 
     @ResponseBody
+    @SameUrlData
     @RequiresPermissions("user_insert")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "保存用户！")
@@ -277,6 +279,8 @@ public class UserController extends BaseController {
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
         user.setOrganization(organizationService.get(user.getOfficeId()));
         user.setStation(stationService.get(user.getStationId()));
+        user.setLoginName(user.getMobile());
+
 
         if (StringUtils.isNotBlank(user.getNewPassword())) {
             user.setPassword(SystemService.entryptPassword(user.getNewPassword()));

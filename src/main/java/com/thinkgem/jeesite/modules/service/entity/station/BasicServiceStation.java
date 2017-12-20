@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.service.entity.station;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -21,16 +22,34 @@ public class BasicServiceStation extends DataEntity<BasicServiceStation> {
     private String type;        // 服务站类型（self:直营，join:加盟）
     private String provinceCode;        // 省_区号
     private String cityCode;        // 市_区号
+    private String cityName;
     private String areaCode;        // 区_区号
     private String address;        // 详细地址
     private User user;        // 站长id
     private String userId;// 站长id
     private String phone;        // 联系电话或联系手机号
-    private String employees;        // 员工数量
-    private String techNum;        // 技师数量
+    private int employees;        // 员工数量
+    private int techNum;        // 技师数量
     private String servicePoint;        // 服务站座标点
     private String orgId;        // 机构ID
     private String isUseable;        // 是否可用(yes:可用，no:不可用)
+    private BasicOrganization organ;
+
+    public BasicOrganization getOrgan() {
+        return organ;
+    }
+
+    public void setOrgan(BasicOrganization organ) {
+        this.organ = organ;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
 
     public BasicServiceStation() {
         super();
@@ -112,20 +131,20 @@ public class BasicServiceStation extends DataEntity<BasicServiceStation> {
     }
 
     @Length(min = 0, max = 11, message = "员工数量长度必须介于 0 和 11 之间")
-    public String getEmployees() {
+    public int getEmployees() {
         return employees;
     }
 
-    public void setEmployees(String employees) {
+    public void setEmployees(int employees) {
         this.employees = employees;
     }
 
     @Length(min = 0, max = 11, message = "技师数量长度必须介于 0 和 11 之间")
-    public String getTechNum() {
+    public int getTechNum() {
         return techNum;
     }
 
-    public void setTechNum(String techNum) {
+    public void setTechNum(int techNum) {
         this.techNum = techNum;
     }
 

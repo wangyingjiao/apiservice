@@ -302,14 +302,17 @@ public class SystemService extends BaseService implements InitializingBean {
     public List<Menu> getParentMenus(List<Menu> menuList) {
         TreeSet<String> strings = new TreeSet<>();
         for (Menu menu : menuList) {
+            menu = getMenu(menu.getId());
             strings.add(menu.getId());
             String parentIds = menu.getParentIds();
-            String[] split = parentIds.split(",");
-            for (String s : split) {
-                strings.add(s);
+            if (StringUtils.isNotBlank(parentIds)) {
+                String[] split = parentIds.split(",");
+                for (String s : split) {
+                    strings.add(s);
+                }
             }
         }
-        menuList = null;
+        menuList = new ArrayList<>();
         for (String string : strings) {
             menuList.add(new Menu(string));
         }

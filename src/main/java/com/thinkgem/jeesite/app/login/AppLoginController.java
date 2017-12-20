@@ -42,7 +42,7 @@ public class AppLoginController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "${appPath}/appLogin", method = RequestMethod.POST)
     @ApiOperation(value = "登入系统", notes = "用户登录")
-    public Object appLogin(@RequestBody LoginUser user, HttpServletRequest request, HttpServletResponse response) {
+    public Object appLogin( LoginUser user, HttpServletRequest request, HttpServletResponse response) {
         AppServiceTechnicianInfo entity = null;
         if (StringUtils.isNotBlank(user.getUsername()) && StringUtils.isNotBlank(user.getPassword())) {
             entity = serviceTechnicianInfoService.appLogin(user);

@@ -9,6 +9,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+/**
+ * @author x
+ */
 @Aspect
 @EnableAspectJAutoProxy
 public class ReqResAop {
