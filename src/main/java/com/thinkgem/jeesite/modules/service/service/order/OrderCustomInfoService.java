@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.MapUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,15 +34,16 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	}
 	
 	public Page<OrderCustomInfo> findPage(Page<OrderCustomInfo> page, OrderCustomInfo orderCustomInfo) {
+		orderCustomInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 		return super.findPage(page, orderCustomInfo);
 	}
 	
 	@Transactional(readOnly = false)
 	public void save(OrderCustomInfo orderCustomInfo) {
 
-		String station = "";
-		station = getStationId(orderCustomInfo.getAddrLatitude(),orderCustomInfo.getAddrLongitude());
-		orderCustomInfo.setStationId(station);//服务站ID
+//		String station = "";
+//		station = getStationId(orderCustomInfo.getAddrLatitude(),orderCustomInfo.getAddrLongitude());
+		orderCustomInfo.setStationId(UserUtils.getUser().getStation().getId());//服务站ID
 
 		super.save(orderCustomInfo);
 	}

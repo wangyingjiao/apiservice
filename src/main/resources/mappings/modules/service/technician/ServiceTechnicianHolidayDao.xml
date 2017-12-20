@@ -53,6 +53,8 @@
 			<if test="endTime != null and endTime != ''">
 				AND a.end_time &lt;= #{endTime}
 			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

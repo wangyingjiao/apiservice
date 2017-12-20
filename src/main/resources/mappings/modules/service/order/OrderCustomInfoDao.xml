@@ -60,6 +60,8 @@
 			<if test="orgId != null and orgId != ''">
 				AND a.org_id = #{orgId}
 			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
