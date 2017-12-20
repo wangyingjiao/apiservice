@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 import com.thinkgem.jeesite.modules.service.service.sort.SerCityScopeService;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -171,7 +172,20 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	public List<SerCityScope> getAllCityCodes(SerItemInfo serItemInfo) {
 		List<SerCityScope> citys = new ArrayList<SerCityScope>();
 		if(StringUtils.isNotBlank(serItemInfo.getSortId())){
-			citys = serCityScopeDao.getSerCityScopeByMaster(serItemInfo.getSortId());
+			SerSortInfo serSortInfo = dao.getSerSortInfo(serItemInfo.getSortId());
+			if(serSortInfo == null || "yes".equals(serSortInfo.getAllCity())){
+				List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
+				if(null != list){
+					for(BasicServiceCity city : list){
+						SerCityScope cityScope = new SerCityScope();
+						cityScope.setCityCode(city.getCityCode());
+						cityScope.setCityName(city.getCityName());
+						citys.add(cityScope);
+					}
+				}
+			}else{
+				citys = serCityScopeDao.getSerCityScopeByMaster(serItemInfo.getSortId());
+			}
 		}else{
 			List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
 			if(null != list){
