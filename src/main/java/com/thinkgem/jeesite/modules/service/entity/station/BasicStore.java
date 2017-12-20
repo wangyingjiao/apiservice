@@ -52,7 +52,6 @@ public class BasicStore extends DataEntity<BasicStore> {
     }
 
     public BasicStore(Area a) {
-        this.id = a.getId();
         this.storeName = a.getName();
         this.white = a.getLevel()+"";
     }
