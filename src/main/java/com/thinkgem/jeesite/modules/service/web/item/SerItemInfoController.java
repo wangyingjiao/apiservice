@@ -88,6 +88,16 @@ public class SerItemInfoController extends BaseController {
         serItemInfoService.save(serItemInfo);
         return new SuccResult("保存成功");
     }
+
+    @ResponseBody
+    @RequestMapping(value = "upDataSortNum", method = {RequestMethod.POST})
+    @RequiresPermissions("project_update")
+    @ApiOperation("保存服务项目排序")
+    public Result upDataSortNum(@RequestBody SerItemInfo serItemInfo) {
+        serItemInfoService.saveSort(serItemInfo);
+        return new SuccResult("保存成功");
+    }
+
     @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务项目列表")
