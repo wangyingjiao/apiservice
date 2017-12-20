@@ -24,7 +24,9 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     private static final long serialVersionUID = 1L;
     private String orgId;		// 技师所属机构id
+    private String orgName;
     private String stationId;		// 技师所属服务站
+    private String stationName;		// 技师所属服务站
     private String stationCityCode;		// 技师所属服务站
     private String name;		// 技师姓名
     private String headPic;		// 头像
@@ -75,6 +77,14 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.orgId = orgId;
     }
 
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
     @Length(min=0, max=32, message="技师所属服务站长度必须介于 0 和 32 之间")
     public String getStationId() {
         return stationId;
@@ -82,6 +92,14 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setStationId(String stationId) {
         this.stationId = stationId;
+    }
+
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
     public String getStationCityCode() {
@@ -317,7 +335,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.nativeProvinceCode = nativeProvinceCode;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     public Date getInJobTime() {
         return inJobTime;
     }

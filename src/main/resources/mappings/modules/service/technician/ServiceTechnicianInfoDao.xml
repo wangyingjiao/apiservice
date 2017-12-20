@@ -60,7 +60,7 @@
 		a.name AS "name",
 		a.sex AS "sex",
 		a.birth_date AS "birthDate",
-		year( from_days( datediff( now( ), a.birth_date))) as age,
+		year( from_days( datediff( now( ), a.birth_date)))+1 as age,
 		a.org_id AS "orgId",
 		b.name AS "orgName",
 		a.station_id AS "stationId",
