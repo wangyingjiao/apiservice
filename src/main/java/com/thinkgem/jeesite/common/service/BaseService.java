@@ -95,10 +95,10 @@ public abstract class BaseService {
             return " AND " + alias + ".org_id = '" + org.getId() + "'";
         } else {
             log.info("机构权限过滤：当前用户为 |本服务站| 用户 " + user.getId() + ":" + user.getName());
-            return " AND " + alias + ".org_id = '" + org.getId() + "'" + "AND a.id = '" + sts.getId() + "'";
+            //return " AND " + alias + ".org_id = '" + org.getId() + "'" + "AND a.id = '" + sts.getId() + "'";
+            return  "AND a.id = '" + sts.getId() + "'";
         }
     }
-
 
     public static String dataStatioRoleFilter(User user, String alias) {
         BasicOrganization org = user.getOrganization();

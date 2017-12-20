@@ -5,7 +5,12 @@ package com.thinkgem.jeesite.modules.service.service.station;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.common.result.Result;
+import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
+import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStoreDao;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -29,6 +34,9 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 
 	@Autowired
 	BasicServiceStationDao basicServiceStationDao;
+
+	@Autowired
+	BasicServiceStoreDao serviceStoreDao;
 
 
 	@Override
@@ -60,5 +68,16 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 		super.delete(serviceStation);
 	}
 
-
+	@Transactional(readOnly = false)
+    public Result saveStore(BasicServiceStation station) {
+		if (StringUtils.isBlank(station.getId())) {
+			return new FailResult("id 不能为空");
+		}
+		if (!(station.getStoreList().size() > 0)) {
+			return new FailResult("门店id为空");
+		}
+		serviceStoreDao.deletebyStation(station);
+		serviceStoreDao.saveStationStore(station);
+		return new SuccResult("保存成功");
+    }
 }

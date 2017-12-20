@@ -13,7 +13,9 @@ import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.Encodes;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.Servlets;
+import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.dao.MenuDao;
 import com.thinkgem.jeesite.modules.sys.dao.RoleDao;
 import com.thinkgem.jeesite.modules.sys.dao.UserDao;
@@ -57,6 +59,9 @@ public class SystemService extends BaseService implements InitializingBean {
     private SessionDAO sessionDao;
     @Autowired
     private SystemAuthorizingRealm systemRealm;
+
+    @Autowired
+    BasicServiceStationDao stationDao;
 
     public SessionDAO getSessionDao() {
         return sessionDao;
@@ -133,6 +138,10 @@ public class SystemService extends BaseService implements InitializingBean {
         if (StringUtils.isBlank(user.getId())) {
             user.preInsert();
             userDao.insert(user);
+            String id = user.getStation().getId();
+            BasicServiceStation basicServiceStation = stationDao.get(id);
+            basicServiceStation.setEmployees(basicServiceStation.getEmployees() + 1);
+            stationDao.update(basicServiceStation);
         } else {
             // 清除原用户机构用户缓存
             User oldUser = userDao.get(user.getId());
@@ -172,10 +181,13 @@ public class SystemService extends BaseService implements InitializingBean {
 
     @Transactional(readOnly = false)
     public void deleteUser(User user) {
+        User u = userDao.get(user);
+        String id = u.getStation().getId();
+        BasicServiceStation station = stationDao.get(id);
+        station.setEmployees(station.getEmployees() - 1);
+        stationDao.update(station);
         userDao.delete(user);
-        // 同步到Activiti
-        //deleteActivitiUser(user);
-        // 清除用户缓存
+
         UserUtils.clearCache(user);
 //		// 清除权限缓存
 //		systemRealm.clearAllCachedAuthorizationInfo();

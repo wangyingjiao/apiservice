@@ -4,8 +4,11 @@
 package com.thinkgem.jeesite.modules.service.service.station;
 
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
@@ -29,7 +32,8 @@ public class BasicStoreService extends CrudService<BasicStoreDao, BasicStore> {
 
     @Autowired
     BasicStoreDao basicStoreDao;
-
+    @Autowired
+    BasicServiceStoreDao serviceStoreDao;
     @Autowired
     private AreaDao areaDao;
 
@@ -130,6 +134,5 @@ public class BasicStoreService extends CrudService<BasicStoreDao, BasicStore> {
     public void delete(BasicStore basicStore) {
         super.delete(basicStore);
     }
-
 
 }

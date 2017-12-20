@@ -10,6 +10,7 @@
     <sql id="basicServiceStoreJoins">
     </sql>
 
+
     <select id="get" resultType="BasicServiceStore">
         SELECT
         <include refid="basicServiceStoreColumns"/>
@@ -67,6 +68,14 @@
 			#{storeId}
 		)
 	</insert>
+    <insert id="saveStationStore">
+        INSERT INTO basic_service_store(
+        station_id,
+        store_id) VALUES
+        <foreach collection="storeList" item="str" separator=",">
+            (#{id},#{str})
+        </foreach>
+    </insert>
 
     <update id="update">
         UPDATE basic_service_store SET
@@ -79,5 +88,9 @@
 		DELETE FROM basic_service_store
 		WHERE id = #{id}
 	</update>
+
+    <delete id="deletebyStation">
+      DELETE FROM basic_service_store WHERE station_id = #{id}
+    </delete>
 
 </mapper>

@@ -9,6 +9,8 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.util.List;
+
 /**
  * 服务站Entity
  *
@@ -34,6 +36,15 @@ public class BasicServiceStation extends DataEntity<BasicServiceStation> {
     private String orgId;        // 机构ID
     private String isUseable;        // 是否可用(yes:可用，no:不可用)
     private BasicOrganization organ;
+    private List<String> storeList;
+
+    public List<String> getStoreList() {
+        return storeList;
+    }
+
+    public void setStoreList(List<String> storeList) {
+        this.storeList = storeList;
+    }
 
     public BasicOrganization getOrgan() {
         return organ;

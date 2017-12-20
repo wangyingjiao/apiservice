@@ -206,4 +206,12 @@ public class ServiceStationController extends BaseController {
         return new FailResult("未找到数据");
     }
 
+    @ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "saveStationStore")
+    public Result saveStationStore(@RequestBody BasicServiceStation station) {
+        return serviceStationService.saveStore(station);
+    }
+
+
 }
