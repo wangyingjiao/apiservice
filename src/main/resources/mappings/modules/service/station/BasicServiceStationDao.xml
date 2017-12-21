@@ -15,9 +15,18 @@
         <result column="techNum" property="techNum"/>
         <result column="servicePoint" property="servicePoint"/>
         <result column="orgId" property="orgId"/>
-
+        <result column="isUseable" property="isUseable"></result>
+        <result column="user.id" property="user.id"></result>
+        <result column="user.name" property="user.id"></result>
+        <result column="organ.scopeType" property="organ.scopeType"></result>
+        <result column="cityName" property="cityName"></result>
+        <collection property="storeList" ofType="java.lang.String" javaType="list" select="basicStore" column="id">
+        </collection>
     </resultMap>
 
+    <select id="basicStore" resultType="string">
+        select store_id from basic_service_store WHERE station_id = #{id}
+    </select>
 
     <sql id="basicServiceStationColumns">
 		a.id AS "id",
@@ -41,12 +50,11 @@
 		a.user_id AS "user.id",
 		u8.name AS "user.name"
 	</sql>
-		<!--bss.store_id as "storeList"-->
+
 
     <sql id="basicServiceStationJoins">
 		LEFT JOIN sys_user u8 ON u8.id = a.user_id
 	</sql>
-		<!--LEFT JOIN basic_service_store bss ON bss.station_id = a.id-->
 
     <select id="get" resultType="BasicServiceStation">
         SELECT
@@ -55,8 +63,10 @@
         <include refid="basicServiceStationJoins"/>
         WHERE a.id = #{id}
     </select>
-
-    <select id="findList" resultType="BasicServiceStation">
+    <!--
+    resultType="BasicServiceStation"
+    -->
+    <select id="findList" resultMap="BaseResultMap">
         SELECT
         <include refid="basicServiceStationColumns"/>
         ,bo.scope_type AS "organ.scopeType"
