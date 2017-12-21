@@ -198,6 +198,21 @@ public class ServiceStationController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("user")
+    @RequestMapping(value = "getStationByAreaTech")
+    public Result getStationByAreaTech(@RequestBody BasicServiceStation serviceStation) {
+        if (StringUtils.isBlank(serviceStation.getCityCode())) {
+            return new FailResult("城市code 不能为空！");
+        } else {
+            BasicServiceStation basicServiceStation = new BasicServiceStation();
+            basicServiceStation.setCityCode(serviceStation.getCityCode());
+            basicServiceStation.setOrgId(UserUtils.getUser().getOrganization().getId());
+            List<BasicServiceStation> list = serviceStationService.findListTech(basicServiceStation);
+            return new SuccResult(list);
+        }
+    }
+
+    @ResponseBody
+    @RequiresPermissions("user")
     @RequestMapping(value = "getStoreList")
     public Result getStoreList(@RequestBody BasicStore basicStore) {
         List<BasicStore> list = basicStoreService.findList(basicStore);
