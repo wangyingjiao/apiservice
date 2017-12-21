@@ -97,7 +97,6 @@ public class SystemService extends BaseService implements InitializingBean {
         user.getSqlMap().put("dsf", dataScopeFilter(user.getCurrentUser(), "org", "ss"));
         // 设置分页参数
         user.setPage(page);
-
         // 执行分页查询
         page.setList(userDao.findList(user));
         return page;
