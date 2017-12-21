@@ -60,6 +60,11 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 
     }
 
+    public List<BasicServiceStation> findListTech(BasicServiceStation serviceStation) {
+        List<BasicServiceStation> serviceStations = super.findList(serviceStation);
+        return serviceStations;
+    }
+
     @Override
     public Page<BasicServiceStation> findPage(Page<BasicServiceStation> page, BasicServiceStation serviceStation) {
         serviceStation.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));

@@ -140,6 +140,8 @@
 		a.id AS "id",
 		a.org_id AS "orgId",
 		a.station_id AS "stationId",
+		a.station_id AS "stationId1",
+		b.city_code AS "stationCityCode",
 		a.name AS "name",
 		a.head_pic AS "headPic",
 		a.id_card AS "idCard",
@@ -174,6 +176,7 @@
 		<result column="id" property="id"/>
 		<result column="org_id" property="orgId"/>
 		<result column="station_id" property="stationId"/>
+		<result column="station_id" property="stationId1"/>
 		<result column="name" property="name"/>
 		<result column="head_pic" property="headPic"/>
 		<result column="id_card" property="idCard"/>
@@ -210,7 +213,7 @@
 		<association property="workTimes" column="{reqId=id}" select="selectWorkTimeByTechId"></association>
 		<!-- 家庭成员 -->
 		<association property="familyMembers" column="{reqId=id}" select="selectFamilyMembersByTechId"></association>
-		<association property="stations" column="{reqId=stationId}" select="selectStationsByTechId"></association>
+		<association property="stations" column="{reqId=stationId1}" select="selectStationsByTechId"></association>
 
 	</resultMap>
 	<select id="selectSkillsByTechId" parameterType="java.util.Map" resultType="SerSkillInfo">
