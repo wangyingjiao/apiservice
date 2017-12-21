@@ -37,7 +37,7 @@ public class OssApi {
         OSSClient client = new OSSClient(endpoint, accessId, accessKey);
 
         long expireTime = 30;
-        long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+        long expireEndTime = System.currentTimeMillis() + expireTime * 60 *1000;
         Date expiration = new Date(expireEndTime);
         PolicyConditions policyConds = new PolicyConditions();
         policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);

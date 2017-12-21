@@ -2,6 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao">
 
+    <resultMap id="BaseResultMap" type="com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+        <result column="provinceCode" property="provinceCode"/>
+        <result column="cityCode" property="cityCode"/>
+        <result column="areaCode" property="areaCode"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="employees" property="employees"/>
+        <result column="techNum" property="techNum"/>
+        <result column="servicePoint" property="servicePoint"/>
+        <result column="orgId" property="orgId"/>
+
+    </resultMap>
+
+
     <sql id="basicServiceStationColumns">
 		a.id AS "id",
 		a.name AS "name",
@@ -10,7 +27,6 @@
 		a.city_code AS "cityCode",
 		a.area_code AS "areaCode",
 		a.address AS "address",
-
 		a.phone AS "phone",
 		a.employees AS "employees",
 		a.tech_num AS "techNum",
@@ -22,14 +38,15 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.del_flag AS "delFlag",
-
 		a.user_id AS "user.id",
 		u8.name AS "user.name"
 	</sql>
+		<!--bss.store_id as "storeList"-->
 
     <sql id="basicServiceStationJoins">
 		LEFT JOIN sys_user u8 ON u8.id = a.user_id
 	</sql>
+		<!--LEFT JOIN basic_service_store bss ON bss.station_id = a.id-->
 
     <select id="get" resultType="BasicServiceStation">
         SELECT
