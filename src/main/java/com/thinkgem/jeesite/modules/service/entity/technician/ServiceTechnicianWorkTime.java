@@ -27,6 +27,15 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	private Timestamp startTime;		// 起始时段
 	private Timestamp endTime;		// 结束时段
 	private List<ServiceTechnicianWorkTimeWeek> weeks;		// 工作日期（周一，周二。。。）
+	private List<String> weekList;
+
+	public List<String> getWeekList() {
+		return weekList;
+	}
+
+	public void setWeekList(List<String> weekList) {
+		this.weekList = weekList;
+	}
 
 	public ServiceTechnicianWorkTime() {
 		super();

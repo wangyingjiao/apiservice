@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -67,7 +68,31 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     public ServiceTechnicianInfo formData(ServiceTechnicianInfo serviceTechnicianInfo) {
-        return technicianInfoDao.formData(serviceTechnicianInfo);
+        ServiceTechnicianInfo info = technicianInfoDao.formData(serviceTechnicianInfo);
+        if(null != info){
+            List<ServiceTechnicianWorkTime> workTimes = info.getWorkTimes();
+            if(null != workTimes){
+                for(ServiceTechnicianWorkTime workTime : workTimes){
+                    String week = workTime.getWeek();
+                    List<ServiceTechnicianWorkTimeWeek> weeks = new ArrayList<ServiceTechnicianWorkTimeWeek>();
+                    if(StringUtils.isNotBlank(week)){
+                        String str[] = week.split(",");
+                        List<String> weekList = Arrays.asList(str);
+                        if(null != weekList && weekList.size()!=0){
+                            for(String weekI : weekList){
+                                if(StringUtils.isNotBlank(weekI)){
+                                    ServiceTechnicianWorkTimeWeek serviceTechnicianWorkTimeWeek = new ServiceTechnicianWorkTimeWeek();
+                                    serviceTechnicianWorkTimeWeek.setId(weekI);
+                                    weeks.add(serviceTechnicianWorkTimeWeek);
+                                }
+                            }
+                        }
+                    }
+                    workTime.setWeeks(weeks);
+                }
+            }
+        }
+        return info;
     }
 
     /**
