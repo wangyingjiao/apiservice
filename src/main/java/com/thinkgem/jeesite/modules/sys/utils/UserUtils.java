@@ -3,7 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.sys.utils;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
@@ -18,6 +17,7 @@ import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -205,7 +205,7 @@ public class UserUtils {
      * 机构查询，分页和条件搜索
      *
      * @return
-//     */
+    //     */
 //    public static Page<Office> getOffices(Page<Office> page, Office office) {
 //        office.setPage(page);
 //        User user = getUser();
@@ -333,6 +333,28 @@ public class UserUtils {
     public static ServiceStation getStationInfo() {
         User user = getUser();
         return stationDao.findStationByUser(user);
+    }
+
+    public static List<Menu> getMenuListForPlatform() {
+        User user = getUser();
+        if (user.getOrganization().getId().equals("0")) {
+            return menuDao.findAllList(new Menu());
+        } else {
+            return getMenuList();
+        }
+    }
+
+    public static List<Menu> genTreeMenu(String id, List<Menu> menus) {
+        ArrayList<Menu> list = new ArrayList<>();
+        for (Menu menu : menus) {
+            //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
+            if (menu.getParentId().equals(id)) {
+                List<Menu> menus1 = genTreeMenu(menu.getId(), menus);
+                menu.setSubMenus(menus1);
+                list.add(menu);
+            }
+        }
+        return list;
     }
 //
 }

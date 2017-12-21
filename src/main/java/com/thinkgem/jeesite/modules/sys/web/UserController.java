@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.thinkgem.jeesite.modules.sys.utils.UserUtils.genTreeMenu;
+
 /**
  * 用户Controller
  *
@@ -158,7 +160,6 @@ public class UserController extends BaseController {
         return new SuccResult(menus);
     }
 
-
     @RequiresPermissions("user")
     @ResponseBody
     @RequestMapping(value = "getButtons", method = RequestMethod.GET)
@@ -172,20 +173,6 @@ public class UserController extends BaseController {
             }
         }
         return new SuccResult(buttons);
-    }
-
-
-    private List<Menu> genTreeMenu(String id, List<Menu> menus) {
-        ArrayList<Menu> list = new ArrayList<>();
-        for (Menu menu : menus) {
-            //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
-            if (menu.getParentId().equals(id)) {
-                List<Menu> menus1 = genTreeMenu(menu.getId(), menus);
-                menu.setSubMenus(menus1);
-                list.add(menu);
-            }
-        }
-        return list;
     }
 
 
@@ -300,11 +287,22 @@ public class UserController extends BaseController {
         String[] roles = user.getRoles();
         List<String> roleIdList = Lists.newArrayList(roles);
 
-        for (Role r : systemService.findRole(UserUtils.getUser())) {
+        List<Role> role = new ArrayList<>();
+        User currUser = UserUtils.getUser();
+        if (currUser.getOrganization().getId().equals("0")) {
+            logger.info("全平台用户！");
+            role = systemService.findAllRole();
+        } else {
+            role = systemService.findRole(currUser);
+        }
+
+        for (Role r : role) {
             if (roleIdList.contains(r.getId())) {
                 roleList.add(r);
             }
         }
+
+
         user.setRoleList(roleList);
         // 保存用户信息
         systemService.saveUser(user);

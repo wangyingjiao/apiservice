@@ -160,8 +160,7 @@ public class SystemService extends BaseService implements InitializingBean {
             } else {
                 throw new ServiceException(user.getLoginName() + "没有设置角色！");
             }
-            // 将当前用户同步到Activiti
-            //saveActivitiUser(user);
+
             // 清除用户缓存
             UserUtils.clearCache(user);
 //			// 清除权限缓存

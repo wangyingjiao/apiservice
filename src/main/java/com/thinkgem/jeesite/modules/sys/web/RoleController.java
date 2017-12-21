@@ -149,7 +149,6 @@ public class RoleController extends BaseController {
      * @return
      */
     @ApiIgnore
-    @RequiresPermissions("sys:role:edit")
     @RequestMapping(value = "assign")
     public String assign(Role role, Model model) {
         List<User> userList = systemService.findUser(new User(new Role(role.getId())));

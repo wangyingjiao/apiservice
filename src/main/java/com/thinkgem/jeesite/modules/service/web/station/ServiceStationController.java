@@ -67,6 +67,7 @@ public class ServiceStationController extends BaseController {
 
         Page<BasicServiceStation> page = serviceStationService.findPage(stationPage, serviceStation);
         return new SuccResult(page);
+
     }
 
     @ResponseBody
