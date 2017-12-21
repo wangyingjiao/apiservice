@@ -14,7 +14,10 @@ import com.thinkgem.jeesite.common.utils.Collections3;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
-import com.thinkgem.jeesite.modules.sys.entity.*;
+import com.thinkgem.jeesite.modules.sys.entity.DeleteRoleGroup;
+import com.thinkgem.jeesite.modules.sys.entity.Role;
+import com.thinkgem.jeesite.modules.sys.entity.SaveRoleGroup;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -347,8 +350,9 @@ public class RoleController extends BaseController {
         }
         User user = UserUtils.getUser();
         BasicOrganization organization = user.getOrganization();
-
-        role.setOrganization(organization);
+        if (role.getOrganization() == null) {
+            role.setOrganization(organization);
+        }
         systemService.saveRole(role);
 
         return new SuccResult(role);

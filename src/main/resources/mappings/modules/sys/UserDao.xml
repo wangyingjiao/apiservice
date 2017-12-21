@@ -87,7 +87,8 @@
         ss.name AS "station.name",
 
         sr.id as "role.id",
-        sr.name as "role.name"
+        sr.name as "role.name",
+        sr.data_scope as "role.dataScope"
     </sql>
 
     <sql id="userJoins">
@@ -131,7 +132,8 @@
         <include refid="userJoins"/>
 
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-        AND sr.data_scope  &lt;= #{currentUser.role.dataScope}
+        AND sr.data_scope  &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)
+
         <if test="organization != null and organization.id != null and organization.id != ''">
             AND (o.id = #{organization.id}
         </if>
