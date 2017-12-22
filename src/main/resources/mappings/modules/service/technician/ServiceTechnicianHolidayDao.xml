@@ -45,7 +45,7 @@
 				AND b.name LIKE concat('%',#{techName},'%')
 			</if>
 			<if test="techPhone != null and techPhone != ''">
-				AND b.phone = #{techPhone}
+				AND b.phone LIKE concat('%',#{techPhone},'%')
 			</if>
 			<if test="startTime != null and startTime != ''">
 				AND a.start_time &gt;= #{startTime}

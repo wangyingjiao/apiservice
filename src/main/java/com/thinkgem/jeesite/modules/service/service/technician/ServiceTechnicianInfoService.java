@@ -141,16 +141,13 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     @Transactional(readOnly = false)
     public void save(ServiceTechnicianInfo serviceTechnicianInfo) {
         super.save(serviceTechnicianInfo);
-        //删除工作时间 按技师
-        deleteTechnicianWorkTime(serviceTechnicianInfo);
-        //删除时同时删除关联的技能
-        delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
 
         List<ServiceTechnicianWorkTime> times = serviceTechnicianInfo.getWorkTimes();
         List<ServiceTechnicianWorkTime> timesList = new ArrayList<ServiceTechnicianWorkTime>();
 
-
         if (null != times) {
+            //删除工作时间 按技师
+            deleteTechnicianWorkTime(serviceTechnicianInfo);
             for (ServiceTechnicianWorkTime time : times) {
                 List<ServiceTechnicianWorkTimeWeek> weeks = time.getWeeks();
                 if(null != weeks){
@@ -175,6 +172,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
         List<String> skillIds = serviceTechnicianInfo.getSkillIds();
         if (null != skillIds) {
+            //删除时同时删除关联的技能
+            delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
             for (String skillId : skillIds) {
                 SerSkillTechnician serSkillTechnician = new SerSkillTechnician();
                 serSkillTechnician.setSkillId(skillId);
