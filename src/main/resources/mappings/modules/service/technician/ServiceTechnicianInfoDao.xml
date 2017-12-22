@@ -216,7 +216,7 @@
 		<association property="stations" column="{reqId=stationId1}" select="selectStationsByTechId"></association>
 
 	</resultMap>
-	<select id="selectSkillsByTechId" parameterType="java.util.Map" resultType="SerSkillInfo">
+	<select id="selectSkillsByTechId" parameterType="java.util.Map" resultType="String">
 		select skill_id AS id
 		from ser_skill_tech
 		where tech_id=#{reqId}
