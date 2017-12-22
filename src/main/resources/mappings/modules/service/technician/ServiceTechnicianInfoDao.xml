@@ -258,7 +258,7 @@
 	</select>
 	<select id="selectFamilyMembersByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianFamilyMembers">
 		select
-		relation AS relation,member_name AS memberName,
+		id AS id,relation AS relation,member_name AS memberName,
 		member_phone AS memberPhone,member_company AS memberCompany,
 		member_job AS memberJob
 		from tech_family_members

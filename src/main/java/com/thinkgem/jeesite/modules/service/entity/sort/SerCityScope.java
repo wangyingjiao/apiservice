@@ -54,6 +54,7 @@ public class SerCityScope extends DataEntity<SerCityScope> {
 
 
 	private boolean haveItem;
+	private boolean sortChecked;
 	private String cityName;		// 市
 
 	public boolean getHaveItem() {
@@ -62,6 +63,14 @@ public class SerCityScope extends DataEntity<SerCityScope> {
 
 	public void setHaveItem(boolean haveItem) {
 		this.haveItem = haveItem;
+	}
+
+	public boolean getSortChecked() {
+		return sortChecked;
+	}
+
+	public void setSortChecked(boolean sortChecked) {
+		this.sortChecked = sortChecked;
 	}
 
 	public String getCityName() {

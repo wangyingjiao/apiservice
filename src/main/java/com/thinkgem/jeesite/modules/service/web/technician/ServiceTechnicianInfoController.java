@@ -165,6 +165,12 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
+        if("leave".equals(info.getJobStatus())){//离职员工判断是否有订单
+            //服务人员还有未完成的订单，则不可离职
+            if(serviceTechnicianInfoService.getOrderTechRelation(info) > 0){
+                return new FailResult("服务人员有未完成订单,不可离职.");
+            }
+        }
         serviceTechnicianInfoService.save(info);
         return new SuccResult("保存成功");
     }

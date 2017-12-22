@@ -119,37 +119,61 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
 
     public SerSortInfo getDataWithItem(SerSortInfo serSortInfo) {
         SerSortInfo sortInfo = super.get(serSortInfo.getId());
-        //获取分类的定向城市
+        User user = UserUtils.getUser();
+        String orgId = user.getOrganization().getId();
+        List<SerCityScope> citysR = new ArrayList<SerCityScope>();
+        //机构下城市
+        List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(orgId);
+        //服务分类选中城市
         List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(serSortInfo.getId());
-        if(null != citys){
-            //当前分类下的项目是全部城市的件数
-            int itemAllCity = dao.getItemAllCityNum(serSortInfo.getId());
-            //当前分类下的项目定向城市
-            List<String> itemCitys = new ArrayList<String>();
-            if("yes".equals(serSortInfo.getAllCity())){
-                List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serSortInfo.getOrgId());
-                if(null != list){
-                    for(BasicServiceCity basicServiceCity : list){
-                        itemCitys.add(basicServiceCity.getCityCode());
-                    }
-                }
-            }else{
-                itemCitys = dao.getItemCitys(serSortInfo.getId());
-            }
 
-            for(SerCityScope city : citys){
-                if(itemAllCity > 0){
-                    city.setHaveItem(true);
+        //当前分类下的项目是全部城市的件数
+        int itemAllCity = dao.getItemAllCityNum(serSortInfo.getId());
+        //当前分类下的项目定向城市
+        List<String> itemCitys = new ArrayList<String>();
+        if("yes".equals(serSortInfo.getAllCity())){
+            if(null != list){
+                for(BasicServiceCity basicServiceCity : list){
+                    itemCitys.add(basicServiceCity.getCityCode());
+                }
+            }
+        }else{
+            itemCitys = dao.getItemCitys(serSortInfo.getId());
+        }
+
+        if(null != list){
+            for(BasicServiceCity basicServiceCity : list){
+                SerCityScope cityScope = new SerCityScope();
+                cityScope.setCityName(basicServiceCity.getCityName());
+                cityScope.setCityCode(basicServiceCity.getCityCode());
+                //是否选中
+                if("yes".equals(serSortInfo.getAllCity())){
+                    cityScope.setSortChecked(true);
                 }else{
-                    if(itemCitys != null && itemCitys.contains(city.getCityCode())){
-                        city.setHaveItem(true);
-                    }else{
-                        city.setHaveItem(false);
+                    if(null != citys){
+                        for(SerCityScope city : citys){
+                            if(basicServiceCity.getCityCode().equals(city.getCityCode())){
+                                cityScope.setSortChecked(true);
+                                break;
+                            }
+                        }
                     }
                 }
+                //是否有服务项目
+                if(itemAllCity > 0){
+                    cityScope.setHaveItem(true);
+                }else{
+                    if(itemCitys != null && itemCitys.contains(basicServiceCity.getCityCode())){
+                        cityScope.setHaveItem(true);
+                    }else{
+                        cityScope.setHaveItem(false);
+                    }
+                }
+
+                citysR.add(cityScope);
             }
         }
-        sortInfo.setCitys(citys);
+        sortInfo.setCitys(citysR);
         return sortInfo;
     }
     @Transactional(readOnly = false)
