@@ -76,7 +76,7 @@ public abstract class BaseService {
     public static String dataOrganFilter(User user, String alias) {
         BasicOrganization organization = user.getOrganization();
         if (null != organization && organization.getId().trim().equals("0")) {
-            log.info("机构权限过滤：当前用户为全机构用户 " + user.getId() + ":" + user.getName());
+            log.info("机构权限过滤：当前用户为全平台用户 " + user.getId() + ":" + user.getName());
             return "";
         } else {
             return " AND " + alias + ".id = '" + organization.getId() + "'";

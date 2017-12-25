@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,6 +74,11 @@ public class SerItemInfoController extends BaseController {
                 return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
             }
         }
+        List<String> pictures = serItemInfo.getPictures();
+        if(null != pictures){
+            String picture = JsonMapper.toJsonString(pictures);
+            serItemInfo.setPicture(picture);
+        }
         serItemInfoService.save(serItemInfo);
         return new SuccResult("保存成功");
     }
@@ -86,7 +92,11 @@ public class SerItemInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-
+        List<String> pictures = serItemInfo.getPictures();
+        if(null != pictures){
+            String picture = JsonMapper.toJsonString(pictures);
+            serItemInfo.setPicture(picture);
+        }
         serItemInfoService.save(serItemInfo);
         return new SuccResult("保存成功");
     }
@@ -125,10 +135,17 @@ public class SerItemInfoController extends BaseController {
         SerItemInfo entity = null;
         if (StringUtils.isNotBlank(serItemInfo.getId())) {
             entity = serItemInfoService.getData(serItemInfo.getId());
+
             String pictureDetail = entity.getPictureDetail();
             if(null != pictureDetail){
-                List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(pictureDetail,List.class);
-                serItemInfo.setPictureDetails(pictureDetails);
+                List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
+                entity.setPictureDetails(pictureDetails);
+            }
+
+            String picture = entity.getPicture();
+            if(null != picture){
+                List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+                entity.setPictures(pictures);
             }
         }
         if (entity == null) {

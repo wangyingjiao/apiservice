@@ -25,6 +25,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String sortId;		// 所属分类编号
 	private String name;		// 服务项目名称
 	private String picture;		// 服务图片缩略图
+	private List<String> pictures;		// 服务图片缩略图
 	private String pictureDetail; //图文详情
 	private List<String> pictureDetails; //图文详情
 	private String description;		// 服务描述
@@ -69,7 +70,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.name = name;
 	}
 
-	@NotBlank(message = "服务图片不可为空")
 	@Length(min=0, max=255, message="服务图片长度必须介于 0 和 255 之间")
 	public String getPicture() {
 		return picture;
@@ -77,6 +77,14 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	public void setPicture(String picture) {
 		this.picture = picture;
+	}
+
+	public List<String> getPictures() {
+		return pictures;
+	}
+
+	public void setPictures(List<String> pictures) {
+		this.pictures = pictures;
 	}
 
 	public String getPictureDetail() {

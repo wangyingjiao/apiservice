@@ -60,7 +60,9 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	}
 
     public List<BasicOrganization> findOrganizationList() {
-		return dao.findOrganizationList();
+		BasicOrganization organization = new BasicOrganization();
+		organization.getSqlMap().put("dsf", dataOrganFilter(UserUtils.getUser(), "a"));
+		return dao.findOrganizationList(organization);
     }
 
     public OrderCustomInfo findCustomInfo(OrderCustomInfo orderCustomInfo) {

@@ -92,8 +92,8 @@
 				INNER JOIN ser_skill_tech t2 on t1.id = t2.tech_id
 				WHERE  t1.del_flag= #{DEL_FLAG_NORMAL} AND  t2.del_flag= #{DEL_FLAG_NORMAL}
 				and t2.skill_id in
-				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-					#{skillIds}
+				<foreach item="skillId" index="index" collection="skillIds" open="(" separator="," close=")">
+					#{skillId}
 				</foreach>
 				)
 			</if>

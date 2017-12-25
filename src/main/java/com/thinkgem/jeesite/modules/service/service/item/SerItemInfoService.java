@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.service.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
@@ -103,7 +104,18 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	
 	public Page<SerItemInfo> findPage(Page<SerItemInfo> page, SerItemInfo serItemInfo) {
 		serItemInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
-		return super.findPage(page, serItemInfo);
+		Page<SerItemInfo> pageResult = super.findPage(page, serItemInfo);
+		List<SerItemInfo> list = pageResult.getList();
+		if(null != list){
+			for(SerItemInfo entity : list){
+				String picture = entity.getPicture();
+				if(null != picture){
+					List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+					entity.setPictures(pictures);
+				}
+			}
+		}
+		return pageResult;
 	}
 
 	/**
