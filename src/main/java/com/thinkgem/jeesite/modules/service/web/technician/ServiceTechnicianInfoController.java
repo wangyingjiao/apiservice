@@ -106,8 +106,8 @@ public class ServiceTechnicianInfoController extends BaseController {
     @ResponseBody
     @RequiresPermissions("techni_delete")
     @ApiOperation("删除技师")
-    @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public Result delete(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
+    @RequestMapping(value = "deleteData", method = RequestMethod.POST)
+    public Result deleteData(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
         //服务人员还有未完成的订单，则不可删除
         if(serviceTechnicianInfoService.getOrderTechRelation(serviceTechnicianInfo) > 0){
             return new FailResult("服务人员有未完成订单,不可删除.");

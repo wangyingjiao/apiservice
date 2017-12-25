@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.service.web.item;
 
+import com.alibaba.fastjson.JSONObject;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
@@ -94,6 +96,11 @@ public class SerItemInfoController extends BaseController {
     @RequiresPermissions("project_update")
     @ApiOperation("保存服务项目排序")
     public Result upDataSortNum(@RequestBody SerItemInfo serItemInfo) {
+        List<String> pictureDetails = serItemInfo.getPictureDetails();
+        if(null != pictureDetails){
+            String pictureDetail = JsonMapper.toJsonString(pictureDetails);
+            serItemInfo.setPictureDetail(pictureDetail);
+        }
         serItemInfoService.saveSort(serItemInfo);
         return new SuccResult("保存成功");
     }
@@ -118,6 +125,11 @@ public class SerItemInfoController extends BaseController {
         SerItemInfo entity = null;
         if (StringUtils.isNotBlank(serItemInfo.getId())) {
             entity = serItemInfoService.getData(serItemInfo.getId());
+            String pictureDetail = entity.getPictureDetail();
+            if(null != pictureDetail){
+                List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(pictureDetail,List.class);
+                serItemInfo.setPictureDetails(pictureDetails);
+            }
         }
         if (entity == null) {
             return new FailResult("未找到此id对应的服务项目。");

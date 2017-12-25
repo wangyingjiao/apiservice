@@ -26,6 +26,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String name;		// 服务项目名称
 	private String picture;		// 服务图片缩略图
 	private String pictureDetail; //图文详情
+	private List<String> pictureDetails; //图文详情
 	private String description;		// 服务描述
 	private String sale;		// 是否上架(yes:是，no:否)
 	private int sortNum;		// 排序号
@@ -84,6 +85,14 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	public void setPictureDetail(String pictureDetail) {
 		this.pictureDetail = pictureDetail;
+	}
+
+	public List<String> getPictureDetails() {
+		return pictureDetails;
+	}
+
+	public void setPictureDetails(List<String> pictureDetails) {
+		this.pictureDetails = pictureDetails;
 	}
 
 	@NotBlank(message = "服务描述不可为空")
