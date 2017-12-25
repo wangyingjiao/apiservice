@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.common.supcan.annotation.treelist.cols.SupCol;
 import com.thinkgem.jeesite.common.utils.Collections3;
+import com.thinkgem.jeesite.common.utils.RegexTool;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 import com.thinkgem.jeesite.common.utils.excel.fieldtype.RoleListType;
@@ -20,6 +21,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
@@ -252,6 +254,7 @@ public class User extends DataEntity<User> {
     }
 
     @NotBlank(message = "员工手机号不可为空。")
+    @Pattern(regexp = RegexTool.REGEX_MOBILE,message = "手机号格式不正确！")
     @Length(min = 0, max = 200, message = "手机长度必须介于 1 和 200 之间")
     @ExcelField(title = "手机", align = 2, sort = 70)
     public String getMobile() {

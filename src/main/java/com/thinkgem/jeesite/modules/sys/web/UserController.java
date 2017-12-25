@@ -257,7 +257,6 @@ public class UserController extends BaseController {
     private ServiceStationService stationService;
 
     @ResponseBody
-    @SameUrlData
     @RequiresPermissions("user_insert")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "保存用户！")

@@ -23,7 +23,6 @@
     <aop:aspectj-autoproxy />
 
     <bean class="com.thinkgem.jeesite.common.aspect.ReqResAop" name="reqResAop" />
-
     <bean class="com.thinkgem.jeesite.app.aop.AppAop" name="appAop"/>
 
 

@@ -58,12 +58,11 @@ public class TokenInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         loger.info("==>后期处理！");
 
-
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
+        loger.info("==>异常处理！");
     }
 
 
