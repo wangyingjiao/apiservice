@@ -50,8 +50,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setMajorSort(String majorSort) {
 		this.majorSort = majorSort;
 	}
-	
-	@Length(min=0, max=64, message="所属分类编号长度必须介于 0 和 64 之间")
+
 	public String getSortId() {
 		return sortId;
 	}
@@ -70,7 +69,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.name = name;
 	}
 
-	@Length(min=0, max=255, message="服务图片长度必须介于 0 和 255 之间")
+	@NotBlank(message = "服务图片不可为空")
 	public String getPicture() {
 		return picture;
 	}

@@ -29,7 +29,6 @@ public class SerItemCommodityPersons extends DataEntity<SerItemCommodityPersons>
 		super(id);
 	}
 
-	@Length(min=0, max=64, message="服务商品编号长度必须介于 0 和 64 之间")
 	public String getGoodsId() {
 		return goodsId;
 	}

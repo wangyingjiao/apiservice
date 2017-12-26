@@ -3,10 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.basic;
 
+import com.thinkgem.jeesite.common.utils.RegexTool;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -40,7 +43,8 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 		super(id);
 	}
 
-	@Length(min=1, max=32, message="机构名称长度必须介于 1 和 32 之间")
+	@NotBlank(message = "机构名称不可为空")
+	@Length(min=2, max=15, message="机构名称长度必须介于 2 和 15 之间")
 	public String getName() {
 		return name;
 	}
@@ -48,7 +52,8 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	@NotBlank(message = "机构电话不可为空")
 	@Length(min=0, max=16, message="机构电话长度必须介于 0 和 16 之间")
 	public String getTelephone() {
 		return telephone;
@@ -57,8 +62,9 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
-	
-	@Length(min=0, max=32, message="负责人长度必须介于 0 和 32 之间")
+
+	@NotBlank(message = "负责人不可为空")
+	@Length(min=2, max=15, message="负责人长度必须介于 2 和 15 之间")
 	public String getMasterName() {
 		return masterName;
 	}
@@ -66,8 +72,10 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setMasterName(String masterName) {
 		this.masterName = masterName;
 	}
-	
-	@Length(min=0, max=11, message="负责人电话长度必须介于 0 和 11 之间")
+
+	@NotBlank(message = "负责人手机号不可为空")
+	@Pattern(regexp = RegexTool.REGEX_MOBILE,message = "负责人手机号格式不正确！")
+	@Length(min=11, max=11, message="负责人手机号长度必须是 11 位")
 	public String getMasterPhone() {
 		return masterPhone;
 	}
@@ -75,7 +83,8 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setMasterPhone(String masterPhone) {
 		this.masterPhone = masterPhone;
 	}
-	
+
+	@NotBlank(message = "省不可为空")
 	@Length(min=0, max=20, message="省_区号长度必须介于 0 和 20 之间")
 	public String getProvinceCode() {
 		return provinceCode;
@@ -84,7 +93,8 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setProvinceCode(String provinceCode) {
 		this.provinceCode = provinceCode;
 	}
-	
+
+	@NotBlank(message = "市不可为空")
 	@Length(min=0, max=20, message="市_区号长度必须介于 0 和 20 之间")
 	public String getCityCode() {
 		return cityCode;
@@ -93,7 +103,8 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setCityCode(String cityCode) {
 		this.cityCode = cityCode;
 	}
-	
+
+	@NotBlank(message = "区不可为空")
 	@Length(min=0, max=20, message="区_区号长度必须介于 0 和 20 之间")
 	public String getAreaCode() {
 		return areaCode;
@@ -102,8 +113,9 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setAreaCode(String areaCode) {
 		this.areaCode = areaCode;
 	}
-	
-	@Length(min=0, max=100, message="详细地址长度必须介于 0 和 100 之间")
+
+	@NotBlank(message = "详细地址不可为空")
+	@Length(min=6, max=100, message="详细地址长度必须介于 6 和 100 之间")
 	public String getAddress() {
 		return address;
 	}
@@ -111,7 +123,8 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
+	@NotBlank(message = "服务范围类型不可为空")
 	public String getScopeType() {
 		return scopeType;
 	}
