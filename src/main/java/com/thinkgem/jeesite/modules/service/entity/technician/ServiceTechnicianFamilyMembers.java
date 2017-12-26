@@ -3,9 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.technician;
 
+import com.thinkgem.jeesite.common.utils.RegexTool;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.Pattern;
 
 /**
  * 服务技师家庭成员Entity
@@ -31,7 +35,6 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 		super(id);
 	}
 
-	@Length(min=0, max=32, message="服务技师id长度必须介于 0 和 32 之间")
 	public String getTechId() {
 		return techId;
 	}
@@ -39,8 +42,7 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 	public void setTechId(String techId) {
 		this.techId = techId;
 	}
-	
-	@Length(min=0, max=64, message="服务技师名称长度必须介于 0 和 64 之间")
+
 	public String getTechName() {
 		return techName;
 	}
@@ -48,8 +50,7 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 	public void setTechName(String techName) {
 		this.techName = techName;
 	}
-	
-	@Length(min=0, max=2, message="与服务技师关系长度必须介于 0 和 2 之间")
+
 	public String getRelation() {
 		return relation;
 	}
@@ -58,7 +59,7 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 		this.relation = relation;
 	}
 	
-	@Length(min=0, max=64, message="成员名字长度必须介于 0 和 64 之间")
+	@Length(min=2, max=15, message="成员名字长度必须介于 2 和 15 之间")
 	public String getMemberName() {
 		return memberName;
 	}
@@ -66,8 +67,10 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 	public void setMemberName(String memberName) {
 		this.memberName = memberName;
 	}
-	
-	@Length(min=0, max=32, message="成员手机号长度必须介于 0 和 32 之间")
+
+	@NotBlank(message = "手机号不可为空")
+	@Pattern(regexp = RegexTool.REGEX_MOBILE,message = "手机号格式不正确！")
+	@Length(min=11, max=11, message="手机号长度必须是 11 位")
 	public String getMemberPhone() {
 		return memberPhone;
 	}
@@ -76,6 +79,7 @@ public class ServiceTechnicianFamilyMembers extends DataEntity<ServiceTechnician
 		this.memberPhone = memberPhone;
 	}
 
+	@Length(min=0, max=64, message="成员单位长度必须介于 0 和 64 之间")
 	public String getMemberCompany() {
 		return memberCompany;
 	}

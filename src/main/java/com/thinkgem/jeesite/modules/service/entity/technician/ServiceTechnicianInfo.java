@@ -5,12 +5,14 @@ package com.thinkgem.jeesite.modules.service.entity.technician;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.common.utils.RegexTool;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
@@ -47,15 +49,15 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String appLoginPassword;		// app登录密码
     private String jobNature;		// 岗位性质（full_time:全职，part_time:兼职）
     private String jobStatus;		// 岗位状态(online:在职，leave:离职)
-    private String workTime;		// 工作年限
+    private int workTime;		// 工作年限
     private String email;		// 邮箱
     private String education;		// 学历(primary：小学 middle：初中 high：高中 special：中专 junior：大专 university：本科及以上)
-    private String height;		// 身高
-    private String weight;		// 体重
+    private int height;		// 身高
+    private int weight;		// 体重
     private String marryStatus;		// 婚姻状况(married：已婚 unmarried：未婚 widowed：丧偶 divorce：离婚)
     private String nativeProvinceCode;		// 籍贯
     private Date inJobTime;		// 入职日期
-    private String jobLevel;		// 级别
+    private int jobLevel;		// 级别
     private String description;		// 经验描述
     private String remark;		// 备注信息
 
@@ -68,7 +70,6 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         super(id);
     }
 
-    @Length(min=0, max=32, message="技师所属机构id长度必须介于 0 和 32 之间")
     public String getOrgId() {
         return orgId;
     }
@@ -85,7 +86,6 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.orgName = orgName;
     }
 
-    @Length(min=0, max=32, message="技师所属服务站长度必须介于 0 和 32 之间")
     public String getStationId() {
         return stationId;
     }
@@ -110,7 +110,8 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.stationCityCode = stationCityCode;
     }
 
-    @Length(min=0, max=32, message="技师姓名长度必须介于 0 和 32 之间")
+    @NotBlank(message = "姓名不可为空")
+    @Length(min=2, max=15, message="技师姓名长度必须介于 2 和 15 之间")
     public String getName() {
         return name;
     }
@@ -119,6 +120,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.name = name;
     }
 
+    @NotBlank(message = "头像不可为空")
     @Length(min=0, max=255, message="头像长度必须介于 0 和 255 之间")
     public String getHeadPic() {
         return headPic;
@@ -128,6 +130,8 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.headPic = headPic;
     }
 
+    @NotBlank(message = "身份证号不可为空")
+    @Pattern(regexp = RegexTool.REGEX_ID_CARD,message = "身份证号格式不正确！")
     @Length(min=0, max=32, message="身份证号长度必须介于 0 和 32 之间")
     public String getIdCard() {
         return idCard;
@@ -162,7 +166,9 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.jobPic = jobPic;
     }
 
-    @Length(min=0, max=11, message="手机号长度必须介于 0 和 11 之间")
+    @NotBlank(message = "手机号不可为空")
+    @Pattern(regexp = RegexTool.REGEX_MOBILE,message = "手机号格式不正确！")
+    @Length(min=11, max=11, message="手机号长度必须是 11 位")
     public String getPhone() {
         return phone;
     }
@@ -171,6 +177,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.phone = phone;
     }
 
+    @NotBlank(message = "省不可为空")
     @Length(min=0, max=20, message="省_区号长度必须介于 0 和 20 之间")
     public String getProvinceCode() {
         return provinceCode;
@@ -180,6 +187,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.provinceCode = provinceCode;
     }
 
+    @NotBlank(message = "市不可为空")
     @Length(min=0, max=20, message="市_区号长度必须介于 0 和 20 之间")
     public String getCityCode() {
         return cityCode;
@@ -189,6 +197,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.cityCode = cityCode;
     }
 
+    @NotBlank(message = "区不可为空")
     @Length(min=0, max=20, message="区_区号长度必须介于 0 和 20 之间")
     public String getAreaCode() {
         return areaCode;
@@ -207,6 +216,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.address = address;
     }
 
+    @NotBlank(message = "性别不可为空")
     public String getSex() {
         return sex;
     }
@@ -224,6 +234,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.nation = nation;
     }
 
+    @NotBlank(message = "出生日期不可为空")
     @JsonFormat(pattern = "yyyy-MM-dd")
     public Date getBirthDate() {
         return birthDate;
@@ -274,15 +285,15 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.jobStatus = jobStatus;
     }
 
-    @Length(min=0, max=11, message="工作年限长度必须介于 0 和 11 之间")
-    public String getWorkTime() {
+    public int getWorkTime() {
         return workTime;
     }
 
-    public void setWorkTime(String workTime) {
+    public void setWorkTime(int workTime) {
         this.workTime = workTime;
     }
 
+    @Pattern(regexp = RegexTool.REGEX_EMAIL,message = "邮箱格式不正确！")
     @Length(min=0, max=64, message="邮箱长度必须介于 0 和 64 之间")
     public String getEmail() {
         return email;
@@ -300,21 +311,19 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.education = education;
     }
 
-    @Length(min=0, max=11, message="身高长度必须介于 0 和 11 之间")
-    public String getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeight(String height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 
-    @Length(min=0, max=11, message="体重长度必须介于 0 和 11 之间")
-    public String getWeight() {
+    public int getWeight() {
         return weight;
     }
 
-    public void setWeight(String weight) {
+    public void setWeight(int weight) {
         this.weight = weight;
     }
 
@@ -344,12 +353,11 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.inJobTime = inJobTime;
     }
 
-    @Length(min=0, max=11, message="级别长度必须介于 0 和 11 之间")
-    public String getJobLevel() {
+    public int getJobLevel() {
         return jobLevel;
     }
 
-    public void setJobLevel(String jobLevel) {
+    public void setJobLevel(int jobLevel) {
         this.jobLevel = jobLevel;
     }
 

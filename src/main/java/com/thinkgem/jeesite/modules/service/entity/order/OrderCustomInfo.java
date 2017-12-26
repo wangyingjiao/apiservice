@@ -3,9 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.order;
 
+import com.thinkgem.jeesite.common.utils.RegexTool;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.Pattern;
 
 /**
  * 客户信息Entity
@@ -38,7 +42,8 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		super(id);
 	}
 
-	@Length(min=0, max=32, message="客户姓名长度必须介于 0 和 32 之间")
+	@NotBlank(message = "姓名不可为空")
+	@Length(min=2, max=15, message="姓名长度必须介于 2 和 15 之间")
 	public String getName() {
 		return name;
 	}
@@ -47,6 +52,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.name = name;
 	}
 
+	@NotBlank(message = "性别不可为空")
 	public String getSex() {
 		return sex;
 	}
@@ -55,7 +61,9 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.sex = sex;
 	}
 
-	@Length(min=0, max=11, message="客户电话长度必须介于 0 和 11 之间")
+	@NotBlank(message = "手机号不可为空")
+	@Pattern(regexp = RegexTool.REGEX_MOBILE,message = "手机号格式不正确！")
+	@Length(min=11, max=11, message="手机号长度必须是 11 位")
 	public String getPhone() {
 		return phone;
 	}
@@ -64,6 +72,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.phone = phone;
 	}
 
+	@NotBlank(message = "省不可为空")
 	@Length(min=0, max=20, message="省_区号长度必须介于 0 和 20 之间")
 	public String getProvinceCode() {
 		return provinceCode;
@@ -73,6 +82,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.provinceCode = provinceCode;
 	}
 
+	@NotBlank(message = "市不可为空")
 	@Length(min=0, max=20, message="市_区号长度必须介于 0 和 20 之间")
 	public String getCityCode() {
 		return cityCode;
@@ -82,6 +92,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.cityCode = cityCode;
 	}
 
+	@NotBlank(message = "区不可为空")
 	@Length(min=0, max=20, message="区_区号长度必须介于 0 和 20 之间")
 	public String getAreaCode() {
 		return areaCode;
@@ -91,6 +102,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.areaCode = areaCode;
 	}
 
+	@NotBlank(message = "详细地址不可为空")
 	@Length(min=0, max=100, message="详细地址长度必须介于 0 和 100 之间")
 	public String getAddress() {
 		return address;
@@ -118,6 +130,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.addrLatitude = addrLatitude;
 	}
 
+	@Pattern(regexp = RegexTool.REGEX_EMAIL,message = "邮箱格式不正确！")
 	@Length(min=0, max=64, message="客户邮箱长度必须介于 0 和 64 之间")
 	public String getEmail() {
 		return email;
@@ -127,7 +140,6 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.email = email;
 	}
 
-	@Length(min=0, max=32, message="所属服务机构ID长度必须介于 0 和 32 之间")
 	public String getOrgId() {
 		return orgId;
 	}

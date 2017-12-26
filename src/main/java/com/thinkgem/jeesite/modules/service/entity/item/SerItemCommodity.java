@@ -42,7 +42,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 		super(id);
 	}
 
-	@Length(min=0, max=64, message="服务项目编号长度必须介于 0 和 64 之间")
 	public String getItemId() {
 		return itemId;
 	}
@@ -62,7 +61,7 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	}
 
 	@NotBlank(message = "商品单位不可为空")
-	@Length(min=1, max=5, message="商品单位长度必须介于 1 和 5 之间")
+	@Length(min=1, max=10, message="商品单位长度必须介于 1 和 10 之间")
 	public String getUnit() {
 		return unit;
 	}

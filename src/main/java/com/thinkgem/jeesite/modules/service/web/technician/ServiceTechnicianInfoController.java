@@ -210,15 +210,6 @@ public class ServiceTechnicianInfoController extends BaseController {
     @RequiresPermissions("techni_update")
     @RequestMapping(value = "saveFamilyMembers", method = RequestMethod.POST)
     public Result saveFamilyMembers(@RequestBody ServiceTechnicianInfo info) {
-        Set<ConstraintViolation<ServiceTechnicianInfo>> validate = validator.validate(info, SaveServiceInfoGroup.class, SaveMoreGroup.class);
-        if (validate != null && validate.size() > 0) {
-            ArrayList<String> errs = new ArrayList<>();
-            for (ConstraintViolation<ServiceTechnicianInfo> violation : validate) {
-                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
-            }
-            return new FailResult(errs);
-        }
-
         serviceTechnicianInfoService.saveFamilyMembers(info);
         return new SuccResult("保存家庭成员成功");
     }

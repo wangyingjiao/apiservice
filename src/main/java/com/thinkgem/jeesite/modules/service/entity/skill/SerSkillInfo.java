@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 		super(id);
 	}
 
+	@NotBlank(message = "技能名称不可为空")
 	@Length(min=2, max=15, message="技能名称长度必须介于 2 和 15 之间")
 	public String getName() {
 		return name;
