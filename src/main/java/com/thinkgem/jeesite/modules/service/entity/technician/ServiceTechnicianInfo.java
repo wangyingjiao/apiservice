@@ -293,7 +293,7 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.workTime = workTime;
     }
 
-    @Pattern(regexp = RegexTool.REGEX_EMAIL,message = "邮箱格式不正确！")
+    //@Pattern(regexp = RegexTool.REGEX_EMAIL,message = "邮箱格式不正确！")
     @Length(min=0, max=64, message="邮箱长度必须介于 0 和 64 之间")
     public String getEmail() {
         return email;
