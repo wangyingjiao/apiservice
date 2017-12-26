@@ -98,7 +98,7 @@
         LEFT JOIN sys_user_role ur ON ur.role_id = a.id
         LEFT JOIN sys_user u ON u.id = ur.user_id
         LEFT JOIN sys_role_office ro ON ro.role_id = a.id
-        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND CAST(a.data_scope AS SIGNED) &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)
         <if test="user != null and user.id != null and user.id != ''">
             AND u.id = #{user.id}
         </if>
@@ -217,7 +217,7 @@
         <include refid="roleColumns"/>
         FROM sys_role a
         INNER JOIN basic_organization o ON o.id = a.office_id
-        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND CAST(a.data_scope AS SIGNED) &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)
         ${sqlMap.dsf}
         <if test="name != null">
             AND a.name LIKE concat( '%' , #{name} , '%' )
