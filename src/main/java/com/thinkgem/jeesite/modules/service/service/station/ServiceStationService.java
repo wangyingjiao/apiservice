@@ -47,6 +47,11 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
     public List<BasicServiceStation> findList(BasicServiceStation serviceStation) {
         User user = UserUtils.getUser();
         List<BasicServiceStation> list = new ArrayList<>();
+        //如果用户服务站id不是0  list添加用户的服务站id
+        if (!user.getStation().getId().equals("0")) {
+            list.add(super.get(user.getStation().getId()));
+            return list;
+        }
         if (!serviceStation.getOrgId().equals("0") && user.getStation().getId().equals("0")) {
             BasicServiceStation station = super.get("0");
             station.setName("本机构");
