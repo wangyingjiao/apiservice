@@ -403,7 +403,7 @@ public class RoleController extends BaseController {
         Page<Role> page = new Page<>(request, response);
         Page<Role> list = systemService.findRole(page, role);
         return new SuccResult(list);
-
+    }
 
 
     @ResponseBody
