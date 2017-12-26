@@ -81,7 +81,7 @@ public abstract class BaseController {
         Set<ConstraintViolation<DataEntity>> validate = validator.validate(entity, groups);
         if (validate.size() > 0) {
             for (ConstraintViolation<DataEntity> violation : validate) {
-                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
+                errs.add(violation.getMessage());
             }
         }
         return errs;
