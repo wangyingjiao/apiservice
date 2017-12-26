@@ -78,11 +78,15 @@ public abstract class BaseController {
 
     protected List<String> errors(DataEntity entity, Class<?>... groups) {
         ArrayList<String> errs = new ArrayList<>();
-        Set<ConstraintViolation<DataEntity>> validate = validator.validate(entity, groups);
-        if (validate.size() > 0) {
-            for (ConstraintViolation<DataEntity> violation : validate) {
-                errs.add(violation.getMessage());
+        try{
+            Set<ConstraintViolation<DataEntity>> validate = validator.validate(entity, groups);
+            if (validate.size() > 0) {
+                for (ConstraintViolation<DataEntity> violation : validate) {
+                    errs.add(violation.getMessage());
+                }
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return errs;
     }

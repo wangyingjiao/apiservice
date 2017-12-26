@@ -161,10 +161,10 @@ public class ServiceTechnicianInfoController extends BaseController {
     @RequiresPermissions("techni_update")
     @RequestMapping(value = "upData", method = RequestMethod.POST)
     public Result upData(@RequestBody ServiceTechnicianInfo info) {
-        List<String> errList = errors(info);
+        /*List<String> errList = errors(info);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
-        }
+        }*/
         if("leave".equals(info.getJobStatus())){//离职员工判断是否有订单
             //服务人员还有未完成的订单，则不可离职
             if(serviceTechnicianInfoService.getOrderTechRelation(info) > 0){

@@ -234,7 +234,6 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.nation = nation;
     }
 
-    @NotBlank(message = "出生日期不可为空")
     @JsonFormat(pattern = "yyyy-MM-dd")
     public Date getBirthDate() {
         return birthDate;
