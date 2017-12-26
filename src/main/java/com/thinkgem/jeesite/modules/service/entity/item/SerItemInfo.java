@@ -77,7 +77,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.picture = picture;
 	}
 
-	@NotBlank(message = "服务图片不可为空")
 	public List<String> getPictures() {
 		return pictures;
 	}
