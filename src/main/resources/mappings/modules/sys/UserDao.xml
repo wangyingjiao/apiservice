@@ -120,7 +120,7 @@
         FROM sys_user a
         <include refid="userJoins"/><!--
 		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
-        WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL}
+        WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL} AND a.useable = '1'
     </select>
 
     <!-- 分页查询用户信息 -->
