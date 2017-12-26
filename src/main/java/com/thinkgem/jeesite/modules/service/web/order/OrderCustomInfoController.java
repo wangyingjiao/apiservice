@@ -64,11 +64,11 @@ public class OrderCustomInfoController extends BaseController {
 			User user = UserUtils.getUser();
 			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
 			orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
-
+/*
 			OrderCustomInfo custInfo = orderCustomInfoService.findCustomInfo(orderCustomInfo);
 			if(null != custInfo){
 				return new FailResult("客户重复");
-			}
+			}*/
 		}
 
 		orderCustomInfoService.save(orderCustomInfo);
