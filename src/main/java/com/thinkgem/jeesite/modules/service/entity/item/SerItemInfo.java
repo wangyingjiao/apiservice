@@ -69,7 +69,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.name = name;
 	}
 
-	@NotBlank(message = "服务图片不可为空")
 	public String getPicture() {
 		return picture;
 	}
@@ -78,6 +77,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.picture = picture;
 	}
 
+	@NotBlank(message = "服务图片不可为空")
 	public List<String> getPictures() {
 		return pictures;
 	}
