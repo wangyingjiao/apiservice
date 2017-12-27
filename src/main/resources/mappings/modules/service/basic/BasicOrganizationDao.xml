@@ -162,18 +162,10 @@
 			<if test="visable != null and visable != ''">
 				visable = #{visable},
 			</if>
-			<if test="url != null and url != ''">
 				url = #{url},
-			</if>
-			<if test="fax != null and fax != ''">
 				fax = #{fax},
-			</if>
-			<if test="tel400 != null and tel400 != ''">
 				tel_400 = #{tel400},
-			</if>
-			<if test="remark != null and remark != ''">
 				remark = #{remark},
-			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
