@@ -5,15 +5,14 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderPayInfo;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderReturn;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderRefundGoods;
 
 /**
- * 支付信息DAO接口
+ * 退货单DAO接口
  * @author a
- * @version 2017-11-23
+ * @version 2017-12-26
  */
 @MyBatisDao
-public interface OrderReturnDao extends CrudDao<OrderReturn> {
+public interface OrderRefundGoodsDao extends CrudDao<OrderRefundGoods> {
 	
 }

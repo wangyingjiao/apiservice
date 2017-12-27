@@ -5,9 +5,6 @@ package com.thinkgem.jeesite.modules.service.entity.order;
 
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
-
-import javax.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -15,16 +12,18 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 /**
  * 支付信息Entity
  * @author a
- * @version 2017-11-23
+ * @version 2017-12-26
  */
 public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	
 	private static final long serialVersionUID = 1L;
-	private String orderId;		// 订单ID
-	private String payMode;		// 支付方式(1:cash(现金);2:wx_pub_qr(微信扫码);3:wx(微信);4:alipay_qr(支付宝扫码);5:alipay(支付宝);6:pos(银行卡);7:balance(余额);)
+	private String payNumber;		// 支付编号
+	private String masterId;		// 主订单ID
+	private String payPlatform;		// 支付平台(cash:现金 wx_pub_qr:微信扫码 wx:微信 alipay_qr:支付宝扫码 alipay:支付宝 pos:银行卡 balance:余额)
+	private String payMethod;		// 支付方式(online:在线 offline:货到付款)
 	private Date payTime;		// 支付时间
-	private String payAccount;	// 支付总额
-	private String payStatus;	// 支付状态(1:待支付;2:已支付;)
+	private String payAccount;		// 支付总额
+	private String payStatus;		// 支付状态(waitpay:待支付 payed:已支付)
 	
 	public OrderPayInfo() {
 		super();
@@ -34,23 +33,38 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 		super(id);
 	}
 
-	@Length(min=0, max=64, message="订单ID长度必须介于 0 和 64 之间")
-	public String getOrderId() {
-		return orderId;
+	@Length(min=0, max=32, message="支付编号长度必须介于 0 和 32 之间")
+	public String getPayNumber() {
+		return payNumber;
 	}
 
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
+	public void setPayNumber(String payNumber) {
+		this.payNumber = payNumber;
 	}
 	
-	@Length(min=0, max=1, message="支付方式必须为【1-7】之间的1位数字")
-    @Pattern(regexp = "^[1-7]{1}$", message = "支付方式必须为【1-7】之间的1位数字")
-	public String getPayMode() {
-		return payMode;
+	@Length(min=1, max=32, message="主订单ID长度必须介于 1 和 32 之间")
+	public String getMasterId() {
+		return masterId;
 	}
 
-	public void setPayMode(String payMode) {
-		this.payMode = payMode;
+	public void setMasterId(String masterId) {
+		this.masterId = masterId;
+	}
+	
+	public String getPayPlatform() {
+		return payPlatform;
+	}
+
+	public void setPayPlatform(String payPlatform) {
+		this.payPlatform = payPlatform;
+	}
+	
+	public String getPayMethod() {
+		return payMethod;
+	}
+
+	public void setPayMethod(String payMethod) {
+		this.payMethod = payMethod;
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -61,8 +75,7 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	public void setPayTime(Date payTime) {
 		this.payTime = payTime;
 	}
-
-    @Pattern(regexp = "^(-?\\\\d+)(\\\\.\\\\d+)?$", message = "支付金额请填写数字") 
+	
 	public String getPayAccount() {
 		return payAccount;
 	}
@@ -71,8 +84,6 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 		this.payAccount = payAccount;
 	}
 	
-	@Length(min=0, max=1, message="支付状态必须为【1-2】之间的1位数字")
-    @Pattern(regexp = "^[1-2]{1}$", message = "支付方式必须为【1-2】之间的1位数字")
 	public String getPayStatus() {
 		return payStatus;
 	}

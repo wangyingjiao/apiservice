@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderRefundDao">
+    
+	<sql id="orderRefundColumns">
+		a.id AS "id",
+		a.refund_number AS "refundNumber",
+		a.order_id AS "orderId",
+		a.apply_time AS "applyTime",
+		a.finish_time AS "finishTime",
+		a.refund_account AS "refundAccount",
+		a.refund_status AS "refundStatus",
+		a.refund_method AS "refundMethod",
+		a.refund_reason AS "refundReason",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orderRefundJoins">
+	</sql>
+    
+	<select id="get" resultType="OrderRefund">
+		SELECT 
+			<include refid="orderRefundColumns"/>
+		FROM order_refund a
+		<include refid="orderRefundJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderRefund">
+		SELECT 
+			<include refid="orderRefundColumns"/>
+		FROM order_refund a
+		<include refid="orderRefundJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderRefund">
+		SELECT 
+			<include refid="orderRefundColumns"/>
+		FROM order_refund a
+		<include refid="orderRefundJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_refund(
+			id,
+			refund_number,
+			order_id,
+			apply_time,
+			finish_time,
+			refund_account,
+			refund_status,
+			refund_method,
+			refund_reason,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{refundNumber},
+			#{orderId},
+			#{applyTime},
+			#{finishTime},
+			#{refundAccount},
+			#{refundStatus},
+			#{refundMethod},
+			#{refundReason},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_refund SET
+			<if test="refundNumber !=null and refundNumber != ''">refund_number = #{refundNumber},</if>
+			<if test="orderId !=null and orderId != ''">order_id = #{orderId},</if>
+			<if test="applyTime !=null and applyTime != ''">apply_time = #{applyTime},</if>
+			<if test="finishTime !=null and finishTime != ''">finish_time = #{finishTime},</if>
+			<if test="refundAccount !=null and refundAccount != ''">refund_account = #{refundAccount},</if>
+			<if test="refundStatus !=null and refundStatus != ''">refund_status = #{refundStatus},</if>
+			<if test="refundMethod !=null and refundMethod != ''">refund_method = #{refundMethod},</if>
+			<if test="refundReason !=null and refundReason != ''">refund_reason = #{refundReason},</if>
+			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_refund SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
