@@ -105,6 +105,9 @@
         <if test="user != null and user.loginName != null and user.loginName != ''">
             AND u.login_name = #{user.loginName}
         </if>
+        <if test="organization != null and organization.id != null and organization.id !='' ">
+            AND o.id = #{organization.id}
+        </if>
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}
         ORDER BY a.name
@@ -223,7 +226,7 @@
         <if test="name != null">
             AND a.name LIKE concat( '%' , #{name} , '%' )
         </if>
-        <if test="organization != null and organization.id != null">
+        <if test="organization != null and organization.id != null and organization.id !='' ">
             AND a.office_id = #{organization.id}
         </if>
         <choose>

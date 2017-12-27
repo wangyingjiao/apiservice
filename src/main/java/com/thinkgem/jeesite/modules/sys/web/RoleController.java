@@ -388,11 +388,17 @@ public class RoleController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("role_view")
-    @RequestMapping(value = "listData", method = RequestMethod.GET)
+    @RequestMapping(value = "listData", method = RequestMethod.POST)
     @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
-    public Result listData(Role role) {
-        List<Role> list = systemService.findRole(UserUtils.getUser());
-        return new SuccResult(list);
+    public Result listData(@RequestBody Role role) {
+        List<Role> list =new ArrayList<>();
+        if (StringUtils.isNotBlank(role.getOrganization().getId())) {
+            User user= UserUtils.getUser();
+            user.setOrganization(role.getOrganization());
+            list = systemService.findRole(user);
+            return new SuccResult(list);
+        }
+        return new FailResult("未找到岗位");
     }
 
     @ResponseBody

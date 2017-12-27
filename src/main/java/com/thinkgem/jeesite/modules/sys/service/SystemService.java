@@ -602,7 +602,13 @@ public class SystemService extends BaseService implements InitializingBean {
     public List<Role> findRole(User user) {
         Role role = new Role();
         role.getSqlMap().put("dsf", dataRoleFilter(user));
-        List<Role> list = roleDao.findList(role);
+        role.setOrganization(user.getOrganization());
+        //根据用户的机构查询出该机构下的所有岗位集合
+        List<Role> list =null;
+        if (StringUtils.isNotBlank(user.getOrganization().getId())){
+            list = roleDao.findList(role);
+        }
+
         return list;
     }
 
