@@ -92,6 +92,16 @@ public class SystemService extends BaseService implements InitializingBean {
         return UserUtils.getByLoginName(loginName);
     }
 
+    /**
+     * 根据用户手机号获取用户
+     * @param user
+     * @return
+     */
+    public User getByMobile(User user) {
+
+        return userDao.getByMobile(user);
+    }
+
     public Page<User> findUser(Page<User> page, User user) {
         // 生成数据权限过滤条件（dsf为dataScopeFilter的简写，在xml中使用 ${sqlMap.dsf}调用权限SQL）
         user.getSqlMap().put("dsf", dataScopeFilter(user.getCurrentUser(), "org", "ss"));
@@ -118,7 +128,7 @@ public class SystemService extends BaseService implements InitializingBean {
     /**
      * 通过部门ID获取用户列表，仅返回用户id和name（树查询用户时用）
      *
-     * @param user
+     * @param officeId
      * @return
      */
     @SuppressWarnings("unchecked")

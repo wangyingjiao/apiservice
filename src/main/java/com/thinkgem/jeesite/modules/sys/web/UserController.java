@@ -280,6 +280,18 @@ public class UserController extends BaseController {
             if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))) {
                 return new FailResult("保存用户'" + user.getLoginName() + "'失败，登录名已存在");
             }
+        }else{
+            //编辑员工
+            User temUser = new User();
+            temUser.setMobile(user.getMobile());
+            User midUser = systemService.getByMobile(temUser);
+            //如果根据手机号查询出用户
+            if (midUser != null){
+                //如果id不相同不是同一用户 不能添加
+                if (!midUser.getId().equals(user.getId())){
+                    return new FailResult("保存用户失败，手机号已存在");
+                }
+            }
         }
         // 角色数据有效性验证，过滤不在授权内的角色
         List<Role> roleList = Lists.newArrayList();
