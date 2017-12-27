@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 
+import java.util.List;
+
 /**
  * 机构DAO接口
  * @author a
@@ -15,7 +17,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 @MyBatisDao
 public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
 
-    BasicOrganization getByName(String name);
+    List<BasicOrganization> getByName(String name);
 
     void deleteCitysByOrgId(BasicOrganization basicOrganization);
 }

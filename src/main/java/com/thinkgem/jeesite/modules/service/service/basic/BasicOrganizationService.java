@@ -47,8 +47,8 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 	 * @return
 	 */
 	public boolean getByName(String name) {
-		BasicOrganization basicOrganization = dao.getByName(name);
-		return basicOrganization != null;
+		List<BasicOrganization> basicOrganization = dao.getByName(name);
+		return basicOrganization.size() != 0;
 	}
 
 	@Transactional(readOnly = false)
