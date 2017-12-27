@@ -309,8 +309,8 @@ public class RoleController extends BaseController {
     /**
      * 验证角色英文名是否有效
      *
-     * @param oldName
-     * @param name
+     * @param oldEnname
+     * @param enname
      * @return
      */
     @RequiresPermissions("user")
@@ -332,13 +332,9 @@ public class RoleController extends BaseController {
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
 
-        Set<ConstraintViolation<Role>> validate = validator.validate(role, SaveRoleGroup.class);
-        if (validate.size() > 0) {
-            ArrayList<String> errs = new ArrayList<>();
-            for (ConstraintViolation<Role> violation : validate) {
-                errs.add(violation.getPropertyPath() + ":" + violation.getMessage());
-            }
-            return new FailResult(errs);
+        List<String> errList = errors(role,SaveRoleGroup.class);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
         }
 
         if (StringUtils.isBlank(role.getId())) {
