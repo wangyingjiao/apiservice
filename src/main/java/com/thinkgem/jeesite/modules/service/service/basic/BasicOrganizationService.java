@@ -9,6 +9,7 @@ import java.util.List;
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -101,6 +102,14 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
             }
         }
 		basicOrganizationRe.setCityCodes(cityCodes);
+
+		int stations = dao.getStationList(basicOrganization.getId());
+		if(stations == 0){
+			basicOrganizationRe.setHaveStation(0);
+		}else{
+			basicOrganizationRe.setHaveStation(1);
+		}
+
 		return basicOrganizationRe;
 	}
 

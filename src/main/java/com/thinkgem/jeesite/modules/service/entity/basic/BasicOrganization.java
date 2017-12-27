@@ -186,4 +186,14 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setCityCodes(List<String> cityCodes) {
 		this.cityCodes = cityCodes;
 	}
+
+	private int haveStation;
+
+	public int getHaveStation() {
+		return haveStation;
+	}
+
+	public void setHaveStation(int haveStation) {
+		this.haveStation = haveStation;
+	}
 }

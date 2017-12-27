@@ -190,4 +190,10 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE org_id = #{id}
 	</update>
+
+	<select id="getStationList" resultType="int">
+		SELECT count(1) FROM basic_service_station a
+		WHERE a.org_id = #{id}
+		AND a.del_flag = '0'
+	</select>
 </mapper>
