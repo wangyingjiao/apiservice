@@ -347,8 +347,21 @@ public class RoleController extends BaseController {
             if (roleByName != null) {
                 return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
             }
+        }else{
+            //编辑岗位 是否修改名称
+            Role roleByName = systemService.getRoleByName(role.getName());
+            //根据名称查询出的岗位为空 没有该岗位
+            if (roleByName != null) {
+                //如果查询出来的岗位与传输的岗位名称相同 id不同 则不可以修改
+                if (!roleByName.getId().equals(role.getId())) {
+                    return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+                }else{
+
+                }
+            }
         }
         User user = UserUtils.getUser();
+        //获取岗位机构
         BasicOrganization organization = user.getOrganization();
         if (role.getOrganization() == null) {
             role.setOrganization(organization);
