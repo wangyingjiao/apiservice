@@ -376,7 +376,7 @@ public class RoleController extends BaseController {
         } else {
             List<User> users = systemService.findUserByRole(role);
             if (users.size() > 0) {
-                return new FailResult("有" + users.size() + "个用户属于要删除的角色，不能删除此角色");
+                return new FailResult("该岗位已有员工，暂时无法删除");
             } else {
                 systemService.deleteRole(role);
                 UserUtils.clearCache();
