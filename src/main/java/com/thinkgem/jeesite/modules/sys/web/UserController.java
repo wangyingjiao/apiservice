@@ -290,7 +290,7 @@ public class UserController extends BaseController {
         User currUser = UserUtils.getUser();
         if (currUser.getOrganization().getId().equals("0")) {
             logger.info("全平台用户！");
-            role = systemService.findAllRole();
+            role = systemService.findRole(new Role());
         } else {
             role = systemService.findRole(currUser);
         }
