@@ -77,8 +77,7 @@ public class BasicOrganizationController extends BaseController {
 		}
 
 		//检查重名
-		if ((basicOrganization.getId() == null || basicOrganization.getId().equals(""))
-				&& basicOrganizationService.getByName(basicOrganization.getName())) {
+		if (basicOrganizationService.getByName(basicOrganization.getName())) {
 			return new FailResult("机构名称不能重复");
 		}
 		basicOrganizationService.save(basicOrganization);

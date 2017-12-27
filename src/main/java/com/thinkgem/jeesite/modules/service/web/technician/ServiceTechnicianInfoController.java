@@ -185,10 +185,10 @@ public class ServiceTechnicianInfoController extends BaseController {
     @ApiOperation("APP保存")
     @RequestMapping(value = "saveAppPassWordData", method = RequestMethod.POST)
     public Result saveAppPassWordData(@RequestBody ServiceTechnicianInfo info) {
-        List<String> errList = errors(info);
+       /* List<String> errList = errors(info);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
-        }
+        }*/
         if(StringUtils.isBlank(info.getAppLoginPassword())){
             return new FailResult("保存失败");
         }
