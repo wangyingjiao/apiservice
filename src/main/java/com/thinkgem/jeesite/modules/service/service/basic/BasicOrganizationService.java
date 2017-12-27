@@ -43,11 +43,11 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 
 	/**
 	 * 验证名称是否重复
-	 * @param name
+	 * @param organization
 	 * @return
 	 */
-	public boolean getByName(String name) {
-		List<BasicOrganization> basicOrganization = dao.getByName(name);
+	public boolean getByName(BasicOrganization organization) {
+		List<BasicOrganization> basicOrganization = dao.getByName(organization);
 		return basicOrganization.size() != 0;
 	}
 

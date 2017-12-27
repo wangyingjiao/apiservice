@@ -17,7 +17,7 @@ import java.util.List;
 @MyBatisDao
 public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
 
-    List<BasicOrganization> getByName(String name);
+    List<BasicOrganization> getByName(BasicOrganization organization);
 
     void deleteCitysByOrgId(BasicOrganization basicOrganization);
 }
