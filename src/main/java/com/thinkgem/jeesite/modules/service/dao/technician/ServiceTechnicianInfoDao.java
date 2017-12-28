@@ -51,4 +51,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     List<SerSkillInfo> getSkillInfosByOrgId(String orgId);
 
     void deleteFamilyMembers(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    List<String> getSkillIds(ServiceTechnicianInfo serviceTechnicianInfo);
 }

@@ -310,6 +310,12 @@
 		WHERE tech_id = #{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
+	<select id="getSkillIds" resultType="String">
+		select skill_id AS id
+		from ser_skill_tech
+		where tech_id=#{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 
 	<select id="findTech"  resultType="ServiceTechnicianInfo">
 		SELECT

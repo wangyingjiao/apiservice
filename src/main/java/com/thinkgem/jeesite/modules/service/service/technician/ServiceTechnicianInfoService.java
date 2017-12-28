@@ -114,8 +114,16 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         deleteTechnicianHoliday(serviceTechnicianInfo);
         //删除家庭成员 按技师
         deleteFamilyMembers(serviceTechnicianInfo);
-        //删除时同时删除关联的技能
-        delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
+
+        List<String> skillIds = dao.getSkillIds(serviceTechnicianInfo);
+        if (null != skillIds) {
+            //删除时同时删除关联的技能
+            delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
+            for (String skillId : skillIds) {
+                //更新技师数量
+                serSkillTechnicianDao.updateTechNum(skillId);
+            }
+        }
     }
 
     @Transactional(readOnly = false)

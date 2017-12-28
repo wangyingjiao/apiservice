@@ -71,7 +71,7 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 		this.week = week;
 	}
 
-	@JsonFormat(pattern = "HH:mm:ss")
+	@JsonFormat(pattern = "HH:mm")
 	public Timestamp getStartTime() {
 		return startTime;
 	}
@@ -80,7 +80,7 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 		this.startTime = startTime;
 	}
 
-	@JsonFormat(pattern = "HH:mm:ss")
+	@JsonFormat(pattern = "HH:mm")
 	public Timestamp getEndTime() {
 		return endTime;
 	}
