@@ -169,8 +169,9 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	public List<SerSkillTechnician>  findTechnicianPage(SerSkillInfo technicianInfo) {
 		return serSkillInfoDao.choiceTechnicianlist(technicianInfo);
 	}
-
-    public List<BasicServiceStation> getServiceStationList() {
-		return serSkillInfoDao.getServiceStationList();
+	//根据权限获取对应的服务站
+    public List<BasicServiceStation> getServiceStationList(BasicServiceStation station) {
+		station.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
+		return serSkillInfoDao.getServiceStationList(station);
     }
 }

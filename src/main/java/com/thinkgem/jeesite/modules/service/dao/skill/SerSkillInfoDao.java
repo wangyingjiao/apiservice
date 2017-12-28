@@ -29,5 +29,5 @@ public interface SerSkillInfoDao extends CrudDao<SerSkillInfo> {
 
     List<SerSkillTechnician> choiceTechnicianlist(SerSkillInfo serSkillInfo);
 
-    List<BasicServiceStation> getServiceStationList();
+    List<BasicServiceStation> getServiceStationList(BasicServiceStation station);
 }

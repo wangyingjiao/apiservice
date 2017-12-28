@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
+import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
@@ -43,6 +44,7 @@ public class SerSkillInfoController extends BaseController {
 
     @Autowired
     private SerSkillInfoService serSkillInfoService;
+
 
     @ModelAttribute
     public SerSkillInfo get(@RequestParam(required = false) String id) {
@@ -118,7 +120,10 @@ public class SerSkillInfoController extends BaseController {
 
             List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
             List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
-            List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList();
+            String orgId = serSkillInfo.getOrgId();
+            BasicServiceStation station =new BasicServiceStation();
+            station.setId(orgId);
+            List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
             HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
             objectObjectHashMap.put("info",entity);
             objectObjectHashMap.put("items",items);
@@ -133,15 +138,19 @@ public class SerSkillInfoController extends BaseController {
     @RequestMapping(value = "insertData", method = {RequestMethod.POST})
     @ApiOperation("新增技能")
     public Result insertData(@RequestBody SerSkillInfo serSkillInfo) {
-            List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
-            List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
-            List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList();
-            HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
-            objectObjectHashMap.put("items",items);
-            objectObjectHashMap.put("techs",techs);
-            objectObjectHashMap.put("stations",stations);
+        List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
+        List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
+       //根据机构id查询机构下的服务站
+        String orgId = serSkillInfo.getOrgId();
+        BasicServiceStation station =new BasicServiceStation();
+        station.setId(orgId);
+        List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
+        HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
+        objectObjectHashMap.put("items",items);
+        objectObjectHashMap.put("techs",techs);
+        objectObjectHashMap.put("stations",stations);
 
-            return new SuccResult(objectObjectHashMap);
+        return new SuccResult(objectObjectHashMap);
     }
 
     @ResponseBody

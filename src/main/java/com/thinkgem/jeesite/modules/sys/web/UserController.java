@@ -278,7 +278,7 @@ public class UserController extends BaseController {
         }
         if (StringUtils.isBlank(user.getId())) {
             if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))) {
-                return new FailResult("保存用户'" + user.getLoginName() + "'失败，登录名已存在");
+                return new FailResult("保存用户'" + user.getLoginName() + "'失败，登陆账号已存在");
             }
         }else{
             //编辑员工
@@ -289,7 +289,7 @@ public class UserController extends BaseController {
             if (midUser != null){
                 //如果id不相同不是同一用户 不能添加
                 if (!midUser.getId().equals(user.getId())){
-                    return new FailResult("保存用户失败，手机号已存在");
+                    return new FailResult("保存用户失败，登陆账号已存在");
                 }
             }
         }
