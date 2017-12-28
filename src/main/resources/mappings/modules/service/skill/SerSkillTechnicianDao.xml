@@ -131,4 +131,9 @@
 		AND  a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
+	<update id="updateTechNum">
+		UPDATE ser_skill_info SET
+		tech_num = (SELECT COUNT(1) FROM ser_skill_tech WHERE skill_id = #{id} AND del_flag = '0')
+		WHERE id = #{id}
+	</update>
 </mapper>

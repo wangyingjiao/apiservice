@@ -180,6 +180,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
                 serSkillTechnician.setTechId(serviceTechnicianInfo.getId());
                 serSkillTechnician.preInsert();
                 serSkillTechnicianDao.insert(serSkillTechnician);
+
+                //更新技师数量
+                serSkillTechnicianDao.updateTechNum(skillId);
             }
         }
     }
