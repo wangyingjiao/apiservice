@@ -6,7 +6,9 @@ package com.thinkgem.jeesite.modules.service.service.order;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.MapUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +43,10 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	@Transactional(readOnly = false)
 	public void save(OrderCustomInfo orderCustomInfo) {
 
+		//var result = BMapLib.GeoUtils.isPointInPolygon(sitePoint, overlay);
 //		String station = "";
 //		station = getStationId(orderCustomInfo.getAddrLatitude(),orderCustomInfo.getAddrLongitude());
-		orderCustomInfo.setStationId(UserUtils.getUser().getStation().getId());//服务站ID
+//		orderCustomInfo.setStationId(UserUtils.getUser().getStation().getId());//服务站ID
 
 		super.save(orderCustomInfo);
 	}
@@ -68,4 +71,8 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
     public OrderCustomInfo findCustomInfo(OrderCustomInfo orderCustomInfo) {
 		return dao.findCustomInfo(orderCustomInfo);
     }
+
+	public List<ServiceStation> getStationsByOrgId(String orgId) {
+		return dao.getStationsByOrgId(orgId);
+	}
 }

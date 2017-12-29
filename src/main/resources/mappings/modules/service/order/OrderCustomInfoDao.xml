@@ -183,4 +183,19 @@
 			AND a.phone = #{phone}
 		</where>
 	</select>
+	<select id="getStationsByOrgId" resultType="ServiceStation">
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.type AS "type",
+			a.province_code AS "provinceCode",
+			a.city_code AS "cityCode",
+			a.area_code AS "areaCode",
+			a.address AS "address",
+			a.service_point AS "servicePoint"
+		FROM basic_service_station a
+		WHERE a.org_id = #{id}
+		AND a.del_flag = '0'
+		AND a.is_useable = 'yes'
+	</select>
 </mapper>

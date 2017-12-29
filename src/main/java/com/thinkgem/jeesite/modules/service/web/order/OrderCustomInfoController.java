@@ -7,10 +7,12 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.MapUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.service.order.OrderCustomInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -64,11 +66,24 @@ public class OrderCustomInfoController extends BaseController {
 			User user = UserUtils.getUser();
 			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
 			orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
-/*
-			OrderCustomInfo custInfo = orderCustomInfoService.findCustomInfo(orderCustomInfo);
-			if(null != custInfo){
-				return new FailResult("客户重复");
-			}*/
+		}
+		//客户经纬度
+		if(StringUtils.isNotBlank(orderCustomInfo.getAddrLatitude()) && StringUtils.isNotBlank(orderCustomInfo.getAddrLongitude())){
+			List<ServiceStation> stations = orderCustomInfoService.getStationsByOrgId(orderCustomInfo.getOrgId());//客户机构下的服务站
+			if(null != stations){
+				for (ServiceStation station : stations){
+					if(StringUtils.isNotBlank(station.getServicePoint())){//服务站范围
+						// 判断当前位置是否在多边形区域内
+						if(MapUtils.isInPolygon(orderCustomInfo.getAddrLatitude(),orderCustomInfo.getAddrLongitude(),station.getServicePoint())){
+							orderCustomInfo.setStationId(station.getId());
+							break;
+						}
+					}
+				}
+				if(StringUtils.isBlank(orderCustomInfo.getStationId())){
+					return new FailResult("该地点没有合适服务站");
+				}
+			}
 		}
 
 		orderCustomInfoService.save(orderCustomInfo);
