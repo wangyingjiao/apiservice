@@ -11,7 +11,7 @@
         <result column="areaCode" property="areaCode"/>
         <result column="address" property="address"/>
         <result column="phone" property="phone"/>
-        <result column="employees" property="employees"/>
+
         <result column="techNum" property="techNum"/>
         <result column="servicePoint" property="servicePoint"/>
         <result column="orgId" property="orgId"/>
@@ -21,6 +21,8 @@
         <result column="organ.scopeType" property="organ.scopeType"></result>
         <result column="cityName" property="cityName"></result>
         <collection property="storeList" ofType="java.lang.String" javaType="list" select="basicStore" column="id"/>
+        <collection property="employees" ofType="java.lang.String" javaType="int" select="getCount" column="id"/>
+       <!-- <result column="employees" property="employees"/>-->
     </resultMap>
 
     <select id="basicStore" resultType="string">
@@ -65,6 +67,14 @@
     <!--
     resultType="BasicServiceStation"
     -->
+    <!--根据服务站id获取员工数量-->
+    <select id="getCount" resultType="int">
+          SELECT COUNT(1)
+          from basic_service_station a
+          LEFT JOIN sys_user b on a.id = b.station_id
+          where a.id=#{id} and b.del_flag = '0'
+    </select>
+
     <select id="findList" resultMap="BaseResultMap">
         SELECT
         <include refid="basicServiceStationColumns"/>
@@ -176,7 +186,7 @@
             <if test="address !=null and address != ''">address = #{address},</if>
             <if test="userId !=null and userId != ''">user_id = #{userId},</if>
             <if test="phone !=null and phone != ''">phone = #{phone},</if>
-            <if test="employees !=null and employees != ''">employees = #{employees},</if>
+            <if test="employees !=null">employees = #{employees},</if>
             <if test="techNum !=null and techNum != ''">tech_num = #{techNum},</if>
             <if test="servicePoint !=null and servicePoint != ''">service_point = #{servicePoint},</if>
             <if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>

@@ -88,6 +88,13 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
         super.delete(serviceStation);
     }
 
+
+    //更新服务站信息
+    @Transactional(readOnly = false)
+    public void update(BasicServiceStation serviceStation) {
+        basicServiceStationDao.update(serviceStation);
+    }
+
     @Transactional(readOnly = false)
     public Result saveStore(BasicServiceStation station) {
         if (StringUtils.isBlank(station.getId())) {

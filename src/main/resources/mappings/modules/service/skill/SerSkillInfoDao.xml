@@ -166,6 +166,7 @@
 			<if test="techStationId != null and techStationId !=''">
 				AND a.station_id= #{techStationId}
 			</if>
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

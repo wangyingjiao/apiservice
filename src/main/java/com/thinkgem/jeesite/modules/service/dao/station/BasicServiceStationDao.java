@@ -14,5 +14,5 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
  */
 @MyBatisDao
 public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
-	
+
 }

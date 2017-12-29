@@ -81,7 +81,9 @@ public class SystemService extends BaseService implements InitializingBean {
     public User getUser(String id) {
         return UserUtils.get(id);
     }
-
+    public User getUserById(String id){
+        return userDao.get(id);
+    }
     /**
      * 根据登录名获取用户
      *
