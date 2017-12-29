@@ -3,9 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.order;
 
+import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 订单服务关联Entity
@@ -23,6 +27,13 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String goodsNum;		// 订购商品数
 	private String originPrice;		// 单价原价
 	private String payPrice;		// 单价(折后价，无折扣时和原价相同)
+	private String goodsType;		// 计量方式(num：按数量 area：按面积 house：按居室)
+	private int minPurchase;		// 起购数量
+
+	private Date serviceTime;		// 服务时间
+	private boolean goodsChecked = false;
+	private List<OrderGoods> goods; //商品list
+	private List<OrderGoodsTypeHouse> houses; //按居室商品列表
 	
 	public OrderGoods() {
 		super();
@@ -101,5 +112,52 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	public void setPayPrice(String payPrice) {
 		this.payPrice = payPrice;
 	}
-	
+
+	public Date getServiceTime() {
+		return serviceTime;
+	}
+
+	public void setServiceTime(Date serviceTime) {
+		this.serviceTime = serviceTime;
+	}
+
+	public List<OrderGoods> getGoods() {
+		return goods;
+	}
+
+	public void setGoods(List<OrderGoods> goods) {
+		this.goods = goods;
+	}
+
+	public boolean getGoodsChecked() {
+		return goodsChecked;
+	}
+
+	public void setGoodsChecked(boolean goodsChecked) {
+		this.goodsChecked = goodsChecked;
+	}
+
+	public String getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(String goodsType) {
+		this.goodsType = goodsType;
+	}
+
+	public int getMinPurchase() {
+		return minPurchase;
+	}
+
+	public void setMinPurchase(int minPurchase) {
+		this.minPurchase = minPurchase;
+	}
+
+	public List<OrderGoodsTypeHouse> getHouses() {
+		return houses;
+	}
+
+	public void setHouses(List<OrderGoodsTypeHouse> houses) {
+		this.houses = houses;
+	}
 }

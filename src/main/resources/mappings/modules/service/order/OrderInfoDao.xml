@@ -52,7 +52,8 @@
 	</select>
 	
 	<select id="findList" resultType="OrderInfo">
-		SELECT 
+		SELECT
+			a.id AS id,
 			a.order_number AS orderNumber,
 			addr.name AS customerName,
 			addr.phone AS customerPhone,
@@ -62,7 +63,6 @@
 			sta.name AS stationName,
 			a.order_content AS orderContent,
 			a.pay_price AS payPrice,
-			a.origin_price AS originPrice,
 			a.service_time AS serviceTime,
 			a.order_status AS orderStatus,
 			a.pay_status AS payStatus,
@@ -104,7 +104,7 @@
 				AND a.order_time &lt;= #{orderTimeEnd}
 			</if>
 			<if test="serviceTime != null and serviceTime != ''">
-				AND a.service_time &lt;= #{serviceTime}
+				AND a.service_time = #{serviceTime}
 			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
@@ -266,5 +266,120 @@
 			${sqlMap.dsf}
 		</where>
 	</select>
+	<select id="findServiceTimeList" resultType="ServiceTechnicianWorkTime">
+		SELECT * FROM tech_work_time a WHERE a.del_flag = '0'
+	</select>
+	<select id="formData" resultType="OrderInfo">
+		SELECT
+			a.id AS "id",
+			a.master_id AS "masterId",
+			a.order_type AS "orderType",
+			a.order_number AS orderNumber,
+			a.order_status AS "orderStatus",
+			a.order_source AS "orderSource",
+			a.order_time AS "orderTime",
+			a.org_id AS orgId,
+			org.name AS orgName,
+			a.station_id AS stationId,
+			sta.name AS stationName,
 
+			pay.pay_number AS "payInfo.payNumber",
+			pay.pay_status AS "payInfo.payStatus",
+			pay.pay_method AS "payInfo.payMethod",
+			pay.pay_platform AS "payInfo.payPlatform",
+			pay.pay_account AS "payInfo.payAccount",
+			pay.pay_time AS "payInfo.payTime",
+
+			ref.refund_number AS "refundInfo.refundNumber",
+			ref.refund_account AS "refundInfo.refundAccount",
+			ref.refund_status AS "refundInfo.refundStatus",
+			ref.apply_time AS "refundInfo.applyTime",
+			ref.refund_reason AS "refundInfo.refundReason",
+
+			addr.name AS "addressInfo.name",
+			addr.phone AS "addressInfo.phone",
+			addr.address AS "addressInfo.address",
+
+			a.customer_remark AS "customerRemark",
+			a.customer_remark_pic AS "customerRemarkPic",
+			a.order_remark AS "orderRemark",
+			a.order_remark_pic AS "orderRemarkPic",
+			a.order_content AS "orderContent",
+			a.business_name AS "businessName",
+			a.business_phone AS "businessPhone",
+			a.business_remark AS "businessRemark",
+			a.business_remark_pic AS "businessRemarkPic",
+			a.shop_name AS "shopName",
+			a.shop_phone AS "shopPhone",
+			a.shop_addr AS "shopAddr",
+			a.shop_remark AS "shopRemark",
+			a.shop_remark_pic AS "shopRemarkPic"
+		FROM
+		order_info a
+		LEFT JOIN order_address addr ON a.order_address_id = addr.id AND addr.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_refund ref ON a.id = ref.order_id AND ref.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getOrderDispatchList" resultType="OrderDispatch">
+		SELECT
+			a.tech_id AS techId,
+			b.name  AS techName,
+			b.head_pic  AS headPic,
+			b.sex  AS techSex,
+			b.phone  AS techPhone
+		FROM
+		order_dispatch a
+		LEFT JOIN tech_info b ON a.tech_id = b.id
+		WHERE a.order_id = #{id}
+		AND a.status = 'yes'
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<select id="getOrderGoodsList" resultType="OrderGoods">
+		SELECT
+			a.service_time AS "serviceTime",
+			good.item_id AS "itemId",
+			good.item_name AS "itemName",
+			good.goods_id AS "goodsId",
+			good.goods_name AS "goodsName",
+			good.goods_num AS "goodsNum",
+			good.pay_price AS "payPrice",
+			good2.type AS "goodsType",
+			good2.min_purchase AS "minPurchase"
+		FROM
+		order_info a
+		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id  AND good2.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+		a.id = #{id}
+	</select>
+	<select id="getGoodsList" resultType="OrderGoods">
+		SELECT
+		a.item_id AS "itemId",
+		b.name AS "itemName",
+		a.id AS "goodsId",
+		a.name AS "goodsName",
+		a.price AS "payPrice",
+		a.type AS "goodsType",
+		a.min_purchase AS "minPurchase"
+		FROM
+		ser_item_info_goods a
+		LEFT JOIN ser_item_info b ON a.item_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+		a.item_id = #{itemId}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<update id="cancelData">
+		UPDATE order_info SET
+			order_status = 'cancel'
+		WHERE id = #{id}
+	</update>
+	<update id="saveTime">
+		UPDATE order_info SET
+			service_time = #{service_time}
+		WHERE id = #{id}
+	</update>
 </mapper>

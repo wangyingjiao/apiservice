@@ -12,6 +12,8 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.ApiOperation;
@@ -70,7 +72,7 @@ public class OrderInfoController extends BaseController {
 		data.put("page",page);
 		List<BasicOrganization> basicOrganizationList = orderInfoService.findOrganizationList();
 		data.put("orgList",basicOrganizationList);
-		return new SuccResult(page);
+		return new SuccResult(data);
 	}
 
 	@ResponseBody
@@ -79,26 +81,55 @@ public class OrderInfoController extends BaseController {
 	public Result formData(@RequestBody OrderInfo orderInfo) {
 		OrderInfo entity = null;
 		if (StringUtils.isNotBlank(orderInfo.getId())) {
-			entity = orderInfoService.formData(orderInfo.getId());
+			entity = orderInfoService.formData(orderInfo);
 		}
 		if (entity == null) {
 			return new FailResult("未找到此id对应的订单");
 		} else {
-
-//			List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
-//			List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
-//			List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList();
-//			HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
-//			objectObjectHashMap.put("info",entity);
-//			objectObjectHashMap.put("items",items);
-//			objectObjectHashMap.put("techs",techs);
-//			objectObjectHashMap.put("stations",stations);
-
 			HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
 			objectObjectHashMap.put("info",entity);
+			List<ServiceTechnicianWorkTime>  serviceTimeList = orderInfoService.findServiceTimeList(orderInfo);
+			objectObjectHashMap.put("serviceTimeList",serviceTimeList);
 			return new SuccResult(objectObjectHashMap);
 		}
 	}
+	@ResponseBody
+	@RequestMapping(value = "cancelData", method = {RequestMethod.POST})
+	@ApiOperation("取消订单")
+	public Result cancelData(@RequestBody OrderInfo orderInfo) {
+		orderInfoService.cancelData(orderInfo);
+		return new SuccResult("取消订单成功");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "saveTime", method = {RequestMethod.POST})
+	@ApiOperation("更换时间保存")
+	public Result saveTime(@RequestBody OrderInfo orderInfo) {
+		orderInfoService.saveTime(orderInfo);
+		return new SuccResult("更换时间成功");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "editGoodsInit", method = {RequestMethod.POST})
+	@ApiOperation("服务项目编辑")
+	public Result editGoodsInit(@RequestBody OrderInfo orderInfo) {
+		List<OrderGoods> goodsInfoList = orderInfoService.editGoodsInit(orderInfo);
+		return new SuccResult(goodsInfoList);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "editGoodsSave", method = {RequestMethod.POST})
+	//@RequiresPermissions("order_insert")
+	@ApiOperation("服务项目编辑保存")
+	public Result editGoodsSave(@RequestBody OrderInfo orderInfo) {
+		List<String> errList = errors(orderInfo);
+		if (errList != null && errList.size() > 0) {
+			return new FailResult(errList);
+		}
+		orderInfoService.save(orderInfo);
+		return new SuccResult("保存成功");
+	}
+
 
 	@ResponseBody
 	@RequestMapping(value = "saveData", method = {RequestMethod.POST})

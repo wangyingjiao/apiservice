@@ -7,6 +7,8 @@ import org.hibernate.validator.constraints.Length;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -47,6 +49,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String shopRemark;		// 门店备注
 	private String shopRemarkPic;		// 门店备注图片
 	private String orderRemark;		// 订单备注（技师添加的）
+	private String orderRemarkPic;   //订单备注图片
 	private String orderContent;		// 下单服务内容
 
 	private String customerName;         //客户姓名
@@ -59,8 +62,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private OrderPayInfo payInfo;       // 支付信息
 	private OrderRefund refundInfo;    //退款信息
 	private OrderAddress addressInfo;  //服务地址信息
-
-
+	private OrderGoods goodsInfo;     //服务信息
+	private List<OrderDispatch> techList; //技师List
 
 	public OrderInfo() {
 		super();
@@ -311,7 +314,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	public void setOrderRemark(String orderRemark) {
 		this.orderRemark = orderRemark;
 	}
-	
+
+	public String getOrderRemarkPic() {
+		return orderRemarkPic;
+	}
+
+	public void setOrderRemarkPic(String orderRemarkPic) {
+		this.orderRemarkPic = orderRemarkPic;
+	}
+
 	@Length(min=0, max=255, message="下单服务内容长度必须介于 0 和 255 之间")
 	public String getOrderContent() {
 		return orderContent;
@@ -369,5 +380,45 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setOrderTimeEnd(Timestamp orderTimeEnd) {
 		this.orderTimeEnd = orderTimeEnd;
+	}
+
+	public OrderPayInfo getPayInfo() {
+		return payInfo;
+	}
+
+	public void setPayInfo(OrderPayInfo payInfo) {
+		this.payInfo = payInfo;
+	}
+
+	public OrderRefund getRefundInfo() {
+		return refundInfo;
+	}
+
+	public void setRefundInfo(OrderRefund refundInfo) {
+		this.refundInfo = refundInfo;
+	}
+
+	public OrderAddress getAddressInfo() {
+		return addressInfo;
+	}
+
+	public void setAddressInfo(OrderAddress addressInfo) {
+		this.addressInfo = addressInfo;
+	}
+
+	public OrderGoods getGoodsInfo() {
+		return goodsInfo;
+	}
+
+	public void setGoodsInfo(OrderGoods goodsInfo) {
+		this.goodsInfo = goodsInfo;
+	}
+
+	public List<OrderDispatch> getTechList() {
+		return techList;
+	}
+
+	public void setTechList(List<OrderDispatch> techList) {
+		this.techList = techList;
 	}
 }
