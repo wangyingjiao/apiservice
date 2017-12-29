@@ -38,15 +38,15 @@ public class MapUtils {
 //    public static void main(String[] args) {
 //        System.out.println(MapUtils.GetDistance(29.490295,106.486654,29.490295,101.486654));
 //    }
-/*
-    public static void main(String[] args) {
 
-        // 商业区域（百度多边形区域经纬度集合）
-       // String partitionLocation = "31.839064_117.219116,31.83253_117.219403,31.828511_117.218146,31.826763_117.219259,31.826118_117.220517,31.822713_117.23586,31.822958_117.238375,31.838512_117.23798,31.839617_117.226194,31.839586_117.222925";
-        String partitionLocation = "116.449214,39.926476 116.449128,39.920717 116.452561,39.927167 116.458011,39.925686 116.45093,39.930393 116.443034,39.927859 116.443034,39.927497 116.442777,39.926213";
-
-        System.out.println(isInPolygon("39.927133", "116.450085",partitionLocation));
-    }*/
+//    public static void main(String[] args) {
+//
+//        // 商业区域（百度多边形区域经纬度集合）
+//       // String partitionLocation = "31.839064_117.219116,31.83253_117.219403,31.828511_117.218146,31.826763_117.219259,31.826118_117.220517,31.822713_117.23586,31.822958_117.238375,31.838512_117.23798,31.839617_117.226194,31.839586_117.222925";
+//        String partitionLocation = "116.419224,39.944776 116.497845,39.94596 116.495785,39.911603 116.419568,39.90897 116.411671,39.929639";
+//
+//        System.out.println(isInPolygon("39.930516", "116.447155",partitionLocation));
+//    }
 
     /**
      * 判断当前位置是否在多边形区域内
@@ -66,8 +66,8 @@ public class MapUtils {
 
         for (String str : strList){
             String[] points = str.split(",");
-            double polygonPoint_x=Double.parseDouble(points[1]);
-            double polygonPoint_y=Double.parseDouble(points[0]);
+            double polygonPoint_x=Double.parseDouble(points[0]);
+            double polygonPoint_y=Double.parseDouble(points[1]);
             Point2D.Double polygonPoint = new Point2D.Double(polygonPoint_x,polygonPoint_y);
             pointList.add(polygonPoint);
         }
