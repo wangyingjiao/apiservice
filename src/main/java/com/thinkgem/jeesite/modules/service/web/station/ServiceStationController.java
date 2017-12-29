@@ -177,6 +177,10 @@ public class ServiceStationController extends BaseController {
     @RequestMapping(value = "deleteStation")
     @ApiOperation("删除服务站")
     public Result deleteStation(@RequestBody BasicServiceStation serviceStation) {
+        int count = serviceStationService.getCount(serviceStation);
+        if (count > 0){
+            return new FailResult("该服务站已有员工，不可删除！");
+        }
         serviceStationService.delete(serviceStation);
         return new SuccResult("删除服务站成功");
     }

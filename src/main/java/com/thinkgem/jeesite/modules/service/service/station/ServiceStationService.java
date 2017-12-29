@@ -88,6 +88,11 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
         super.delete(serviceStation);
     }
 
+    //查询服务站的员工数量
+    public int getCount(BasicServiceStation station){
+        return basicServiceStationDao.getCount(station);
+    }
+
 
     //更新服务站信息
     @Transactional(readOnly = false)

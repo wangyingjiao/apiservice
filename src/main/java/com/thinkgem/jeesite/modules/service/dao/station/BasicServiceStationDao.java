@@ -14,5 +14,6 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
  */
 @MyBatisDao
 public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
-
+    //查询服务站人员人数
+    int getCount(BasicServiceStation station);
 }
