@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.Menu;
@@ -53,6 +54,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private BasicOrganizationService organizationService;
+
+    @Autowired
+    private ServiceStationService serviceStationService;
 
 
     @ModelAttribute
@@ -248,6 +252,16 @@ public class UserController extends BaseController {
         } else if (User.isAdmin(user.getId())) {
             return new FailResult("删除用户失败, 不允许删除超级管理员用户");
         } else {
+//            User user1 = systemService.getUserById(user.getId());
+//            //获取员工的服务站id
+//            String id = user1.getStation().getId();
+//            //获取员工所在服务站
+//            BasicServiceStation basicServiceStation = serviceStationService.get(id);
+//            //获取服务站的员工数量
+//            int employees = basicServiceStation.getEmployees();
+//            basicServiceStation.setEmployees(employees-1);
+//            System.out.println(basicServiceStation.getEmployees()+"*************************************");
+//            serviceStationService.update(basicServiceStation);
             systemService.deleteUser(user);
             return new SuccResult("删除用户成功");
         }
@@ -312,11 +326,38 @@ public class UserController extends BaseController {
                 roleList.add(r);
             }
         }
-
-
+/*
+        //获取传过来的员工的服务站
+        String staId = user.getStation().getId();
+        BasicServiceStation station = serviceStationService.get(staId);
+        //获取服务站的员工数量
+        int employees = station.getEmployees();
+        //新增
+        if (StringUtils.isBlank(user.getId())){
+            
+            station.setEmployees(employees+ 1);
+            serviceStationService.update(station);
+        }else{
+            //编辑 查询出来和传过来的员工服务站没变 不修改服务站数量
+            //根据用户id 去数据库查询出用户的服务站id
+            User temUser = systemService.getUser(user.getId());
+            String id = temUser.getStation().getId();
+            //查出来的服务站id和修改后的服务站id不同  修改两个服务站员工数量
+            if (!id.equals(staId)){
+                //新服务站数量+1
+                station.setEmployees(employees++);
+                serviceStationService.update(station);
+                //原服务站数量—1
+                BasicServiceStation oldStation =serviceStationService.get(temUser.getStation().getId());
+                oldStation.setEmployees(oldStation.getEmployees()-1);
+                serviceStationService.update(oldStation);
+            }
+        }
+        */
         user.setRoleList(roleList);
         // 保存用户信息
         systemService.saveUser(user);
+
         // 清除当前用户缓存
         if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
             UserUtils.clearCache();

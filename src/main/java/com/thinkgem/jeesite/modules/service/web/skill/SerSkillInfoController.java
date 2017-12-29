@@ -138,13 +138,14 @@ public class SerSkillInfoController extends BaseController {
     @RequestMapping(value = "insertData", method = {RequestMethod.POST})
     @ApiOperation("新增技能")
     public Result insertData(@RequestBody SerSkillInfo serSkillInfo) {
+
         List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
+        //根据权限查看对应下的技师列表
         List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
-       //根据机构id查询机构下的服务站
-        String orgId = serSkillInfo.getOrgId();
+       //根据权限 查看对应的服务站列表
         BasicServiceStation station =new BasicServiceStation();
-        station.setId(orgId);
         List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
+
         HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
         objectObjectHashMap.put("items",items);
         objectObjectHashMap.put("techs",techs);

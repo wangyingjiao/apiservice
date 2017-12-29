@@ -162,11 +162,14 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		return serSkillInfoDao.checkDataName(serSkillInfo);
 	}
 
+	//根据权限查看服务列表
     public List<SerItemInfo> findSerPage(SerSkillInfo serInfo) {
+		serInfo.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
 		return serSkillInfoDao.choiceSerlist(serInfo);
     }
-
+	//根据权限查看技师列表
 	public List<SerSkillTechnician>  findTechnicianPage(SerSkillInfo technicianInfo) {
+		technicianInfo.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
 		return serSkillInfoDao.choiceTechnicianlist(technicianInfo);
 	}
 	//根据权限获取对应的服务站
