@@ -63,9 +63,6 @@ public class SerSortInfoController extends BaseController {
         }
 
         if (!StringUtils.isNotBlank(serSortInfo.getId())) {//新增时验证重复
-            User user = UserUtils.getUser();
-            serSortInfo.setOrgId(user.getOrganization().getId());//机构ID
-
             if (0 != serSortInfoService.checkDataName(serSortInfo)) {
                 return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
             }
@@ -96,6 +93,9 @@ public class SerSortInfoController extends BaseController {
         if(serSortInfo == null){
             serSortInfo = new SerSortInfo();
         }
+        if (!"0".equals(UserUtils.getUser().getOrganization().getId())) {
+            return new FailResult("没有权限");
+        }
         Page<SerSortInfo> serSortInfoPage = new Page<>(request, response);
         Page<SerSortInfo> page = serSortInfoService.findPage(serSortInfoPage, serSortInfo);
         return new SuccResult(page);
@@ -107,7 +107,7 @@ public class SerSortInfoController extends BaseController {
     public Result formData(@RequestBody SerSortInfo serSortInfo) {
         SerSortInfo entity = null;
         if (StringUtils.isNotBlank(serSortInfo.getId())) {
-            entity = serSortInfoService.getDataWithItem(serSortInfo);
+            entity = serSortInfoService.formData(serSortInfo);
         }
         if (entity == null) {
             return new FailResult("未找到此id：" + serSortInfo.getId() + "对应的服务分类。");

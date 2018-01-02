@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.basic;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.utils.RegexTool;
 import org.hibernate.validator.constraints.Length;
 
@@ -10,6 +11,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Pattern;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +35,9 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	private String url;		// 机构网址
 	private String fax;		// 机构传真
 	private String tel400;		// 机构400电话
+	private Date workStartTime;//工作开始时间
+	private Date workEndTime;//工作结束时间
+	private String jointEshopCode;//对接方E店CODE
 	private String remark;		// 备注信息
 	
 	public BasicOrganization() {
@@ -167,7 +172,33 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setTel400(String tel400) {
 		this.tel400 = tel400;
 	}
-	
+
+	@JsonFormat(pattern = "HH:mm:ss")
+	public Date getWorkStartTime() {
+		return workStartTime;
+	}
+
+	public void setWorkStartTime(Date workStartTime) {
+		this.workStartTime = workStartTime;
+	}
+
+	@JsonFormat(pattern = "HH:mm:ss")
+	public Date getWorkEndTime() {
+		return workEndTime;
+	}
+
+	public void setWorkEndTime(Date workEndTime) {
+		this.workEndTime = workEndTime;
+	}
+
+	public String getJointEshopCode() {
+		return jointEshopCode;
+	}
+
+	public void setJointEshopCode(String jointEshopCode) {
+		this.jointEshopCode = jointEshopCode;
+	}
+
 	@Length(min=0, max=255, message="备注信息长度必须介于 0 和 255 之间")
 	public String getRemark() {
 		return remark;

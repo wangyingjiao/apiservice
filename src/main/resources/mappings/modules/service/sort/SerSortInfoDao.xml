@@ -4,10 +4,8 @@
     
 	<sql id="serSortInfoColumns">
 		a.id AS "id",
-		a.org_id AS "orgId",
 		a.major_sort AS "majorSort",
-		a.name AS "name",
-		a.all_city AS "allCity"
+		a.name AS "name"
 	</sql>
 	<sql id="serSortInfoJoins">
 	</sql>
@@ -20,14 +18,12 @@
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultMap="SerSortResultMap">
+	<select id="findList" resultType="SerSortInfo">
 		SELECT
-		<include refid="serSortCityNamesColumns"/>
+			a.id AS "id",
+			a.major_sort AS "majorSort",
+			a.name AS "name"
 		FROM ser_sort_info a
-		<if test="cityCode != null and cityCode !=''">
-			LEFT JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = #{DEL_FLAG_NORMAL}
-		</if>
-		<include refid="serSortInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
@@ -36,11 +32,6 @@
 			<if test="majorSort != null and majorSort !='' and majorSort !='all'.toString()">
 				AND a.major_sort= #{majorSort}
 			</if>
-			<if test="cityCode != null and cityCode !=''">
-				AND (b.city_code = #{cityCode} OR a.all_city = 'yes')
-			</if>
-			<!-- 数据范围过滤 -->
-			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -52,74 +43,19 @@
 		</choose>
 	</select>
 
-	<sql id="serSortCityNamesColumns">
-		a.id AS "id",
-		a.major_sort AS "majorSort",
-		a.name AS "name",
-		a.all_city AS "allCity"
-	</sql>
-	<resultMap type="SerSortInfo" id="SerSortResultMap">
-		<id column="id" property="id"/>
-		<result column="major_sort" property="majorSort"/>
-		<result column="name" property="name"/>
-		<result column="all_city" property="allCity"/>
-		<!-- 定向城市 -->
-		<association property="citys" column="{reqId=id}" select="selectCitysById"></association>
-	</resultMap>
-	<select id="selectCityNameById" parameterType="java.util.Map" resultType="string">
-		select city_code as cityName from ser_city_scope
-		where master_id=#{reqId}
-		and del_flag = '0'
-	</select>
-	<select id="selectCityIdById" parameterType="java.util.Map" resultType="string">
-		select city_code as cityCode from ser_city_scope
-		where master_id=#{reqId}
-		and del_flag = '0'
-	</select>
-	<select id="selectCitysById" parameterType="java.util.Map" resultType="SerCityScope">
-		select
-			a.city_code AS cityCode,
-			b.`name` AS cityName
-		from ser_city_scope a
-		INNER JOIN sys_area b on a.city_code = b.`code` AND b.del_flag='0'
-		where a.master_id=#{reqId}
-		and a.del_flag = '0'
-	</select>
 
 	<!-- 验证服务分类名称是否重复 -->
 	<select id="checkDataName" resultType="int">
 		SELECT COUNT(*) FROM ser_sort_info
 		WHERE name = #{name}
-		AND  org_id = #{orgId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
-	</select>
-	<!-- 验证此分类下是否有服务项目 -->
-	<select id="checkedSortItem" resultType="int">
-		SELECT COUNT(*) FROM ser_item_info s
-		WHERE s.sort_id = #{id}
-		AND s.del_flag = #{DEL_FLAG_NORMAL}
-	</select>
-	<select id="getItemAllCityNum" resultType="int">
-		SELECT COUNT(*) FROM ser_item_info s
-		WHERE s.sort_id = #{id}
-		AND s.all_city = 'yes'
-		AND s.del_flag = '0'
-	</select>
-	<select id="getItemCitys" resultType="String">
-		SELECT b.city_code
-		FROM ser_item_info a
-		INNER JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = '0'
-		WHERE a.sort_id = #{id}
-		AND a.del_flag = '0'
 	</select>
 
 	<insert id="insert">
 		INSERT INTO ser_sort_info(
 			id,
-			org_id,
 			major_sort,
 			name,
-			all_city,
 			create_by,
 			create_date,
 			update_by,
@@ -127,10 +63,8 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{orgId},
 			#{majorSort},
 			#{name},
-			#{allCity},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -147,9 +81,6 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="allCity != null and allCity != ''">
-				all_city = #{allCity},
-			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
@@ -160,4 +91,11 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<!-- 验证此分类下是否有服务项目 -->
+	<select id="checkedSortItem" resultType="int">
+		SELECT COUNT(*) FROM ser_item_info s
+		WHERE s.sort_id = #{id}
+		AND s.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 </mapper>

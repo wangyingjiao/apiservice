@@ -23,8 +23,8 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     private static final long serialVersionUID = 1L;
     private String majorSort;        // 分类：保洁、家修
     private String name;        // 服务分类名称
-    private String allCity;   //是否是全部城市
-    private String orgId;//机构ID
+//    private String allCity;   //是否是全部城市
+//    private String orgId;//机构ID
 
     public SerSortInfo() {
         super();
@@ -52,7 +52,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     public void setName(String name) {
         this.name = name;
     }
-
+/*
     public String getAllCity() {
         return allCity;
     }
@@ -67,8 +67,8 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     public void setOrgId(String orgId) {
         this.orgId = orgId;
-    }
-
+    }*/
+/*
     private String cityCode;        // 城市编号 查询用
     private List<String> cityCodes; // 城市 编辑选中用
     private List<SerCityScope> citys;
@@ -97,5 +97,5 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     public void setCitys(List<SerCityScope> citys) {
         this.citys = citys;
-    }
+    }*/
 }

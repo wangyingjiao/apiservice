@@ -17,6 +17,9 @@
 		a.url AS "url",
 		a.fax AS "fax",
 		a.tel_400 AS "tel400",
+		a.work_start_time AS "workStartTime",
+		a.work_end_time AS "workEndTime",
+		a.joint_eshop_code AS "jointEshopCode",
 		a.remark AS "remark",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -44,6 +47,9 @@
 			a.url AS "url",
 			a.fax AS "fax",
 			a.tel_400 AS "tel400",
+			a.work_start_time AS "workStartTime",
+			a.work_end_time AS "workEndTime",
+			a.joint_eshop_code AS "jointEshopCode",
 			a.remark AS "remark"
 		FROM basic_organization a
 		WHERE a.id = #{id}
@@ -100,6 +106,9 @@
 			url,
 			fax,
 			tel_400,
+			work_start_time,
+			work_end_time,
+			joint_eshop_code,
 			remark,
 			create_by,
 			create_date,
@@ -121,6 +130,9 @@
 			#{url},
 			#{fax},
 			#{tel400},
+			#{workStartTime},
+			#{workEndTime},
+			#{jointEshopCode},
 			#{remark},
 			#{createBy.id},
 			#{createDate},
@@ -162,10 +174,19 @@
 			<if test="visable != null and visable != ''">
 				visable = #{visable},
 			</if>
-				url = #{url},
-				fax = #{fax},
-				tel_400 = #{tel400},
-				remark = #{remark},
+			<if test="workStartTime != null and workStartTime != ''">
+				work_start_time = #{workStartTime},
+			</if>
+			<if test="workEndTime != null and workEndTime != ''">
+				work_end_time = #{workEndTime},
+			</if>
+			<if test="jointEshopCode != null and jointEshopCode != ''">
+				joint_eshop_code = #{jointEshopCode},
+			</if>
+			url = #{url},
+			fax = #{fax},
+			tel_400 = #{tel400},
+			remark = #{remark},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
