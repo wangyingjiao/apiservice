@@ -14,5 +14,6 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
  */
 @MyBatisDao
 public interface OrderDispatchDao extends CrudDao<OrderDispatch> {
-	
+
+    OrderDispatch formData(OrderDispatch info);
 }

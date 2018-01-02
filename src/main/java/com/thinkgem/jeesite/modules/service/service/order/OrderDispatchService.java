@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class OrderDispatchService extends CrudService<OrderDispatchDao, OrderDis
 	}
 	
 	public Page<OrderDispatch> findPage(Page<OrderDispatch> page, OrderDispatch orderDispatch) {
+		orderDispatch.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
 		return super.findPage(page, orderDispatch);
 	}
 	
@@ -43,5 +45,9 @@ public class OrderDispatchService extends CrudService<OrderDispatchDao, OrderDis
 	public void delete(OrderDispatch orderDispatch) {
 		super.delete(orderDispatch);
 	}
-	
+
+    public OrderDispatch formData(OrderDispatch info) {
+		OrderDispatch dispatchInfo = dao.formData(info);
+		return dispatchInfo;
+    }
 }

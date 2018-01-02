@@ -32,6 +32,7 @@
 		a.shop_remark AS "shopRemark",
 		a.shop_remark_pic AS "shopRemarkPic",
 		a.order_remark AS "orderRemark",
+		a.order_remark_pic AS "orderRemarkPic",
 		a.order_content AS "orderContent",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -168,6 +169,7 @@
 			shop_remark,
 			shop_remark_pic,
 			order_remark,
+			order_remark_pic,
 			order_content,
 			create_by,
 			create_date,
@@ -204,6 +206,7 @@
 			#{shopRemark},
 			#{shopRemarkPic},
 			#{orderRemark},
+			#{orderRemarkPic},
 			#{orderContent},
 			#{createBy.id},
 			#{createDate},
@@ -243,6 +246,7 @@
 			<if test="shopRemark !=null and shopRemark != ''">shop_remark = #{shopRemark},</if>
 			<if test="shopRemarkPic !=null and shopRemarkPic != ''">shop_remark_pic = #{shopRemarkPic},</if>
 			<if test="orderRemark !=null and orderRemark != ''">order_remark = #{orderRemark},</if>
+		<if test="orderRemarkPic !=null and orderRemarkPic != ''">order_remark_pic = #{orderRemarkPic},</if>
 			<if test="orderContent !=null and orderContent != ''">order_content = #{orderContent},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>

@@ -23,7 +23,8 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 	private String headPic;    //头像
 	private String techSex;    //性别
 	private String techPhone;   //电话
-	
+	private String jobNature; //岗位性质（full_time:全职，part_time:兼职）
+
 	public OrderDispatch() {
 		super();
 	}
@@ -88,5 +89,13 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 
 	public void setTechPhone(String techPhone) {
 		this.techPhone = techPhone;
+	}
+
+	public String getJobNature() {
+		return jobNature;
+	}
+
+	public void setJobNature(String jobNature) {
+		this.jobNature = jobNature;
 	}
 }

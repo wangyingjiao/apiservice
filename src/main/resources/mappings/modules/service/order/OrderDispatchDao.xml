@@ -32,6 +32,8 @@
 		<include refid="orderDispatchJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -100,5 +102,20 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<select id="formData" resultType="OrderDispatch">
+		SELECT
+			a.create_date AS "createDate",
+			t.name AS "techName",
+			t.head_pic AS "headPic",
+			t.sex AS "techSex",
+			t.phone AS "techPhone",
+			t.job_nature AS "jobNature"
+		FROM order_dispatch a
+		LEFT JOIN tech_info t ON a.tech_id = t.id  AND t.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.order_id = #{orderId}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	  	AND a.status = 'no'
+	</select>
+
 </mapper>

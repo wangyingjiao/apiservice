@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.order;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.hibernate.validator.constraints.Length;
 
@@ -113,6 +114,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 		this.payPrice = payPrice;
 	}
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getServiceTime() {
 		return serviceTime;
 	}

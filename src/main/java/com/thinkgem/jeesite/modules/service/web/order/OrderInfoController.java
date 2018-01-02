@@ -108,7 +108,7 @@ public class OrderInfoController extends BaseController {
 		orderInfoService.saveTime(orderInfo);
 		return new SuccResult("更换时间成功");
 	}
-
+/*
 	@ResponseBody
 	@RequestMapping(value = "editGoodsInit", method = {RequestMethod.POST})
 	@ApiOperation("服务项目编辑")
@@ -129,13 +129,20 @@ public class OrderInfoController extends BaseController {
 		orderInfoService.save(orderInfo);
 		return new SuccResult("保存成功");
 	}
-
+*/
 
 	@ResponseBody
-	@RequestMapping(value = "saveData", method = {RequestMethod.POST})
-	@RequiresPermissions("order_insert")
-	@ApiOperation("保存订单")
-	public Result saveData(@RequestBody OrderInfo orderInfo) {
+	@RequestMapping(value = "addTech", method = {RequestMethod.POST})
+	@ApiOperation("增加技师")
+	public Result addTech(@RequestBody OrderInfo orderInfo) {
+		List<OrderGoods> goodsInfoList = orderInfoService.editGoodsInit(orderInfo);
+		return new SuccResult(goodsInfoList);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "addTechSave", method = {RequestMethod.POST})
+	@ApiOperation("增加技师保存")
+	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
 		List<String> errList = errors(orderInfo);
 		if (errList != null && errList.size() > 0) {
 			return new FailResult(errList);
@@ -144,4 +151,23 @@ public class OrderInfoController extends BaseController {
 		return new SuccResult("保存成功");
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "dispatchTech", method = {RequestMethod.POST})
+	@ApiOperation("技师改派")
+	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
+		List<OrderGoods> goodsInfoList = orderInfoService.editGoodsInit(orderInfo);
+		return new SuccResult(goodsInfoList);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "dispatchTechSave", method = {RequestMethod.POST})
+	@ApiOperation("技师改派保存")
+	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
+		List<String> errList = errors(orderInfo);
+		if (errList != null && errList.size() > 0) {
+			return new FailResult(errList);
+		}
+		orderInfoService.save(orderInfo);
+		return new SuccResult("保存成功");
+	}
 }
