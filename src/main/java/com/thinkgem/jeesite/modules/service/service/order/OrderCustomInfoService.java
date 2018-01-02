@@ -42,19 +42,7 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	
 	@Transactional(readOnly = false)
 	public void save(OrderCustomInfo orderCustomInfo) {
-
-		//var result = BMapLib.GeoUtils.isPointInPolygon(sitePoint, overlay);
-//		String station = "";
-//		station = getStationId(orderCustomInfo.getAddrLatitude(),orderCustomInfo.getAddrLongitude());
-//		orderCustomInfo.setStationId(UserUtils.getUser().getStation().getId());//服务站ID
-
 		super.save(orderCustomInfo);
-	}
-
-	private String getStationId(String addrLatitude, String addrLongitude) {
-
-		MapUtils.GetDistance(29.490295,106.486654,29.490295,101.486654);
-		return null;
 	}
 
 	@Transactional(readOnly = false)

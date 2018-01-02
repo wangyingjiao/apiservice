@@ -67,6 +67,8 @@ public class OrderCustomInfoController extends BaseController {
 			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
 			orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
 		}
+		/*
+		//计算服务站
 		//客户经纬度
 		if(StringUtils.isNotBlank(orderCustomInfo.getAddrLatitude()) && StringUtils.isNotBlank(orderCustomInfo.getAddrLongitude())){
 			List<ServiceStation> stations = orderCustomInfoService.getStationsByOrgId(orderCustomInfo.getOrgId());//客户机构下的服务站
@@ -84,40 +86,12 @@ public class OrderCustomInfoController extends BaseController {
 					return new FailResult("该地点没有合适服务站");
 				}
 			}
-		}
+		}*/
 
 		orderCustomInfoService.save(orderCustomInfo);
 		return new SuccResult("保存成功");
 	}
 
-	/*@ResponseBody
-	@RequiresPermissions("customer_update")
-	@RequestMapping(value = "formData", method = {RequestMethod.POST})
-	@ApiOperation("编辑客户")
-	public Result formData(@RequestBody OrderCustomInfo orderCustomInfo) {
-		OrderCustomInfo entity = null;
-		if (StringUtils.isNotBlank(orderCustomInfo.getId())) {
-			entity = orderCustomInfoService.get(orderCustomInfo.getId());
-		}
-		if (entity == null) {
-			return new FailResult("未找到此id对应的客户。");
-		} else {
-			return new SuccResult(entity);
-		}
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "upData", method = {RequestMethod.POST})
-	@RequiresPermissions("customer_update")
-	@ApiOperation("编辑保存客户")
-	public Result upData(@RequestBody OrderCustomInfo orderCustomInfo) {
-		List<String> errList = errors(orderCustomInfo);
-		if (errList != null && errList.size() > 0) {
-			return new FailResult(errList);
-		}
-		orderCustomInfoService.save(orderCustomInfo);
-		return new SuccResult("保存成功");
-	}*/
 	@ResponseBody
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@RequiresPermissions("customer_view")
