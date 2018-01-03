@@ -189,7 +189,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		List<SerCityScope> citys = new ArrayList<SerCityScope>();
 		if(StringUtils.isNotBlank(serItemInfo.getSortId())){
 			SerSortInfo serSortInfo = dao.getSerSortInfo(serItemInfo.getSortId());
-			if(serSortInfo == null || "yes".equals(serSortInfo.getAllCity())){
+			if(serSortInfo == null){
 				List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
 				if(null != list){
 					for(BasicServiceCity city : list){
