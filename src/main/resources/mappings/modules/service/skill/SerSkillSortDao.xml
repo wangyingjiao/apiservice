@@ -102,7 +102,7 @@
 	</update>
 
 	<update id="delSerSkillSortBySkill">
-		UPDATE ser_sort_info SET
+		UPDATE ser_skill_sort SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE skill_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
