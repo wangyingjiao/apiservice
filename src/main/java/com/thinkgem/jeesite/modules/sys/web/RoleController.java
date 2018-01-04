@@ -331,7 +331,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions("role_insert")
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新岗位")
-    public Result saveData(@RequestParam Role role) {
+    public Result saveData(@RequestBody Role role) {
 
         List<String> errList = errors(role,SaveRoleGroup.class);
         if (errList != null && errList.size() > 0) {

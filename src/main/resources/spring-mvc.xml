@@ -31,8 +31,7 @@
         <mvc:message-converters register-defaults="true">
             <!-- 将StringHttpMessageConverter的默认编码设为UTF-8 -->
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
-               <!-- <constructor-arg value="UTF-8"/>-->
-                <property name="supportedMediaTypes" value="text/html;charset=utf-8"></property>
+                <constructor-arg value="UTF-8"/>
             </bean>
             <!-- 将Jackson2HttpMessageConverter的默认格式化输出为false -->
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
@@ -72,10 +71,11 @@
     <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
         <property name="mediaTypes">
             <map>
-                <entry key="xml" value="application/xml"/>
-                <entry key="json" value="application/json"/>
+                <entry key="xml" value="application/xml;charset=utf-8"/>
+                <entry key="json" value="application/json;charset=utf-8"/>
             </map>
         </property>
+        <property name="defaultContentType" value="application/json;charset=utf-8" />
         <property name="ignoreAcceptHeader" value="true"/>
         <property name="favorPathExtension" value="true"/>
     </bean>
