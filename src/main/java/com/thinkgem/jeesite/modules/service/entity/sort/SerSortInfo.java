@@ -26,6 +26,15 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 //    private String allCity;   //是否是全部城市
 //    private String orgId;//机构ID
 
+    public Boolean getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Boolean flag) {
+        this.flag = flag;
+    }
+
+    private Boolean flag=false;
     public SerSortInfo() {
         super();
     }
