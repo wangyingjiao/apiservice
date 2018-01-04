@@ -272,7 +272,7 @@ public class UserController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("user_insert")
-    @RequestMapping(value = "saveData", method = RequestMethod.POST)
+    @RequestMapping(value = "saveData", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ApiOperation(value = "保存用户！")
     public Result saveData(@RequestBody User user) {
 

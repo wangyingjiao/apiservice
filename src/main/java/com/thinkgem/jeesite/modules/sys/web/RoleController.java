@@ -329,7 +329,7 @@ public class RoleController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("role_insert")
-    @RequestMapping(value = "saveData", method = RequestMethod.POST)
+    @RequestMapping(value = "saveData", method = RequestMethod.POST ,produces = "text/html;charset=UTF-8")
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
 
