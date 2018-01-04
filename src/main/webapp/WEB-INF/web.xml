@@ -81,6 +81,24 @@
     <!--&lt;!&ndash;<param-value>3600</param-value>&ndash;&gt;-->
     <!--&lt;!&ndash;</init-param>&ndash;&gt;-->
     <!--</filter>-->
+
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <filter>
         <filter-name>CORS</filter-name>
         <filter-class>com.thinkgem.jeesite.common.filter.CorsFilter</filter-class>
@@ -97,22 +115,6 @@
     <filter-mapping>
         <filter-name>requestWrapper</filter-name>
         <url-pattern>*</url-pattern>
-    </filter-mapping>
-    <filter>
-        <filter-name>encodingFilter</filter-name>
-        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>encodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
 
