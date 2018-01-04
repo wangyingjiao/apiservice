@@ -42,7 +42,16 @@
 			</otherwise>
 		</choose>
 	</select>
-
+	<select id="findSortAllList" resultType="SerSortInfo">
+		SELECT
+		a.id AS "id",
+		a.major_sort AS "majorSort",
+		a.name AS "name"
+		FROM ser_sort_info a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
 
 	<!-- 验证服务分类名称是否重复 -->
 	<select id="checkDataName" resultType="int">
@@ -97,5 +106,13 @@
 		SELECT COUNT(*) FROM ser_item_info s
 		WHERE s.sort_id = #{id}
 		AND s.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<select id="findSortList" resultType="String">
+		SELECT a.sort_id
+		from ser_skill_sort a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
 	</select>
 </mapper>

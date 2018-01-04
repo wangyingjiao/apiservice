@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.sort;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface SerSortInfoDao extends CrudDao<SerSortInfo> {
     int checkDataName(SerSortInfo serSortInfo);
 
     int checkedSortItem(SerSortInfo serSortInfo);
+
+    List<String> findSortList(SerSortInfo serSortInfo);
+
+    List<SerSortInfo> findSortAllList(SerSortInfo serSortInfo);
 }

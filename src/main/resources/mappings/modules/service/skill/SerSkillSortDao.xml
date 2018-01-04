@@ -31,6 +31,10 @@
 		<include refid="serSkillSortJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="skillId != null and skillId !=''">
+				AND a.skill_id=#{skillId}
+			</if>
+
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -97,4 +101,18 @@
 		WHERE id = #{id}
 	</update>
 
+	<update id="delSerSkillSortBySkill">
+		UPDATE ser_sort_info SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE skill_id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<select id="findSortIdList" resultType="String">
+		SELECT a.sort_id
+		from ser_skill_sort a
+		<where>
+		a.del_flag = '0'
+		</where>
+	</select>
 </mapper>

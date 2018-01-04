@@ -8,10 +8,12 @@ import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillItemDao;
+import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
@@ -37,7 +39,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	@Autowired
 	SerSkillInfoDao serSkillInfoDao;
 	@Autowired
-	SerSkillItemDao serSkillItemDao;
+	SerSkillSortDao serSkillSortDao;
 	@Autowired
 	SerSkillTechnicianDao serSkillTechnicianDao;
 
@@ -53,12 +55,13 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	@Transactional(readOnly = false)
 	public void save(SerSkillInfo serSkillInfo) {
 		if (StringUtils.isNotBlank(serSkillInfo.getId())) {
-			//删除商品信息
-			serSkillItemDao.delSerSkillItemBySkill(serSkillInfo);
+			//删除技能分类
+			serSkillSortDao.delSerSkillSortBySkill(serSkillInfo);
 			//更新时，删除技师关系
 			serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
 		}
-		List<SerItemInfo> serItems = serSkillInfo.getItems();
+		//List<SerItemInfo> serItems = serSkillInfo.getItems();
+		List<String> sortIds = serSkillInfo.getSortIds();
 		List<SerSkillTechnician> technicians = serSkillInfo.getTechnicians();
 		if(technicians != null && technicians.size() != 0){
 			serSkillInfo.setTechNum(technicians.size());
@@ -67,7 +70,15 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		}
 
 		super.save(serSkillInfo);
-		if(serItems != null) {
+		//批量插入类别技能
+		for (String id:sortIds) {
+			SerSkillSort sortInfo = new SerSkillSort();
+			sortInfo.setSkillId(serSkillInfo.getId());
+			sortInfo.setSortId(id);
+			sortInfo.preInsert();
+			serSkillSortDao.insert(sortInfo);
+		}
+		/*if(serItems != null) {
 			//批量插入商品信息
 			for (SerItemInfo item : serItems) {
 				List<SerItemCommodity> commoditys = item.getCommoditys();
@@ -82,7 +93,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 					}
 				}
 			}
-		}
+		}*/
 		if(technicians != null) {
 			//批量插入技师信息
 			for (SerSkillTechnician technician : technicians) {
@@ -105,10 +116,19 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	public SerSkillInfo getData(String id) {
 		SerSkillInfo serSkillInfo = super.get(id);
 		//商品信息
-		List<SerSkillItem> serItems = serSkillItemDao.getSerSkillItemBySkill(serSkillInfo);
-		List<SerSkillItem> serGoods = serSkillItemDao.getSerSkillGoodsBySkill(serSkillInfo);
-		List<SerItemInfo> itemList = new ArrayList<SerItemInfo>();
-		if(null != serItems){
+	//	List<SerSkillItem> serItems = serSkillItemDao.getSerSkillItemBySkill(serSkillInfo);
+	//	List<SerSkillItem> serGoods = serSkillItemDao.getSerSkillGoodsBySkill(serSkillInfo);
+		//根据技能id获取技能分类的id集合
+		SerSkillSort serSkillSort=new SerSkillSort();
+		serSkillSort.setSkillId(id);
+		List<SerSkillSort> list = serSkillSortDao.findList(serSkillSort);
+		List<String> sortIds = new ArrayList<String>();
+		for (SerSkillSort s:list){
+			String sortId = s.getSortId();
+			sortIds.add(sortId);
+		}
+		//	List<SerItemInfo> itemList = new ArrayList<SerItemInfo>();
+		/*if(null != serItems){
 			for(SerSkillItem item : serItems){
 				SerItemInfo itemInfo = new SerItemInfo();
 				itemInfo.setId(item.getItemId());
@@ -127,9 +147,9 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 				itemInfo.setCommoditys(commodityList);
 				itemList.add(itemInfo);
 			}
-		}
-		serSkillInfo.setItems(itemList);
-
+		}*/
+	//	serSkillInfo.setItems(itemList);
+		serSkillInfo.setSortIds(sortIds);
 		//技师关系
 		List<SerSkillTechnician> technicians = serSkillTechnicianDao.getSerSkillTechnicianBySkill(serSkillInfo);
 		serSkillInfo.setTechnicians(technicians);
@@ -140,11 +160,12 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	@Transactional(readOnly = false)
 	public void delete(SerSkillInfo serSkillInfo) {
 
-		//删除商品信息
-		List<SerSkillItem> serItems = serSkillItemDao.getSerItems(serSkillInfo);
-		for(SerSkillItem serItem : serItems) {
-			serSkillItemService.delete(serItem);
-		}
+		//删除技能分类
+		serSkillSortDao.delSerSkillSortBySkill(serSkillInfo);
+//		List<SerSkillItem> serItems = serSkillItemDao.getSerItems(serSkillInfo);
+//		for(SerSkillItem serItem : serItems) {
+//			serSkillItemService.delete(serItem);
+//		}
 
 		//更新时，删除技师关系
 		serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);

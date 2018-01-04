@@ -12,10 +12,14 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
+import com.thinkgem.jeesite.modules.service.service.skill.SerSkillSortService;
+import com.thinkgem.jeesite.modules.service.service.sort.SerSortInfoService;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,7 +49,10 @@ public class SerSkillInfoController extends BaseController {
 
     @Autowired
     private SerSkillInfoService serSkillInfoService;
-
+    @Autowired
+    private SerSkillSortService serSkillSortService;
+    @Autowired
+    private SerSortInfoService serSortInfoService;
 
     @ModelAttribute
     public SerSkillInfo get(@RequestParam(required = false) String id) {
@@ -117,8 +125,10 @@ public class SerSkillInfoController extends BaseController {
         if (entity == null) {
             return new FailResult("未找到此id对应的技能。");
         } else {
-
-            List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
+            //获取分类表
+            SerSortInfo serSortInfo = new SerSortInfo();
+            List<SerSortInfo> list = serSortInfoService.findList(serSortInfo);
+//            List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
             List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
             String orgId = serSkillInfo.getOrgId();
             BasicServiceStation station =new BasicServiceStation();
@@ -126,7 +136,8 @@ public class SerSkillInfoController extends BaseController {
             List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
             HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
             objectObjectHashMap.put("info",entity);
-            objectObjectHashMap.put("items",items);
+            objectObjectHashMap.put("list",list);
+           // objectObjectHashMap.put("items",items);
             objectObjectHashMap.put("techs",techs);
             objectObjectHashMap.put("stations",stations);
 
@@ -138,16 +149,20 @@ public class SerSkillInfoController extends BaseController {
     @RequestMapping(value = "insertData", method = {RequestMethod.POST})
     @ApiOperation("新增技能")
     public Result insertData(@RequestBody SerSkillInfo serSkillInfo) {
-
-        List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
+        //服务项目
+    //    List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
         //根据权限查看对应下的技师列表
         List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
        //根据权限 查看对应的服务站列表
         BasicServiceStation station =new BasicServiceStation();
         List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
+        SerSortInfo serSortInfo = new SerSortInfo();
+        //获取分类表
+        List<SerSortInfo> list = serSortInfoService.findList(serSortInfo);
 
         HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
-        objectObjectHashMap.put("items",items);
+    //      objectObjectHashMap.put("items",items);
+        objectObjectHashMap.put("list",list);
         objectObjectHashMap.put("techs",techs);
         objectObjectHashMap.put("stations",stations);
 
