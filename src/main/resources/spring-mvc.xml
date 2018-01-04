@@ -30,9 +30,18 @@
     <!--<mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">-->
     <mvc:annotation-driven>
         <!--<mvc:message-converters register-defaults="true">-->
-        <mvc:message-converters >
-            <!-- 将StringHttpMessageConverter的默认编码设为UTF-8 -->
+
+
+        <mvc:message-converters>
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value="text/html;charset=utf-8"></property>
+            </bean>
+        </mvc:message-converters>
+
+<!--
+        <mvc:message-converters >
+            &lt;!&ndash; 将StringHttpMessageConverter的默认编码设为UTF-8 &ndash;&gt;
+            <bean class="com.thinkgem.jeesite.common.aspect.StringHttpMessageConverter">
 
                 <constructor-arg value="UTF-8" index="0"/>
                 <property name="supportedMediaTypes">
@@ -41,7 +50,7 @@
                     </list>
                 </property>
             </bean>
-            <!-- 将Jackson2HttpMessageConverter的默认格式化输出为false -->
+            &lt;!&ndash; 将Jackson2HttpMessageConverter的默认格式化输出为false &ndash;&gt;
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="supportedMediaTypes">
                     <list>
@@ -53,7 +62,7 @@
                     <bean class="com.thinkgem.jeesite.common.mapper.JsonMapper"></bean>
                 </property>
             </bean>
-            <!-- 使用XML格式输出数据 -->
+            &lt;!&ndash; 使用XML格式输出数据 &ndash;&gt;
             <bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
                 <constructor-arg>
                     <bean class="org.springframework.oxm.xstream.XStreamMarshaller">
@@ -72,7 +81,7 @@
                 </constructor-arg>
                 <property name="supportedMediaTypes" value="application/xml"></property>
             </bean>
-        </mvc:message-converters>
+        </mvc:message-converters>-->
     </mvc:annotation-driven>
 
     <!-- REST中根据URL后缀自动判定Content-Type及相应的View -->
