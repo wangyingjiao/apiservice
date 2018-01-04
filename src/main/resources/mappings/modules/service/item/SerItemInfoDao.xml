@@ -12,8 +12,7 @@
 		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
 		a.sale AS "sale",
-		a.sort_num AS "sortNum",
-		a.all_city AS "allCity"
+		a.sort_num AS "sortNum"
 	</sql>
 	
 	<sql id="serItemInfoJoins">
@@ -32,9 +31,9 @@
 			<include refid="serItemCommodityColumns"/>
 		FROM ser_item_info a
 		LEFT JOIN ser_sort_info s ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
-		<if test="cityCode != null and cityCode !=''">
-			LEFT JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = #{DEL_FLAG_NORMAL}
-		</if>
+		<!--<if test="cityCode != null and cityCode !=''">-->
+			<!--LEFT JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = #{DEL_FLAG_NORMAL}-->
+		<!--</if>-->
 		<include refid="serItemInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -47,9 +46,9 @@
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
 			</if>
-			<if test="cityCode != null and cityCode !=''">
-				AND (b.city_code = #{cityCode} OR a.all_city = 'yes')
-			</if>
+			<!--<if test="cityCode != null and cityCode !=''">-->
+				<!--AND (b.city_code = #{cityCode} OR a.all_city = 'yes')-->
+			<!--</if>-->
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
 		</where>
@@ -91,22 +90,22 @@
 		<!-- 项目关联商品 -->
 		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
 		<!-- 定向城市 -->
-		<association property="citys" column="{reqId=id}" select="selectCitysById"></association>
+		<!--<association property="citys" column="{reqId=id}" select="selectCitysById"></association>-->
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
 		select id,name,unit,type,price from ser_item_info_goods
 		where item_id=#{reqId}
 		and del_flag = '0'
 	</select>
-	<select id="selectCitysById" parameterType="java.util.Map" resultType="SerCityScope">
-		select
-		a.city_code AS cityCode,
-		b.`name` AS cityName
-		from ser_city_scope a
-		INNER JOIN sys_area b on a.city_code = b.`code` AND b.del_flag='0'
-		where a.master_id=#{reqId}
-		and a.del_flag = '0'
-	</select>
+	<!--<select id="selectCitysById" parameterType="java.util.Map" resultType="SerCityScope">-->
+		<!--select-->
+<!-- 		a.city_code AS cityCode,-->
+		<!--b.`name` AS cityName-->
+		<!--from ser_city_scope a-->
+		<!--INNER JOIN sys_area b on a.city_code = b.`code` AND b.del_flag='0'-->
+		<!--where a.master_id=#{reqId}-->
+		<!--and a.del_flag = '0'-->
+	<!--</select>-->
 
 	<select id="findAllList" resultType="SerItemInfo">
 		SELECT 
@@ -133,7 +132,7 @@
 			major_sort,
 			sort_id,
 			name,
-			all_city,
+-- 			all_city,
 			picture,
 			picture_detail,
 			description,
@@ -150,7 +149,7 @@
 			#{majorSort},
 			#{sortId},
 			#{name},
-			#{allCity},
+-- 			#{allCity},
 			#{picture},
 			#{pictureDetail},
 			#{description},
@@ -175,9 +174,9 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="allCity != null and allCity != ''">
-				all_city = #{allCity},
-			</if>
+			<!--<if test="allCity != null and allCity != ''">-->
+				<!--all_city = #{allCity},-->
+			<!--</if>-->
 			<if test="picture != null and picture != ''">
 				picture = #{picture},
 			</if>
@@ -240,11 +239,11 @@
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
-	<select id="getSerSortInfo" resultType="SerSortInfo">
-		select a.all_city AS allCity
-		from ser_sort_info a
-		where
-		a.id = #{id}
-		AND  a.del_flag = '0'
-	</select>
+	<!--<select id="getSerSortInfo" resultType="SerSortInfo">-->
+		<!--select a.all_city AS allCity-->
+		<!--from ser_sort_info a-->
+		<!--where-->
+		<!--a.id = #{id}-->
+		<!--AND  a.del_flag = '0'-->
+	<!--</select>-->
 </mapper>

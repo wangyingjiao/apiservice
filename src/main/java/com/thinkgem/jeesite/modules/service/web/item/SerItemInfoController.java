@@ -164,7 +164,7 @@ public class SerItemInfoController extends BaseController {
         return new SuccResult("删除成功");
     }
 
-    @ResponseBody
+   /* @ResponseBody
     @RequestMapping(value = "getAllCityCodes", method = {RequestMethod.POST})
     @ApiOperation("机构或分类下定向城市")
     public Result getAllCityCodes(@RequestBody SerItemInfo serItemInfo) {
@@ -175,6 +175,6 @@ public class SerItemInfoController extends BaseController {
         serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
         List<SerCityScope> list = serItemInfoService.getAllCityCodes(serItemInfo);
         return new SuccResult(list);
-    }
+    }*/
 
 }

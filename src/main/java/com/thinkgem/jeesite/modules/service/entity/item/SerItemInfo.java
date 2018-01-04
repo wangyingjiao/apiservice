@@ -31,7 +31,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String description;		// 服务描述
 	private String sale;		// 是否上架(yes:是，no:否)
 	private int sortNum;		// 排序号
-	private String allCity;//全部城市(yes:是，no:否)
 	private String orgId;//机构ID
 
 	public SerItemInfo() {
@@ -127,14 +126,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.sortNum = sortNum;
 	}
 
-	public String getAllCity() {
-		return allCity;
-	}
-
-	public void setAllCity(String allCity) {
-		this.allCity = allCity;
-	}
-
 	public String getOrgId() {
 		return orgId;
 	}
@@ -143,46 +134,9 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.orgId = orgId;
 	}
 
-	private String cityCode;        // 城市编号 查询用
-	private List<String> cityCodes = new ArrayList<String>(); // 城市 编辑选中用
-	private List<SerCityScope> citys = new ArrayList<SerCityScope>();
-	private List<SerCityScope> allCitys = new ArrayList<SerCityScope>();
 	private List<SerItemCommodity> commoditys;
 	private String sortName;		// 所属分类
 
-	public String getCityCode() {
-		return cityCode;
-	}
-
-	public void setCityCode(String cityCode) {
-		this.cityCode = cityCode;
-	}
-
-	@JsonInclude
-	public List<String> getCityCodes() {
-		return cityCodes;
-	}
-
-	public void setCityCodes(List<String> cityCodes) {
-		this.cityCodes = cityCodes;
-	}
-
-	@JsonInclude
-	public List<SerCityScope> getCitys() {
-		return citys;
-	}
-
-	public void setCitys(List<SerCityScope> citys) {
-		this.citys = citys;
-	}
-
-	public List<SerCityScope> getAllCitys() {
-		return allCitys;
-	}
-
-	public void setAllCitys(List<SerCityScope> allCitys) {
-		this.allCitys = allCitys;
-	}
 
 	@JsonInclude
 	public List<SerItemCommodity> getCommoditys() {return commoditys;}

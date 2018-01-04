@@ -85,7 +85,10 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
 
     public Page<SerSortInfo> findPage(Page<SerSortInfo> page, SerSortInfo serSortInfo) {
         //serSortInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
-        return super.findPage(page, serSortInfo);
+        Page<SerSortInfo> page1 = super.findPage(page, serSortInfo);
+
+
+        return page1;
     }
 
     /**
