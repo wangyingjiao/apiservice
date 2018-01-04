@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderMasterInfoDao">
+    
+	<sql id="orderMasterInfoColumns">
+		a.id AS "id",
+		a.order_type AS "orderType",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orderMasterInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="OrderMasterInfo">
+		SELECT 
+			<include refid="orderMasterInfoColumns"/>
+		FROM order_master_info a
+		<include refid="orderMasterInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderMasterInfo">
+		SELECT 
+			<include refid="orderMasterInfoColumns"/>
+		FROM order_master_info a
+		<include refid="orderMasterInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderMasterInfo">
+		SELECT 
+			<include refid="orderMasterInfoColumns"/>
+		FROM order_master_info a
+		<include refid="orderMasterInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_master_info(
+			id,
+			order_type,
+			create_date,
+			create_by,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{orderType},
+			#{createDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_master_info SET
+			<if test="orderType !=null and orderType != ''">order_type = #{orderType},</if>
+			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_master_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

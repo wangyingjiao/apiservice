@@ -15,7 +15,7 @@
 		a.aunts AS "aunts",
 		a.service_point AS "servicePoint",
 		a.create_by AS "createBy.id",
-		a.office_id AS "office.id",
+		a.office_id AS "organization.id",
 		a.office_name AS "officeName",
 		a.create_date AS "createDate",
 		a.addr_province_id AS "addrProvinceId",
@@ -34,8 +34,8 @@
 		a.range_type AS "rangeType",
 		a.useable AS "useable",
 		u6.name AS "user.name",
-		o13.name AS "office.name",
-		o13.service_area_type as "office.serviceAreaType"
+		o13.name AS "organization.name",
+		o13.service_area_type as "organization.serviceAreaType"
 	</sql>
 
     <sql id="serviceStationJoins">
@@ -46,7 +46,7 @@
     <select id="get" resultType="ServiceStation">
         SELECT
         <include refid="serviceStationColumns"/>
-        FROM service_station a
+        FROM basic_service_station a
         <include refid="serviceStationJoins"/>
         WHERE a.id = #{id}
     </select>
@@ -54,7 +54,7 @@
     <select id="findList" resultType="ServiceStation">
         SELECT
         <include refid="serviceStationColumns"/>
-        FROM service_station a
+        FROM basic_service_station a
         <include refid="serviceStationJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -73,7 +73,7 @@
                 ORDER BY ${page.orderBy}
             </when>
             <otherwise>
-                ORDER BY a.update_date DESC
+                ORDER BY a.create_date DESC
             </otherwise>
         </choose>
     </select>
@@ -81,7 +81,7 @@
     <select id="findAllList" resultType="ServiceStation">
         SELECT
         <include refid="serviceStationColumns"/>
-        FROM service_station a
+        FROM basic_service_station a
         <include refid="serviceStationJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -91,19 +91,17 @@
                 ORDER BY ${page.orderBy}
             </when>
             <otherwise>
-                ORDER BY a.update_date DESC
+                ORDER BY a.create_date DESC
             </otherwise>
         </choose>
     </select>
     <!--返回当前服务站下的员工列表-->
-
-    <select id="findStationByUser"
-            resultType="com.thinkgem.jeesite.modules.service.entity.station.ServiceStation">
-		SELECT * FROM service_station WHERE del_flag = 0 AND user_id = #{id}
+    <select id="findStationByUser" resultType="com.thinkgem.jeesite.modules.service.entity.station.ServiceStation">
+		SELECT * FROM basic_service_station WHERE del_flag = 0 AND user_id = #{id}
 	</select>
 
     <insert id="insert">
-		INSERT INTO service_station(
+		INSERT INTO basic_service_station(
 			id,
 			name,
 			type,
@@ -147,7 +145,7 @@
 			#{aunts},
 			#{servicePoint},
 			#{createBy.id},
-			#{office.id},
+			#{organization.id},
 			#{officeName},
 			#{createDate},
 			#{addrProvinceId},
@@ -169,9 +167,9 @@
 	</insert>
 
     <!--<update id="update">-->
-    <!--UPDATE service_station set-->
+    <!--UPDATE basic_service_station set-->
     <!--<set>-->
-    <!--<if test="office != null and office.id != null">office_id = #{office.id},</if>-->
+    <!--<if test="organization != null and organization.id != null">office_id = #{organization.id},</if>-->
 
     <!--<if test="updateBy!=null and updateBy.id != null">update_by = #{updateBy.id},</if>-->
 
@@ -180,10 +178,10 @@
     <!--WHERE id = #{id}-->
     <!--</update>-->
     <update id="update">
-        UPDATE service_station
+        UPDATE basic_service_station
         <set>
             <if test="updateBy != null and updateBy.id != null">update_by = #{updateBy.id},</if>
-            <if test="office != null and office.id != null">office_id = #{office.id},</if>
+            <if test="organization != null and organization.id != null">office_id = #{organization.id},</if>
             <if test="user != null and user.id != null">user_id = #{user.id},</if>
             <if test="userName != null">user_name = #{userName},</if>
             <if test="updateBy != null and updateBy.id != null">update_by = #{updateBy.id},</if>
@@ -214,7 +212,7 @@
 
 
     <update id="delete">
-		UPDATE service_station SET 
+		UPDATE basic_service_station SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

@@ -1,57 +1,53 @@
+/**
+ * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ */
 package com.thinkgem.jeesite.modules.sys.entity;
 
-import java.io.Serializable;
-
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.thinkgem.jeesite.modules.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thinkgem.jeesite.common.persistence.TreeEntity;
+import org.hibernate.validator.constraints.Length;
 
 /**
- * <p>
- * 区域表
- * </p>
- *
- * @author X
- * @since 2017-12-10
+ * 区域Entity
+ * @author ThinkGem
+ * @version 2013-05-15
  */
-@TableName("sys_area")
-public class Area extends BaseEntity<Area> {
+public class Area extends TreeEntity<Area> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
+//	private Area parent;	// 父级编号
+//	private String parentIds; // 所有父级编号
+/*
+	private String code;// 区域编码
+	@JsonInclude
+	private String name; 	// 区域名称
+	private Integer sort;		// 排序
+	private String type; 	// 区域类型（1：国家；2：省份、直辖市；3：地市；4：区县）
+*/
 
-    /**
-     * 名称
-     */
-	private String name;
-    /**
-     * 区域编码
-     */
-	private String code;
-    /**
-     * 邮政编码
-     */
-	@TableField("zip_code")
-	private String zipCode;
-    /**
-     * 级别
-     */
-	private Integer level;
-    /**
-     * 排序
-     */
-	private Integer sort;
-    /**
-     * 父级编码
-     */
-	@TableField("parent_code")
-	private String parentCode;
+	private String name; 	// 区域名称
+	private String code; 	// 区域编码
+	private String zipCode; 	// 邮政编码
+	private Integer level; 	// 级别
+	private Integer sort; 	// 排序
+	private String parentCode; 	// 父级编码
 
+	@Override
+	public Area getParent() {
+		return null;
+	}
 
+	@Override
+	public void setParent(Area parent) {
+
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -80,10 +76,12 @@ public class Area extends BaseEntity<Area> {
 		this.level = level;
 	}
 
+	@Override
 	public Integer getSort() {
 		return sort;
 	}
 
+	@Override
 	public void setSort(Integer sort) {
 		this.sort = sort;
 	}
@@ -95,21 +93,64 @@ public class Area extends BaseEntity<Area> {
 	public void setParentCode(String parentCode) {
 		this.parentCode = parentCode;
 	}
+	/*
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
+
+	public Area(){
+		super();
+		this.sort = 30;
+	}
+
+	public Area(String id){
+		super(id);
+	}
+
+	public Area getParent() {
+		return parent;
+	}
+
+	public void setParent(Area parent) {
+		this.parent = parent;
+	}
+
+	@JsonInclude
+	@Length(min=1, max=100)
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
+	}
+
+	@Length(min=1, max=1)
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Length(min=0, max=100)
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	@Override
 	public String toString() {
-		return "Area{" +
-			", name=" + name +
-			", code=" + code +
-			", zipCode=" + zipCode +
-			", level=" + level +
-			", sort=" + sort +
-			", parentCode=" + parentCode +
-			"}";
-	}
+		return name;
+	}*/
 }

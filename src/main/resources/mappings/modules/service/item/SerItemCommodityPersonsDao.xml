@@ -4,15 +4,14 @@
     
 	<sql id="serItemCommodityPersonsColumns">
 		a.id AS "id",
-		a.commodity_id AS "commodityId",
-		a.commodity_name AS "commodityName",
+		a.goods_id AS "goodsId",
 		a.critical AS "critical",
 		a.quantity AS "quantity",
+		a.sort AS "sort",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
@@ -22,7 +21,7 @@
 	<select id="get" resultType="SerItemCommodityPersons">
 		SELECT 
 			<include refid="serItemCommodityPersonsColumns"/>
-		FROM ser_item_commodity_persons a
+		FROM ser_item_info_goods_persons a
 		<include refid="serItemCommodityPersonsJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -30,7 +29,7 @@
 	<select id="findList" resultType="SerItemCommodityPersons">
 		SELECT 
 			<include refid="serItemCommodityPersonsColumns"/>
-		FROM ser_item_commodity_persons a
+		FROM ser_item_info_goods_persons a
 		<include refid="serItemCommodityPersonsJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -40,7 +39,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -48,7 +47,7 @@
 	<select id="findAllList" resultType="SerItemCommodityPersons">
 		SELECT 
 			<include refid="serItemCommodityPersonsColumns"/>
-		FROM ser_item_commodity_persons a
+		FROM ser_item_info_goods_persons a
 		<include refid="serItemCommodityPersonsJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -58,53 +57,55 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO ser_item_commodity_persons(
+		INSERT INTO ser_item_info_goods_persons(
 			id,
-			commodity_id,
-			commodity_name,
+			goods_id,
 			critical,
 			quantity,
+			sort,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
-			#{commodityId},
-			#{commodityName},
+			#{goodsId},
 			#{critical},
 			#{quantity},
+			#{sort},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
 	
 	<update id="update">
-		UPDATE ser_item_commodity_persons SET 	
-			commodity_id = #{commodityId},
-			commodity_name = #{commodityName},
-			critical = #{critical},
-			quantity = #{quantity},
+		UPDATE ser_item_info_goods_persons SET
+			<if test="critical != null and critical != ''">
+				critical = #{critical},
+			</if>
+			<if test="quantity != null and quantity != ''">
+				quantity = #{quantity},
+			</if>
+			<if test="sort != null and sort != ''">
+				sort = #{sort},
+			</if>
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE ser_item_commodity_persons SET 
+		UPDATE ser_item_info_goods_persons SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

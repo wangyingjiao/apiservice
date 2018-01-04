@@ -3,30 +3,21 @@
  */
 package com.thinkgem.jeesite.modules.sys.utils;
 
-
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.basic.entity.ServiceStation;
-import com.thinkgem.jeesite.modules.basic.mapper.OrganizationDao;
-import com.thinkgem.jeesite.modules.basic.mapper.ServiceStationDao;
-import com.thinkgem.jeesite.modules.sys.entity.Area;
-import com.thinkgem.jeesite.modules.sys.entity.Menu;
-import com.thinkgem.jeesite.modules.sys.entity.Role;
-import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.mapper.AreaDao;
-import com.thinkgem.jeesite.modules.sys.mapper.MenuDao;
-import com.thinkgem.jeesite.modules.sys.mapper.RoleDao;
-import com.thinkgem.jeesite.modules.sys.mapper.UserDao;
-import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
+import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
+import com.thinkgem.jeesite.modules.sys.dao.*;
+import com.thinkgem.jeesite.modules.sys.entity.*;
+import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm.Principal;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +32,7 @@ public class UserUtils {
     private static RoleDao roleDao = SpringContextHolder.getBean(RoleDao.class);
     private static MenuDao menuDao = SpringContextHolder.getBean(MenuDao.class);
     private static AreaDao areaDao = SpringContextHolder.getBean(AreaDao.class);
-    private static OrganizationDao orgDao = SpringContextHolder.getBean(OrganizationDao.class);
+    private static OfficeDao officeDao = SpringContextHolder.getBean(OfficeDao.class);
     private static ServiceStationDao stationDao = SpringContextHolder.getBean(ServiceStationDao.class);
 
     public static final String USER_CACHE = "userCache";
@@ -66,17 +57,13 @@ public class UserUtils {
     public static User get(String id) {
         User user = (User) CacheUtils.get(USER_CACHE, USER_CACHE_ID_ + id);
         if (user == null) {
-            user = userDao.selectById(id);
+            user = userDao.get(id);
             if (user == null) {
                 return null;
             }
-            if (StringUtils.isNotBlank(user.getRoleId())) {
-                user.setRole(roleDao.selectById(user.getRoleId()));
-            }
-
-
+            user.setRoleList(roleDao.findList(new Role(user)));
             CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + user.getId(), user);
-            CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getPhone(), user);
+            CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName(), user);
         }
         return user;
     }
@@ -84,23 +71,19 @@ public class UserUtils {
     /**
      * 根据登录名获取用户
      *
-     * @param phone
+     * @param loginName
      * @return 取不到返回null
      */
-    public static User getByLoginName(String phone) {
-        User user = (User) CacheUtils.get(USER_CACHE, USER_CACHE_LOGIN_NAME_ + phone);
+    public static User getByLoginName(String loginName) {
+        User user = null; //(User)CacheUtils.get(USER_CACHE, USER_CACHE_LOGIN_NAME_ + loginName);
         if (user == null) {
-            User u = new User();
-            u.setPhone(phone);
-            user = userDao.selectOne(u);
+            user = userDao.getByLoginName(new User(null, loginName));
             if (user == null) {
                 return null;
             }
-            if (StringUtils.isNotBlank(user.getRoleId())) {
-                user.setRole(roleDao.selectById(user.getRoleId()));
-            }
+            user.setRoleList(roleDao.findList(new Role(user)));
             CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + user.getId(), user);
-            CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getPhone(), user);
+            CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName(), user);
         }
         return user;
     }
@@ -124,11 +107,20 @@ public class UserUtils {
      * @param user
      */
     public static void clearCache(User user) {
-        CacheUtils.remove(USER_CACHE, USER_CACHE_ID_ + user.getId());
-        CacheUtils.remove(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getPhone());
-        if (user.getOrg() != null && user.getOrg().getId() != null) {
-            CacheUtils.remove(USER_CACHE, USER_CACHE_LIST_BY_OFFICE_ID_ + user.getOrg().getId());
+        //todo 清空时会报空异常
+        try {
+
+            CacheUtils.remove(USER_CACHE, USER_CACHE_ID_ + user.getId());
+            CacheUtils.remove(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName());
+            CacheUtils.remove(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getOldLoginName());
+            if (user.getOrganization() != null && user.getOrganization().getId() != null) {
+                CacheUtils.remove(USER_CACHE, USER_CACHE_LIST_BY_OFFICE_ID_ + user.getOrganization().getId());
+            }
+
+        } catch (NullPointerException e) {
+
         }
+
     }
 
     /**
@@ -137,7 +129,7 @@ public class UserUtils {
      * @return 取不到返回 new User()
      */
     public static User getUser() {
-        SystemAuthorizingRealm.Principal principal = getPrincipal();
+        Principal principal = getPrincipal();
         if (principal != null) {
             User user = get(principal.getId());
             if (user != null) {
@@ -149,11 +141,11 @@ public class UserUtils {
         return new User();
     }
 
-//    /**
-//     * 获取当前用户角色列表
-//     *
-//     * @return
-//     */
+    /**
+     * 获取当前用户角色列表
+     *
+     * @return
+     */
     public static List<Role> getRoleList() {
         @SuppressWarnings("unchecked")
         List<Role> roleList = null;
@@ -161,11 +153,11 @@ public class UserUtils {
         if (roleList == null) {
             User user = getUser();
             if (user.isAdmin()) {
-                roleList = roleDao.selectList(new EntityWrapper<>(new Role()));
+                roleList = roleDao.findAllList(new Role());
             } else {
                 Role role = new Role();
-                //role.getSqlMap().put("dsf", BaseService.dataScopeFilter(user.getCurrentUser(), "o", "u"));
-                roleList = roleDao.selectList(new EntityWrapper<>(new Role()));
+                //role.getSqlMap().put("dsf", BaseService.dataRoleFilter(user.getCurrentUser(), "a"));
+                roleList = roleDao.findRoleListByUser(user);
             }
             putCache(CACHE_ROLE_LIST, roleList);
         }
@@ -177,44 +169,43 @@ public class UserUtils {
      *
      * @return
      */
-//    public static List<Menu> getMenuList() {
-//        @SuppressWarnings("unchecked")
-//        List<Menu> menuList = (List<Menu>) getCache(CACHE_MENU_LIST);
-//        if (menuList == null) {
-//            User user = getUser();
-//            if (user.isAdmin()) {
-//                menuList = menuDao.selectList(new EntityWrapper<Menu>(new Menu()));
-//            } else {
-////                Menu m = new Menu();
-////                m.set(user.getId());
-//
-//                menuList = menuDao.selectBy()
-//            }
-//            putCache(CACHE_MENU_LIST, menuList);
-//        }
-//        return menuList;
-//    }
+    public static List<Menu> getMenuList() {
+        @SuppressWarnings("unchecked")
+        List<Menu> menuList = (List<Menu>) getCache(CACHE_MENU_LIST);
+        if (menuList == null) {
+            User user = getUser();
+            if (user.isAdmin()) {
+                menuList = menuDao.findAllList(new Menu());
+            } else {
+                Menu m = new Menu();
+                m.setUserId(user.getId());
+                menuList = menuDao.findByUserId(m);
+            }
+            putCache(CACHE_MENU_LIST, menuList);
+        }
+        return menuList;
+    }
 
-//    /**
-//     * 获取当前用户授权的区域
-//     *
-//     * @return
-//     */
-//    public static List<Area> getAreaList() {
-//        @SuppressWarnings("unchecked")
-//        List<Area> areaList = (List<Area>) getCache(CACHE_AREA_LIST);
-//        if (areaList == null) {
-//            areaList = areaDao.findAllList(new Area());
-//            putCache(CACHE_AREA_LIST, areaList);
-//        }
-//        return areaList;
-//    }
+    /**
+     * 获取当前用户授权的区域
+     *
+     * @return
+     */
+    public static List<Area> getAreaList() {
+        @SuppressWarnings("unchecked")
+        List<Area> areaList = (List<Area>) getCache(CACHE_AREA_LIST);
+        if (areaList == null) {
+            areaList = areaDao.findAllList(new Area());
+            putCache(CACHE_AREA_LIST, areaList);
+        }
+        return areaList;
+    }
 
-//    /**
-//     * 机构查询，分页和条件搜索
-//     *
-//     * @return
-//     */
+    /**
+     * 机构查询，分页和条件搜索
+     *
+     * @return
+    //     */
 //    public static Page<Office> getOffices(Page<Office> page, Office office) {
 //        office.setPage(page);
 //        User user = getUser();
@@ -231,37 +222,37 @@ public class UserUtils {
      * 获取当前用户有权限访问的部门
      *
      * @return
-//     */
-//    public static List<Office> getOfficeList() {
-//        @SuppressWarnings("unchecked")
-//        List<Office> officeList = (List<Office>) getCache(CACHE_OFFICE_LIST);
-//        if (officeList == null) {
-//            User user = getUser();
-//            if (user.isAdmin()) {
-//                officeList = officeDao.findAllList(new Office());
-//            } else {
-//                Office office = new Office();
-//                office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "a", ""));
-//                officeList = officeDao.findList(office);
-//            }
-//            putCache(CACHE_OFFICE_LIST, officeList);
-//        }
-//        return officeList;
-//    }
+     */
+    public static List<Office> getOfficeList() {
+        @SuppressWarnings("unchecked")
+        List<Office> officeList = (List<Office>) getCache(CACHE_OFFICE_LIST);
+        if (officeList == null) {
+            User user = getUser();
+            if (user.isAdmin()) {
+                officeList = officeDao.findAllList(new Office());
+            } else {
+                Office office = new Office();
+                office.getSqlMap().put("dsf", BaseService.dataScopeFilter(user, "org", "ss"));
+                officeList = officeDao.findList(office);
+            }
+            putCache(CACHE_OFFICE_LIST, officeList);
+        }
+        return officeList;
+    }
 
     /**
      * 获取当前用户有权限访问的部门
      *
      * @return
      */
-//    public static List<Office> getOfficeAllList() {
-//        @SuppressWarnings("unchecked")
-//        List<Office> officeList = (List<Office>) getCache(CACHE_OFFICE_ALL_LIST);
-//        if (officeList == null) {
-//            officeList = officeDao.findAllList(new Office());
-//        }
-//        return officeList;
-//    }
+    public static List<Office> getOfficeAllList() {
+        @SuppressWarnings("unchecked")
+        List<Office> officeList = (List<Office>) getCache(CACHE_OFFICE_ALL_LIST);
+        if (officeList == null) {
+            officeList = officeDao.findAllList(new Office());
+        }
+        return officeList;
+    }
 
     /**
      * 获取授权主要对象
@@ -273,10 +264,10 @@ public class UserUtils {
     /**
      * 获取当前登录者对象
      */
-    public static SystemAuthorizingRealm.Principal getPrincipal() {
+    public static Principal getPrincipal() {
         try {
             Subject subject = SecurityUtils.getSubject();
-            SystemAuthorizingRealm.Principal principal = (SystemAuthorizingRealm.Principal) subject.getPrincipal();
+            Principal principal = (Principal) subject.getPrincipal();
             if (principal != null) {
                 return principal;
             }
@@ -339,25 +330,31 @@ public class UserUtils {
     /**
      * 获取当前用户的所属服务站信息
      */
-//    public static ServiceStation getStationInfo() {
-//        User user = getUser();
-//        return stationDao.findStationByUser(user);
-//    }
+    public static ServiceStation getStationInfo() {
+        User user = getUser();
+        return stationDao.findStationByUser(user);
+    }
 
-//    public static User getUserByPhone(String phone) {
-//        User user = (User) CacheUtils.get(USER_CACHE, USER_CACHE_LOGIN_NAME_ + phone);
-//        if (user == null) {
-//            user = userDao.getbyPhone(new User(null, phone));
-//            if (user == null) {
-//                return null;
-//            }
-//            user.setRoleList(roleDao.findList(new Role(user)));
-//            CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + user.getId(), user);
-//            CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName(), user);
-//        }
-//        return user;
-//
-//
-//    }
+    public static List<Menu> getMenuListForPlatform() {
+        User user = getUser();
+        if (user.getOrganization().getId().equals("0")) {
+            return menuDao.findAllList(new Menu());
+        } else {
+            return getMenuList();
+        }
+    }
+
+    public static List<Menu> genTreeMenu(String id, List<Menu> menus) {
+        ArrayList<Menu> list = new ArrayList<>();
+        for (Menu menu : menus) {
+            //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
+            if (menu.getParentId().equals(id)) {
+                List<Menu> menus1 = genTreeMenu(menu.getId(), menus);
+                menu.setSubMenus(menus1);
+                list.add(menu);
+            }
+        }
+        return list;
+    }
 //
 }

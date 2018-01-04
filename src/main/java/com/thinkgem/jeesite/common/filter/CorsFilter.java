@@ -39,7 +39,6 @@ public class CorsFilter implements Filter {
             }
             chain.doFilter(request, response);
         } catch (Exception e) {
-//            errorLogger.error("Exception in crossDomainFilter.doFilter", e);
             throw e;
         }
     }

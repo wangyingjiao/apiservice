@@ -42,8 +42,11 @@
 		GROUP BY type
 		ORDER BY type
 	</select>
-	
-	<insert id="insert">
+    <select id="getAllDicts" resultType="Dict">
+		SELECT type,`value`,label FROM sys_dict  ORDER BY type,`value`,label
+	</select>
+
+    <insert id="insert">
 		INSERT INTO sys_dict(
 			id, 
 			value, 

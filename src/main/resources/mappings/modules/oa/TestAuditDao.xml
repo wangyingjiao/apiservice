@@ -22,8 +22,8 @@
 		a.proc_ins_id, 
 		u.id AS "user.id", 
 		u.name AS "user.name", 
-		o.id AS "office.id", 
-		o.name AS "office.name", 
+		o.id AS "organization.id",
+		o.name AS "organization.name",
 		a.create_by AS "createBy.id", 
 		a.create_date, 
 		a.update_by AS "updateBy.id", 
@@ -103,7 +103,7 @@
 		) VALUES (
 			#{id}, 
 			#{user.id}, 
-			#{office.id}, 
+			#{organization.id},
 			#{post}, 
 			#{age}, 
 			#{edu}, 
@@ -128,7 +128,7 @@
 	<update id="update">
 		UPDATE oa_test_audit SET 
 			user_id = #{user.id}, 
-			office_id = #{office.id}, 
+			office_id = #{organization.id},
 			post = #{post}, 
 			age = #{age}, 
 			edu = #{edu}, 

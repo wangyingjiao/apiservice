@@ -4,29 +4,23 @@
     
 	<sql id="orderCustomInfoColumns">
 		a.id AS "id",
-		a.custom_name AS "customName",
-		a.custom_sex AS "customSex",
-		a.custom_phone AS "customPhone",
-		a.custom_area AS "customArea",
-		a.custom_addr AS "customAddr",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.province_code AS "provinceCode",
+		a.city_code AS "cityCode",
+		a.area_code AS "areaCode",
+		a.address AS "address",
 		a.addr_longitude AS "addrLongitude",
 		a.addr_latitude AS "addrLatitude",
-		a.custom_email AS "customEmail",
-		a.office_id AS "officeId",
-		a.office_name AS "officeName",
+		a.email AS "email",
+		a.org_id AS "orgId",
+		a.source AS "source",
 		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		a.cus_prov_id AS "cusProvId",
-		a.cus_prov_name AS "cusProvName",
-		a.cus_city_id AS "cusCityId",
-		a.cus_city_name AS "cusCityName",
-		a.cus_town_id AS "cusTownId",
-		a.cus_town_name AS "cusTownName",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
@@ -36,40 +30,45 @@
 	<select id="get" resultType="OrderCustomInfo">
 		SELECT 
 			<include refid="orderCustomInfoColumns"/>
-		FROM order_custom_info a
+		FROM customer_info a
 		<include refid="orderCustomInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="OrderCustomInfo">
-		SELECT 
-			<include refid="orderCustomInfoColumns"/>
-		FROM order_custom_info a
-		<include refid="orderCustomInfoJoins"/>
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.sex AS "sex",
+			a.phone AS "phone",
+			a.address AS "address",
+			a.addr_longitude AS "addrLongitude",
+			a.addr_latitude AS "addrLatitude",
+			a.org_id AS "orgId",
+			b.name AS "orgName",
+			a.source AS "source"
+		FROM customer_info a
+		LEFT JOIN basic_organization b ON a.org_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="customPhone != null and customPhone != ''">
-				AND a.custom_phone LIKE
-				<if test="dbName == 'oracle'">'%'||#{customPhone}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{customPhone}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{customPhone},'%')</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone LIKE concat('%',#{phone},'%')
 			</if>
-			<if test="customName != null and customName != ''">
-				AND a.custom_name LIKE
-				<if test="dbName == 'oracle'">'%'||#{customName}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{customName}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{customName},'%')</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%',#{name},'%')
 			</if>
-			<if test="officeId != null and officeId != ''">
-				AND a.office_id = #{officeId}
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
 			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -77,7 +76,7 @@
 	<select id="findAllList" resultType="OrderCustomInfo">
 		SELECT 
 			<include refid="orderCustomInfoColumns"/>
-		FROM order_custom_info a
+		FROM customer_info a
 		<include refid="orderCustomInfoJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -87,97 +86,116 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<insert id="insert">
-		INSERT INTO order_custom_info(
+		INSERT INTO customer_info(
 			id,
-			custom_name,
-			custom_sex,
-			custom_phone,
-			custom_area,
-			custom_addr,
+			name,
+			sex,
+			phone,
+			province_code,
+			city_code,
+			area_code,
+			address,
 			addr_longitude,
 			addr_latitude,
-			custom_email,
-			office_id,
-			office_name,
+			email,
+			org_id,
+			source,
 			station_id,
-			station_name,
-			cus_prov_id,
-			cus_prov_name,
-			cus_city_id,
-			cus_city_name,
-			cus_town_id,
-			cus_town_name,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
-			#{customName},
-			#{customSex},
-			#{customPhone},
-			#{customArea},
-			#{customAddr},
+			#{name},
+			#{sex},
+			#{phone},
+			#{provinceCode},
+			#{cityCode},
+			#{areaCode},
+			#{address},
 			#{addrLongitude},
 			#{addrLatitude},
-			#{customEmail},
-			#{officeId},
-			#{officeName},
+			#{email},
+			#{orgId},
+			#{source},
 			#{stationId},
-			#{stationName},
-			#{cusProvId},
-			#{cusProvName},
-			#{cusCityId},
-			#{cusCityName},
-			#{cusTownId},
-			#{cusTownName},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
-	
+
 	<update id="update">
-		UPDATE order_custom_info SET 	
-			custom_name = #{customName},
-			custom_sex = #{customSex},
-			custom_phone = #{customPhone},
-			custom_area = #{customArea},
-			custom_addr = #{customAddr},
-			addr_longitude = #{addrLongitude},
-			addr_latitude = #{addrLatitude},
-			custom_email = #{customEmail},
-			office_id = #{officeId},
-			office_name = #{officeName},
-			station_id = #{stationId},
-			station_name = #{stationName},
-			cus_prov_id = #{cusProvId},
-			cus_prov_name = #{cusProvName},
-			cus_city_id = #{cusCityId},
-			cus_city_name = #{cusCityName},
-			cus_town_id = #{cusTownId},
-			cus_town_name = #{cusTownName},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+		UPDATE customer_info SET
+		<if test="name !=null and name != ''">name = #{name},</if>
+		<if test="sex !=null and sex != ''">sex = #{sex},</if>
+		<if test="phone !=null and phone != ''">phone = #{phone},</if>
+		<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
+		<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
+		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
+		<if test="address !=null and address != ''">address = #{address},</if>
+		<if test="addrLongitude !=null and addrLongitude != ''">addr_longitude = #{addrLongitude},</if>
+		<if test="addrLatitude !=null and addrLatitude != ''">addr_latitude = #{addrLatitude},</if>
+		<if test="email !=null and email != ''">email = #{email},</if>
+		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
+		<if test="source !=null and source != ''">source = #{source},</if>
+		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
-	
+
 	<update id="delete">
-		UPDATE order_custom_info SET 
-			del_flag = #{DEL_FLAG_DELETE}
+		UPDATE customer_info SET
+		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<select id="findOrganizationList" resultType="BasicOrganization">
+	SELECT
+	a.id AS "id",
+	a.name AS "name"
+	FROM basic_organization a
+	<where>
+		a.del_flag = '0'
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+	</where>
+	</select>
+
+	<select id="findCustomInfo"  resultType="OrderCustomInfo">
+		SELECT
+		a.id AS "id"
+		FROM customer_info a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			AND a.phone = #{phone}
+		</where>
+	</select>
+	<select id="getStationsByOrgId" resultType="ServiceStation">
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.type AS "type",
+			a.province_code AS "provinceCode",
+			a.city_code AS "cityCode",
+			a.area_code AS "areaCode",
+			a.address AS "address",
+			a.service_point AS "servicePoint"
+		FROM basic_service_station a
+		WHERE a.org_id = #{id}
+		AND a.del_flag = '0'
+		AND a.is_useable = 'yes'
+	</select>
 </mapper>

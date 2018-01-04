@@ -191,7 +191,7 @@ public class Base64Decoder extends FilterInputStream {
 //            if (decoder != null) decoder.close();
 //        }
 
-        String str = Base64Decoder.decode("eyJvcmRlcklkIjoiNGNmNDgxZTYyYTZjNGYzODhkZWJlYzZjYTQ5MjNiNGYiLCJncm91cElkIjoiMTk3MDNlMDkyZmMzNDg3N2FmZjNiNDdhNGY2ZmNmZjgiLCJ1c2VyVHlwZSI6InNlbGxlciIsImlzU3BsaXQiOiJ5ZXMifQ==");
+        String str = Base64Decoder.decode("eyJ2ZXJpZmljb2RlIjoiODg4ODg4IiwicGhvbmUiOiIxODg4ODg4ODg4OCJ9");
         System.out.println(str);
 
 

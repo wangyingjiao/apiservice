@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStoreDao">
+
+    <sql id="basicServiceStoreColumns">
+		a.station_id AS "stationId",
+		a.store_id AS "storeId"
+	</sql>
+
+    <sql id="basicServiceStoreJoins">
+    </sql>
+
+
+    <select id="get" resultType="BasicServiceStore">
+        SELECT
+        <include refid="basicServiceStoreColumns"/>
+        FROM basic_service_store a
+        <include refid="basicServiceStoreJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="BasicServiceStore">
+        SELECT
+        <include refid="basicServiceStoreColumns"/>
+        FROM basic_service_store a
+        <include refid="basicServiceStoreJoins"/>
+        <where>
+
+            <if test="stationId != null and stationId != ''">
+                AND a.station_id = #{stationId}
+            </if>
+            <if test="storeId != null and storeId != ''">
+                AND a.store_id = #{storeId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="BasicServiceStore">
+        SELECT
+        <include refid="basicServiceStoreColumns"/>
+        FROM basic_service_store a
+        <include refid="basicServiceStoreJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO basic_service_store(
+			station_id,
+			store_id
+		) VALUES (
+			#{stationId},
+			#{storeId}
+		)
+	</insert>
+    <insert id="saveStationStore">
+        INSERT INTO basic_service_store(
+        station_id,
+        store_id) VALUES
+        <foreach collection="storeList" item="str" separator=",">
+            (#{id},#{str})
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE basic_service_store SET
+        <if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
+        <if test="storeId !=null and storeId != ''">store_id = #{storeId},</if>
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
+		DELETE FROM basic_service_store
+		WHERE id = #{id}
+	</update>
+
+    <delete id="deletebyStation">
+      DELETE FROM basic_service_store WHERE station_id = #{id}
+    </delete>
+
+</mapper>

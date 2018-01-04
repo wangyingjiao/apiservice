@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao">
+    
+	<sql id="orderDispatchColumns">
+		a.id AS "id",
+		a.order_id AS "orderId",
+		a.tech_id AS "techId",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orderDispatchJoins">
+	</sql>
+    
+	<select id="get" resultType="OrderDispatch">
+		SELECT 
+			<include refid="orderDispatchColumns"/>
+		FROM order_dispatch a
+		<include refid="orderDispatchJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderDispatch">
+		SELECT 
+			<include refid="orderDispatchColumns"/>
+		FROM order_dispatch a
+		<include refid="orderDispatchJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderDispatch">
+		SELECT 
+			<include refid="orderDispatchColumns"/>
+		FROM order_dispatch a
+		<include refid="orderDispatchJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_dispatch(
+			id,
+			order_id,
+			tech_id,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{techId},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_dispatch SET
+			<if test="orderId !=null and orderId != ''">order_id = #{orderId},</if>
+			<if test="techId !=null and techId != ''">tech_id = #{techId},</if>
+			<if test="status !=null and status != ''">status = #{status},</if>
+			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_dispatch SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="formData" resultType="OrderDispatch">
+		SELECT
+			a.create_date AS "createDate",
+			t.name AS "techName",
+			t.head_pic AS "headPic",
+			t.sex AS "techSex",
+			t.phone AS "techPhone",
+			t.job_nature AS "jobNature"
+		FROM order_dispatch a
+		LEFT JOIN tech_info t ON a.tech_id = t.id  AND t.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.order_id = #{orderId}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	  	AND a.status = 'no'
+	</select>
+
+</mapper>

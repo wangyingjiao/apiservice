@@ -4,19 +4,9 @@
     
 	<sql id="serSkillInfoColumns">
 		a.id AS "id",
-		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		a.office_id AS "officeId",
-		a.office_name AS "officeName",
+		a.org_id AS "orgId",
 		a.name AS "name",
-		a.code AS "code",
-		a.technician_num AS "technicianNum",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.tech_num AS "techNum"
 	</sql>
 	
 	<sql id="serSkillInfoJoins">
@@ -30,7 +20,13 @@
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultMap="SerSkillInfoResultMap">
+	<sql id="serSkillInfoColumnsAll">
+		a.id AS "id",
+		a.org_id AS "orgId",
+		a.name AS "name",
+		a.tech_num AS "techNum"
+	</sql>
+	<select id="findList" resultType="SerSkillInfo">
 		SELECT
 		<include refid="serSkillInfoColumnsAll"/>
 		FROM ser_skill_info a
@@ -38,22 +34,21 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				AND a.name LIKE concat('%',#{name},'%')
 			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findAllList" resultType="SerSkillInfo">
 		SELECT 
 			<include refid="serSkillInfoColumns"/>
@@ -67,7 +62,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -75,33 +70,23 @@
 	<insert id="insert">
 		INSERT INTO ser_skill_info(
 			id,
-			station_id,
-			station_name,
-			office_id,
-			office_name,
+			org_id,
 			name,
-			code,
-			technician_num,
+			tech_num,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		) VALUES (
 			#{id},
-			#{stationId},
-			#{stationName},
-			#{officeId},
-			#{officeName},
+			#{orgId},
 			#{name},
-			#{code},
-			#{technicianNum},
+			#{techNum},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{remarks},
 			#{delFlag}
 		)
 	</insert>
@@ -111,15 +96,11 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="code != null and code != ''">
-				code = #{code},
-			</if>
-			<if test="technicianNum != null and technicianNum != ''">
-				technician_num = #{technicianNum},
+			<if test="techNum != null">
+				tech_num = #{techNum},
 			</if>
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
@@ -132,95 +113,19 @@
 	<select id="checkDataName" resultType="int">
 		SELECT COUNT(*) FROM ser_skill_info
 		WHERE name = #{name}
-		AND  office_id = #{officeId}
+		AND  org_id = #{orgId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
-
-
-	<select id="getSkillInfoById" resultMap="SerSkillInfoResultMap">
-		SELECT
-		<include refid="serSkillInfoColumnsAll"/>
-		FROM ser_skill_info a
-		<where>
-			a.id = #{id}
-		</where>
-	</select>
-
-	<sql id="serSkillInfoColumnsAll">
-		a.id AS "id",
-		a.station_id AS "stationId",
-		a.station_name AS "stationName",
-		a.office_id AS "officeId",
-		a.office_name AS "officeName",
-		a.name AS "name",
-		a.code AS "code",
-		a.technician_num AS "technicianNum"
-	</sql>
-	<resultMap type="SerSkillInfo" id="SerSkillInfoResultMap">
-		<id column="id" property="id"/>
-		<result column="station_id" property="stationId"/>
-		<result column="station_name" property="stationName"/>
-		<result column="office_id" property="officeId"/>
-		<result column="office_name" property="officeName"/>
-		<result column="sort_name" property="sortName"/>
-		<result column="name" property="name"/>
-		<result column="code" property="code"/>
-		<result column="technician_num" property="technicianNum"/>
-		<!-- 关联商品 -->
-		<association property="serItems" column="{reqId=id}" select="selectSerItemsById"></association>
-		<!-- 关联技师 -->
-		<association property="technicians" column="{reqId=id}" select="selectTechnicianById"></association>
-	</resultMap>
-	<select id="selectTechnicianById" parameterType="java.util.Map" resultType="SerSkillTechnician">
-		select a.id,a.technician_id AS technicianId,a.technician_name AS technicianName,
-		b.tech_sex AS techSex,
-		b.tech_station_id AS techStationId,b.tech_station_name AS techStationName,
-		c.img_url AS imgUrl
-		from ser_skill_technician a
-		LEFT JOIN  service_technician_info b ON a.technician_id = b.id AND b.del_flag = '0'
-		LEFT JOIN  service_technician_images c ON a.technician_id = c.tech_id AND c.del_flag = '0' AND c.img_type = '1'
-		where a.skill_id=#{reqId}
-		and a.del_flag = '0'
-	</select>
-	<select id="selectSerItemsById" parameterType="java.util.Map" resultMap="SerSkillItemResultMap">
-		select id,
-		item_id AS itemId,item_name AS itemName,
-		item_id AS reqId
-		from ser_skill_item
-		where skill_id=#{reqId}
-		and del_flag = '0'
-	</select>
-	<resultMap type="SerSkillItem" id="SerSkillItemResultMap">
-		<id column="id" property="id"/>
-		<result column="item_id" property="itemId"/>
-		<result column="item_id" property="reqId"/>
-		<result column="item_name" property="itemName"/>
-		<!-- 关联商品 -->
-		<association property="serItemCommoditys" column="{reqId=reqId}" select="selectSerItemCommoditysById"></association>
-	</resultMap>
-	<select id="selectSerItemCommoditysById" parameterType="java.util.Map" resultType="SerSkillItemCommodity">
-		select id,
-		commodity_id AS commodityId,commodity_name AS commodityName
-		from ser_skill_item_commodity
-		where item_id=#{reqId}
-		and del_flag = '0'
-	</select>
-
-
 	<select id="choiceSerlist" resultMap="SerItemCommodityResultMap">
 		SELECT
-		a.id,
-		a.id AS "itemId",
-		a.name AS "itemName"
+		a.id AS "id",
+		a.name AS "name"
 		FROM ser_item_info a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="itemName != null and itemName != ''">
-				AND a.name LIKE
-				<if test="dbName == 'oracle'">'%'||#{itemName}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{itemName}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{itemName},'%')</if>
+				AND a.name LIKE concat('%',#{itemName},'%')
 			</if>
 		</where>
 		<choose>
@@ -233,53 +138,50 @@
 		</choose>
 	</select>
 
-	<resultMap type="SerSkillItem" id="SerItemCommodityResultMap">
-		<id column="id" property="itemId"/>
-		<result column="name" property="itemName"/>
-		<!-- 项目关联商品 -->
-		<association property="serItemCommoditys" column="{reqId=id}" select="selectCommodityById">
-			<result column="id" property="commodityId"/>
-			<result column="name" property="commodityName"/>
-		</association>
+	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<association property="commoditys" column="{reqId=id}" select="selectCommoditysById"></association>
 	</resultMap>
-	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerSkillItemCommodity">
-		select id as commodityId,name as commodityName from ser_item_commodity
-		where item_id=#{reqId}
+	<select id="selectCommoditysById" resultType="SerItemCommodity">
+		SELECT a.id,a.name
+		FROM ser_item_info_goods a
+		WHERE a.item_id=#{reqId}
+		AND a.del_flag = '0'
 	</select>
 
 	<select id="choiceTechnicianlist" resultType="SerSkillTechnician">
 		SELECT
-		a.id as technicianId, a.tech_name AS technicianName,a.tech_sex AS techSex,
-		a.tech_station_id AS techStationId,a.tech_station_name AS techStationName,
-		b.img_url AS imgUrl
-		FROM service_technician_info a
-		LEFT JOIN  service_technician_images b
-		ON a.id=b.tech_id AND b.del_flag = #{DEL_FLAG_NORMAL} AND b.img_type = '1'
+		a.id as techId, a.name AS techName,a.sex AS techSex,
+		a.station_id AS techStationId,
+		b.name AS techStationName,
+		a.head_pic AS headPic
+		FROM tech_info a
+		LEFT JOIN  basic_service_station b ON a.station_id = b.id AND b.del_flag = '0'
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="technicianName != null and technicianName != ''">
-				AND a.tech_name LIKE
-				<if test="dbName == 'oracle'">'%'||#{technicianName}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{technicianName}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{technicianName},'%')</if>
+			<if test="techName != null and techName != ''">
+				AND a.name LIKE concat('%',#{techName},'%')
 			</if>
 			<if test="techStationId != null and techStationId !=''">
-				AND a.tech_station_id= #{techStationId}
+				AND a.station_id= #{techStationId}
 			</if>
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
 
-	<select id="getServiceStationList" resultType="ServiceStation">
+	<select id="getServiceStationList" resultType="BasicServiceStation">
 		select a.id , a.name as name
-		from service_station a
+		from basic_service_station a
 		where del_flag = '0'
+		${sqlMap.dsf}
 	</select>
 </mapper>

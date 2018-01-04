@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderAddressDao">
+    
+	<sql id="orderAddressColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.phone AS "phone",
+		a.zipcode AS "zipcode",
+		a.province_code AS "provinceCode",
+		a.city_code AS "cityCode",
+		a.area_code AS "areaCode",
+		a.detail_address AS "detailAddress",
+		a.address AS "address",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orderAddressJoins">
+	</sql>
+    
+	<select id="get" resultType="OrderAddress">
+		SELECT 
+			<include refid="orderAddressColumns"/>
+		FROM order_address a
+		<include refid="orderAddressJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderAddress">
+		SELECT 
+			<include refid="orderAddressColumns"/>
+		FROM order_address a
+		<include refid="orderAddressJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderAddress">
+		SELECT 
+			<include refid="orderAddressColumns"/>
+		FROM order_address a
+		<include refid="orderAddressJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_address(
+			id,
+			name,
+			phone,
+			zipcode,
+			province_code,
+			city_code,
+			area_code,
+			detail_address,
+			address,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{phone},
+			#{zipcode},
+			#{provinceCode},
+			#{cityCode},
+			#{areaCode},
+			#{detailAddress},
+			#{address},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_address SET
+			<if test="name !=null and name != ''">name = #{name},</if>
+			<if test="phone !=null and phone != ''">phone = #{phone},</if>
+			<if test="zipcode !=null and zipcode != ''">zipcode = #{zipcode},</if>
+			<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
+			<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
+			<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
+			<if test="detailAddress !=null and detailAddress != ''">detail_address = #{detailAddress},</if>
+			<if test="address !=null and address != ''">address = #{address},</if>
+			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_address SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderRefundGoodsDao">
+    
+	<sql id="orderRefundGoodsColumns">
+		a.id AS "id",
+		a.order_id AS "orderId",
+		a.refund_id AS "refundId",
+		a.item_id AS "itemId",
+		a.item_name AS "itemName",
+		a.goods_id AS "goodsId",
+		a.goods_name AS "goodsName",
+		a.goods_num AS "goodsNum",
+		a.pay_price AS "payPrice",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orderRefundGoodsJoins">
+	</sql>
+    
+	<select id="get" resultType="OrderRefundGoods">
+		SELECT 
+			<include refid="orderRefundGoodsColumns"/>
+		FROM order_refund_goods a
+		<include refid="orderRefundGoodsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderRefundGoods">
+		SELECT 
+			<include refid="orderRefundGoodsColumns"/>
+		FROM order_refund_goods a
+		<include refid="orderRefundGoodsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderRefundGoods">
+		SELECT 
+			<include refid="orderRefundGoodsColumns"/>
+		FROM order_refund_goods a
+		<include refid="orderRefundGoodsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_refund_goods(
+			id,
+			order_id,
+			refund_id,
+			item_id,
+			item_name,
+			goods_id,
+			goods_name,
+			goods_num,
+			pay_price,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{refundId},
+			#{itemId},
+			#{itemName},
+			#{goodsId},
+			#{goodsName},
+			#{goodsNum},
+			#{payPrice},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_refund_goods SET
+			<if test="orderId !=null and orderId != ''">order_id = #{orderId},</if>
+			<if test="refundId !=null and refundId != ''">refund_id = #{refundId},</if>
+			<if test="itemId !=null and itemId != ''">item_id = #{itemId},</if>
+			<if test="itemName !=null and itemName != ''">item_name = #{itemName},</if>
+			<if test="goodsId !=null and goodsId != ''">goods_id = #{goodsId},</if>
+			<if test="goodsName !=null and goodsName != ''">goods_name = #{goodsName},</if>
+			<if test="goodsNum !=null and goodsNum != ''">goods_num = #{goodsNum},</if>
+			<if test="payPrice !=null and payPrice != ''">pay_price = #{payPrice},</if>
+			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE order_refund_goods SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

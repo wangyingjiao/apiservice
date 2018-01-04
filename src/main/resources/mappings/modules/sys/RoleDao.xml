@@ -10,7 +10,10 @@
         <result property="dataScope" column="dataScope"/>
         <result property="remarks" column="remarks"/>
 
-        <result property="sysData" column="sysData"/><!--
+        <result property="sysData" column="sysData"/>
+        <result property="organization.id" column="organization.id"/>
+        <result property="organization.name" column="organization.name"/>
+        <!--
 		<collection property="userList" ofType="User">
 			<id property="id" column="userList.id" />
 			<id property="loginName" column="userList.loginName" />
@@ -18,7 +21,7 @@
 			<id property="email" column="userList.email" />
 			<id property="phone" column="userList.phone" />
 			<id property="mobile" column="userList.mobile" />
-			<id property="office.name" column="userList.office.name" />
+			<id property="organization.name" column="userList.organization.name" />
 			<id property="company.name" column="userList.company.name" />
 		</collection> -->
         <collection property="menuList" ofType="Menu">
@@ -31,7 +34,6 @@
 
     <sql id="roleColumns">
     	a.id,
-    	a.office_id AS "office.id",
     	a.name,
     	a.enname,
     	a.role_type AS roleType,
@@ -42,9 +44,9 @@
 		a.update_by AS "updateBy.id",
 		a.update_date,
 		a.del_flag,
-    	o.name AS "office.name",
-    	o.code,
-    	a.is_sys AS sysData
+		a.is_sys AS sysData,
+    	o.name AS "organization.name",
+    	o.id AS "organization.id"
     </sql>
 
     <select id="get" resultMap="roleResult">
@@ -57,11 +59,11 @@
 			u.phone AS "userList.phone",
 			u.mobile AS "userList.mobile",
 			uc.name AS "userList.company.name",
-			uo.name AS "userList.office.name", -->
+			uo.name AS "userList.organization.name", -->
         rm.menu_id AS "menuList.id",
         ro.office_id AS "officeList.id"
         FROM sys_role a
-        JOIN sys_office o ON o.id = a.office_id<!--
+        JOIN basic_organization o ON o.id = a.office_id<!--
 		LEFT JOIN sys_user_role ur ON ur.role_id = a.id
 		LEFT JOIN sys_user u ON u.id = ur.user_id
 		LEFT JOIN sys_office uc ON uc.id = u.company_id
@@ -75,7 +77,7 @@
         SELECT
         <include refid="roleColumns"/>
         FROM sys_role a
-        JOIN sys_office o ON o.id = a.office_id
+        JOIN basic_organization o ON o.id = a.office_id
         WHERE a.name = #{name} AND a.del_flag = #{DEL_FLAG_NORMAL}
     </select>
 
@@ -83,7 +85,7 @@
         SELECT
         <include refid="roleColumns"/>
         FROM sys_role a
-        JOIN sys_office o ON o.id = a.office_id
+        JOIN basic_organization o ON o.id = a.office_id
         WHERE a.enname = #{enname} AND a.del_flag = #{DEL_FLAG_NORMAL}
     </select>
 
@@ -92,33 +94,33 @@
         <include refid="roleColumns"/>,
         ro.office_id AS "officeList.id"
         FROM sys_role a
-        LEFT JOIN sys_office o ON o.id = a.office_id
+        LEFT JOIN basic_organization o ON o.id = a.office_id
         LEFT JOIN sys_user_role ur ON ur.role_id = a.id
         LEFT JOIN sys_user u ON u.id = ur.user_id
         LEFT JOIN sys_role_office ro ON ro.role_id = a.id
-        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND CAST(a.data_scope AS SIGNED) &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)
         <if test="user != null and user.id != null and user.id != ''">
             AND u.id = #{user.id}
         </if>
         <if test="user != null and user.loginName != null and user.loginName != ''">
             AND u.login_name = #{user.loginName}
         </if>
+        <if test="organization != null and organization.id != null and organization.id !='' ">
+            AND o.id = #{organization.id}
+        </if>
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}
-        ORDER BY o.code, a.name
+        ORDER BY a.name
     </select>
-
-
-
 
 
     <select id="findAllList" resultType="Role">
         SELECT
         <include refid="roleColumns"/>
         FROM sys_role a
-        LEFT JOIN sys_office o ON o.id = a.office_id
+        LEFT JOIN basic_organization o ON o.id = a.office_id
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-        ORDER BY o.code, a.name
+        ORDER BY a.name
     </select>
 
     <insert id="insert">
@@ -139,7 +141,7 @@
 
 		) VALUES (
 			#{id}, 
-			#{office.id}, 
+			#{organization.id},
 			#{name}, 
 			#{enname}, 
 			#{roleType}, 
@@ -157,7 +159,7 @@
 
     <update id="update">
 		UPDATE sys_role SET 
-			office_id = #{office.id}, 
+			office_id = #{organization.id},
 			name = #{name}, 
 			enname = #{enname}, 
 			role_type = #{roleType}, 
@@ -178,9 +180,6 @@
         INSERT INTO sys_role_menu(role_id, menu_id)
         <foreach collection="menuList" item="menu" separator=" union all ">
             SELECT #{id}, #{menu.id}
-            <if test="dbName != 'mssql'">
-                FROM dual
-            </if>
         </foreach>
     </insert>
 
@@ -190,11 +189,9 @@
 
     <insert id="insertRoleOffice">
         INSERT INTO sys_role_office(role_id, office_id)
-        <foreach collection="officeList" item="office" separator=" union all ">
-            SELECT #{id}, #{office.id}
-            <if test="dbName != 'mssql'">
-                FROM dual
-            </if>
+        <foreach collection="officeList" item="organization" separator=" union all ">
+            SELECT #{id}, #{organization.id}
+
         </foreach>
     </insert>
 
@@ -208,7 +205,7 @@
         SELECT
         <include refid="roleColumns"></include>
         FROM sys_role a
-        JOIN sys_office o ON o.id = a.office_id
+        JOIN basic_organization o ON o.id = a.office_id
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
         <if test="name != null">
             AND a.name LIKE concat( '%' , #{name} , '%' )
@@ -216,25 +213,39 @@
         <if test="name == null">
             and a.name is null
         </if>
+
     </select>
 
     <select id="findPageList" resultMap="roleResult">
         SELECT
-        <include refid="roleColumns" />
+        <include refid="roleColumns"/>
         FROM sys_role a
-        JOIN sys_office o ON o.id = a.office_id
-        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        INNER JOIN basic_organization o ON o.id = a.office_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND CAST(a.data_scope AS SIGNED) &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)
+        ${sqlMap.dsf}
         <if test="name != null">
             AND a.name LIKE concat( '%' , #{name} , '%' )
+        </if>
+        <if test="organization != null and organization.id != null and organization.id !='' ">
+            AND a.office_id = #{organization.id}
         </if>
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
                 ORDER BY ${page.orderBy}
             </when>
-            <!--<otherwise>-->
-                <!--ORDER BY c.code, o.code, a.name-->
-            <!--</otherwise>-->
+            <otherwise>
+                ORDER BY a.create_date DESC
+            </otherwise>
         </choose>
+    </select>
+    <select id="findRoleListByUser" resultMap="roleResult">
+        SELECT
+        <include refid="roleColumns"></include>
+        FROM sys_role a
+        JOIN sys_user_role sur ON a.id = sur.role_id
+        JOIN basic_organization o ON o.id = a.office_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        AND sur.user_id = #{id}
     </select>
 
 </mapper>

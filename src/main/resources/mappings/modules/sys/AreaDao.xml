@@ -4,31 +4,36 @@
     
 	<sql id="areaColumns">
 		a.id,
-		a.parent_id AS "parent.id",
-		a.parent_ids,
 		a.code,
 		a.name,
+		a.zip_code as "zipCode",
 		a.sort,
-		a.type,
-		a.remarks,
+		a.level,
 		a.create_by AS "createBy.id",
 		a.create_date,
 		a.update_by AS "updateBy.id",
 		a.update_date,
-		a.del_flag,
-		p.name AS "parent.name"
+		a.del_flag
 	</sql>
-	
+<!--&#45;&#45; 		p.name AS "parent.name"-->
+
 	<sql id="areaJoins">
-		LEFT JOIN sys_office p ON p.id = a.parent_id
     </sql>
-    
+<!--&#45;&#45; 		LEFT JOIN  basic_organization p ON p.id = a.parent_id-->
+
 	<select id="get" resultType="Area">
 		SELECT
 			<include refid="areaColumns"/>
 		FROM sys_area a
 		<include refid="areaJoins"/>
-		WHERE a.id = #{id}
+	  <where>
+		  <if test="id != '' and id != null">
+			  AND id = #{id}
+		  </if>
+		  <if test="code != '' and code != null">
+			  AND code = #{code}
+		  </if>
+	  </where>
 	</select>
 	
 	<select id="findList" resultType="Area">
@@ -39,7 +44,7 @@
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-		OR a.id = #{currentUser.office.area.id}
+		OR a.id = #{currentUser.organization.area.id}
 		ORDER BY a.code
 	</select>
 	
@@ -146,5 +151,11 @@
 					<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
 	</update>
-	
+
+	<select id="getListByLevel" resultType="Area">
+		SELECT * FROM sys_area a
+		WHERE a.level = #{level}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.code
+	</select>
 </mapper>

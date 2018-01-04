@@ -144,7 +144,7 @@ public class Base64Encoder extends FilterOutputStream {
             encodedOut.write(bytes);
             encodedOut.close();
 
-            return out.toString("UTF-8");
+            return out.toString("UTF-8").replace("\r", "").replace("\n", "");
         } catch (IOException ignored) {
             return null;
         }
@@ -171,15 +171,8 @@ public class Base64Encoder extends FilterOutputStream {
 //            if (in != null) in.close();
 //            if (encoder != null) encoder.close();
 //        }
-//        String s = "{\"verificode\":\"888888\",\"phone\":\"13012345678\"}";
-//        String s = "{\"phone\":\"13012345678\",\"verificode\":\"888888\",\"deviceos\":\"ios\"}";
-//        String s = "{\"deviceos\":\"ios\",\"phone\":\"13012345678\",\"verificode\":\"888888\"}";
-        String s = "{\"orderId\":\"1d5b14a0fd8944f79c49647882d1821d\",\"groupId\":\"1169f9e8efe849c592e3a7c768fbba47\",\"userType\":\"seller\",\"isSplit\":\"yes\"}";
-//        String s = "{\"phone\":\"13012345678\",\"verificode\":\"888888\"}";
-//        String s = "{\"mobileNum\":\"13000000002\",\"password\":\"45101b093c4e8acf32a525dc231afd50\"}";
-//        String s = "{\"latitude\":\"116.4668045043945\", \"longitude\":\"39.92348861694336\"}";
-        String body = Base64Encoder.encode(s).replace("\r", "").replace("\n", "");
-        System.out.println("body -> " +body);
-        System.out.println("MD5 -> "+ MD5Util.getStringMD5(body+"4994e425-01df-11e6-8c30-005056800d0e"));
+        String s = "{\"loginName\":\"13716663777\",\"password\":\"21232f297a57a5a743894a0e4a801fc3\",\"requestTimestamp\":\"1494908307760\"}";
+        System.out.println(Base64Encoder.encode(s));
+//        System.out.println(MD5Util.getStringMD5(Base64Encoder.encode(s)+"4994e425-01df-11e6-8c30-005056800d0e"));
     }
 }

@@ -1,0 +1,424 @@
+/**
+ * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ */
+package com.thinkgem.jeesite.modules.service.entity.order;
+
+import org.hibernate.validator.constraints.Length;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import com.thinkgem.jeesite.common.persistence.DataEntity;
+
+/**
+ * 子订单Entity
+ * @author a
+ * @version 2017-12-26
+ */
+public class OrderInfo extends DataEntity<OrderInfo> {
+	
+	private static final long serialVersionUID = 1L;
+	private String masterId;		// 主订单ID
+	private String orderType;		// 订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
+	private String orderNumber;		// 订单编号
+	private String orgId;		// 所属服务机构ID
+	private String stationId;		// 服务站id
+	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
+	private String originPrice;		// 订单总价原价
+	private String payPrice;		// 实际付款价格
+	private String orderAddressId;		// 订单地址ID
+	private Date orderTime;		// 下单时间
+	private Date serviceTime;		// 服务时间
+	private Date finishTime;		// 完成时间
+	private String orderStatus;		// 订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)
+	private String orderSource;		// 订单来源(app:app callcenter:400 store:门店 wechat:微信 score:积分商城 web:PC tv:电视)
+	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
+	private String customerId;		// 客户ID
+	private String customerRemark;		// 客户备注
+	private String customerRemarkPic;		// 客户备注图片
+	private String businessName;		// 业务人员姓名
+	private String businessPhone;		// 业务人员电话
+	private String businessRemark;		// 业务人员备注
+	private String businessRemarkPic;		// 业务人员备注图片
+	private String shopName;		// 门店名称
+	private String shopPhone;		// 门店电话
+	private String shopAddr;		// 门店地址
+	private String shopRemark;		// 门店备注
+	private String shopRemarkPic;		// 门店备注图片
+	private String orderRemark;		// 订单备注（技师添加的）
+	private String orderRemarkPic;   //订单备注图片
+	private String orderContent;		// 下单服务内容
+
+	private String customerName;         //客户姓名
+	private String customerPhone;         //客户电话
+	private String orgName;         //机构
+	private String stationName;         //服务站
+	private Timestamp orderTimeStart;		// 下单起始时
+	private Timestamp orderTimeEnd;		// 下单结束时
+
+	private OrderPayInfo payInfo;       // 支付信息
+	private OrderRefund refundInfo;    //退款信息
+	private OrderAddress addressInfo;  //服务地址信息
+	private OrderGoods goodsInfo;     //服务信息
+	private List<OrderDispatch> techList; //技师List
+
+	public OrderInfo() {
+		super();
+	}
+
+	public OrderInfo(String id){
+		super(id);
+	}
+
+	@Length(min=1, max=32, message="主订单ID长度必须介于 1 和 32 之间")
+	public String getMasterId() {
+		return masterId;
+	}
+
+	public void setMasterId(String masterId) {
+		this.masterId = masterId;
+	}
+	
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+	
+	@Length(min=0, max=32, message="订单编号长度必须介于 0 和 32 之间")
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+	
+	@Length(min=0, max=32, message="所属服务机构ID长度必须介于 0 和 32 之间")
+	public String getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+	
+	@Length(min=0, max=32, message="服务站id长度必须介于 0 和 32 之间")
+	public String getStationId() {
+		return stationId;
+	}
+
+	public void setStationId(String stationId) {
+		this.stationId = stationId;
+	}
+	
+	public String getMajorSort() {
+		return majorSort;
+	}
+
+	public void setMajorSort(String majorSort) {
+		this.majorSort = majorSort;
+	}
+	
+	public String getOriginPrice() {
+		return originPrice;
+	}
+
+	public void setOriginPrice(String originPrice) {
+		this.originPrice = originPrice;
+	}
+	
+	public String getPayPrice() {
+		return payPrice;
+	}
+
+	public void setPayPrice(String payPrice) {
+		this.payPrice = payPrice;
+	}
+	
+	@Length(min=0, max=32, message="订单地址ID长度必须介于 0 和 32 之间")
+	public String getOrderAddressId() {
+		return orderAddressId;
+	}
+
+	public void setOrderAddressId(String orderAddressId) {
+		this.orderAddressId = orderAddressId;
+	}
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getOrderTime() {
+		return orderTime;
+	}
+
+	public void setOrderTime(Date orderTime) {
+		this.orderTime = orderTime;
+	}
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getServiceTime() {
+		return serviceTime;
+	}
+
+	public void setServiceTime(Date serviceTime) {
+		this.serviceTime = serviceTime;
+	}
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getFinishTime() {
+		return finishTime;
+	}
+
+	public void setFinishTime(Date finishTime) {
+		this.finishTime = finishTime;
+	}
+	
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+	
+	public String getOrderSource() {
+		return orderSource;
+	}
+
+	public void setOrderSource(String orderSource) {
+		this.orderSource = orderSource;
+	}
+	
+	public String getPayStatus() {
+		return payStatus;
+	}
+
+	public void setPayStatus(String payStatus) {
+		this.payStatus = payStatus;
+	}
+	
+	@Length(min=0, max=32, message="客户ID长度必须介于 0 和 32 之间")
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+	
+	@Length(min=0, max=255, message="客户备注长度必须介于 0 和 255 之间")
+	public String getCustomerRemark() {
+		return customerRemark;
+	}
+
+	public void setCustomerRemark(String customerRemark) {
+		this.customerRemark = customerRemark;
+	}
+	
+	public String getCustomerRemarkPic() {
+		return customerRemarkPic;
+	}
+
+	public void setCustomerRemarkPic(String customerRemarkPic) {
+		this.customerRemarkPic = customerRemarkPic;
+	}
+	
+	@Length(min=0, max=32, message="业务人员姓名长度必须介于 0 和 32 之间")
+	public String getBusinessName() {
+		return businessName;
+	}
+
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
+	}
+	
+	@Length(min=0, max=16, message="业务人员电话长度必须介于 0 和 16 之间")
+	public String getBusinessPhone() {
+		return businessPhone;
+	}
+
+	public void setBusinessPhone(String businessPhone) {
+		this.businessPhone = businessPhone;
+	}
+	
+	@Length(min=0, max=255, message="业务人员备注长度必须介于 0 和 255 之间")
+	public String getBusinessRemark() {
+		return businessRemark;
+	}
+
+	public void setBusinessRemark(String businessRemark) {
+		this.businessRemark = businessRemark;
+	}
+	
+	public String getBusinessRemarkPic() {
+		return businessRemarkPic;
+	}
+
+	public void setBusinessRemarkPic(String businessRemarkPic) {
+		this.businessRemarkPic = businessRemarkPic;
+	}
+	
+	@Length(min=0, max=32, message="门店名称长度必须介于 0 和 32 之间")
+	public String getShopName() {
+		return shopName;
+	}
+
+	public void setShopName(String shopName) {
+		this.shopName = shopName;
+	}
+	
+	@Length(min=0, max=16, message="门店电话长度必须介于 0 和 16 之间")
+	public String getShopPhone() {
+		return shopPhone;
+	}
+
+	public void setShopPhone(String shopPhone) {
+		this.shopPhone = shopPhone;
+	}
+	
+	@Length(min=0, max=255, message="门店地址长度必须介于 0 和 255 之间")
+	public String getShopAddr() {
+		return shopAddr;
+	}
+
+	public void setShopAddr(String shopAddr) {
+		this.shopAddr = shopAddr;
+	}
+	
+	@Length(min=0, max=255, message="门店备注长度必须介于 0 和 255 之间")
+	public String getShopRemark() {
+		return shopRemark;
+	}
+
+	public void setShopRemark(String shopRemark) {
+		this.shopRemark = shopRemark;
+	}
+	
+	public String getShopRemarkPic() {
+		return shopRemarkPic;
+	}
+
+	public void setShopRemarkPic(String shopRemarkPic) {
+		this.shopRemarkPic = shopRemarkPic;
+	}
+	
+	@Length(min=0, max=255, message="订单备注（技师添加的）长度必须介于 0 和 255 之间")
+	public String getOrderRemark() {
+		return orderRemark;
+	}
+
+	public void setOrderRemark(String orderRemark) {
+		this.orderRemark = orderRemark;
+	}
+
+	public String getOrderRemarkPic() {
+		return orderRemarkPic;
+	}
+
+	public void setOrderRemarkPic(String orderRemarkPic) {
+		this.orderRemarkPic = orderRemarkPic;
+	}
+
+	@Length(min=0, max=255, message="下单服务内容长度必须介于 0 和 255 之间")
+	public String getOrderContent() {
+		return orderContent;
+	}
+
+	public void setOrderContent(String orderContent) {
+		this.orderContent = orderContent;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getCustomerPhone() {
+		return customerPhone;
+	}
+
+	public void setCustomerPhone(String customerPhone) {
+		this.customerPhone = customerPhone;
+	}
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+
+	public String getStationName() {
+		return stationName;
+	}
+
+	public void setStationName(String stationName) {
+		this.stationName = stationName;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Timestamp getOrderTimeStart() {
+		return orderTimeStart;
+	}
+
+	public void setOrderTimeStart(Timestamp orderTimeStart) {
+		this.orderTimeStart = orderTimeStart;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Timestamp getOrderTimeEnd() {
+		return orderTimeEnd;
+	}
+
+	public void setOrderTimeEnd(Timestamp orderTimeEnd) {
+		this.orderTimeEnd = orderTimeEnd;
+	}
+
+	public OrderPayInfo getPayInfo() {
+		return payInfo;
+	}
+
+	public void setPayInfo(OrderPayInfo payInfo) {
+		this.payInfo = payInfo;
+	}
+
+	public OrderRefund getRefundInfo() {
+		return refundInfo;
+	}
+
+	public void setRefundInfo(OrderRefund refundInfo) {
+		this.refundInfo = refundInfo;
+	}
+
+	public OrderAddress getAddressInfo() {
+		return addressInfo;
+	}
+
+	public void setAddressInfo(OrderAddress addressInfo) {
+		this.addressInfo = addressInfo;
+	}
+
+	public OrderGoods getGoodsInfo() {
+		return goodsInfo;
+	}
+
+	public void setGoodsInfo(OrderGoods goodsInfo) {
+		this.goodsInfo = goodsInfo;
+	}
+
+	public List<OrderDispatch> getTechList() {
+		return techList;
+	}
+
+	public void setTechList(List<OrderDispatch> techList) {
+		this.techList = techList;
+	}
+}
