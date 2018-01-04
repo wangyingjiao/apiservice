@@ -24,7 +24,7 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	private String orgId;//机构ID
 
 	private List<SerSkillTechnician> technicians;
-	private List<SerSkillItem> goodsList;
+	private List<SerSkillSort> goodsList;
 
 	public SerSkillInfo() {
 		super();
@@ -68,11 +68,11 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 		this.technicians = technicians;
 	}
 
-	public List<SerSkillItem> getGoodsList() {
+	public List<SerSkillSort> getGoodsList() {
 		return goodsList;
 	}
 
-	public void setGoodsList(List<SerSkillItem> goodsList) {
+	public void setGoodsList(List<SerSkillSort> goodsList) {
 		this.goodsList = goodsList;
 	}
 
