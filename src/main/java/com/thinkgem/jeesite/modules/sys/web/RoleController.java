@@ -332,6 +332,10 @@ public class RoleController extends BaseController {
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
 
+        System.out.println("--------------- "+role+" ----------------------------");
+        if(null!=role){
+            System.out.println("--------------- "+role.getName()+" ----------------------------");
+        }
         List<String> errList = errors(role,SaveRoleGroup.class);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
