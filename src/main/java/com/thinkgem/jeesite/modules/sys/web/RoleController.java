@@ -30,6 +30,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import springfox.documentation.annotations.ApiIgnore;
+import sun.security.util.Debug;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -332,10 +333,13 @@ public class RoleController extends BaseController {
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
 
-        System.out.println("--------------- "+role+" ----------------------------");
         if(null!=role){
-            System.out.println("--------------- "+role.getName()+" ----------------------------");
+            logger.debug("--------------------role.name-------------: "+role.getName(),role.getName());
+            logger.info("--------------------role.name-------------: " +role.getName(),role.getName());
         }
+        role.setId("11111111111111111111111");
+        return new FailResult(role);
+        /*
         List<String> errList = errors(role,SaveRoleGroup.class);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
@@ -369,7 +373,7 @@ public class RoleController extends BaseController {
         systemService.saveRole(role);
 
         return new SuccResult(role);
-
+*/
     }
 
     @ResponseBody
