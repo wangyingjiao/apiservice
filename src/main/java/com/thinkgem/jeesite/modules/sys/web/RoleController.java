@@ -333,13 +333,6 @@ public class RoleController extends BaseController {
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
 
-        if(null!=role){
-            logger.debug("--------------------role.name-------------: "+role.getName(),role.getName());
-            logger.info("--------------------role.name-------------: " +role.getName(),role.getName());
-        }
-        role.setId("11111111111111111111111");
-        return new FailResult(role);
-        /*
         List<String> errList = errors(role,SaveRoleGroup.class);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
@@ -373,7 +366,7 @@ public class RoleController extends BaseController {
         systemService.saveRole(role);
 
         return new SuccResult(role);
-*/
+
     }
 
     @ResponseBody
