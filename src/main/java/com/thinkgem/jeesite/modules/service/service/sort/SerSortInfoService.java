@@ -64,23 +64,26 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
 
     public List<SerSortInfo> findList(SerSortInfo serSortInfo) {
         List<SerSortInfo> list = dao.findSortAllList(serSortInfo);
-        List<String> sortIds = serSkillSortDao.findSortIdList();
+
+        List<String> sortIds = serSkillSortDao.findSortIdList(serSortInfo);
+
+        List<SerSortInfo> listRE = new ArrayList<SerSortInfo>();
 
         for(SerSortInfo info :list){
             String id = info.getId();
-            if(sortIds.contains(id)){
-                info.setFlag(true);
+            if(!sortIds.contains(id)){
+                if (info.getMajorSort().equals("clean")){
+                    info.setMajorSort("保洁");
+                }
+                if(info.getMajorSort().equals("repair")){
+                    info.setMajorSort("家修");
+                }
+                info.setName(info.getName()+"("+info.getMajorSort()+")");
+                listRE.add(info);
             }
-            if (info.getMajorSort().equals("clean")){
-                info.setMajorSort("保洁");
-            }
-            if(info.getMajorSort().equals("repair")){
-                info.setMajorSort("家修");
-            }
-            info.setName(info.getName()+"("+info.getMajorSort()+")");
         }
 
-        return list;
+        return listRE;
     }
 
     public Page<SerSortInfo> findPage(Page<SerSortInfo> page, SerSortInfo serSortInfo) {

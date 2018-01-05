@@ -113,6 +113,12 @@
 		from ser_skill_sort a
 		<where>
 		a.del_flag = '0'
+		<if test="sortIds != null">
+			and a.sort_id NOT in
+			<foreach item="sortId" index="index" collection="sortIds" open="(" separator="," close=")">
+				#{sortId}
+			</foreach>
+		</if>
 		</where>
 	</select>
 </mapper>

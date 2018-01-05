@@ -127,6 +127,7 @@ public class SerSkillInfoController extends BaseController {
         } else {
             //获取分类表
             SerSortInfo serSortInfo = new SerSortInfo();
+            serSortInfo.setSortIds(entity.getSortIds());
             List<SerSortInfo> list = serSortInfoService.findList(serSortInfo);
 //            List<SerItemInfo> items = serSkillInfoService.findSerPage(serSkillInfo);
             List<SerSkillTechnician>  techs = serSkillInfoService.findTechnicianPage(serSkillInfo);

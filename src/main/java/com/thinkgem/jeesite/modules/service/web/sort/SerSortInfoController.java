@@ -99,6 +99,18 @@ public class SerSortInfoController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/listDataAll", method = {RequestMethod.POST, RequestMethod.GET})
+    //@RequiresPermissions("class_view")
+    @ApiOperation("获取服务分类列表")
+    public Result listDataAll(@RequestBody(required=false) SerSortInfo serSortInfo, HttpServletRequest request, HttpServletResponse response) {
+        if(serSortInfo == null){
+            serSortInfo = new SerSortInfo();
+        }
+        Page<SerSortInfo> serSortInfoPage = new Page<>(request, response);
+        Page<SerSortInfo> page = serSortInfoService.findPage(serSortInfoPage, serSortInfo);
+        return new SuccResult(page);
+    }
+    @ResponseBody
     @RequestMapping(value = "formData", method = {RequestMethod.POST})
     @ApiOperation("服务分类编辑")
     public Result formData(@RequestBody SerSortInfo serSortInfo) {

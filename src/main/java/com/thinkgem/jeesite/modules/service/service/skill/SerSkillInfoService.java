@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillItemDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
+import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillItem;
@@ -44,9 +45,12 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	SerSkillTechnicianDao serSkillTechnicianDao;
 
 	@Autowired
-	SerSkillItemService serSkillItemService;
-	@Autowired
-	SerSkillTechnicianService serSkillTechnicianService;
+	BasicServiceStationDao basicServiceStationDao;
+
+//	@Autowired
+//	SerSkillItemService serSkillItemService;
+//	@Autowired
+//	SerSkillTechnicianService serSkillTechnicianService;
 
 	public SerSkillInfo get(String id) {
 		return super.get(id);
@@ -195,7 +199,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	}
 	//根据权限获取对应的服务站
     public List<BasicServiceStation> getServiceStationList(BasicServiceStation station) {
-		station.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
-		return serSkillInfoDao.getServiceStationList(station);
+		station.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
+		return basicServiceStationDao.getServiceStationList(station);
     }
 }
