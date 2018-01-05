@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.common.utils;
+package com.thinkgem.jeesite.common.utils.map;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
