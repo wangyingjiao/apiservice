@@ -190,12 +190,12 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
     }
 	//根据权限查看技师列表
 	public List<SerSkillTechnician>  findTechnicianPage(SerSkillInfo technicianInfo) {
-			technicianInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
+			technicianInfo.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
 		return serSkillInfoDao.choiceTechnicianlist(technicianInfo);
 	}
 	//根据权限获取对应的服务站
     public List<BasicServiceStation> getServiceStationList(BasicServiceStation station) {
-		station.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
+		station.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
 		return serSkillInfoDao.getServiceStationList(station);
     }
 }

@@ -93,9 +93,6 @@ public class SerSortInfoController extends BaseController {
         if(serSortInfo == null){
             serSortInfo = new SerSortInfo();
         }
-        if (!"0".equals(UserUtils.getUser().getOrganization().getId())) {
-            return new FailResult("没有权限");
-        }
         Page<SerSortInfo> serSortInfoPage = new Page<>(request, response);
         Page<SerSortInfo> page = serSortInfoService.findPage(serSortInfoPage, serSortInfo);
         return new SuccResult(page);

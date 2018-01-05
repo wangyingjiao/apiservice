@@ -12,7 +12,9 @@
 		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
 		a.sale AS "sale",
-		a.sort_num AS "sortNum"
+		a.sort_num AS "sortNum",
+		a.custom_tags AS "customTags",
+		a.sys_tags AS "sysTags"
 	</sql>
 	
 	<sql id="serItemInfoJoins">
@@ -137,6 +139,8 @@
 			description,
 			sale,
 			sort_num,
+			custom_tags,
+			sys_tags,
 			create_by,
 			create_date,
 			update_by,
@@ -153,6 +157,8 @@
 			#{description},
 			#{sale},
 			#{sortNum},
+			#{customTags},
+			#{sysTags},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -189,6 +195,12 @@
 			</if>
 			<if test="sortNum != null and sortNum != ''">
 				sort_num = #{sortNum},
+			</if>
+			<if test="sysTags != null and sysTags != ''">
+				sys_tags = #{sysTags},
+			</if>
+			<if test="customTags != null and customTags != ''">
+				custom_tags = #{customTags},
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}

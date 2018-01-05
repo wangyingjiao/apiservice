@@ -32,6 +32,27 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String sale;		// 是否上架(yes:是，no:否)
 	private int sortNum;		// 排序号
 	private String orgId;//机构ID
+	private List<String> sysTags;			//系统标签
+	private List<String> customTags;		//自定义标签
+
+	private String tags;
+	private String cusTags;
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
+
+	public String getCusTags() {
+		return cusTags;
+	}
+
+	public void setCusTags(String cusTags) {
+		this.cusTags = cusTags;
+	}
 
 	public SerItemInfo() {
 		super();
@@ -168,5 +189,21 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	public void setCheckedCities(List<Object> checkedCities) {
 		this.checkedCities = checkedCities;
+	}
+
+	public List<String> getSysTags() {
+		return sysTags;
+	}
+
+	public void setSysTags(List<String> sysTags) {
+		this.sysTags = sysTags;
+	}
+
+	public List<String> getCustomTags() {
+		return customTags;
+	}
+
+	public void setCustomTags(List<String> customTags) {
+		this.customTags = customTags;
 	}
 }

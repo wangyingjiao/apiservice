@@ -13,14 +13,7 @@
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS "startPerNum",
 		a.capping_per_num AS "cappinPerNum",
-		a.sys_tags AS "sysTags",
-		a.custom_tags AS "customTags",
 		a.joint_goods_code AS "jointGoodsCode",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -85,8 +78,6 @@
 			min_purchase,
 			start_per_num,
 			capping_per_num,
-			sys_tags,
-			custom_tags,
 			joint_goods_code,
 			create_by,
 			create_date,
@@ -104,8 +95,6 @@
 			#{minPurchase},
 			#{startPerNum},
 			#{cappinPerNum},
-			#{sysTags},
-			#{customTags},
 			#{jointGoodsCode},
 			#{createBy.id},
 			#{createDate},
@@ -140,12 +129,6 @@
 			</if>
 			<if test="cappinPerNum != null and cappinPerNum != ''">
 				capping_per_num = #{cappinPerNum},
-			</if>
-			<if test="sysTags != null and sysTags != ''">
-				sys_tags = #{sysTags},
-			</if>
-			<if test="customTags != null and customTags != ''">
-				custom_tags = #{customTags},
 			</if>
 			<if test="jointGoodsCode != null and jointGoodsCode != ''">
 				joint_goods_code = #{jointGoodsCode},

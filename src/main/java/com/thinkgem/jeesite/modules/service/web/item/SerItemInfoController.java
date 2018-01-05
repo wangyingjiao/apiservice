@@ -74,6 +74,18 @@ public class SerItemInfoController extends BaseController {
                 return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
             }
         }
+        List<String> sysTags = serItemInfo.getSysTags();
+        if (null != sysTags){
+            String sys = JsonMapper.toJsonString(sysTags);
+            serItemInfo.setTags(sys);
+        }
+
+        List<String> customTags = serItemInfo.getCustomTags();
+        if (null != customTags){
+            String tags = JsonMapper.toJsonString(customTags);
+            serItemInfo.setCusTags(tags);
+        }
+
         List<String> pictures = serItemInfo.getPictures();
         if(null != pictures){
             String picture = JsonMapper.toJsonString(pictures);
@@ -141,7 +153,16 @@ public class SerItemInfoController extends BaseController {
                 List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
                 entity.setPictureDetails(pictureDetails);
             }
-
+            String tags = entity.getTags();
+            if (null != tags){
+                List<String> sysTags = (List<String>) JsonMapper.fromJsonString(tags, ArrayList.class);
+                entity.setSysTags(sysTags);
+            }
+            String cusTags = entity.getCusTags();
+            if (null != cusTags){
+                List<String> customTags = (List<String>) JsonMapper.fromJsonString(cusTags, ArrayList.class);
+                entity.setCustomTags(customTags);
+            }
             String picture = entity.getPicture();
             if(null != picture){
                 List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);

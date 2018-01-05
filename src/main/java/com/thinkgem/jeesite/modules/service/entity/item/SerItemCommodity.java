@@ -30,8 +30,7 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private int minPurchase;		// 起购数量
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
 	private int cappinPerNum;		//封项人数
-	private String sysTags;			//系统标签
-	private String customTags;		//自定义标签
+
 
 	public int getStartPerNum() {
 		return startPerNum;
@@ -47,22 +46,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	public void setCappinPerNum(int cappinPerNum) {
 		this.cappinPerNum = cappinPerNum;
-	}
-
-	public String getSysTags() {
-		return sysTags;
-	}
-
-	public void setSysTags(String sysTags) {
-		this.sysTags = sysTags;
-	}
-
-	public String getCustomTags() {
-		return customTags;
-	}
-
-	public void setCustomTags(String customTags) {
-		this.customTags = customTags;
 	}
 
 	public String getJointGoodsCode() {
