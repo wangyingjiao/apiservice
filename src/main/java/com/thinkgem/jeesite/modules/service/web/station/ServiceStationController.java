@@ -189,15 +189,15 @@ public class ServiceStationController extends BaseController {
     @RequiresPermissions("user")
     @RequestMapping(value = "getStationByArea")
     public Result getStationByArea(@RequestBody BasicServiceStation serviceStation) {
-        if (StringUtils.isBlank(serviceStation.getCityCode())) {
-            return new FailResult("城市code 不能为空！");
-        } else {
+//        if (StringUtils.isBlank(serviceStation.getCityCode())) {
+//            return new FailResult("城市code 不能为空！");
+//        } else {
             BasicServiceStation basicServiceStation = new BasicServiceStation();
-            basicServiceStation.setCityCode(serviceStation.getCityCode());
+//            basicServiceStation.setCityCode(serviceStation.getCityCode());
             basicServiceStation.setOrgId(UserUtils.getUser().getOrganization().getId());
             List<BasicServiceStation> list = serviceStationService.findList(basicServiceStation);
             return new SuccResult(list);
-        }
+//        }
     }
 
     @ResponseBody
