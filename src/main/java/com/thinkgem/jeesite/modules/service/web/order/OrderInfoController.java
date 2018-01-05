@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -93,13 +94,14 @@ public class OrderInfoController extends BaseController {
 			return new SuccResult(objectObjectHashMap);
 		}
 	}
+	/*
 	@ResponseBody
 	@RequestMapping(value = "cancelData", method = {RequestMethod.POST})
 	@ApiOperation("取消订单")
 	public Result cancelData(@RequestBody OrderInfo orderInfo) {
 		orderInfoService.cancelData(orderInfo);
 		return new SuccResult("取消订单成功");
-	}
+	}*/
 
 	@ResponseBody
 	@RequestMapping(value = "saveTime", method = {RequestMethod.POST})
@@ -135,20 +137,16 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "addTech", method = {RequestMethod.POST})
 	@ApiOperation("增加技师")
 	public Result addTech(@RequestBody OrderInfo orderInfo) {
-		List<OrderGoods> goodsInfoList = orderInfoService.editGoodsInit(orderInfo);
-		return new SuccResult(goodsInfoList);
+		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+		return new SuccResult(techList);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "addTechSave", method = {RequestMethod.POST})
 	@ApiOperation("增加技师保存")
 	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
-		List<String> errList = errors(orderInfo);
-		if (errList != null && errList.size() > 0) {
-			return new FailResult(errList);
-		}
-		orderInfoService.save(orderInfo);
-		return new SuccResult("保存成功");
+		List<OrderDispatch> techList = orderInfoService.addTechSave(orderInfo);
+		return new SuccResult(techList);
 	}
 
 	@ResponseBody

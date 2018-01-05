@@ -27,14 +27,19 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String orgId;		// 所属服务机构ID
 	private String stationId;		// 服务站id
 	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
-	private String originPrice;		// 订单总价原价
+	//private String originPrice;		// 订单总价原价
 	private String payPrice;		// 实际付款价格
 	private String orderAddressId;		// 订单地址ID
+	private String longitude;		// 经度
+	private String latitude;		// 纬度
 	private Date orderTime;		// 下单时间
-	private Date serviceTime;		// 服务时间
-	private Date finishTime;		// 完成时间
+	private Date serviceTime;		// 服务时间 上门时间
+	private Date finishTime;		// 完成时间 实际完成时间（用来计算库存）
+	private Date suggestFinishTime;		// 建议完成时间
+	private Double serviceHour; //建议服务时长（小时）
+	private String serviceStatus;//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 	private String orderStatus;		// 订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)
-	private String orderSource;		// 订单来源(app:app callcenter:400 store:门店 wechat:微信 score:积分商城 web:PC tv:电视)
+	private String orderSource;		// 订单来源(own:本机构 gasq:国安社区)
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
 	private String customerId;		// 客户ID
 	private String customerRemark;		// 客户备注
@@ -60,9 +65,10 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private Timestamp orderTimeEnd;		// 下单结束时
 
 	private OrderPayInfo payInfo;       // 支付信息
-	private OrderRefund refundInfo;    //退款信息
-	private OrderAddress addressInfo;  //服务地址信息
+	//private OrderRefund refundInfo;    //退款信息
+	//private OrderAddress addressInfo;  //服务地址信息
 	private OrderGoods goodsInfo;     //服务信息
+	private List<OrderGoods> goodsInfoList;
 	private List<OrderDispatch> techList; //技师List
 
 	public OrderInfo() {
@@ -124,15 +130,48 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	public void setMajorSort(String majorSort) {
 		this.majorSort = majorSort;
 	}
-	
-	public String getOriginPrice() {
-		return originPrice;
+
+	public String getLongitude() {
+		return longitude;
 	}
 
-	public void setOriginPrice(String originPrice) {
-		this.originPrice = originPrice;
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
-	
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getSuggestFinishTime() {
+		return suggestFinishTime;
+	}
+
+	public void setSuggestFinishTime(Date suggestFinishTime) {
+		this.suggestFinishTime = suggestFinishTime;
+	}
+
+	public Double getServiceHour() {
+		return serviceHour;
+	}
+
+	public void setServiceHour(Double serviceHour) {
+		this.serviceHour = serviceHour;
+	}
+
+	public String getServiceStatus() {
+		return serviceStatus;
+	}
+
+	public void setServiceStatus(String serviceStatus) {
+		this.serviceStatus = serviceStatus;
+	}
+
 	public String getPayPrice() {
 		return payPrice;
 	}
@@ -390,7 +429,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.payInfo = payInfo;
 	}
 
-	public OrderRefund getRefundInfo() {
+/*	public OrderRefund getRefundInfo() {
 		return refundInfo;
 	}
 
@@ -404,7 +443,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setAddressInfo(OrderAddress addressInfo) {
 		this.addressInfo = addressInfo;
-	}
+	}*/
 
 	public OrderGoods getGoodsInfo() {
 		return goodsInfo;
@@ -412,6 +451,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setGoodsInfo(OrderGoods goodsInfo) {
 		this.goodsInfo = goodsInfo;
+	}
+
+	public List<OrderGoods> getGoodsInfoList() {
+		return goodsInfoList;
+	}
+
+	public void setGoodsInfoList(List<OrderGoods> goodsInfoList) {
+		this.goodsInfoList = goodsInfoList;
 	}
 
 	public List<OrderDispatch> getTechList() {

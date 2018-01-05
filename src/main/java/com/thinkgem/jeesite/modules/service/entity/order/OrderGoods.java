@@ -21,11 +21,12 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	
 	private static final long serialVersionUID = 1L;
 	private String orderId;		// 订单ID
+	private String sortId;
 	private String itemId;		// 服务项目ID
 	private String itemName;		// 项目名称
 	private String goodsId;		// 商品ID
 	private String goodsName;		// 商品名称
-	private String goodsNum;		// 订购商品数
+	private int goodsNum;		// 订购商品数
 	private String originPrice;		// 单价原价
 	private String payPrice;		// 单价(折后价，无折扣时和原价相同)
 	private String goodsType;		// 计量方式(num：按数量 area：按面积 house：按居室)
@@ -35,6 +36,11 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private boolean goodsChecked = false;
 	private List<OrderGoods> goods; //商品list
 	private List<OrderGoodsTypeHouse> houses; //按居室商品列表
+
+
+	private Double convertHours;		// 折算时长
+	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
+	private int cappinPerNum;		//封项人数
 	
 	public OrderGoods() {
 		super();
@@ -52,7 +58,15 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
-	
+
+	public String getSortId() {
+		return sortId;
+	}
+
+	public void setSortId(String sortId) {
+		this.sortId = sortId;
+	}
+
 	@Length(min=1, max=32, message="服务项目ID长度必须介于 1 和 32 之间")
 	public String getItemId() {
 		return itemId;
@@ -90,11 +104,11 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	}
 	
 	@Length(min=0, max=11, message="订购商品数长度必须介于 0 和 11 之间")
-	public String getGoodsNum() {
+	public int getGoodsNum() {
 		return goodsNum;
 	}
 
-	public void setGoodsNum(String goodsNum) {
+	public void setGoodsNum(int goodsNum) {
 		this.goodsNum = goodsNum;
 	}
 	
@@ -161,5 +175,29 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setHouses(List<OrderGoodsTypeHouse> houses) {
 		this.houses = houses;
+	}
+
+	public Double getConvertHours() {
+		return convertHours;
+	}
+
+	public void setConvertHours(Double convertHours) {
+		this.convertHours = convertHours;
+	}
+
+	public int getStartPerNum() {
+		return startPerNum;
+	}
+
+	public void setStartPerNum(int startPerNum) {
+		this.startPerNum = startPerNum;
+	}
+
+	public int getCappinPerNum() {
+		return cappinPerNum;
+	}
+
+	public void setCappinPerNum(int cappinPerNum) {
+		this.cappinPerNum = cappinPerNum;
 	}
 }

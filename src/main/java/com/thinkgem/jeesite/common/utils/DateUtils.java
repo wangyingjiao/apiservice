@@ -3,7 +3,9 @@
  */
 package com.thinkgem.jeesite.common.utils;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -169,7 +171,29 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		long afterTime = after.getTime();
 		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
 	}
-	
+
+	public static double getDistanceOfTwoDate1(Date before, Date after) {
+		long beforeTime = before.getTime();
+		long afterTime = after.getTime();
+		return (afterTime - beforeTime) / (1000);
+	}
+
+	/**
+	 * 获取传入时间是周几
+	 *
+	 * @param today
+	 * @return
+	 */
+	public static int getWeekNum(Date today) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(today);
+		int weekday = c.get(Calendar.DAY_OF_WEEK) - 1;
+		if (0 == weekday) {
+			weekday = 7;
+		}
+		return weekday;
+	}
+
 	/**
 	 * @param args
 	 * @throws ParseException
@@ -179,5 +203,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 //		System.out.println(getDate("yyyy年MM月dd日 E"));
 //		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 //		System.out.println(time/(24*60*60*1000));
+		System.out.println(getDistanceOfTwoDate1(parseDate("2010-3-6 8:01:00"),parseDate("2010-3-6 8:01:00")));
+
+		String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
+		System.out.println(week);
 	}
 }

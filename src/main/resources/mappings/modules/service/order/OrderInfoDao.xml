@@ -10,7 +10,13 @@
 		a.org_id AS "orgId",
 		a.station_id AS "stationId",
 		a.major_sort AS "majorSort",
-		a.origin_price AS "originPrice",
+
+		a.longitude AS "longitude",
+		a.latitude AS "latitude",
+		a.suggest_finish_time AS "suggestFinishTime",
+		a.service_hour AS "serviceHour",
+		a.service_status AS "serviceStatus",
+
 		a.pay_price AS "payPrice",
 		a.order_address_id AS "orderAddressId",
 		a.order_time AS "orderTime",
@@ -56,8 +62,6 @@
 		SELECT
 			a.id AS id,
 			a.order_number AS orderNumber,
-			addr.name AS customerName,
-			addr.phone AS customerPhone,
 			a.org_id AS orgId,
 			org.name AS orgName,
 			a.station_id AS stationId,
@@ -66,10 +70,10 @@
 			a.pay_price AS payPrice,
 			a.service_time AS serviceTime,
 			a.order_status AS orderStatus,
+			a.service_status AS "serviceStatus",
 			a.pay_status AS payStatus,
 			a.order_time AS orderTime
 		FROM order_info a
-		LEFT JOIN order_address addr ON a.order_address_id = addr.id AND addr.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
@@ -86,18 +90,14 @@
 			<if test="stationId != null and stationId !=''">
 				AND a.station_id= #{stationId}
 			</if>
-			<if test="customerName != null and customerName != ''">
-				AND addr.name LIKE concat('%',#{customerName},'%')
-			</if>
-			<if test="customerPhone != null and customerPhone != ''">
-				AND addr.phone LIKE concat('%',#{customerPhone},'%')
-			</if>
+
 			<if test="orderNumber != null and orderNumber != ''">
 				AND a.order_number LIKE concat('%',#{orderNumber},'%')
 			</if>
-			<if test="orderContent != null and orderContent != ''">
-				AND a.order_content LIKE concat('%',#{orderContent},'%')
+			<if test="serviceStatus != null and serviceStatus != ''">
+				AND a.service_status = #{serviceStatus}
 			</if>
+
 			<if test="orderTimeStart != null and orderTimeStart != ''">
 				AND a.order_time &gt;= #{orderTimeStart}
 			</if>
@@ -147,7 +147,13 @@
 			org_id,
 			station_id,
 			major_sort,
-			origin_price,
+
+			longitude,
+			latitude,
+			suggest_finish_time,
+			service_hour,
+			service_status,
+
 			pay_price,
 			order_address_id,
 			order_time,
@@ -184,7 +190,13 @@
 			#{orgId},
 			#{stationId},
 			#{majorSort},
-			#{originPrice},
+
+			#{longitude},
+			#{latitude},
+			#{suggestFinishTime},
+			#{serviceHour},
+			#{serviceStatus},
+
 			#{payPrice},
 			#{orderAddressId},
 			#{orderTime},
@@ -224,7 +236,13 @@
 			<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
 			<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
 			<if test="majorSort !=null and majorSort != ''">major_sort = #{majorSort},</if>
-			<if test="originPrice !=null and originPrice != ''">origin_price = #{originPrice},</if>
+
+			<if test="longitude !=null and longitude != ''">longitude = #{longitude},</if>
+			<if test="latitude !=null and latitude != ''">latitude = #{latitude},</if>
+			<if test="suggestFinishTime !=null and suggestFinishTime != ''">suggest_finish_time = #{suggestFinishTime},</if>
+			<if test="serviceHour !=null and serviceHour != ''">service_hour = #{serviceHour},</if>
+			<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
+
 			<if test="payPrice !=null and payPrice != ''">pay_price = #{payPrice},</if>
 			<if test="orderAddressId !=null and orderAddressId != ''">order_address_id = #{orderAddressId},</if>
 			<if test="orderTime !=null and orderTime != ''">order_time = #{orderTime},</if>
@@ -246,7 +264,7 @@
 			<if test="shopRemark !=null and shopRemark != ''">shop_remark = #{shopRemark},</if>
 			<if test="shopRemarkPic !=null and shopRemarkPic != ''">shop_remark_pic = #{shopRemarkPic},</if>
 			<if test="orderRemark !=null and orderRemark != ''">order_remark = #{orderRemark},</if>
-		<if test="orderRemarkPic !=null and orderRemarkPic != ''">order_remark_pic = #{orderRemarkPic},</if>
+			<if test="orderRemarkPic !=null and orderRemarkPic != ''">order_remark_pic = #{orderRemarkPic},</if>
 			<if test="orderContent !=null and orderContent != ''">order_content = #{orderContent},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
@@ -278,8 +296,10 @@
 			a.id AS "id",
 			a.master_id AS "masterId",
 			a.order_type AS "orderType",
+			a.major_sort AS "majorSort",
 			a.order_number AS orderNumber,
 			a.order_status AS "orderStatus",
+			a.service_status AS "serviceStatus",
 			a.order_source AS "orderSource",
 			a.order_time AS "orderTime",
 			a.org_id AS orgId,
@@ -287,6 +307,7 @@
 			a.station_id AS stationId,
 			sta.name AS stationName,
 
+			a.pay_status AS "payStatus",
 			pay.pay_number AS "payInfo.payNumber",
 			pay.pay_status AS "payInfo.payStatus",
 			pay.pay_method AS "payInfo.payMethod",
@@ -294,15 +315,9 @@
 			pay.pay_account AS "payInfo.payAccount",
 			pay.pay_time AS "payInfo.payTime",
 
-			ref.refund_number AS "refundInfo.refundNumber",
-			ref.refund_account AS "refundInfo.refundAccount",
-			ref.refund_status AS "refundInfo.refundStatus",
-			ref.apply_time AS "refundInfo.applyTime",
-			ref.refund_reason AS "refundInfo.refundReason",
-
-			addr.name AS "addressInfo.name",
-			addr.phone AS "addressInfo.phone",
-			addr.address AS "addressInfo.address",
+			a.service_time AS "serviceTime",
+			a.finish_time AS "finishTime",
+			a.service_hour AS "serviceHour",
 
 			a.customer_remark AS "customerRemark",
 			a.customer_remark_pic AS "customerRemarkPic",
@@ -320,9 +335,7 @@
 			a.shop_remark_pic AS "shopRemarkPic"
 		FROM
 		order_info a
-		LEFT JOIN order_address addr ON a.order_address_id = addr.id AND addr.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN order_refund ref ON a.id = ref.order_id AND ref.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.id = #{id}
@@ -345,18 +358,22 @@
 	<select id="getOrderGoodsList" resultType="OrderGoods">
 		SELECT
 			a.service_time AS "serviceTime",
+			good.sort_id AS "sortId",
 			good.item_id AS "itemId",
 			good.item_name AS "itemName",
 			good.goods_id AS "goodsId",
 			good.goods_name AS "goodsName",
 			good.goods_num AS "goodsNum",
 			good.pay_price AS "payPrice",
-			good2.type AS "goodsType",
-			good2.min_purchase AS "minPurchase"
+
+			good2.convert_hours AS "convertHours",
+			good2.start_per_num AS "startPerNum",
+			good2.capping_per_num AS "cappingPerNum"
+
 		FROM
 		order_info a
 		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id  AND good2.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id
 		WHERE
 		a.id = #{id}
 	</select>
@@ -386,4 +403,77 @@
 			service_time = #{service_time}
 		WHERE id = #{id}
 	</update>
+
+	<!-- 通过服务分类取得技能ID -->
+	<select id="getSkillIdBySortId" resultType="String">
+		select skill_id from ser_skill_sort WHERE sort_id = #{sortId};
+	</select>
+	<!-- 取得技师List -->
+	<select id="getTechListBySkillId" resultType="OrderDispatch">
+		SELECT
+		t.id as techId, t.name AS techName,t.sex AS techSex,
+		t.head_pic AS headPic,t.job_nature AS jobNature
+		FROM ser_skill_tech a
+		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="orderId != null and orderId != ''">
+		LEFT JOIN order_dispatch d ON t.id = d.tech_id AND d.status = 'yes' AND d.del_flag = #{DEL_FLAG_NORMAL}
+		</if>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.skill_id= #{skillId}
+			AND t.station_id= #{stationId}
+			AND t.status= #{techStatus}
+			AND t.job_status= #{jobStatus}
+			<if test="jobNature != null and jobNature != ''">
+				AND t.job_nature= #{jobNature}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND d.order_id= #{orderId}
+			</if>
+		</where>
+	</select>
+	<select id="getTechByWorkTime" resultType="String">
+		SELECT
+			t.id as techId
+		FROM  tech_work_time a
+		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND t.station_id= #{stationId}
+			AND a.week =#{week}
+			AND a.start_time &lt;= #{startTime}
+			AND a.end_time &gt;= #{endTime}
+		</where>
+	</select>
+	<select id="getTechByHoliday" resultType="String">
+		SELECT
+		t.id as techId
+		FROM  tech_holiday a
+		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND t.station_id= #{stationId}
+			AND ( (a.start_time BETWEEN #{startTime} AND #{endTime}) OR
+			(a.end_time BETWEEN #{startTime} AND #{endTime}) OR
+			(a.start_time &lt;= #{startTime} AND a.end_time &gt;= #{endTime}))
+		</where>
+	</select>
+	<select id="getTechByOrder" resultType="OrderDispatch">
+		SELECT  a.order_id AS "orderId",
+		a.tech_id AS "techId",
+		o.service_time AS "serviceTime",
+		o.finish_time AS "finishTime"
+		from order_dispatch a
+		LEFT JOIN order_info o ON a.order_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.status = 'yes'
+		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
+		AND o.finish_time &gt;= #{serviceTime}
+		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
+		AND a.tech_id  in
+		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+	</select>
 </mapper>

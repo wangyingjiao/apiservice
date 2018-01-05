@@ -36,4 +36,14 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     void saveTime(OrderInfo orderInfo);
 
     List<OrderGoods> getGoodsList(OrderInfo orderInfo);
+
+    String getSkillIdBySortId(String sortId);
+
+    List<OrderDispatch> getTechListBySkillId(OrderDispatch serchInfo);
+
+    List<String> getTechByWorkTime(OrderDispatch serchInfo);
+
+    List<String> getTechByHoliday(OrderDispatch serchInfo);
+
+    List<OrderDispatch> getTechByOrder(OrderDispatch serchInfo);
 }
