@@ -44,7 +44,7 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	@Transactional(readOnly = false)
 	public void save(SerItemCommodity serItemCommodity) {
 		//删除商品信息派人数量
-		serItemCommodityDao.delSerItemCommodityPersons(serItemCommodity);
+		//serItemCommodityDao.delSerItemCommodityPersons(serItemCommodity);
 		super.save(serItemCommodity);
 		List<SerItemCommodityPersons> persons = serItemCommodity.getPersons();
 		if(persons != null){
@@ -59,14 +59,14 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	@Transactional(readOnly = false)
 	public void delete(SerItemCommodity serItemCommodity) {
 		//删除商品信息派人数量
-		serItemCommodityDao.delSerItemCommodityPersons(serItemCommodity);
+	//	serItemCommodityDao.delSerItemCommodityPersons(serItemCommodity);
 		super.delete(serItemCommodity);
 	}
 
     public void delSerItemCommodityPersons(SerItemInfo serItemInfo) {
 		List<SerItemCommodity> list = serItemCommodityDao.getSerItemCommodityByItem(serItemInfo);
-		for(SerItemCommodity info : list){
-			serItemCommodityDao.delSerItemCommodityPersons(info);
-		}
+//		for(SerItemCommodity info : list){
+//			serItemCommodityDao.delSerItemCommodityPersons(info);
+//		}
     }
 }

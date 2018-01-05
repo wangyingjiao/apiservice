@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.item.SerGasqSortDao">
+    
+	<sql id="SerGasqSortColumns">
+		a.id AS "id",
+		a.pid AS "pid",
+		a.name AS "name",
+		a.content_img AS "contentImg",
+		a.level AS "level",
+		a.sort AS "sort",
+		a.version AS "version",
+		a.tag_ref_count AS "tagRefCount",
+		a.hidden AS "hidden"
+	</sql>
+
+	<sql id="SerGasqSortJoins">
+	</sql>
+
+	<select id="get" resultType="SerGasqSort">
+		SELECT 
+			<include refid="SerGasqSortColumns"/>
+		FROM ser_gasq_sort a
+		<include refid="SerGasqSortJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SerGasqSort">
+		SELECT 
+			<include refid="SerGasqSortColumns"/>
+		FROM ser_gasq_sort a
+		<include refid="SerGasqSortJoins"/>
+		<where>
+			<if test="pid != null and pid != ''">
+				AND a.pid = #{pid}
+			</if>
+			<if test="level != null and level != ''">
+				AND a.level = #{level}
+			</if>
+		</where>
+	</select>
+</mapper>

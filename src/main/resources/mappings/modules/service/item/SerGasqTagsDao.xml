@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.item.SerGasqTagsDao">
+    
+	<sql id="SerGasqTagsColumns">
+		a.id AS "id",
+		a.sort_id AS "sortId",
+		a.ref_count AS "refCount",
+		a.tag_name AS "tagName",
+		a.sort AS "sort",
+		a.version AS "version"
+	</sql>
+
+
+	<select id="get" resultType="SerGasqTags">
+		SELECT 
+			<include refid="SerGasqTagsColumns"/>
+		FROM ser_gasq_tags a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SerGasqTags">
+		SELECT 
+			<include refid="SerGasqTagsColumns"/>
+		FROM ser_gasq_tags a
+		<!--<where>-->
+			<!--<if test="sortId != null and sortId != ''">-->
+				<!--AND a.sort_id = #{sortId}-->
+			<!--</if>-->
+		<!--</where>-->
+	</select>
+</mapper>
