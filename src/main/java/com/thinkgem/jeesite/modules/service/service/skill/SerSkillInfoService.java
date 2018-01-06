@@ -56,6 +56,11 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		return super.get(id);
 	}
 
+
+	public SerSkillInfo getByName(SerSkillInfo serSkillInfo){
+		return serSkillInfoDao.getByName(serSkillInfo);
+	}
+
 	@Transactional(readOnly = false)
 	public void save(SerSkillInfo serSkillInfo) {
 		if (StringUtils.isNotBlank(serSkillInfo.getId())) {

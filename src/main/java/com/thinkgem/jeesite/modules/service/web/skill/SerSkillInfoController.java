@@ -93,6 +93,20 @@ public class SerSkillInfoController extends BaseController {
     @ApiOperation("保存技能")
     public Result upData(@RequestBody SerSkillInfo serSkillInfo) {
         List<String> errList = errors(serSkillInfo);
+        //验证名字是否可用
+        SerSkillInfo serSkillInfo1=new SerSkillInfo();
+        serSkillInfo1.setName(serSkillInfo.getName());
+        SerSkillInfo byName = serSkillInfoService.getByName(serSkillInfo1);
+        //不同id
+        if (byName != null){
+            if (!byName.getId().equals(serSkillInfo.getId())){
+                //同机构
+                if (byName.getOrgId().equals(serSkillInfo.getOrgId())){
+                    return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
+                }
+            }
+        }
+
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }

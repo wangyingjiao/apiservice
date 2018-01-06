@@ -31,4 +31,6 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
     List<Dict> getSerSortInfoList(SerItemInfo serItemInfo);
 
     SerSortInfo getSerSortInfo(String sortId);
+
+    SerItemInfo getByName(SerItemInfo serItemInfo);
 }

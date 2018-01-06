@@ -220,6 +220,14 @@
 		AND org_id = #{orgId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
+	<!--验证是否有同名-->
+	<select id="getByName" resultType="SerItemInfo">
+		SELECT
+		<include refid="serItemInfoColumns"/>
+		FROM ser_item_info a
+		WHERE a.name = #{name} AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
 	<select id="getSerItemCommoditys" resultType="SerItemCommodity">
 		SELECT id FROM ser_item_info_goods WHERE item_id = #{id}
 	</select>

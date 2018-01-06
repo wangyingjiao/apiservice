@@ -38,6 +38,9 @@ import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
 public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo> {
 
 	@Autowired
+	SerItemInfoDao serItemInfoDao;
+
+	@Autowired
 	SerItemCommodityDao serItemCommodityDao;
 	@Autowired
 	SerItemCommodityService serItemCommodityService;
@@ -60,6 +63,10 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 * 保存
 	 * @param serItemInfo
 	 */
+	@Transactional(readOnly = false)
+	public SerItemInfo getByName(SerItemInfo serItemInfo){
+		return serItemInfoDao.getByName(serItemInfo);
+	}
 	@Transactional(readOnly = false)
 	public void save(SerItemInfo serItemInfo) {
 		if (StringUtils.isNotBlank(serItemInfo.getId())) {
