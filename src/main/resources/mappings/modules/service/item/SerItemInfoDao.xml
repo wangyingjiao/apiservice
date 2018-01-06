@@ -13,8 +13,8 @@
 		a.description AS "description",
 		a.sale AS "sale",
 		a.sort_num AS "sortNum",
-		a.custom_tags AS "customTags",
-		a.sys_tags AS "sysTags"
+		a.custom_tags AS "cusTags",
+		a.sys_tags AS "tags"
 	</sql>
 	
 	<sql id="serItemInfoJoins">
@@ -157,8 +157,8 @@
 			#{description},
 			#{sale},
 			#{sortNum},
-			#{customTags},
-			#{sysTags},
+			#{cusTags},
+			#{tags},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
