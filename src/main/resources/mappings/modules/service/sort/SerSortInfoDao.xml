@@ -51,6 +51,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
+			ORDER BY a.major_sort DESC
 	</select>
 
 	<!-- 验证服务分类名称是否重复 -->

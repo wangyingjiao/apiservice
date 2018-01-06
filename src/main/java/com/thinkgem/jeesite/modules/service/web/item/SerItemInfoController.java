@@ -104,6 +104,18 @@ public class SerItemInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
+        List<String> sysTags = serItemInfo.getSysTags();
+        if (null != sysTags){
+            String sys = JsonMapper.toJsonString(sysTags);
+            serItemInfo.setTags(sys);
+        }
+
+        List<String> customTags = serItemInfo.getCustomTags();
+        if (null != customTags){
+            String tags = JsonMapper.toJsonString(customTags);
+            serItemInfo.setCusTags(tags);
+        }
+
         List<String> pictures = serItemInfo.getPictures();
         if(null != pictures){
             String picture = JsonMapper.toJsonString(pictures);

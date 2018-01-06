@@ -196,11 +196,11 @@
 			<if test="sortNum != null and sortNum != ''">
 				sort_num = #{sortNum},
 			</if>
-			<if test="sysTags != null and sysTags != ''">
-				sys_tags = #{sysTags},
+			<if test="tags != null and tags != ''">
+				sys_tags = #{tags},
 			</if>
-			<if test="customTags != null and customTags != ''">
-				custom_tags = #{customTags},
+			<if test="cusTags != null and cusTags != ''">
+				custom_tags = #{cusTags},
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
