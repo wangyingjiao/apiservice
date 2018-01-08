@@ -428,7 +428,7 @@
 				AND t.job_nature= #{jobNature}
 			</if>
 			<if test="orderId != null and orderId != ''">
-				AND d.order_id= #{orderId}
+				AND d.order_id != #{orderId}
 			</if>
 		</where>
 	</select>

@@ -94,14 +94,14 @@ public class OrderInfoController extends BaseController {
 			return new SuccResult(objectObjectHashMap);
 		}
 	}
-	/*
+
 	@ResponseBody
-	@RequestMapping(value = "cancelData", method = {RequestMethod.POST})
-	@ApiOperation("取消订单")
-	public Result cancelData(@RequestBody OrderInfo orderInfo) {
-		orderInfoService.cancelData(orderInfo);
-		return new SuccResult("取消订单成功");
-	}*/
+	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
+	@ApiOperation("更换时间")
+	public Result timeData(@RequestBody OrderInfo orderInfo) {
+		List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
+		return new SuccResult(techList);
+	}
 
 	@ResponseBody
 	@RequestMapping(value = "saveTime", method = {RequestMethod.POST})
@@ -110,28 +110,6 @@ public class OrderInfoController extends BaseController {
 		orderInfoService.saveTime(orderInfo);
 		return new SuccResult("更换时间成功");
 	}
-/*
-	@ResponseBody
-	@RequestMapping(value = "editGoodsInit", method = {RequestMethod.POST})
-	@ApiOperation("服务项目编辑")
-	public Result editGoodsInit(@RequestBody OrderInfo orderInfo) {
-		List<OrderGoods> goodsInfoList = orderInfoService.editGoodsInit(orderInfo);
-		return new SuccResult(goodsInfoList);
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "editGoodsSave", method = {RequestMethod.POST})
-	//@RequiresPermissions("order_insert")
-	@ApiOperation("服务项目编辑保存")
-	public Result editGoodsSave(@RequestBody OrderInfo orderInfo) {
-		List<String> errList = errors(orderInfo);
-		if (errList != null && errList.size() > 0) {
-			return new FailResult(errList);
-		}
-		orderInfoService.save(orderInfo);
-		return new SuccResult("保存成功");
-	}
-*/
 
 	@ResponseBody
 	@RequestMapping(value = "addTech", method = {RequestMethod.POST})

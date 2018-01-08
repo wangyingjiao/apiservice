@@ -5,8 +5,10 @@ package com.thinkgem.jeesite.common.utils;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -194,6 +196,49 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return weekday;
 	}
 
+	/**
+	 * 取得同一天 某时间段内半小时和整点数据
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public static List<String> getHeafHourTimeList(Date startTime, Date endTime) {
+		if(!startTime.before(endTime)){
+			return null;//开始时间在结束时间之前 否则返回null
+		}
+		if(!(DateUtils.formatDate(startTime, "yyyy").equals(DateUtils.formatDate(endTime, "yyyy"))) ||
+				!(DateUtils.formatDate(startTime, "MM").equals(DateUtils.formatDate(endTime, "MM"))) ||
+				!(DateUtils.formatDate(startTime, "dd").equals(DateUtils.formatDate(endTime, "dd")))){
+			return null;//开始时间和结束时间是同一天 否则返回null
+		}
+
+		if(!DateUtils.addMinutes(startTime,30).before(endTime)){
+			return null;//开始时间和结束时间之间相隔不到30分钟
+		}
+
+		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy") + "-" +
+				DateUtils.formatDate(startTime, "MM") + "-" +
+				DateUtils.formatDate(startTime, "dd") + " " +
+				DateUtils.formatDate(startTime, "HH") + ":30:00");
+		if(!startTime.before(heafHourTime)){
+			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy") + "-" +
+					DateUtils.formatDate(startTime, "MM") + "-" +
+					DateUtils.formatDate(startTime, "dd") + " " +
+					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
+		}
+		List<String> heafHourTimeList = new ArrayList<String>();
+		heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH") + ":" + DateUtils.formatDate(heafHourTime, "mm"));
+		for (int i = 0; i < 48; i++) {
+
+			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
+			if(endTime.after(heafHourTime)){
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH") + ":" + DateUtils.formatDate(heafHourTime, "mm"));
+				continue;
+			}
+			break;
+		}
+		return heafHourTimeList;
+	}
 	/**
 	 * @param args
 	 * @throws ParseException
