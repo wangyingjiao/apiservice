@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.service.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -44,6 +45,9 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 	//显示用
 	private String latitude;//纬度
 	private String longitude;//经度
+	//技师工作时间
+	private List<ServiceTechnicianWorkTime> workTimeList;
+	private List<String> workTimes;//工作时间List
 
 	public OrderDispatch() {
 		super();
@@ -219,4 +223,19 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 		this.longitude = longitude;
 	}
 
+	public List<ServiceTechnicianWorkTime> getWorkTimeList() {
+		return workTimeList;
+	}
+
+	public void setWorkTimeList(List<ServiceTechnicianWorkTime> workTimeList) {
+		this.workTimeList = workTimeList;
+	}
+
+	public List<String> getWorkTimes() {
+		return workTimes;
+	}
+
+	public void setWorkTimes(List<String> workTimes) {
+		this.workTimes = workTimes;
+	}
 }

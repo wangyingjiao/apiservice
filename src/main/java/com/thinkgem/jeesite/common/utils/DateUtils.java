@@ -181,7 +181,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取传入时间是周几
+	 * 获取传入时间是周几 1/2/3/4/5/6/7
 	 *
 	 * @param today
 	 * @return

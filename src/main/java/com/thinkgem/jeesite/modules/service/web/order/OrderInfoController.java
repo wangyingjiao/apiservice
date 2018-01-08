@@ -87,11 +87,7 @@ public class OrderInfoController extends BaseController {
 		if (entity == null) {
 			return new FailResult("未找到此id对应的订单");
 		} else {
-			HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
-			objectObjectHashMap.put("info",entity);
-			List<ServiceTechnicianWorkTime>  serviceTimeList = orderInfoService.findServiceTimeList(orderInfo);
-			objectObjectHashMap.put("serviceTimeList",serviceTimeList);
-			return new SuccResult(objectObjectHashMap);
+			return new SuccResult(entity);
 		}
 	}
 
@@ -99,7 +95,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
 	@ApiOperation("更换时间")
 	public Result timeData(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
+		List<String> techList = orderInfoService.timeData(orderInfo);
 		return new SuccResult(techList);
 	}
 
@@ -107,8 +103,8 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "saveTime", method = {RequestMethod.POST})
 	@ApiOperation("更换时间保存")
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
-		orderInfoService.saveTime(orderInfo);
-		return new SuccResult("更换时间成功");
+		List<OrderDispatch> techList = orderInfoService.saveTime(orderInfo);
+		return new SuccResult(techList);
 	}
 
 	@ResponseBody
@@ -131,19 +127,15 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "dispatchTech", method = {RequestMethod.POST})
 	@ApiOperation("技师改派")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
-		List<OrderGoods> goodsInfoList = orderInfoService.editGoodsInit(orderInfo);
-		return new SuccResult(goodsInfoList);
+		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+		return new SuccResult(techList);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "dispatchTechSave", method = {RequestMethod.POST})
 	@ApiOperation("技师改派保存")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
-		List<String> errList = errors(orderInfo);
-		if (errList != null && errList.size() > 0) {
-			return new FailResult(errList);
-		}
-		orderInfoService.save(orderInfo);
-		return new SuccResult("保存成功");
+		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
+		return new SuccResult(techList);
 	}
 }

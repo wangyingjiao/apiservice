@@ -70,6 +70,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private OrderGoods goodsInfo;     //服务信息
 	private List<OrderGoods> goodsInfoList;
 	private List<OrderDispatch> techList; //技师List
+	private List<String> techIdList; //技师List
+	private String dispatchTechId;//改派前技师ID
 
 	public OrderInfo() {
 		super();
@@ -467,5 +469,21 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setTechList(List<OrderDispatch> techList) {
 		this.techList = techList;
+	}
+
+	public List<String> getTechIdList() {
+		return techIdList;
+	}
+
+	public void setTechIdList(List<String> techIdList) {
+		this.techIdList = techIdList;
+	}
+
+	public String getDispatchTechId() {
+		return dispatchTechId;
+	}
+
+	public void setDispatchTechId(String dispatchTechId) {
+		this.dispatchTechId = dispatchTechId;
 	}
 }
