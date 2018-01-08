@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -56,7 +57,15 @@ public class SerSortInfoController extends BaseController {
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
     @RequiresPermissions("class_insert")
     @ApiOperation(value="新增保存服务分类")
-    public Result saveData(@RequestBody SerSortInfo serSortInfo) {
+    public Result saveData(@RequestBody SerSortInfo serSortInfo)  {
+        try {
+            String name = new String(serSortInfo.getName().getBytes("UTF-8"), "UTF-8");
+            //String name = new String(serSortInfo.getName().getBytes("GBK"), "UTF-8");
+            serSortInfo.setName(name);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         List<String> errList = errors(serSortInfo);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
@@ -67,6 +76,8 @@ public class SerSortInfoController extends BaseController {
                 return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
             }
         }
+
+
         serSortInfoService.save(serSortInfo);
         return new SuccResult("保存服务分类" + serSortInfo.getName() + "成功");
     }
