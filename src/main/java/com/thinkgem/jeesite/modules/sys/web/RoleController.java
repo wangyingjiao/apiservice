@@ -35,6 +35,8 @@ import sun.security.util.Debug;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -332,7 +334,12 @@ public class RoleController extends BaseController {
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
-
+        //role.getName()
+        try {
+            role.setName(URLDecoder.decode(role.getName(),"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         List<String> errList = errors(role,SaveRoleGroup.class);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
