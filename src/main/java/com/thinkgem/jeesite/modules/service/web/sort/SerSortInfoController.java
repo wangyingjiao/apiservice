@@ -53,7 +53,7 @@ public class SerSortInfoController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "saveData", method = {RequestMethod.POST})
+    @RequestMapping(value = "saveData", method = {RequestMethod.POST},produces="text/plain;charset=UTF-8")
     @RequiresPermissions("class_insert")
     @ApiOperation(value="新增保存服务分类")
     public Result saveData(@RequestBody SerSortInfo serSortInfo) {
