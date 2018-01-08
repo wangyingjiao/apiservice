@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -59,11 +60,8 @@ public class SerSortInfoController extends BaseController {
     @ApiOperation(value="新增保存服务分类")
     public Result saveData(@RequestBody SerSortInfo serSortInfo)  {
         try {
-            String name = new String(serSortInfo.getName().getBytes("UTF-8"), "UTF-8");
-            //String name = new String(serSortInfo.getName().getBytes("GBK"), "UTF-8");
-            serSortInfo.setName(name);
+            serSortInfo.setName(URLDecoder.decode(serSortInfo.getName(),"UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         List<String> errList = errors(serSortInfo);
