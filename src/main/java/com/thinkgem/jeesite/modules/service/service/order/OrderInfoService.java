@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import com.google.common.collect.Sets;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -62,6 +63,27 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
 		orderInfo.setGoodsInfo(goodsInfo);
 		orderInfo.setTechList(techList);
+
+		String customerRemarkPic = orderInfo.getCustomerRemarkPic();
+		if(null != customerRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(customerRemarkPic,ArrayList.class);
+			orderInfo.setCustomerRemarkPics(pictureDetails);
+		}
+		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
+		if(null != businessRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
+			orderInfo.setBusinessRemarkPics(pictureDetails);
+		}
+		String shopRemarkPic = orderInfo.getShopRemarkPic();
+		if(null != shopRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
+			orderInfo.setShopRemarkPics(pictureDetails);
+		}
+		String orderRemarkPic = orderInfo.getOrderRemarkPic();
+		if(null != orderRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
+			orderInfo.setOrderRemarkPics(pictureDetails);
+		}
 		return orderInfo;
 	}
 
@@ -668,10 +690,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	@Transactional(readOnly = false)
 	public List<OrderDispatch> saveTime(OrderInfo orderInfo) {
-		/*//根据传入的年月日取得当天有时间且没休假的技师
-		List<OrderGoods> goodsInfoList = null;
 		orderInfo = get(orderInfo.getId());//当前订单
-		goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
+		List<OrderDispatch> techBeforList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 		int techDispatchNum = 0;//派人数量
 		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
 			for(OrderGoods goods :goodsInfoList){//
@@ -701,7 +722,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("订单没有服务信息！");
 		}
 		String stationId = orderInfo.getStationId();//服务站ID
-		Date serviceDate = orderInfo.getServiceTime();//服务时间年月日
+		Date serviceDate = orderInfo.getServiceTime();//服务时间
+		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
+		Double serviceSecond = (serviceHour * 3600);
+
 		int week = DateUtils.getWeekNum(serviceDate); //周几
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy") + "-" +
 				DateUtils.formatDate(serviceDate, "MM") + "-" +
@@ -709,9 +733,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy") + "-" +
 				DateUtils.formatDate(serviceDate, "MM") + "-" +
 				DateUtils.formatDate(serviceDate, "dd") + " 23:59:59");
-		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
-		Double serviceSecond = (serviceHour * 3600);
 
+
+		//根据传入的年月日取得当天有时间且没休假的技师
 		//取得技师List
 		OrderDispatch serchInfo = new OrderDispatch();
 		//展示当前下单客户所在服务站的所有可服务的技师
@@ -805,11 +829,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				resTimeList.add(temp.toString());
 			}
 		}
-		return resTimeList;*/
+		return null;
 		// order_dispatch tech status ==> no
 
 		// insert order_dispatch new tech
-		//更新服务时间
+		/*//更新服务时间
 		dao.saveTime(orderInfo);
 
 		List<String> techIdList = orderInfo.getTechIdList();//新增技师List
@@ -838,7 +862,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderDispatchDao.insert(orderDispatch);
 			techList.add(orderDispatch);
 		}
-		return techList;
+		return techList;*/
 	}
 
 	public List<OrderDispatch> timeData1(OrderInfo orderInfo) {

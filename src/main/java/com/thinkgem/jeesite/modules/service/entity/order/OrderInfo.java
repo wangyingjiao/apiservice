@@ -44,17 +44,21 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String customerId;		// 客户ID
 	private String customerRemark;		// 客户备注
 	private String customerRemarkPic;		// 客户备注图片
+	private List<String> customerRemarkPics;		// 客户备注图片
 	private String businessName;		// 业务人员姓名
 	private String businessPhone;		// 业务人员电话
 	private String businessRemark;		// 业务人员备注
 	private String businessRemarkPic;		// 业务人员备注图片
+	private List<String> businessRemarkPics;		// 业务人员备注图片
 	private String shopName;		// 门店名称
 	private String shopPhone;		// 门店电话
 	private String shopAddr;		// 门店地址
 	private String shopRemark;		// 门店备注
 	private String shopRemarkPic;		// 门店备注图片
+	private List<String> shopRemarkPics;		// 门店备注图片
 	private String orderRemark;		// 订单备注（技师添加的）
 	private String orderRemarkPic;   //订单备注图片
+	private List<String> orderRemarkPics;   //订单备注图片
 	private String orderContent;		// 下单服务内容
 
 	private String customerName;         //客户姓名
@@ -485,5 +489,37 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setDispatchTechId(String dispatchTechId) {
 		this.dispatchTechId = dispatchTechId;
+	}
+
+	public List<String> getCustomerRemarkPics() {
+		return customerRemarkPics;
+	}
+
+	public void setCustomerRemarkPics(List<String> customerRemarkPics) {
+		this.customerRemarkPics = customerRemarkPics;
+	}
+
+	public List<String> getBusinessRemarkPics() {
+		return businessRemarkPics;
+	}
+
+	public void setBusinessRemarkPics(List<String> businessRemarkPics) {
+		this.businessRemarkPics = businessRemarkPics;
+	}
+
+	public List<String> getShopRemarkPics() {
+		return shopRemarkPics;
+	}
+
+	public void setShopRemarkPics(List<String> shopRemarkPics) {
+		this.shopRemarkPics = shopRemarkPics;
+	}
+
+	public List<String> getOrderRemarkPics() {
+		return orderRemarkPics;
+	}
+
+	public void setOrderRemarkPics(List<String> orderRemarkPics) {
+		this.orderRemarkPics = orderRemarkPics;
 	}
 }
