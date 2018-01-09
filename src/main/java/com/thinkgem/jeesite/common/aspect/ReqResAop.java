@@ -29,6 +29,8 @@ public class ReqResAop {
 	// com.thinkgem.jeesite.modules.service.web.sort
 	@Before("execution(* com.thinkgem..web..*.*(..))")
 	public void before(JoinPoint jp) throws Exception {
+		Object object[] = jp.getArgs();
+		System.out.println(object[0]);
 		for (int i = 0; i < jp.getArgs().length; i++) {
 			System.out.println("ReqResAop类拦截器处理请求参数===========" + jp.getArgs()[i]);
 			if (jp.getArgs()[i] != null) {
