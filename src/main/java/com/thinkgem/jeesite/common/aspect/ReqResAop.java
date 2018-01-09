@@ -26,18 +26,23 @@ public class ReqResAop {
 		logger.info("-----------------------------------------");
 	}
 
-	// com.thinkgem.jeesite.modules.service.web.sort
+/*	@Before("point()")
+	public void before(JoinPoint jp) throws Exception {
+		
+	}*/
 	@Before("execution(* com.thinkgem..web..*.*(..))")
 	public void before(JoinPoint jp) throws Exception {
 		Object object[] = jp.getArgs();
 		System.out.println(object[0]);
 		for (int i = 0; i < jp.getArgs().length; i++) {
-			System.out.println("ReqResAop类拦截器处理请求参数===========" + jp.getArgs()[i]);
+			logger.info("ReqResAop类拦截器处理请求参数===========" + jp.getArgs()[i]);
 			if (jp.getArgs()[i] != null) {
 				String string = jp.getArgs()[i].toString();
 				logger.info("转换前的参数=============" + string);
-				String decode = URLDecoder.decode(string, "UTF-8");
-				logger.info("转换后的参数=============" + decode);
+				if (string!=null) {
+					String decode = URLDecoder.decode(string, "UTF-8");
+					logger.info("转换后的参数=============" + decode);
+				}
 			}
 		}
 		logger.info(" class[" + jp.getTarget().getClass().getName() + "] - " + "method[" + jp.getSignature().getName()
