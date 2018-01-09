@@ -24,10 +24,10 @@ public class ReqResAop {
         logger.info("-----------------------------------------");
     }
 
-   /* @Before("point()")
+   @Before("point()")
     public void before(JoinPoint jp) throws Exception {
-    }*/
-   @Before("execution(* com.thinkgem..web..*.*(..))")
+    }
+/*   @Before("execution(* com.thinkgem..web..*.*(..))")
    public void before(JoinPoint jp) throws Exception {
        for (int i = 0; i < jp.getArgs().length; i++) {
            System.out.println("ReqResAop类拦截器处理请求参数===========" + jp.getArgs()[i]);
@@ -38,7 +38,7 @@ public class ReqResAop {
                System.out.println("转换后的参数=============" + decode);
            }
        }
-   }
+   }*/
 
     @Around("point()")
     public Object around(ProceedingJoinPoint jp) throws Throwable {
