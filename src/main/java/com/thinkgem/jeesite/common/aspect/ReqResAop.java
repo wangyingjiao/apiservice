@@ -35,12 +35,13 @@ public class ReqResAop {
 			System.out.println("ReqResAop类拦截器处理请求参数===========" + jp.getArgs()[i]);
 			if (jp.getArgs()[i] != null) {
 				String string = jp.getArgs()[i].toString();
-				System.out.println("转换前的参数=============" + string);
+				logger.info("转换前的参数=============" + string);
 				String decode = URLDecoder.decode(string, "UTF-8");
-				System.out.println("转换后的参数=============" + decode);
+				logger.info("转换后的参数=============" + decode);
 			}
 		}
-
+		logger.info(" class[" + jp.getTarget().getClass().getName() + "] - " + "method[" + jp.getSignature().getName()
+				+ "]\r传入参数：" + object[0]);
 	}
 
 	@Around("point()")
