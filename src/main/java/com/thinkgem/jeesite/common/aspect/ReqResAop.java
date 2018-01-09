@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.mapper.Mapper.Null;
 
 import java.net.URLDecoder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -39,7 +40,7 @@ public class ReqResAop {
 			if (jp.getArgs()[i] != null) {
 				String string = jp.getArgs()[i].toString();
 				logger.info("转换前的参数=============" + string);
-				if (string!=null) {
+				if (StringUtils.isNotEmpty(string)) {
 					String decode = URLDecoder.decode(string, "UTF-8");
 					logger.info("转换后的参数=============" + decode);
 				}
