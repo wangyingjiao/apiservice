@@ -265,4 +265,19 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         }
         return null;
     }
+
+    //app获取技师技能工作时间
+    public Page<ServiceTechnicianInfo> appFindSkillList(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo){
+        return technicianInfoDao.appFindSkillList(page,serviceTechnicianInfo);
+    }
+
+    //app通讯录
+    public List<ServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo){
+        return technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
+    }
+
+    //编辑技师
+    public int updateTech(ServiceTechnicianInfo serviceTechnicianInfo){
+        return dao.update(serviceTechnicianInfo);
+    }
 }

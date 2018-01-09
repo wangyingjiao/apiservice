@@ -65,7 +65,34 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
+	<!--app获取技师休假列表-->
+	<select id="appFindPage" resultType="ServiceTechnicianHoliday">
+		SELECT
+		a.id AS "id",
+		a.tech_id AS "techId",
+		b.name AS "techName",
+		b.phone AS "techPhone",
+		c.name AS "techStationName",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.remark AS "remark"
+		FROM tech_holiday a
+		LEFT JOIN tech_info b ON a.tech_id = b.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.tech_id=#{techId}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
 	<select id="findAllList" resultType="ServiceTechnicianHoliday">
 		SELECT 
 			<include refid="serviceTechnicianHolidayColumns"/>

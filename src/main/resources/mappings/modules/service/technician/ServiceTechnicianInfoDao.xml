@@ -110,6 +110,44 @@
 		</choose>
 	</select>
 
+	<!--app技师服务列表-->
+	<select id="appFindSkillList" resultType="ServiceTechnicianInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.org_id AS "orgId",
+		b.*,
+		a.station_id AS "stationId",
+		c.name AS "stationName",
+		d.skill_id AS "skillId"
+		FROM tech_info a
+		LEFT JOIN tech_work_time b ON a.id = b.tech_id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station c ON a.station_id = c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_skill_tech d ON d.tech_id = a.id AND d.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_skill_info e ON d.skill_id = e.id AND e.del_flag = #{DEL_FLAG_NORMAL}
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.id=#{id}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<!--app获取通讯录-->
+	<select id="appGetFriendByStationId" resultType="ServiceTechnicianInfo">
+		SELECT a.id,a.name,a.phone,a.head_pic AS "headPic"
+		FROM tech_info a
+		WHERE
+		a.del_flag = '0'
+		AND a.station_id = #{stationId}
+		AND a.id != #{id}
+	</select>
 
 	<select id="getSkillInfosByOrgId" resultType="SerSkillInfo">
 		SELECT a.id,a.name

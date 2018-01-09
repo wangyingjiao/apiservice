@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.service.dao.technician;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 
@@ -22,4 +23,6 @@ public interface ServiceTechnicianHolidayDao extends CrudDao<ServiceTechnicianHo
     List<ServiceTechnicianHoliday> getServiceTechnicianWorkTime(ServiceTechnicianHoliday serviceTechnicianHoliday);
 
     int getHolidayHistory(ServiceTechnicianHoliday info);
+    //app获取技师休假列表
+    Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday);
 }

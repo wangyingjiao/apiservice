@@ -1103,5 +1103,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		return list;
 	}
+	//app订单列表
+	public Page<OrderInfo> appFindPage(Page<OrderInfo> page, OrderInfo orderInfo) {
+		Page<OrderInfo> pageResult = dao.appFindList(page, orderInfo);
+		return pageResult;
+	}
 
+	//订单编辑
+	public int appSaveRemark(OrderInfo orderInfo){
+		return dao.appUpdate(orderInfo);
+	}
 }
