@@ -74,6 +74,18 @@ public class SerItemInfoController extends BaseController {
                 return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
             }
         }
+        List<String> sysTags = serItemInfo.getSysTags();
+        if (null != sysTags){
+            String sys = JsonMapper.toJsonString(sysTags);
+            serItemInfo.setTags(sys);
+        }
+
+        List<String> customTags = serItemInfo.getCustomTags();
+        if (null != customTags){
+            String tags = JsonMapper.toJsonString(customTags);
+            serItemInfo.setCusTags(tags);
+        }
+
         List<String> pictures = serItemInfo.getPictures();
         if(null != pictures){
             String picture = JsonMapper.toJsonString(pictures);
@@ -92,6 +104,34 @@ public class SerItemInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
+        //判断名字是否重复
+        SerItemInfo serItemInfo1=new SerItemInfo();
+        serItemInfo1.setName(serItemInfo.getName());
+        SerItemInfo byName = serItemInfoService.getByName(serItemInfo1);
+        //不同id
+        if (byName != null){
+            if (! byName.getId().equals(serItemInfo.getId())){
+                //同机构
+                if (byName.getOrgId().equals(serItemInfo.getOrgId())){
+                    //同分类 （保洁 家修）
+                    if (byName.getMajorSort().equals(serItemInfo.getMajorSort())){
+                        return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
+                    }
+                }
+            }
+        }
+        List<String> sysTags = serItemInfo.getSysTags();
+        if (null != sysTags){
+            String sys = JsonMapper.toJsonString(sysTags);
+            serItemInfo.setTags(sys);
+        }
+
+        List<String> customTags = serItemInfo.getCustomTags();
+        if (null != customTags){
+            String tags = JsonMapper.toJsonString(customTags);
+            serItemInfo.setCusTags(tags);
+        }
+
         List<String> pictures = serItemInfo.getPictures();
         if(null != pictures){
             String picture = JsonMapper.toJsonString(pictures);
@@ -141,7 +181,16 @@ public class SerItemInfoController extends BaseController {
                 List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
                 entity.setPictureDetails(pictureDetails);
             }
-
+            String tags = entity.getTags();
+            if (null != tags){
+                List<String> sysTags = (List<String>) JsonMapper.fromJsonString(tags, ArrayList.class);
+                entity.setSysTags(sysTags);
+            }
+            String cusTags = entity.getCusTags();
+            if (null != cusTags){
+                List<String> customTags = (List<String>) JsonMapper.fromJsonString(cusTags, ArrayList.class);
+                entity.setCustomTags(customTags);
+            }
             String picture = entity.getPicture();
             if(null != picture){
                 List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
@@ -164,7 +213,7 @@ public class SerItemInfoController extends BaseController {
         return new SuccResult("删除成功");
     }
 
-    @ResponseBody
+   /* @ResponseBody
     @RequestMapping(value = "getAllCityCodes", method = {RequestMethod.POST})
     @ApiOperation("机构或分类下定向城市")
     public Result getAllCityCodes(@RequestBody SerItemInfo serItemInfo) {
@@ -175,6 +224,6 @@ public class SerItemInfoController extends BaseController {
         serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
         List<SerCityScope> list = serItemInfoService.getAllCityCodes(serItemInfo);
         return new SuccResult(list);
-    }
+    }*/
 
 }

@@ -5,12 +5,12 @@
 	<sql id="orderGoodsColumns">
 		a.id AS "id",
 		a.order_id AS "orderId",
+		a.sort_id AS "sortId",
 		a.item_id AS "itemId",
 		a.item_name AS "itemName",
 		a.goods_id AS "goodsId",
 		a.goods_name AS "goodsName",
 		a.goods_num AS "goodsNum",
-		a.origin_price AS "originPrice",
 		a.pay_price AS "payPrice",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -70,12 +70,12 @@
 		INSERT INTO order_goods(
 			id,
 			order_id,
+			sort_id,
 			item_id,
 			item_name,
 			goods_id,
 			goods_name,
 			goods_num,
-			origin_price,
 			pay_price,
 			create_by,
 			create_date,
@@ -85,12 +85,12 @@
 		) VALUES (
 			#{id},
 			#{orderId},
+			#{sortId},
 			#{itemId},
 			#{itemName},
 			#{goodsId},
 			#{goodsName},
 			#{goodsNum},
-			#{originPrice},
 			#{payPrice},
 			#{createBy.id},
 			#{createDate},
@@ -103,12 +103,12 @@
 	<update id="update">
 		UPDATE order_goods SET
 			<if test="orderId !=null and orderId != ''">order_id = #{orderId},</if>
+			<if test="sortId !=null and sortId != ''">sort_id = #{sortId},</if>
 			<if test="itemId !=null and itemId != ''">item_id = #{itemId},</if>
 			<if test="itemName !=null and itemName != ''">item_name = #{itemName},</if>
 			<if test="goodsId !=null and goodsId != ''">goods_id = #{goodsId},</if>
 			<if test="goodsName !=null and goodsName != ''">goods_name = #{goodsName},</if>
 			<if test="goodsNum !=null and goodsNum != ''">goods_num = #{goodsNum},</if>
-			<if test="originPrice !=null and originPrice != ''">origin_price = #{originPrice},</if>
 			<if test="payPrice !=null and payPrice != ''">pay_price = #{payPrice},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>

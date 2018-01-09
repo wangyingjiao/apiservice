@@ -3,9 +3,14 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.order;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 派单Entity
@@ -24,6 +29,25 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 	private String techSex;    //性别
 	private String techPhone;   //电话
 	private String jobNature; //岗位性质（full_time:全职，part_time:兼职）
+
+	//查询条件
+	private String stationId;
+	private String skillId;//技能ID
+	private String techStatus;		// 状态(yes:上线，no:暂停)
+	private String jobStatus;//岗位状态(online:在职，leave:离职)
+	private Date startTime;		// 起始时段
+	private Date endTime;		// 结束时段
+	private int week;         //周几
+	private Date serviceTime;//服务时间
+	private Date finishTime;//完成时间
+	private List<String> techIds;//技能List
+
+	//显示用
+	private String latitude;//纬度
+	private String longitude;//经度
+	//技师工作时间
+	private List<ServiceTechnicianWorkTime> workTimeList;
+	private List<String> workTimes;//工作时间List
 
 	public OrderDispatch() {
 		super();
@@ -97,5 +121,121 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 
 	public void setJobNature(String jobNature) {
 		this.jobNature = jobNature;
+	}
+
+	public String getStationId() {
+		return stationId;
+	}
+
+	public void setStationId(String stationId) {
+		this.stationId = stationId;
+	}
+
+	public String getSkillId() {
+		return skillId;
+	}
+
+	public void setSkillId(String skillId) {
+		this.skillId = skillId;
+	}
+
+	public String getTechStatus() {
+		return techStatus;
+	}
+
+	public void setTechStatus(String techStatus) {
+		this.techStatus = techStatus;
+	}
+
+	public String getJobStatus() {
+		return jobStatus;
+	}
+
+	public void setJobStatus(String jobStatus) {
+		this.jobStatus = jobStatus;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+
+	public int getWeek() {
+		return week;
+	}
+
+	public void setWeek(int week) {
+		this.week = week;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getServiceTime() {
+		return serviceTime;
+	}
+
+	public void setServiceTime(Date serviceTime) {
+		this.serviceTime = serviceTime;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getFinishTime() {
+		return finishTime;
+	}
+
+	public void setFinishTime(Date finishTime) {
+		this.finishTime = finishTime;
+	}
+
+	public List<String> getTechIds() {
+		return techIds;
+	}
+
+	public void setTechIds(List<String> techIds) {
+		this.techIds = techIds;
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public List<ServiceTechnicianWorkTime> getWorkTimeList() {
+		return workTimeList;
+	}
+
+	public void setWorkTimeList(List<ServiceTechnicianWorkTime> workTimeList) {
+		this.workTimeList = workTimeList;
+	}
+
+	public List<String> getWorkTimes() {
+		return workTimes;
+	}
+
+	public void setWorkTimes(List<String> workTimes) {
+		this.workTimes = workTimes;
 	}
 }

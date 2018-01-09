@@ -9,9 +9,11 @@ import java.util.List;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
 import com.thinkgem.jeesite.modules.service.dao.office.OfficeSeviceAreaListDao;
+import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortDao;
 import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -33,7 +35,8 @@ import com.thinkgem.jeesite.modules.service.dao.sort.SerSortInfoDao;
 @Service
 @Transactional(readOnly = true)
 public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo> {
-
+    @Autowired
+    SerSkillSortDao serSkillSortDao;
     public SerSortInfo get(String id) {
         return super.get(id);
     }
@@ -60,12 +63,34 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
     }
 
     public List<SerSortInfo> findList(SerSortInfo serSortInfo) {
-        return super.findList(serSortInfo);
+        List<SerSortInfo> list = dao.findSortAllList(serSortInfo);
+
+        List<String> sortIds = serSkillSortDao.findSortIdList(serSortInfo);
+
+        List<SerSortInfo> listRE = new ArrayList<SerSortInfo>();
+
+        for(SerSortInfo info :list){
+            String id = info.getId();
+            if(!sortIds.contains(id)){
+                if (info.getMajorSort().equals("clean")){
+                    info.setMajorSort("保洁");
+                }
+                if(info.getMajorSort().equals("repair")){
+                    info.setMajorSort("家修");
+                }
+                info.setName(info.getName()+"("+info.getMajorSort()+")");
+                listRE.add(info);
+            }
+        }
+
+        return listRE;
     }
 
     public Page<SerSortInfo> findPage(Page<SerSortInfo> page, SerSortInfo serSortInfo) {
-        //serSortInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
         return super.findPage(page, serSortInfo);
+    }
+    public List<SerSortInfo> listDataAll(SerSortInfo serSortInfo) {
+        return dao.findList(serSortInfo);
     }
 
     /**

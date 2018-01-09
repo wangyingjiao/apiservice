@@ -188,6 +188,4 @@ public class MenuController extends BaseController {
         logger.info(JSON.toJSONString(menus));
         return new SuccResult(menus);
     }
-
-
 }

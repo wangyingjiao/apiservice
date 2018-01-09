@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.item;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerGasqSort;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
@@ -13,24 +14,11 @@ import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import java.util.List;
 
 /**
- * 服务项目DAO接口
+ * 分类DAO接口
  * @author a
  * @version 2017-11-15
  */
 @MyBatisDao
-public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
+public interface SerGasqSortDao extends CrudDao<SerGasqSort> {
 
-    int checkDataName(SerItemInfo serItemInfo);
-
-    List<SerItemCommodity> getSerItemCommoditys(SerItemInfo serItemInfo);
-
-    void updateSerItemPicNum(SerItemInfo serItemInfo);
-
-    SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo);
-
-    List<Dict> getSerSortInfoList(SerItemInfo serItemInfo);
-
-    SerSortInfo getSerSortInfo(String sortId);
-
-    SerItemInfo getByName(SerItemInfo serItemInfo);
 }

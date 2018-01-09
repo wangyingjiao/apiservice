@@ -101,12 +101,12 @@
 		WHERE id = #{id}
 	</update>
 
-	<update id="delSerSkillItemBySkill">
-		UPDATE ser_skill_goods SET
-		del_flag = #{DEL_FLAG_DELETE}
-		WHERE skill_id = #{id}
-		AND del_flag = #{DEL_FLAG_NORMAL}
-	</update>
+	<!--<update id="getSerSkillGoodsBySkill">-->
+		<!--UPDATE ser_skill_goods SET-->
+		<!--del_flag = #{DEL_FLAG_DELETE}-->
+		<!--WHERE skill_id = #{id}-->
+		<!--AND del_flag = #{DEL_FLAG_NORMAL}-->
+	<!--</update>-->
 	<select id="getSerSkillItemBySkill" resultType="SerSkillItem">
 		SELECT
 		a.item_id AS "itemId",

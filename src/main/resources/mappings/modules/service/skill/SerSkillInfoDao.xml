@@ -115,6 +115,17 @@
 		WHERE name = #{name}
 		AND  org_id = #{orgId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
+		<if test="id != null and id !=''">
+			id!=#{id}
+		</if>
+	</select>
+	<!--根据名称获取技能-->
+	<select id="getByName" resultType="SerSkillInfo">
+		SELECT
+		<include refid="serSkillInfoColumns"/>
+		FROM ser_skill_info a
+		WHERE a.name = #{name}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<select id="choiceSerlist" resultMap="SerItemCommodityResultMap">
@@ -178,10 +189,4 @@
 		</choose>
 	</select>
 
-	<select id="getServiceStationList" resultType="BasicServiceStation">
-		select a.id , a.name as name
-		from basic_service_station a
-		where del_flag = '0'
-		${sqlMap.dsf}
-	</select>
 </mapper>

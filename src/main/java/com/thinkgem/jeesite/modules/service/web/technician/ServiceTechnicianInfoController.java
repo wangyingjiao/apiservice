@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -62,6 +64,27 @@ public class ServiceTechnicianInfoController extends BaseController {
         return entity;
     }
 
+
+    //获取用户所在服务站的工作时间
+    @ResponseBody
+    @ApiOperation(notes = "返回用户服务站的工作时间", value = "获取用户服务站的工作时间")
+    @RequestMapping(value = {"getDate"}, method = RequestMethod.POST)
+    public Result getDate(){
+        String orgId = UserUtils.getUser().getOrganization().getId();
+        BasicOrganization basicOrganization = basicOrganizationService.get(orgId);
+        SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
+        //开始时间
+        Date workStartTime = basicOrganization.getWorkStartTime();
+        String start = sdf.format(workStartTime);
+        //结束时间
+        Date workEndTime = basicOrganization.getWorkEndTime();
+        String end = sdf.format(workEndTime);
+        Map<String,String> map=new HashMap<String,String>();
+        map.put("start", start);
+        map.put("end", end);
+        return new SuccResult(map);
+    }
+
     @ResponseBody
     @ApiOperation("获取技师列表")
     @RequiresPermissions("techni_view")
@@ -74,14 +97,14 @@ public class ServiceTechnicianInfoController extends BaseController {
 
         User user = UserUtils.getUser();
         String orgId = user.getOrganization().getId();//机构ID
-        List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
+//        List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
 
         List<BasicServiceStation> stations = serviceTechnicianInfoService.getStationsByOrgId(orgId);
         List<SerSkillInfo> skillInfos = serviceTechnicianInfoService.getSkillInfosByOrgId(orgId);
 
         HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
         objectObjectHashMap.put("page",page);
-        objectObjectHashMap.put("cityCodes",cityCodes);
+//        objectObjectHashMap.put("cityCodes",cityCodes);
         objectObjectHashMap.put("stations",stations);
         objectObjectHashMap.put("skillInfos",skillInfos);
         return new SuccResult(objectObjectHashMap);

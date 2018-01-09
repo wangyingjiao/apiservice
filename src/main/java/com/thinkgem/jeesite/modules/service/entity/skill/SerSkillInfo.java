@@ -26,6 +26,8 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	private List<SerSkillTechnician> technicians;
 	private List<SerSkillSort> goodsList;
 
+	private List<String> sortIds;
+
 	public SerSkillInfo() {
 		super();
 	}
@@ -112,5 +114,13 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 
 	public void setTechStationId(String techStationId) {
 		this.techStationId = techStationId;
+	}
+
+	public List<String> getSortIds() {
+		return sortIds;
+	}
+
+	public void setSortIds(List<String> sortIds) {
+		this.sortIds = sortIds;
 	}
 }

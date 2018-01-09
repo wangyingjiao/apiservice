@@ -112,7 +112,19 @@ public abstract class BaseService {
             return " AND " + alias + ".org_id = '" + org.getId() + "'";
         } else {
             log.info("机构权限过滤：当前用户为 |本服务站| 用户 " + user.getId() + ":" + user.getName());
-            return " AND " + alias + ".org_id = '" + org.getId() + "'" + "AND " + alias + ".station_id = '" + sts.getId() + "'";
+            return " AND " + alias + ".org_id = '" + org.getId() + "'" + " AND " + alias + ".station_id = '" + sts.getId() + "'";
+        }
+    }
+    public static String dataOrderRoleFilter(User user, String alias) {
+        BasicOrganization org = user.getOrganization();
+        BasicServiceStation sts = user.getStation();
+        if (null != org && org.getId().trim().equals("0")) {
+            log.info("订单权限过滤：当前用户为 |全平台| 用户 " + user.getId() + ":" + user.getName());
+            return " AND " + alias + ".order_source = 'gasq'";
+        } else{
+            log.info("订单权限过滤：当前用户为 |本机构/本服务站| 用户 " + user.getId() + ":" + user.getName());
+
+            return " AND " + alias + ".org_id = '" + org.getId() + "'";
         }
     }
 

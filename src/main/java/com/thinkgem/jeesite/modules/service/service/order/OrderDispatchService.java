@@ -35,16 +35,6 @@ public class OrderDispatchService extends CrudService<OrderDispatchDao, OrderDis
 		orderDispatch.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
 		return super.findPage(page, orderDispatch);
 	}
-	
-	@Transactional(readOnly = false)
-	public void save(OrderDispatch orderDispatch) {
-		super.save(orderDispatch);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(OrderDispatch orderDispatch) {
-		super.delete(orderDispatch);
-	}
 
     public OrderDispatch formData(OrderDispatch info) {
 		OrderDispatch dispatchInfo = dao.formData(info);

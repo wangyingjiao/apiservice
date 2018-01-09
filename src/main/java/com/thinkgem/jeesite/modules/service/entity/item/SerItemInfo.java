@@ -31,8 +31,28 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String description;		// 服务描述
 	private String sale;		// 是否上架(yes:是，no:否)
 	private int sortNum;		// 排序号
-	private String allCity;//全部城市(yes:是，no:否)
 	private String orgId;//机构ID
+	private List<String> sysTags;			//系统标签
+	private List<String> customTags;		//自定义标签
+
+	private String tags;
+	private String cusTags;
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
+
+	public String getCusTags() {
+		return cusTags;
+	}
+
+	public void setCusTags(String cusTags) {
+		this.cusTags = cusTags;
+	}
 
 	public SerItemInfo() {
 		super();
@@ -127,14 +147,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.sortNum = sortNum;
 	}
 
-	public String getAllCity() {
-		return allCity;
-	}
-
-	public void setAllCity(String allCity) {
-		this.allCity = allCity;
-	}
-
 	public String getOrgId() {
 		return orgId;
 	}
@@ -143,46 +155,9 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 		this.orgId = orgId;
 	}
 
-	private String cityCode;        // 城市编号 查询用
-	private List<String> cityCodes = new ArrayList<String>(); // 城市 编辑选中用
-	private List<SerCityScope> citys = new ArrayList<SerCityScope>();
-	private List<SerCityScope> allCitys = new ArrayList<SerCityScope>();
 	private List<SerItemCommodity> commoditys;
 	private String sortName;		// 所属分类
 
-	public String getCityCode() {
-		return cityCode;
-	}
-
-	public void setCityCode(String cityCode) {
-		this.cityCode = cityCode;
-	}
-
-	@JsonInclude
-	public List<String> getCityCodes() {
-		return cityCodes;
-	}
-
-	public void setCityCodes(List<String> cityCodes) {
-		this.cityCodes = cityCodes;
-	}
-
-	@JsonInclude
-	public List<SerCityScope> getCitys() {
-		return citys;
-	}
-
-	public void setCitys(List<SerCityScope> citys) {
-		this.citys = citys;
-	}
-
-	public List<SerCityScope> getAllCitys() {
-		return allCitys;
-	}
-
-	public void setAllCitys(List<SerCityScope> allCitys) {
-		this.allCitys = allCitys;
-	}
 
 	@JsonInclude
 	public List<SerItemCommodity> getCommoditys() {return commoditys;}
@@ -214,5 +189,21 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	public void setCheckedCities(List<Object> checkedCities) {
 		this.checkedCities = checkedCities;
+	}
+
+	public List<String> getSysTags() {
+		return sysTags;
+	}
+
+	public void setSysTags(List<String> sysTags) {
+		this.sysTags = sysTags;
+	}
+
+	public List<String> getCustomTags() {
+		return customTags;
+	}
+
+	public void setCustomTags(List<String> customTags) {
+		this.customTags = customTags;
 	}
 }

@@ -28,6 +28,35 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private BigDecimal price;		// 价格
 	private Double convertHours;		// 折算时长
 	private int minPurchase;		// 起购数量
+	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
+	private int cappinPerNum;		//封项人数
+
+
+	public int getStartPerNum() {
+		return startPerNum;
+	}
+
+	public void setStartPerNum(int startPerNum) {
+		this.startPerNum = startPerNum;
+	}
+
+	public int getCappinPerNum() {
+		return cappinPerNum;
+	}
+
+	public void setCappinPerNum(int cappinPerNum) {
+		this.cappinPerNum = cappinPerNum;
+	}
+
+	public String getJointGoodsCode() {
+		return jointGoodsCode;
+	}
+
+	public void setJointGoodsCode(String jointGoodsCode) {
+		this.jointGoodsCode = jointGoodsCode;
+	}
+
+	private String jointGoodsCode;		//对接方商品CODE
 	private List<SerItemCommodityPersons> persons;//派人数量
 
 	@NotNull(message = "派人数量不可为空")

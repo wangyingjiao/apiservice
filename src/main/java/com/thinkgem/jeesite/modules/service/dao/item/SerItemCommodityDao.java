@@ -18,7 +18,7 @@ import java.util.List;
 @MyBatisDao
 public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
 
-    void delSerItemCommodityPersons(SerItemCommodity serItemCommodity);
+   // void delSerItemCommodityPersons(SerItemCommodity serItemCommodity);
 
     void delSerItemCommodity(SerItemInfo serItemInfo);
 

@@ -11,11 +11,9 @@
 		a.price AS "price",
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.del_flag AS "delFlag"
+		a.start_per_num AS "startPerNum",
+		a.capping_per_num AS "cappinPerNum",
+		a.joint_goods_code AS "jointGoodsCode",
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -78,6 +76,9 @@
 			price,
 			convert_hours,
 			min_purchase,
+			start_per_num,
+			capping_per_num,
+			joint_goods_code,
 			create_by,
 			create_date,
 			update_by,
@@ -92,6 +93,9 @@
 			#{price},
 			#{convertHours},
 			#{minPurchase},
+			#{startPerNum},
+			#{cappinPerNum},
+			#{jointGoodsCode},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -120,6 +124,15 @@
 			<if test="minPurchase != null and minPurchase != ''">
 				min_purchase = #{minPurchase},
 			</if>
+			<if test="startPerNum != null and startPerNum != ''">
+				start_per_num = #{startPerNum},
+			</if>
+			<if test="cappinPerNum != null and cappinPerNum != ''">
+				capping_per_num = #{cappinPerNum},
+			</if>
+			<if test="jointGoodsCode != null and jointGoodsCode != ''">
+				joint_goods_code = #{jointGoodsCode},
+			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
@@ -137,12 +150,12 @@
 		WHERE item_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
-	<update id="delSerItemCommodityPersons">
-		UPDATE ser_item_info_goods_persons SET
-		del_flag = #{DEL_FLAG_DELETE}
-		WHERE goods_id = #{id}
-		AND del_flag = #{DEL_FLAG_NORMAL}
-	</update>
+	<!--<update id="delSerItemCommodityPersons">-->
+		<!--UPDATE ser_item_info_goods_persons SET-->
+		<!--del_flag = #{DEL_FLAG_DELETE}-->
+		<!--WHERE goods_id = #{id}-->
+		<!--AND del_flag = #{DEL_FLAG_NORMAL}-->
+	<!--</update>-->
 
 	<update id="delSerItemCommodity">
 		UPDATE ser_item_info_goods SET
@@ -153,7 +166,7 @@
 
 
 
-	<select id="findListByItemId" resultMap="SerItemGoodsResultMap">
+	<select id="findListByItemId" resultType="SerItemCommodity">
 		SELECT
 		<include refid="serItemGoodsColumns"/>
 		FROM ser_item_info_goods a
@@ -183,11 +196,11 @@
 		<result column="convert_hours" property="convertHours"/>
 		<result column="min_purchase" property="minPurchase"/>
 		<!-- 派人数量 -->
-		<association property="persons" column="{reqId=id}" select="selectPersonsById"></association>
+		<!--<association property="persons" column="{reqId=id}" select="selectPersonsById"></association>-->
 	</resultMap>
-	<select id="selectPersonsById" parameterType="java.util.Map" resultType="SerItemCommodityPersons">
-		select id,critical,sort,quantity from ser_item_info_goods_persons
-		where goods_id=#{reqId}
-		and del_flag = '0'
-	</select>
+	<!--<select id="selectPersonsById" parameterType="java.util.Map" resultType="SerItemCommodityPersons">-->
+		<!--select id,critical,sort,quantity from ser_item_info_goods_persons-->
+		<!--where goods_id=#{reqId}-->
+		<!--and del_flag = '0'-->
+	<!--</select>-->
 </mapper>

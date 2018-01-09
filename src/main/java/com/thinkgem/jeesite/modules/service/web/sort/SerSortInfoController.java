@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -56,7 +58,8 @@ public class SerSortInfoController extends BaseController {
     @RequestMapping(value = "saveData", method = {RequestMethod.POST},produces="text/plain;charset=UTF-8")
     @RequiresPermissions("class_insert")
     @ApiOperation(value="新增保存服务分类")
-    public Result saveData(@RequestBody SerSortInfo serSortInfo) {
+    public Result saveData(@RequestBody SerSortInfo serSortInfo)  {
+
         List<String> errList = errors(serSortInfo);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
@@ -67,6 +70,8 @@ public class SerSortInfoController extends BaseController {
                 return new FailResult("当前机构已经包含服务分类名称" + serSortInfo.getName() + "");
             }
         }
+
+
         serSortInfoService.save(serSortInfo);
         return new SuccResult("保存服务分类" + serSortInfo.getName() + "成功");
     }
@@ -93,14 +98,22 @@ public class SerSortInfoController extends BaseController {
         if(serSortInfo == null){
             serSortInfo = new SerSortInfo();
         }
-        if (!"0".equals(UserUtils.getUser().getOrganization().getId())) {
-            return new FailResult("没有权限");
-        }
         Page<SerSortInfo> serSortInfoPage = new Page<>(request, response);
         Page<SerSortInfo> page = serSortInfoService.findPage(serSortInfoPage, serSortInfo);
         return new SuccResult(page);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/listDataAll", method = {RequestMethod.POST, RequestMethod.GET})
+    //@RequiresPermissions("class_view")
+    @ApiOperation("获取服务分类列表")
+    public Result listDataAll(@RequestBody(required=false) SerSortInfo serSortInfo, HttpServletRequest request, HttpServletResponse response) {
+        if(serSortInfo == null){
+            serSortInfo = new SerSortInfo();
+        }
+        List<SerSortInfo> page = serSortInfoService.listDataAll(serSortInfo);
+        return new SuccResult(page);
+    }
     @ResponseBody
     @RequestMapping(value = "formData", method = {RequestMethod.POST})
     @ApiOperation("服务分类编辑")

@@ -25,6 +25,19 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     private String name;        // 服务分类名称
 //    private String allCity;   //是否是全部城市
 //    private String orgId;//机构ID
+    private Boolean flag=false;  //是否已经选过
+
+
+    private List<String> sortIds;
+
+
+    public Boolean getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Boolean flag) {
+        this.flag = flag;
+    }
 
     public SerSortInfo() {
         super();
@@ -98,4 +111,12 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     public void setCitys(List<SerCityScope> citys) {
         this.citys = citys;
     }*/
+
+    public List<String> getSortIds() {
+        return sortIds;
+    }
+
+    public void setSortIds(List<String> sortIds) {
+        this.sortIds = sortIds;
+    }
 }
