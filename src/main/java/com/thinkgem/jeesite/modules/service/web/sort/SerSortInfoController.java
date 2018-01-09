@@ -55,10 +55,11 @@ public class SerSortInfoController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "saveData", method = {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+    @RequestMapping(value = "saveData", method = {RequestMethod.POST})
     @RequiresPermissions("class_insert")
     @ApiOperation(value="新增保存服务分类")
     public Result saveData(@RequestBody SerSortInfo serSortInfo) {
+    	
         List<String> errList = errors(serSortInfo);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
