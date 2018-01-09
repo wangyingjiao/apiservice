@@ -52,6 +52,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<ServiceTechnicianHoliday> findTechHolidayList(OrderDispatch serchTech);
 
     List<OrderDispatch> findTechOrderList(OrderDispatch serchTech);
+
+    List<OrderDispatch> getTechListOrderByNum(OrderDispatch serchTechInfo);
     //app修改订单
     int appUpdate(OrderInfo orderInfo);
     //app获取订单列表

@@ -76,7 +76,7 @@
 			a.order_time AS orderTime
 		FROM order_info a
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="orderStatus != null and orderStatus !=''">
@@ -396,7 +396,7 @@
 		order_info a
 		LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.id = #{id}
 	</select>
 
@@ -475,20 +475,24 @@
 		t.head_pic AS headPic,t.job_nature AS jobNature
 		FROM ser_skill_tech a
 		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
-		<if test="orderId != null and orderId != ''">
-		LEFT JOIN order_dispatch d ON t.id = d.tech_id AND d.status = 'yes' AND d.del_flag = #{DEL_FLAG_NORMAL}
-		</if>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.skill_id= #{skillId}
 			AND t.station_id= #{stationId}
 			AND t.status= #{techStatus}
 			AND t.job_status= #{jobStatus}
+			<if test="techName != null and techName !=''">
+				AND t.name LIKE concat('%',#{techName},'%')
+			</if>
 			<if test="jobNature != null and jobNature != ''">
 				AND t.job_nature= #{jobNature}
 			</if>
 			<if test="orderId != null and orderId != ''">
-				AND d.order_id != #{orderId}
+				AND t.id NOT IN (
+					SELECT d.tech_id FROM order_dispatch d
+					WHERE d.order_id = #{orderId}
+					AND d.status = 'yes' AND d.del_flag = #{DEL_FLAG_NORMAL}
+				)
 			</if>
 		</where>
 	</select>
@@ -524,7 +528,7 @@
 		o.service_time AS "serviceTime",
 		o.finish_time AS "finishTime"
 		from order_dispatch a
-		LEFT JOIN order_info o ON a.order_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE
 		a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
@@ -563,7 +567,7 @@
 		o.service_time AS "startTime",
 		o.finish_time AS "endTime"
 		from order_dispatch a
-		LEFT JOIN order_info o ON a.order_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE
 		a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
@@ -571,5 +575,23 @@
 		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
 		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
 		AND a.tech_id  = #{techId}
+	</select>
+	<select id="getTechListOrderByNum" resultType="OrderDispatch">
+		SELECT
+			a.tech_id ,COUNT(1) AS num
+		FROM
+		order_dispatch a
+		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.status = 'yes'
+		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
+		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
+		AND a.tech_id  in
+		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+		GROUP BY a.tech_id
+		ORDER BY num
 	</select>
 </mapper>

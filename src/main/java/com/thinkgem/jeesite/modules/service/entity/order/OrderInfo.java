@@ -76,6 +76,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<OrderDispatch> techList; //技师List
 	private List<String> techIdList; //技师List
 	private String dispatchTechId;//改派前技师ID
+	private String techName;
 
 	public OrderInfo() {
 		super();
@@ -521,5 +522,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setOrderRemarkPics(List<String> orderRemarkPics) {
 		this.orderRemarkPics = orderRemarkPics;
+	}
+
+	public String getTechName() {
+		return techName;
+	}
+
+	public void setTechName(String techName) {
+		this.techName = techName;
 	}
 }
