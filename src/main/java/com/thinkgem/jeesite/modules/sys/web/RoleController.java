@@ -334,12 +334,6 @@ public class RoleController extends BaseController {
     @RequestMapping(value = "saveData", method = RequestMethod.POST)
     @ApiOperation(value = "新建，更新岗位")
     public Result saveData(@RequestBody Role role) {
-        //role.getName()
-        try {
-            role.setName(URLDecoder.decode(role.getName(),"UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         List<String> errList = errors(role,SaveRoleGroup.class);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
