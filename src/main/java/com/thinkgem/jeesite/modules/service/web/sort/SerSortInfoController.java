@@ -59,11 +59,7 @@ public class SerSortInfoController extends BaseController {
     @RequiresPermissions("class_insert")
     @ApiOperation(value="新增保存服务分类")
     public Result saveData(@RequestBody SerSortInfo serSortInfo)  {
-        try {
-            serSortInfo.setName(URLDecoder.decode(serSortInfo.getName(),"UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+
         List<String> errList = errors(serSortInfo);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
@@ -115,8 +111,7 @@ public class SerSortInfoController extends BaseController {
         if(serSortInfo == null){
             serSortInfo = new SerSortInfo();
         }
-        Page<SerSortInfo> serSortInfoPage = new Page<>(request, response);
-        Page<SerSortInfo> page = serSortInfoService.findPage(serSortInfoPage, serSortInfo);
+        List<SerSortInfo> page = serSortInfoService.listDataAll(serSortInfo);
         return new SuccResult(page);
     }
     @ResponseBody
