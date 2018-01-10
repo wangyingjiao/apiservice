@@ -14,6 +14,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -95,7 +96,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
 	@ApiOperation("更换时间")
 	public Result timeData(@RequestBody OrderInfo orderInfo) {
-		List<String> techList = orderInfoService.timeData(orderInfo);
+		List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
 		return new SuccResult(techList);
 	}
 

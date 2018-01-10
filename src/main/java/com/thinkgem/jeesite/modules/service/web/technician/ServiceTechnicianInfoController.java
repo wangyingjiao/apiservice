@@ -180,10 +180,23 @@ public class ServiceTechnicianInfoController extends BaseController {
      * @return
      */
     @ResponseBody
-    @ApiOperation("更新保存")
+    @ApiOperation("更新保存个人资料")
     @RequiresPermissions("techni_update")
     @RequestMapping(value = "upData", method = RequestMethod.POST)
     public Result upData(@RequestBody ServiceTechnicianInfo info) {
+        /*List<String> errList = errors(info);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }*/
+        serviceTechnicianInfoService.saveInfo(info);
+        return new SuccResult("保存成功");
+    }
+
+    @ResponseBody
+    @ApiOperation("更新保存服务信息")
+    @RequiresPermissions("techni_update")
+    @RequestMapping(value = "upDataService", method = RequestMethod.POST)
+    public Result upDataService(@RequestBody ServiceTechnicianInfo info) {
         /*List<String> errList = errors(info);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
@@ -194,7 +207,33 @@ public class ServiceTechnicianInfoController extends BaseController {
                 return new FailResult("服务人员有未完成订单,不可离职.");
             }
         }
-        serviceTechnicianInfoService.save(info);
+        serviceTechnicianInfoService.saveService(info);
+        return new SuccResult("保存成功");
+    }
+
+    @ResponseBody
+    @ApiOperation("更新保存补充资料")
+    @RequiresPermissions("techni_update")
+    @RequestMapping(value = "upDataPlus", method = RequestMethod.POST)
+    public Result upDataPlus(@RequestBody ServiceTechnicianInfo info) {
+        /*List<String> errList = errors(info);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }*/
+        serviceTechnicianInfoService.savePlus(info);
+        return new SuccResult("保存成功");
+    }
+
+    @ResponseBody
+    @ApiOperation("更新保存其它信息")
+    @RequiresPermissions("techni_update")
+    @RequestMapping(value = "upDataOther", method = RequestMethod.POST)
+    public Result upDataOther(@RequestBody ServiceTechnicianInfo info) {
+        /*List<String> errList = errors(info);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }*/
+        serviceTechnicianInfoService.saveOther(info);
         return new SuccResult("保存成功");
     }
 

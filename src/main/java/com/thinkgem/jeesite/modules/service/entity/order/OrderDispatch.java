@@ -39,12 +39,14 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 	private Date endTime;		// 结束时段
 	private int week;         //周几
 	private Date serviceTime;//服务时间
+	private String serviceTimeStr;//服务时间
 	private Date finishTime;//完成时间
-	private List<String> techIds;//技能List
+	private List<String> techIds;//技师List
 
 	//显示用
 	private String latitude;//纬度
 	private String longitude;//经度
+	private int orderNum;//订单数
 	//技师工作时间
 	private List<ServiceTechnicianWorkTime> workTimeList;
 	private List<String> workTimes;//工作时间List
@@ -237,5 +239,21 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 
 	public void setWorkTimes(List<String> workTimes) {
 		this.workTimes = workTimes;
+	}
+
+	public int getOrderNum() {
+		return orderNum;
+	}
+
+	public void setOrderNum(int orderNum) {
+		this.orderNum = orderNum;
+	}
+
+	public String getServiceTimeStr() {
+		return serviceTimeStr;
+	}
+
+	public void setServiceTimeStr(String serviceTimeStr) {
+		this.serviceTimeStr = serviceTimeStr;
 	}
 }

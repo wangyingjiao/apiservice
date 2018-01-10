@@ -44,6 +44,10 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		serviceTechnicianHoliday.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "b"));
 		return super.findPage(page, serviceTechnicianHoliday);
 	}
+	//app获取技师列表
+	public Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		return dao.appFindPage(page, serviceTechnicianHoliday);
+	}
 
 	@Transactional(readOnly = false)
 	public void save(ServiceTechnicianHoliday serviceTechnicianHoliday) {

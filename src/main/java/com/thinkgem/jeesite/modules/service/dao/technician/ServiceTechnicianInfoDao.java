@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.service.dao.technician;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
@@ -53,4 +54,14 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     void deleteFamilyMembers(ServiceTechnicianInfo serviceTechnicianInfo);
 
     List<String> getSkillIds(ServiceTechnicianInfo serviceTechnicianInfo);
+    //app获取技师技能工作时间
+    Page<ServiceTechnicianInfo> appFindSkillList(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo);
+    //app通讯录
+    List<ServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void updateInfo(ServiceTechnicianInfo info);
+
+    void updatePlus(ServiceTechnicianInfo info);
+
+    void updateOther(ServiceTechnicianInfo info);
 }

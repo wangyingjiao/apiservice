@@ -40,7 +40,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	private Double convertHours;		// 折算时长
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
-	private int cappinPerNum;		//封项人数
+	private int cappingPerNum;		//封项人数
 	
 	public OrderGoods() {
 		super();
@@ -193,11 +193,11 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 		this.startPerNum = startPerNum;
 	}
 
-	public int getCappinPerNum() {
-		return cappinPerNum;
+	public int getCappingPerNum() {
+		return cappingPerNum;
 	}
 
-	public void setCappinPerNum(int cappinPerNum) {
-		this.cappinPerNum = cappinPerNum;
+	public void setCappingPerNum(int cappingPerNum) {
+		this.cappingPerNum = cappingPerNum;
 	}
 }

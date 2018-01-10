@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
@@ -51,4 +52,10 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<ServiceTechnicianHoliday> findTechHolidayList(OrderDispatch serchTech);
 
     List<OrderDispatch> findTechOrderList(OrderDispatch serchTech);
+
+    List<OrderDispatch> getTechListOrderByNum(OrderDispatch serchTechInfo);
+    //app修改订单
+    int appUpdate(OrderInfo orderInfo);
+    //app获取订单列表
+    Page<OrderInfo> appFindList(Page<OrderInfo> page,OrderInfo orderInfo);
 }

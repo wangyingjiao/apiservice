@@ -24,8 +24,8 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	private String techId;		// tech_id
 	private String techName;		// 名称
 	private String week;		// 工作日期（周一，周二。。。）
-	private Timestamp startTime;		// 起始时段
-	private Timestamp endTime;		// 结束时段
+	private Date startTime;		// 起始时段
+	private Date endTime;		// 结束时段
 	private List<ServiceTechnicianWorkTimeWeek> weeks;		// 工作日期（周一，周二。。。）
 	private List<String> weekList;
 
@@ -72,20 +72,20 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	}
 
 	@JsonFormat(pattern = "HH:mm")
-	public Timestamp getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Timestamp startTime) {
+	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
 
 	@JsonFormat(pattern = "HH:mm")
-	public Timestamp getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(Timestamp endTime) {
+	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
 
