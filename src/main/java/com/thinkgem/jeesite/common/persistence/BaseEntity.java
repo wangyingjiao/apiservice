@@ -19,13 +19,14 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
+
 /**
  * Entity支持类
  * @author ThinkGem
  * @version 2014-05-16
  */
 @SupTreeList
-public abstract class BaseEntity<T> implements Serializable {
+public abstract class BaseEntity<T>implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
