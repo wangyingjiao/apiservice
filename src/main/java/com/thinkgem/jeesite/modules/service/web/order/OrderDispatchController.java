@@ -67,14 +67,7 @@ public class OrderDispatchController extends BaseController {
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
 	@ApiOperation("查看订单")
 	public Result formData(@RequestBody OrderDispatch dispatchInfo) {
-		OrderDispatch entity = null;
-		if (StringUtils.isNotBlank(dispatchInfo.getId())) {
-			entity = orderDispatchService.formData(dispatchInfo);
-		}
-		if (entity == null) {
-			return new FailResult("未找到此id对应的记录");
-		} else {
-			return new SuccResult(entity);
-		}
+		List<OrderDispatch> list = orderDispatchService.formData(dispatchInfo);
+		return new SuccResult(list);
 	}
 }

@@ -55,17 +55,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 	public OrderInfo formData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
-		OrderGoods goodsInfo = new OrderGoods();
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
 		if(goodsInfoList != null && goodsInfoList.size() != 0){
+			OrderGoods goodsInfo = new OrderGoods();
 			goodsInfo.setServiceTime(goodsInfoList.get(0).getServiceTime());
 			goodsInfo.setItemId(goodsInfoList.get(0).getItemId());
 			goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
 			goodsInfo.setGoods(goodsInfoList);
+			orderInfo.setGoodsInfo(goodsInfo);
 		}
 
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
-		orderInfo.setGoodsInfo(goodsInfo);
 		orderInfo.setTechList(techList);
 
 		String customerRemarkPic = orderInfo.getCustomerRemarkPic();
@@ -92,7 +92,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 
 	public Page<OrderInfo> findPage(Page<OrderInfo> page, OrderInfo orderInfo) {
-		orderInfo.getSqlMap().put("dsf", dataOrderRoleFilter(UserUtils.getUser(), "a"));
+		orderInfo.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
 		Page<OrderInfo> pageResult = super.findPage(page, orderInfo);
 		return pageResult;
 	}
