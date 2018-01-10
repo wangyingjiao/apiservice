@@ -29,7 +29,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 public abstract class BaseEntity<T>implements Serializable {
 
 	  private static final long serialVersionUID = 1L;
-
+    
 	/**
 	 * 实体编号（唯一标识）
 	 */
