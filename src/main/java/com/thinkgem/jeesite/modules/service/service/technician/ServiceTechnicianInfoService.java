@@ -345,5 +345,10 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public int updateTech(ServiceTechnicianInfo serviceTechnicianInfo){
         return dao.update(serviceTechnicianInfo);
     }
+    //校验手机号重复
+	public int checkPhone(ServiceTechnicianInfo info) {
+		// TODO Auto-generated method stub
+		return technicianInfoDao.checkPhone(info);
+	}
 
 }
