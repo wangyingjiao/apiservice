@@ -28,7 +28,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @SupTreeList
 public abstract class BaseEntity<T>implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	  private static final long serialVersionUID = 1L;
 
 	/**
 	 * 实体编号（唯一标识）
