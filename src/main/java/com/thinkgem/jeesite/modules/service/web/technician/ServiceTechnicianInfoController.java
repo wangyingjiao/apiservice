@@ -158,8 +158,10 @@ public class ServiceTechnicianInfoController extends BaseController {
             return new FailResult(errList);
         }
 
-        ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
-        if (null == techInfo) {
+        //ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
+        List<ServiceTechnicianInfo> techInfoList=serviceTechnicianInfoService.findTechList(info);
+        
+        if (null == techInfoList||techInfoList.size()==0) {
             User user = UserUtils.getUser();
             info.setOrgId(user.getOrganization().getId());
             String phoneSub = info.getPhone().substring(7,11);
