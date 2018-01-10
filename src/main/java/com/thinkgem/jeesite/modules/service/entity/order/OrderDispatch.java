@@ -31,6 +31,7 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 	private String jobNature; //岗位性质（full_time:全职，part_time:兼职）
 
 	//查询条件
+	private String orderNumber;
 	private String stationId;
 	private String skillId;//技能ID
 	private String techStatus;		// 状态(yes:上线，no:暂停)
@@ -255,5 +256,13 @@ public class OrderDispatch extends DataEntity<OrderDispatch> {
 
 	public void setServiceTimeStr(String serviceTimeStr) {
 		this.serviceTimeStr = serviceTimeStr;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
 	}
 }
