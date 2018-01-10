@@ -98,7 +98,7 @@ public class SerSortInfoController extends BaseController {
 				&& org.apache.commons.lang3.StringUtils.isNotEmpty(serSortInfo.getMajorSort())) {
 			int i = serSortInfoService.checkRepeatByNameMajorSort(serSortInfo);
 			if (0!=i) {
-				return new FailResult("同一服务分类的名称不能重复");
+				return new FailResult("同一所属类型下的的分类名称不能重复");
 			}
 		}
 		serSortInfoService.save(serSortInfo);
