@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.station;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
     int getCount(BasicServiceStation station);
     //根据权限获取服务站
     List<BasicServiceStation> getServiceStationList(BasicServiceStation station);
+
+    List<User> getUserListByStationId(BasicServiceStation serviceStation);
 }

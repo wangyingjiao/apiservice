@@ -8,8 +8,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,10 +93,10 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	 */
 	private ServiceTechnicianHoliday getLastHolidays(ServiceTechnicianHoliday weekDayWorkTime, ServiceTechnicianHoliday holiday) {
 		ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
-		Timestamp workStartTime = weekDayWorkTime.getStartTime();//工作开始时间
-		Timestamp workEndTime = weekDayWorkTime.getEndTime();//工作结束时间
-		Timestamp holidayStartTime = holiday.getStartTime();//休假开始时间
-		Timestamp holidayEndTime = holiday.getEndTime();//休假结束时间
+		Date workStartTime = weekDayWorkTime.getStartTime();//工作开始时间
+		Date workEndTime = weekDayWorkTime.getEndTime();//工作结束时间
+		Date holidayStartTime = holiday.getStartTime();//休假开始时间
+		Date holidayEndTime = holiday.getEndTime();//休假结束时间
 
 		//数据库中工作时间只有时分秒 拼接年月日
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
@@ -165,13 +167,13 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	 * @param workEndTime
 	 * @return
 	 */
-	private void getHolidays(Timestamp workStartTime, Timestamp workEndTime) {
+	private void getHolidays(Date workStartTime, Date workEndTime) {
 		ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat ymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String newEndStr = ymd.format(workStartTime) + " 23:59:59"; //获取开始时间日最后时间
 		Timestamp newEndTime = Timestamp.valueOf(newEndStr);
-		int weekDay = getWeek(workStartTime);
+		int weekDay = DateUtils.getWeekNum(workStartTime);
 
 		if (workEndTime.before(newEndTime)) {//最后时间大于结束时间
 			holiday.setStartTime(workStartTime);
@@ -205,20 +207,4 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	public int getHolidayHistory(ServiceTechnicianHoliday info) {
 		return serviceTechnicianHolidayDao.getHolidayHistory(info);
 	}
-	/**
-	 * 获取传入时间是周几
-	 *
-	 * @param today
-	 * @return
-	 */
-	public int getWeek(Timestamp today) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(today);
-		int weekday = c.get(Calendar.DAY_OF_WEEK) - 1;
-		if (0 == weekday) {
-			weekday = 7;
-		}
-		return weekday;
-	}
-
 }
