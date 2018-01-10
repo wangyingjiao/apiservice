@@ -26,7 +26,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 import java.io.UnsupportedEncodingException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import java.util.List;
 
 /**
@@ -42,6 +47,7 @@ public class SerSortInfoController extends BaseController {
 
 	@Autowired
 	private SerSortInfoService serSortInfoService;
+
 
 	@ModelAttribute
 	public SerSortInfo get(@RequestParam(required = false) String id) {
@@ -74,6 +80,9 @@ public class SerSortInfoController extends BaseController {
 		serSortInfoService.save(serSortInfo);
 		return new SuccResult("保存服务分类" + serSortInfo.getName() + "成功");
 	}
+
+   
+
 
 	@ResponseBody
 	@RequestMapping(value = "upData", method = { RequestMethod.POST })
@@ -124,20 +133,25 @@ public class SerSortInfoController extends BaseController {
 		return new SuccResult(page);
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "formData", method = { RequestMethod.POST })
-	@ApiOperation("服务分类编辑")
-	public Result formData(@RequestBody SerSortInfo serSortInfo) {
-		SerSortInfo entity = null;
-		if (StringUtils.isNotBlank(serSortInfo.getId())) {
-			entity = serSortInfoService.formData(serSortInfo);
-		}
-		if (entity == null) {
-			return new FailResult("未找到此id：" + serSortInfo.getId() + "对应的服务分类。");
-		} else {
-			return new SuccResult(entity);
-		}
-	}
+
+	
+
+   
+    @ResponseBody
+    @RequestMapping(value = "formData", method = {RequestMethod.POST})
+    @ApiOperation("服务分类编辑")
+    public Result formData(@RequestBody SerSortInfo serSortInfo) {
+        SerSortInfo entity = null;
+        if (StringUtils.isNotBlank(serSortInfo.getId())) {
+            entity = serSortInfoService.formData(serSortInfo);
+        }
+        if (entity == null) {
+            return new FailResult("未找到此id：" + serSortInfo.getId() + "对应的服务分类。");
+        } else {
+            return new SuccResult(entity);
+        }
+    }
+
 
 	@ResponseBody
 	@RequiresPermissions("class_delete")

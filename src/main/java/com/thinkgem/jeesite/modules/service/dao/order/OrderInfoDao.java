@@ -4,11 +4,13 @@
 package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 
 import java.util.List;
@@ -22,8 +24,6 @@ import java.util.List;
 public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     List<BasicOrganization> findOrganizationList(BasicOrganization organization);
-
-    List<ServiceTechnicianWorkTime> findServiceTimeList(OrderInfo orderInfo);
 
     OrderInfo formData(OrderInfo info);
 
@@ -46,4 +46,16 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<String> getTechByHoliday(OrderDispatch serchInfo);
 
     List<OrderDispatch> getTechByOrder(OrderDispatch serchInfo);
+
+    List<ServiceTechnicianWorkTime> findTechWorkTimeList(OrderDispatch tech);
+
+    List<ServiceTechnicianHoliday> findTechHolidayList(OrderDispatch serchTech);
+
+    List<OrderDispatch> findTechOrderList(OrderDispatch serchTech);
+
+    List<OrderDispatch> getTechListOrderByNum(OrderDispatch serchTechInfo);
+    //app修改订单
+    int appUpdate(OrderInfo orderInfo);
+    //app获取订单列表
+    Page<OrderInfo> appFindList(Page<OrderInfo> page,OrderInfo orderInfo);
 }

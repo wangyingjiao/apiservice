@@ -18,11 +18,11 @@ import org.apache.commons.lang3.time.DateFormatUtils;
  * @version 2014-4-15
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
-	
+
 	private static String[] parsePatterns = {
-		"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM", 
-		"yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
-		"yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
+			"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
+			"yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
+			"yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
 
 	/**
 	 * 得到当前日期字符串 格式（yyyy-MM-dd）
@@ -30,14 +30,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	public static String getDate() {
 		return getDate("yyyy-MM-dd");
 	}
-	
+
 	/**
 	 * 得到当前日期字符串 格式（yyyy-MM-dd） pattern可以为："yyyy-MM-dd" "HH:mm:ss" "E"
 	 */
 	public static String getDate(String pattern) {
 		return DateFormatUtils.format(new Date(), pattern);
 	}
-	
+
 	/**
 	 * 得到日期字符串 默认格式（yyyy-MM-dd） pattern可以为："yyyy-MM-dd" "HH:mm:ss" "E"
 	 */
@@ -50,7 +50,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return formatDate;
 	}
-	
+
 	/**
 	 * 得到日期时间字符串，转换格式（yyyy-MM-dd HH:mm:ss）
 	 */
@@ -99,15 +99,15 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	public static String getWeek() {
 		return formatDate(new Date(), "E");
 	}
-	
+
 	/**
 	 * 日期型字符串转化为日期 格式
-	 * { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", 
-	 *   "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm",
-	 *   "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm" }
+	 * { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
+	 * "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm",
+	 * "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm" }
 	 */
 	public static Date parseDate(Object str) {
-		if (str == null){
+		if (str == null) {
 			return null;
 		}
 		try {
@@ -119,51 +119,55 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 	/**
 	 * 获取过去的天数
+	 *
 	 * @param date
 	 * @return
 	 */
 	public static long pastDays(Date date) {
-		long t = new Date().getTime()-date.getTime();
-		return t/(24*60*60*1000);
+		long t = new Date().getTime() - date.getTime();
+		return t / (24 * 60 * 60 * 1000);
 	}
 
 	/**
 	 * 获取过去的小时
+	 *
 	 * @param date
 	 * @return
 	 */
 	public static long pastHour(Date date) {
-		long t = new Date().getTime()-date.getTime();
-		return t/(60*60*1000);
+		long t = new Date().getTime() - date.getTime();
+		return t / (60 * 60 * 1000);
 	}
-	
+
 	/**
 	 * 获取过去的分钟
+	 *
 	 * @param date
 	 * @return
 	 */
 	public static long pastMinutes(Date date) {
-		long t = new Date().getTime()-date.getTime();
-		return t/(60*1000);
+		long t = new Date().getTime() - date.getTime();
+		return t / (60 * 1000);
 	}
-	
+
 	/**
 	 * 转换为时间（天,时:分:秒.毫秒）
+	 *
 	 * @param timeMillis
 	 * @return
 	 */
-    public static String formatDateTime(long timeMillis){
-		long day = timeMillis/(24*60*60*1000);
-		long hour = (timeMillis/(60*60*1000)-day*24);
-		long min = ((timeMillis/(60*1000))-day*24*60-hour*60);
-		long s = (timeMillis/1000-day*24*60*60-hour*60*60-min*60);
-		long sss = (timeMillis-day*24*60*60*1000-hour*60*60*1000-min*60*1000-s*1000);
-		return (day>0?day+",":"")+hour+":"+min+":"+s+"."+sss;
-    }
-	
+	public static String formatDateTime(long timeMillis) {
+		long day = timeMillis / (24 * 60 * 60 * 1000);
+		long hour = (timeMillis / (60 * 60 * 1000) - day * 24);
+		long min = ((timeMillis / (60 * 1000)) - day * 24 * 60 - hour * 60);
+		long s = (timeMillis / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+		long sss = (timeMillis - day * 24 * 60 * 60 * 1000 - hour * 60 * 60 * 1000 - min * 60 * 1000 - s * 1000);
+		return (day > 0 ? day + "," : "") + hour + ":" + min + ":" + s + "." + sss;
+	}
+
 	/**
 	 * 获取两个日期之间的天数
-	 * 
+	 *
 	 * @param before
 	 * @param after
 	 * @return
@@ -181,7 +185,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取传入时间是周几
+	 * 获取传入时间是周几 1/2/3/4/5/6/7
 	 *
 	 * @param today
 	 * @return
@@ -196,6 +200,32 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return weekday;
 	}
 
+	/**
+	 * 获取当前月第一天
+	 * @param today
+	 * @return
+	 */
+	public static Date getMonthFristDay(Date today) {
+		//获取当前月第一天：
+		Calendar c = Calendar.getInstance();
+		c.setTime(today);
+		c.add(Calendar.MONTH, 0);
+		c.set(Calendar.DAY_OF_MONTH, 1);//设置为1号,当前日期既为本月第一天
+		return parseDate(formatDate(c.getTime()));
+	}
+
+	/**
+	 * 获取当前月最后一天
+	 * @param today
+	 * @return
+	 */
+	public static Date getMonthLastDay(Date today) {
+		//获取当前月最后一天
+		Calendar ca = Calendar.getInstance();
+		ca.setTime(today);
+		ca.set(Calendar.DAY_OF_MONTH,ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+		return parseDate(formatDate(ca.getTime()));
+	}
 	/**
 	 * 取得同一天 某时间段内半小时和整点数据
 	 * @param startTime

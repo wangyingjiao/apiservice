@@ -19,6 +19,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import java.net.URLDecoder;
+
 /**
  * @author x
  */
@@ -95,8 +97,23 @@ public class ReqResAop {
 		Object proceed = jp.proceed();
 		logger.info("返回值：" + JsonMapper.toJsonString(proceed));
 		return proceed;
-
 	}
+ 
+/*   @Before("execution(* com.thinkgem..web..*.*(..))")
+   public void before(JoinPoint jp) throws Exception {
+       for (int i = 0; i < jp.getArgs().length; i++) {
+           System.out.println("ReqResAop类拦截器处理请求参数===========" + jp.getArgs()[i]);
+           if (jp.getArgs()[i] != null) {
+               String string = jp.getArgs()[i].toString();
+               System.out.println("转换前的参数=============" + string);
+               String decode = URLDecoder.decode(string, "UTF-8");
+               System.out.println("转换后的参数=============" + decode);
+           }
+       }
+   }*/
+
+
+	
 
 	@AfterReturning("point()")
 	public void afterReturning(JoinPoint jp) throws Exception {

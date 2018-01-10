@@ -57,7 +57,7 @@
 		<include refid="orderInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
 	<select id="findList" resultType="OrderInfo">
 		SELECT
 			a.id AS id,
@@ -65,6 +65,7 @@
 			a.org_id AS orgId,
 			org.name AS orgName,
 			a.station_id AS stationId,
+			a.major_sort AS majorSort,
 			sta.name AS stationName,
 			a.order_content AS orderContent,
 			a.pay_price AS payPrice,
@@ -75,7 +76,7 @@
 			a.order_time AS orderTime
 		FROM order_info a
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="orderStatus != null and orderStatus !=''">
@@ -90,7 +91,9 @@
 			<if test="stationId != null and stationId !=''">
 				AND a.station_id= #{stationId}
 			</if>
-
+			<if test="majorSort != null and majorSort !=''">
+				AND a.major_sort= #{majorSort}
+			</if>
 			<if test="orderNumber != null and orderNumber != ''">
 				AND a.order_number LIKE concat('%',#{orderNumber},'%')
 			</if>
@@ -109,6 +112,55 @@
 			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<!--app查询列表-->
+	<select id="appFindList" resultType="OrderInfo">
+		SELECT
+		a.id AS id,
+		a.order_number AS orderNumber,
+		a.org_id AS orgId,
+		org.name AS orgName,
+		a.station_id AS stationId,
+		a.major_sort AS majorSort,
+		sta.name AS stationName,
+		a.order_content AS orderContent,
+		a.pay_price AS payPrice,
+		a.service_time AS serviceTime,
+		a.order_status AS orderStatus,
+		a.service_status AS "serviceStatus",
+		a.pay_status AS payStatus,
+		a.order_time AS orderTime
+		FROM order_info a
+		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			 AND a.business_phone = #{businessPhone}
+			<if test="orderStatus != null and orderStatus !=''">
+				AND a.order_status= #{orderStatus}
+			</if>
+			<if test="majorSort != null and majorSort !=''">
+				AND a.major_sort= #{majorSort}
+			</if>
+			<if test="serviceStatus != null and serviceStatus != ''">
+				AND a.service_status = #{serviceStatus}
+			</if>
+
+			<if test="serviceTime != null and serviceTime != ''">
+				AND a.service_time &gt;= #{serviceTime}
+			</if>
+			<if test="finishTime != null and finishTime != ''">
+				AND a.finish_time &lt;= #{finishTime}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -270,7 +322,16 @@
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
-	
+	<!--app编辑-->
+	<update id="appUpdate">
+		UPDATE order_info SET
+		order_remark = #{orderRemark},
+		order_remark_pic = #{orderRemarkPic},
+		order_status= #{orderStatus},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
 	<update id="delete">
 		UPDATE order_info SET 
 			del_flag = #{DEL_FLAG_DELETE}
@@ -288,9 +349,7 @@
 			${sqlMap.dsf}
 		</where>
 	</select>
-	<select id="findServiceTimeList" resultType="ServiceTechnicianWorkTime">
-		SELECT * FROM tech_work_time a WHERE a.del_flag = '0'
-	</select>
+
 	<select id="formData" resultType="OrderInfo">
 		SELECT
 			a.id AS "id",
@@ -337,12 +396,13 @@
 		order_info a
 		LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.id = #{id}
 	</select>
 
 	<select id="getOrderDispatchList" resultType="OrderDispatch">
 		SELECT
+			a.id AS id,
 			a.tech_id AS techId,
 			b.name  AS techName,
 			b.head_pic  AS headPic,
@@ -415,20 +475,24 @@
 		t.head_pic AS headPic,t.job_nature AS jobNature
 		FROM ser_skill_tech a
 		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
-		<if test="orderId != null and orderId != ''">
-		LEFT JOIN order_dispatch d ON t.id = d.tech_id AND d.status = 'yes' AND d.del_flag = #{DEL_FLAG_NORMAL}
-		</if>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.skill_id= #{skillId}
 			AND t.station_id= #{stationId}
 			AND t.status= #{techStatus}
 			AND t.job_status= #{jobStatus}
+			<if test="techName != null and techName !=''">
+				AND t.name LIKE concat('%',#{techName},'%')
+			</if>
 			<if test="jobNature != null and jobNature != ''">
 				AND t.job_nature= #{jobNature}
 			</if>
 			<if test="orderId != null and orderId != ''">
-				AND d.order_id != #{orderId}
+				AND t.id NOT IN (
+					SELECT d.tech_id FROM order_dispatch d
+					WHERE d.order_id = #{orderId}
+					AND d.status = 'yes' AND d.del_flag = #{DEL_FLAG_NORMAL}
+				)
 			</if>
 		</where>
 	</select>
@@ -464,7 +528,7 @@
 		o.service_time AS "serviceTime",
 		o.finish_time AS "finishTime"
 		from order_dispatch a
-		LEFT JOIN order_info o ON a.order_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE
 		a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
@@ -475,5 +539,59 @@
 		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
 			#{techId}
 		</foreach>
+	</select>
+	<select id="findTechWorkTimeList" resultType="ServiceTechnicianWorkTime">
+		select
+		a.tech_id AS "techId",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime"
+		from tech_work_time a
+		WHERE a.tech_id = #{techId}
+		AND a.week = #{week}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<select id="findTechHolidayList" resultType="ServiceTechnicianHoliday">
+		SELECT
+		a.tech_id AS "techId",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime"
+		from tech_holiday a
+		WHERE a.tech_id = #{techId}
+		AND a.start_time BETWEEN #{startTime} AND #{endTime}
+		AND a.end_time BETWEEN #{startTime} AND #{endTime}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<select id="findTechOrderList" resultType="OrderDispatch">
+		SELECT
+		a.tech_id AS "techId",
+		o.service_time AS "startTime",
+		o.finish_time AS "endTime"
+		from order_dispatch a
+		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.status = 'yes'
+		AND o.service_time BETWEEN #{startTime} AND #{endTime}
+		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
+		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
+		AND a.tech_id  = #{techId}
+	</select>
+	<select id="getTechListOrderByNum" resultType="OrderDispatch">
+		SELECT
+			a.tech_id ,COUNT(1) AS num
+		FROM
+		order_dispatch a
+		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.status = 'yes'
+		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
+		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
+		AND a.tech_id  in
+		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+		GROUP BY a.tech_id
+		ORDER BY num
 	</select>
 </mapper>

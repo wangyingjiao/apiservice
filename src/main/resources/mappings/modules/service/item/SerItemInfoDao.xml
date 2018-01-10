@@ -59,7 +59,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.sort_num ASC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>

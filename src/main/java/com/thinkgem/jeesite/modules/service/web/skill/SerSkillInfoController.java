@@ -49,6 +49,7 @@ import java.util.List;
 @RequestMapping(value = "${adminPath}/service/skill/serSkillInfo")
 public class SerSkillInfoController extends BaseController {
 
+
 	@Autowired
 	private SerSkillInfoService serSkillInfoService;
 	@Autowired
