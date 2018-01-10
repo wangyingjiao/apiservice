@@ -22,6 +22,7 @@
         <result column="cityName" property="cityName"></result>
         <collection property="storeList" ofType="java.lang.String" javaType="list" select="basicStore" column="id"/>
         <collection property="employees" ofType="java.lang.String" javaType="int" select="getCount" column="id"/>
+        <collection property="techNum" ofType="java.lang.String" javaType="int" select="getTechNum" column="id"/>
        <!-- <result column="employees" property="employees"/>-->
     </resultMap>
 
@@ -70,9 +71,19 @@
     <!--根据服务站id获取员工数量-->
     <select id="getCount" resultType="int">
           SELECT COUNT(1)
-          from basic_service_station a
-          LEFT JOIN sys_user b on a.id = b.station_id
-          where a.id=#{id} and b.del_flag = '0'
+          from sys_user a
+          where a.station_id=#{id} and a.del_flag = '0'
+    </select>
+    <select id="getUserListByStationId" resultType="User">
+        SELECT id,name
+          from sys_user a
+          where a.station_id=#{id} and a.del_flag = '0'
+    </select>
+
+    <select id="getTechNum" resultType="int">
+        SELECT COUNT(1)
+        from tech_info a
+        where a.station_id=#{id} and a.del_flag = '0'
     </select>
 
     <select id="findList" resultMap="BaseResultMap">

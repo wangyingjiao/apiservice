@@ -60,7 +60,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequiresPermissions("holiday_insert")
+	//@RequiresPermissions("holiday_insert")
 	@ApiOperation("保存服务技师休假时间")
 	@RequestMapping(value = "saveData", method = RequestMethod.POST)
 	public Result saveData(@RequestBody ServiceTechnicianHoliday info) {

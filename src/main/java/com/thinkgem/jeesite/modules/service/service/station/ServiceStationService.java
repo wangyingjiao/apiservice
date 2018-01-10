@@ -112,4 +112,8 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
         serviceStoreDao.saveStationStore(station);
         return new SuccResult("保存成功");
     }
+
+    public List<User> getUserListByStationId(BasicServiceStation serviceStation) {
+        return  dao.getUserListByStationId(serviceStation);
+    }
 }
