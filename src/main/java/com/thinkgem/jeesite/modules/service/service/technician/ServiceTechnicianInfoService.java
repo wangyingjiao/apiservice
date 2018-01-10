@@ -195,6 +195,71 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         }
     }
 
+    @Transactional(readOnly = false)
+    public void saveService(ServiceTechnicianInfo serviceTechnicianInfo) {
+        super.save(serviceTechnicianInfo);
+
+        List<ServiceTechnicianWorkTime> times = serviceTechnicianInfo.getWorkTimes();
+        List<ServiceTechnicianWorkTime> timesList = new ArrayList<ServiceTechnicianWorkTime>();
+
+        if (null != times) {
+            //删除工作时间 按技师
+            deleteTechnicianWorkTime(serviceTechnicianInfo);
+            for (ServiceTechnicianWorkTime time : times) {
+                List<ServiceTechnicianWorkTimeWeek> weeks = time.getWeeks();
+                if(null != weeks){
+                    for(ServiceTechnicianWorkTimeWeek week : weeks){
+                        ServiceTechnicianWorkTime technicianWorkTime = new ServiceTechnicianWorkTime();
+                        technicianWorkTime.setTechId(serviceTechnicianInfo.getId());
+                        technicianWorkTime.setStartTime(time.getStartTime());
+                        technicianWorkTime.setEndTime(time.getEndTime());
+                        technicianWorkTime.setWeek(week.getId());
+                        technicianWorkTime.preInsert();
+                        timesList.add(technicianWorkTime);
+                    }
+                }
+            }
+        }
+
+        if (null != timesList) {
+            for (ServiceTechnicianWorkTime time : timesList) {
+                workTimeDao.insert(time);
+            }
+        }
+
+        List<String> skillIds = serviceTechnicianInfo.getSkillIds();
+        if (null != skillIds) {
+            //删除时同时删除关联的技能
+            delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
+            for (String skillId : skillIds) {
+                SerSkillTechnician serSkillTechnician = new SerSkillTechnician();
+                serSkillTechnician.setSkillId(skillId);
+                serSkillTechnician.setTechId(serviceTechnicianInfo.getId());
+                serSkillTechnician.preInsert();
+                serSkillTechnicianDao.insert(serSkillTechnician);
+
+                //更新技师数量
+                serSkillTechnicianDao.updateTechNum(skillId);
+            }
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void saveInfo(ServiceTechnicianInfo info) {
+        info.preUpdate();
+        dao.updateInfo(info);
+    }
+    @Transactional(readOnly = false)
+    public void savePlus(ServiceTechnicianInfo info) {
+        info.preUpdate();
+        dao.updatePlus(info);
+    }
+    @Transactional(readOnly = false)
+    public void saveOther(ServiceTechnicianInfo info) {
+        info.preUpdate();
+        dao.updateOther(info);
+    }
+
     public ServiceTechnicianInfo findTech(ServiceTechnicianInfo info) {
         return technicianInfoDao.findTech(info);
     }
@@ -280,4 +345,5 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public int updateTech(ServiceTechnicianInfo serviceTechnicianInfo){
         return dao.update(serviceTechnicianInfo);
     }
+
 }

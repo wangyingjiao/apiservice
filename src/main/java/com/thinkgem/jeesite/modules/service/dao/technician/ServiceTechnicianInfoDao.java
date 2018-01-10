@@ -58,4 +58,10 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     Page<ServiceTechnicianInfo> appFindSkillList(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo);
     //app通讯录
     List<ServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    void updateInfo(ServiceTechnicianInfo info);
+
+    void updatePlus(ServiceTechnicianInfo info);
+
+    void updateOther(ServiceTechnicianInfo info);
 }
