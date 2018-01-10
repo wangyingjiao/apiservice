@@ -22,8 +22,8 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	private String techId;		// tech_id
 	private String techName;		// 名称
 	private String holiday;		// 休假日期（周一，周二。。。）
-	private Timestamp startTime;		// 起始时段
-	private Timestamp endTime;		// 结束时段
+	private Date startTime;		// 起始时段
+	private Date endTime;		// 结束时段
 	private String sort;		// 排序
 	private String techPhone; //手机号
 	private String techStationId;//服务站ID
@@ -65,20 +65,20 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	}
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Timestamp getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Timestamp startTime) {
+	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Timestamp getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(Timestamp endTime) {
+	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
 	

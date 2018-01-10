@@ -128,15 +128,10 @@ public class SerSortInfoController extends BaseController {
 		if (serSortInfo == null) {
 			serSortInfo = new SerSortInfo();
 		}
-		Page<SerSortInfo> serSortInfoPage = new Page<>(request, response);
-		Page<SerSortInfo> page = serSortInfoService.findPage(serSortInfoPage, serSortInfo);
+		List<SerSortInfo> page = serSortInfoService.listDataAll(serSortInfo);
 		return new SuccResult(page);
 	}
 
-
-	
-
-   
     @ResponseBody
     @RequestMapping(value = "formData", method = {RequestMethod.POST})
     @ApiOperation("服务分类编辑")
