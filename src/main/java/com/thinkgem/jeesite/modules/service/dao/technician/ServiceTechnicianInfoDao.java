@@ -66,4 +66,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     void updateOther(ServiceTechnicianInfo info);
 
 	int checkPhone(ServiceTechnicianInfo info);
+
+	List<ServiceTechnicianInfo> findTechList(ServiceTechnicianInfo info);
 }

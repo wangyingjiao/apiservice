@@ -351,4 +351,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 		return technicianInfoDao.checkPhone(info);
 	}
 
+	public List<ServiceTechnicianInfo> findTechList(ServiceTechnicianInfo info) {
+		// TODO Auto-generated method stub
+		return technicianInfoDao.findTechList(info);
+	}
+
 }
