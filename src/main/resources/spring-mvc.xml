@@ -20,7 +20,7 @@
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
-    <aop:aspectj-autoproxy />
+    <aop:aspectj-autoproxy expose-proxy="true" proxy-target-class="true" />
 
     <bean class="com.thinkgem.jeesite.common.aspect.ReqResAop" name="reqResAop" />
     <bean class="com.thinkgem.jeesite.app.aop.AppAop" name="appAop"/>

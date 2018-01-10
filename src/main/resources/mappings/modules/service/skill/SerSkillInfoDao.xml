@@ -116,7 +116,7 @@
 		AND  org_id = #{orgId}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 		<if test="id != null and id !=''">
-			id!=#{id}
+		AND	id!=#{id}
 		</if>
 	</select>
 	<!--根据名称获取技能-->

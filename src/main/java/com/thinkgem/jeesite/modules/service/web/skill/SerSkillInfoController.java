@@ -112,7 +112,7 @@ public class SerSkillInfoController extends BaseController {
 		if (errList != null && errList.size() > 0) {
 			return new FailResult(errList);
 		}
-		serSkillInfoService.save(serSkillInfo);
+		  serSkillInfoService.save(serSkillInfo);
 		return new SuccResult("保存成功");
 
 	}

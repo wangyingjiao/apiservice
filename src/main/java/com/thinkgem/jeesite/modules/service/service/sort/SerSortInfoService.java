@@ -37,10 +37,20 @@ import com.thinkgem.jeesite.modules.service.dao.sort.SerSortInfoDao;
 public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo> {
     @Autowired
     SerSkillSortDao serSkillSortDao;
+
+	
+	
     public SerSortInfo get(String id) {
         return super.get(id);
     }
-
+    /**
+     * 校验重复
+     * @param serSortInfo
+     * @return
+     */
+	public int checkRepeatByNameMajorSort(SerSortInfo serSortInfo) {
+        return dao.checkRepeatByNameMajorSort(serSortInfo);
+    }
     /**
      * 检查服务分类名称是否相同
      *
@@ -118,5 +128,6 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         // 此分类下是否有服务项目
         return dao.checkedSortItem(serSortInfo);
     }
+	
 
 }

@@ -59,6 +59,14 @@
 		SELECT COUNT(*) FROM ser_sort_info
 		WHERE name = #{name}
 		AND del_flag = #{DEL_FLAG_NORMAL}
+		AND major_Sort= #{majorSort}
+	</select>
+	<select id="checkRepeatByNameMajorSort" resultType="int">
+		SELECT COUNT(*) FROM ser_sort_info
+		WHERE name = #{name}
+		AND major_Sort= #{majorSort}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+		AND id!=#{id}
 	</select>
 
 	<insert id="insert">
