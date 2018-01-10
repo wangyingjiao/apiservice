@@ -84,7 +84,7 @@
 				AND a.name LIKE concat('%',#{name},'%')
 			</if>
 			<if test="phone != null and phone != ''">
-				AND a.phone = #{phone}
+				AND a.phone LIKE concat('%',#{phone},'%')
 			</if>
 			<if test="skillIds != null and skillIds != ''">
 				AND a.id IN(
@@ -587,5 +587,12 @@
 			a.del_flag = '0'
 			AND a.phone = #{username}
 			AND a.app_login_password = #{password}
+	</select>
+	<select id="checkPhone" resultType="int">
+	SELECT  count(*) 
+		FROM tech_info a
+		WHERE
+			del_flag = #{DEL_FLAG_NORMAL}
+			AND phone = #{phone} AND id !=#{id}
 	</select>
 </mapper>
