@@ -32,7 +32,7 @@ public abstract class BaseEntity<T>implements Serializable {
       
 	/**
 	 * 实体编号（唯一标识）
-	 */  
+	 */       
 	protected String id;
 	
 	/**
