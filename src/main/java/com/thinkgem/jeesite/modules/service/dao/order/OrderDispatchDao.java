@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 
+import java.util.List;
+
 /**
  * 派单DAO接口
  * @author a
@@ -15,5 +17,5 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 @MyBatisDao
 public interface OrderDispatchDao extends CrudDao<OrderDispatch> {
 
-    OrderDispatch formData(OrderDispatch info);
+    List<OrderDispatch> formData(OrderDispatch info);
 }

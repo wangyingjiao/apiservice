@@ -36,8 +36,8 @@ public class OrderDispatchService extends CrudService<OrderDispatchDao, OrderDis
 		return super.findPage(page, orderDispatch);
 	}
 
-    public OrderDispatch formData(OrderDispatch info) {
-		OrderDispatch dispatchInfo = dao.formData(info);
+    public List<OrderDispatch> formData(OrderDispatch info) {
+		List<OrderDispatch> dispatchInfo = dao.formData(info);
 		return dispatchInfo;
     }
 }
