@@ -1058,6 +1058,12 @@
             </properties>
         </profile>
         <profile>
+            <id>alitest</id>
+            <properties>
+                <package.environment>alitest</package.environment>
+            </properties>
+        </profile>
+        <profile>
             <id>local</id>
             <properties>
                 <package.environment>local</package.environment>
