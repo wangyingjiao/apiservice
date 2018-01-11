@@ -61,6 +61,12 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String description;		// 经验描述
     private String remark;		// 备注信息
 
+    private List<SerSkillInfo> skills;  //app使用
+    private List<ServiceTechnicianWorkTime> times;  //app使用
+    private String oldPassword;//app使用
+    private String newPassword;//app使用
+
+
 
     public ServiceTechnicianInfo() {
         super();
@@ -415,5 +421,37 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setStations(List<BasicServiceStation> stations) {
         this.stations = stations;
+    }
+
+    public List<SerSkillInfo> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<SerSkillInfo> skills) {
+        this.skills = skills;
+    }
+
+    public List<ServiceTechnicianWorkTime> getTimes() {
+        return times;
+    }
+
+    public void setTimes(List<ServiceTechnicianWorkTime> times) {
+        this.times = times;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 }

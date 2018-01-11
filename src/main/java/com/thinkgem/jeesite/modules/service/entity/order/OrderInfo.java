@@ -27,6 +27,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String orgId;		// 所属服务机构ID
 	private String stationId;		// 服务站id
 	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
+	private String majorSortName;	//app订单类型名称
 	//private String originPrice;		// 订单总价原价
 	private String payPrice;		// 实际付款价格
 	private String orderAddressId;		// 订单地址ID
@@ -557,5 +558,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setCustomerInfo(OrderCustomInfo customerInfo) {
 		this.customerInfo = customerInfo;
+	}
+
+	public String getMajorSortName() {
+		return majorSortName;
+	}
+
+	public void setMajorSortName(String majorSortName) {
+		this.majorSortName = majorSortName;
 	}
 }
