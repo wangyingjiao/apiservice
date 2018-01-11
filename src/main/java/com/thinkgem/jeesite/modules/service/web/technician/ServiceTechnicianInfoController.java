@@ -170,7 +170,7 @@ public class ServiceTechnicianInfoController extends BaseController {
 
             return new SuccResult("保存成功");
         } else {
-            return new FailResult("新增技师手机号不能重复！");
+            return new FailResult("技师手机号不能重复！");
         }
     }
 
