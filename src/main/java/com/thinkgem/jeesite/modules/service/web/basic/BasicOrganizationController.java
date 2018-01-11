@@ -35,6 +35,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,26 @@ public class BasicOrganizationController extends BaseController {
 		Page<BasicOrganization> organizationPage = new Page<>(request, response, Integer.parseInt(size));
 		Page<BasicOrganization> page = basicOrganizationService.findPage(organizationPage, basicOrganization);
 		return new SuccResult(page);
+	}
+
+
+	/**
+	 * 服务机构的下拉列表
+	 * @param basicOrganization
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "listDataAll", method = {RequestMethod.POST})
+	public Result listDataAll(@RequestBody BasicOrganization basicOrganization, HttpServletRequest request, HttpServletResponse response) {
+		if(basicOrganization == null){
+			basicOrganization = new BasicOrganization();
+		}
+		List<BasicOrganization> page = basicOrganizationService.findListAll(basicOrganization);
+        HashMap<Object,Object> map = new HashMap<>();
+        map.put("list",page);
+		return new SuccResult(map);
 	}
 
 	@ResponseBody
