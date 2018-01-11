@@ -149,7 +149,7 @@ public class ServiceStationController extends BaseController {
         String id = serviceStation.getId();
         int i=serviceStationService.checkRepeatNameUpdate(serviceStation.getName(),orgId,id);
         if (0!=i) {
-			return new FailResult("编辑时同一机构下的服务站名称应不可重复");
+			return new FailResult("同一机构下的服务站名称应不可重复");
 		}
         serviceStationService.save(serviceStation);
         return new SuccResult("保存服务站" + serviceStation.getName() + "成功");
