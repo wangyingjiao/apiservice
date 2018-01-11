@@ -323,8 +323,6 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     public AppServiceTechnicianInfo appLogin(LoginUser user) {
         AppServiceTechnicianInfo technician = technicianInfoDao.getTechnicianByPhone(user);
-        String s = SystemService.entryptPassword(user.getPassword());
-        boolean b = SystemService.validatePassword(user.getPassword(), s);
         if (SystemService.validatePassword(user.getPassword(), technician.getPassword())) {
             return technician;
         }
@@ -333,17 +331,32 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     //app获取技师技能工作时间
     public Page<ServiceTechnicianInfo> appFindSkillList(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo){
-        return technicianInfoDao.appFindSkillList(page,serviceTechnicianInfo);
+        serviceTechnicianInfo.setPage(page);
+        page.setList(technicianInfoDao.appFindSkillList(serviceTechnicianInfo));
+        return page;
     }
 
     //app通讯录
-    public List<ServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo){
-        return technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
+    public Page<ServiceTechnicianInfo> appGetFriendByStationId(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo){
+
+        serviceTechnicianInfo.setPage(page);
+        Page<ServiceTechnicianInfo> pageList = page.setList(technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo));
+        return pageList;
     }
 
     //编辑技师
     public int updateTech(ServiceTechnicianInfo serviceTechnicianInfo){
         return dao.update(serviceTechnicianInfo);
     }
+    //校验手机号重复
+	public int checkPhone(ServiceTechnicianInfo info) {
+		// TODO Auto-generated method stub
+		return technicianInfoDao.checkPhone(info);
+	}
+
+	public List<ServiceTechnicianInfo> findTechList(ServiceTechnicianInfo info) {
+		// TODO Auto-generated method stub
+		return technicianInfoDao.findTechList(info);
+	}
 
 }

@@ -57,5 +57,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     //app修改订单
     int appUpdate(OrderInfo orderInfo);
     //app获取订单列表
-    Page<OrderInfo> appFindList(Page<OrderInfo> page,OrderInfo orderInfo);
+    List<OrderInfo> appFindList(OrderInfo orderInfo);
+    //app获取图片
+    String appGetPics(String id);
 }

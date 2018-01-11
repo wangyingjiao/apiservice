@@ -325,9 +325,15 @@
 	<!--app编辑-->
 	<update id="appUpdate">
 		UPDATE order_info SET
+		<if test="orderRemark !=null and orderRemark != ''">
 		order_remark = #{orderRemark},
+		</if>
+		<if test="orderRemarkPic !=null and orderRemarkPic != ''">
 		order_remark_pic = #{orderRemarkPic},
-		order_status= #{orderStatus},
+		</if>
+		<if test="serviceStatus !=null and serviceStatus != ''">
+			service_status= #{serviceStatus},
+		</if>
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
@@ -437,6 +443,17 @@
 		WHERE
 		a.id = #{id}
 	</select>
+
+	<select id="appGetPics" resultType="String">
+		SELECT
+		b.picture AS "pictures"
+		FROM order_goods a
+		LEFT JOIN ser_item_info b ON  a.item_id=b.id AND b.del_flag = '0'
+		WHERE
+		a.order_id = #{orderId}
+		AND a.del_flag = '0'
+	</select>
+
 	<select id="getGoodsList" resultType="OrderGoods">
 		SELECT
 		a.item_id AS "itemId",
@@ -466,7 +483,7 @@
 
 	<!-- 通过服务分类取得技能ID -->
 	<select id="getSkillIdBySortId" resultType="String">
-		select skill_id from ser_skill_sort WHERE sort_id = #{sortId};
+		select skill_id from ser_skill_sort WHERE sort_id = #{sortId} and del_flag='0'
 	</select>
 	<!-- 取得技师List -->
 	<select id="getTechListBySkillId" resultType="OrderDispatch">

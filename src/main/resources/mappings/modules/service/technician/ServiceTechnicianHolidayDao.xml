@@ -73,7 +73,7 @@
 		a.tech_id AS "techId",
 		b.name AS "techName",
 		b.phone AS "techPhone",
-		c.name AS "techStationName",
+		a.name AS "techStationName",
 		a.start_time AS "startTime",
 		a.end_time AS "endTime",
 		a.remark AS "remark"
@@ -168,8 +168,8 @@
 		from tech_holiday a
 		where a.del_flag = #{DEL_FLAG_NORMAL}
 		and a.tech_id = #{techId}
-		and (a.start_time BETWEEN #{startTime} AND #{endTime} OR
-		a.end_time BETWEEN #{startTime} AND #{endTime} )
+		and ((a.start_time &gt; #{startTime} AND a.start_time &lt; #{endTime}) OR
+		(a.end_time &gt; #{startTime} AND a.end_time &lt; #{endTime}) )
 	</select>
 	<select id="getServiceTechnicianWorkTime" resultType="ServiceTechnicianHoliday">
 		SELECT
@@ -179,6 +179,7 @@
 			a.end_time AS "endTime"
 		FROM tech_work_time a
 		WHERE a.tech_id = #{techId}
+		AND a.del_flag = '0'
 		order by a.week
 	</select>
 </mapper>

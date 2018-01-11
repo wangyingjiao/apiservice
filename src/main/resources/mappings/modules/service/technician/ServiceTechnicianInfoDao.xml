@@ -84,7 +84,7 @@
 				AND a.name LIKE concat('%',#{name},'%')
 			</if>
 			<if test="phone != null and phone != ''">
-				AND a.phone = #{phone}
+				AND a.phone LIKE concat('%',#{phone},'%')
 			</if>
 			<if test="skillIds != null and skillIds != ''">
 				AND a.id IN(
@@ -113,10 +113,14 @@
 	<!--app技师服务列表-->
 	<select id="appFindSkillList" resultType="ServiceTechnicianInfo">
 		SELECT
-		a.id AS "id",
+		a.id AS "skillsId",
 		a.name AS "name",
 		a.org_id AS "orgId",
-		b.*,
+		b.id,
+		b.tech_id,
+		b.week,
+		b.start_time,
+		b.end_time,
 		a.station_id AS "stationId",
 		c.name AS "stationName",
 		d.skill_id AS "skillId"
@@ -565,27 +569,42 @@
 
 	<select id="getTechnicianByPhone" resultType="AppServiceTechnicianInfo">
 		SELECT
-			a.tech_station_name AS stationName,
 			a.head_pic AS imgUrlHead,
-			a.tech_phone AS techPhone,
-			a.tech_name AS techName,
-			a.tech_sex AS techSex,
-			a.tech_birth_date AS techBirthDate,
-			a.addr_detail_info AS addrDetailInfo,
-			a.tech_id_card AS techIdCard,
+			a.phone AS techPhone,
+			a.name AS techName,
+			a.sex AS techSex,
+			a.birth_date AS techBirthDate,
+			a.address AS addrDetailInfo,
+			a.id_card AS techIdCard,
 			a.id_card_pic AS imgUrlCard,
-			a.tech_email AS techEmail,
-			a.tech_height AS techHeight,
-			a.tech_weight AS techWeight,
-			a.tech_native_place AS techNativePlace,
-			a.tech_nation AS techNation,
+			a.email AS techEmail,
+			a.height AS techHeight,
+			a.weight AS techWeight,
+			a.native_province_code AS techNativePlace,
+			a.nation AS techNation,
 			a.description AS experDesc,
-			a.life_pic AS imgUrlLife
+			a.life_pic AS imgUrlLife,
+			a.app_login_password AS password
 		FROM
 			tech_info a
 		WHERE
 			a.del_flag = '0'
 			AND a.phone = #{username}
-			AND a.app_login_password = #{password}
 	</select>
+	<select id="checkPhone" resultType="int">
+	SELECT  count(*) 
+		FROM tech_info a
+		WHERE
+			del_flag = #{DEL_FLAG_NORMAL}
+			AND phone = #{phone} AND id !=#{id}
+	</select> 
+	<select id="findTechList" resultType="ServiceTechnicianInfo">
+	SELECT
+		<include refid="serviceTechnicianInfoColumns"/>
+		FROM tech_info a
+		WHERE
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.phone = #{phone}
+	</select>
+
 </mapper>

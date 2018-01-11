@@ -24,6 +24,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String sortId;
 	private String itemId;		// 服务项目ID
 	private String itemName;		// 项目名称
+	private String picture;			//服务图片
 	private String goodsId;		// 商品ID
 	private String goodsName;		// 商品名称
 	private int goodsNum;		// 订购商品数
@@ -31,7 +32,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String payPrice;		// 单价(折后价，无折扣时和原价相同)
 	private String goodsType;		// 计量方式(num：按数量 area：按面积 house：按居室)
 	private int minPurchase;		// 起购数量
-
+	private List<String> pics;
 	private Date serviceTime;		// 服务时间
 	private boolean goodsChecked = false;
 	private List<OrderGoods> goods; //商品list
@@ -199,5 +200,21 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setCappingPerNum(int cappingPerNum) {
 		this.cappingPerNum = cappingPerNum;
+	}
+
+	public String getPicture() {
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
+
+	public List<String> getPics() {
+		return pics;
+	}
+
+	public void setPics(List<String> pics) {
+		this.pics = pics;
 	}
 }

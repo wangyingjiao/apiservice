@@ -56,9 +56,11 @@ public class AppTechController extends BaseController {
 
 		 //获取登陆技师的信息  id 服务站id
 		 ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-
+		 tech.setPhone("13508070808");
+		 tech.setDelFlag("0");
+		 ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		 Page<ServiceTechnicianInfo> page = new Page<ServiceTechnicianInfo>(request, response);
-		 Page<ServiceTechnicianInfo> pageList = techService.appFindSkillList(page, tech);
+		 Page<ServiceTechnicianInfo> pageList = techService.appFindSkillList(page, tech1);
 
 		 return new SuccResult(pageList);
 	}
@@ -67,12 +69,14 @@ public class AppTechController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "appGetFriendByStationId", method = RequestMethod.POST)
 	@ApiOperation(value = "通讯录", notes = "通讯录")
-	public Result appGetFriendByStationId() {
+	public Result appGetFriendByStationId(HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id 服务站id
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		String stationId = tech.getStationId();
-
-		List<ServiceTechnicianInfo> list = techService.appGetFriendByStationId(tech);
+		tech.setPhone("13508070808");
+		tech.setDelFlag("0");
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		Page<ServiceTechnicianInfo> page = new Page<ServiceTechnicianInfo>(request, response);
+		Page<ServiceTechnicianInfo> list = techService.appGetFriendByStationId(page,tech1);
 
 		return new SuccResult(list);
 	}
@@ -85,9 +89,12 @@ public class AppTechController extends BaseController {
 
 		//获取登陆技师的信息  id
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setPhone("13508070808");
+		tech.setDelFlag("0");
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 
 		ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
-		holiday.setTechId(tech.getId());
+		holiday.setTechId(tech1.getId());
 		Page<ServiceTechnicianHoliday> serSortInfoPage = new Page<>(request, response);
 		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(serSortInfoPage, holiday);
 
