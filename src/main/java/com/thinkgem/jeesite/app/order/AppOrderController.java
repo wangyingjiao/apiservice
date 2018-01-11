@@ -5,9 +5,7 @@ package com.thinkgem.jeesite.app.order;
 
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.result.FailResult;
-import com.thinkgem.jeesite.common.result.Result;
-import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
@@ -46,43 +44,65 @@ public class AppOrderController extends BaseController {
 	@ResponseBody
     @RequestMapping(value = "getOrderListPage",  method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "订单列表", notes = "订单")
-    public Result getOrderListPage(@RequestBody OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
+    public AppResult getOrderListPage(@RequestBody OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		//获取登录用户id 获取用户手机set进去
 		orderInfo.setBusinessPhone("13508070808");
-		System.out.println("getOrderListPage+++++++"+orderInfo);
+		if (orderInfo.getServiceStatus()==null){
+			return new AppFailResult("订单服务状态不可为空");
+		}
+		if (orderInfo.getMajorSort().equals("all")){
+			orderInfo.setMajorSort(null);
+		}
 		Page<OrderInfo> orderInfoPage = new Page<>(request, response);
 		Page<OrderInfo> page = orderInfoService.appFindPage(orderInfoPage,orderInfo);
-		return new SuccResult(page);
+		return new AppSuccResult(page);
     }
 	//订单详情
 	@ResponseBody
 	@RequestMapping(value = "getOrderById", method = RequestMethod.POST)
 	@ApiOperation(value = "订单详情", notes = "订单")
-	public Result getOrderById(@RequestBody OrderInfo Info){
+	public AppResult getOrderById(@RequestBody OrderInfo Info){
 		//获取登录用户id
 		Info.setBusinessPhone("13508070808");
 		OrderInfo orderInfo = orderInfoService.appFormData(Info);
+		//订单备注
+		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
+		List<String> orp=new ArrayList<String>();
+		for (String pic:orderRemarkPics){
+			String url="https://openservice.guoanshequ.com/"+pic;
+			orp.add(url);
+		}
+		orderInfo.setOrderRemarkPics(orp);
 		//业务人员信息
 		BusinessInfo bus=new BusinessInfo();
 		bus.setBusinessName(orderInfo.getBusinessName());
 		bus.setBusinessPhone(orderInfo.getBusinessPhone());
 		bus.setBusinessRemark(orderInfo.getBusinessRemark());
+		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
+		List<String> busiPic = (List<String>) JsonMapper.fromJsonString(businessRemarkPic, ArrayList.class);
+		List<String> bp=new ArrayList<String>();
+		for (String pic:busiPic){
+			String url="https://openservice.guoanshequ.com/"+pic;
+			bp.add(url);
+		}
+		bus.setBusinessRemarkPic(bp);
 		orderInfo.setBusinessInfo(bus);
 		//门店信息
-		List<String> shopRemarkPics = orderInfo.getShopRemarkPics();
 		ShopInfo shop=new ShopInfo();
 		shop.setId(orderInfo.getStationId());
 		shop.setShopName(orderInfo.getShopName());
 		shop.setShopPhone(orderInfo.getShopPhone());
 		shop.setShopAddress(orderInfo.getShopAddr());
 		shop.setShopRemark(orderInfo.getShopRemark());
-		List<String> shopRemarkPic = shop.getShopRemarkPic();
+		String shopRemarkPic = orderInfo.getShopRemarkPic();
+		List<String> shopPics = (List<String>) JsonMapper.fromJsonString(shopRemarkPic, ArrayList.class);
 		List<String> ls=new ArrayList<String>();
-		for (String pic:shopRemarkPics){
+		for (String pic:shopPics){
 			String url="https://openservice.guoanshequ.com/"+pic;
 			ls.add(url);
 		}
 		shop.setShopRemarkPic(ls);
+		orderInfo.setShopInfo(shop);
 		//客户信息
 		OrderCustomInfo customerInfo=new OrderCustomInfo();
 		customerInfo.setCustomerRemark(orderInfo.getCustomerRemark());
@@ -94,19 +114,19 @@ public class AppOrderController extends BaseController {
 		}
 		customerInfo.setCustomerRemarkPic(ll);
 		orderInfo.setCustomerInfo(customerInfo);
-		return new SuccResult(orderInfo);
+		return new AppSuccResult(0,orderInfo,"查询订单详情");
 	}
 
 	//技师添加订单备注
 	@ResponseBody
 	@RequestMapping(value = "saveRemark", method = RequestMethod.POST)
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
-	public Result saveRemark(@RequestBody OrderInfo orderInfo){
+	public AppResult saveRemark(@RequestBody OrderInfo orderInfo){
 		orderInfo.setBusinessPhone("13508070808");
-//		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
-//		if (errList != null && errList.size() > 0) {
-//			return new FailResult(errList);
-//		}
+		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
+		if (errList != null && errList.size() > 0) {
+			return new AppFailResult(errList);
+		}
 		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
 		if (null != orderRemarkPics){
 			String sys = JsonMapper.toJsonString(orderRemarkPics);
@@ -114,39 +134,43 @@ public class AppOrderController extends BaseController {
 		}
 		int i = orderInfoService.appSaveRemark(orderInfo);
 		if (i>0){
-			return new SuccResult("添加备注成功");
+			return new AppSuccResult(0,null,"添加备注成功");
 		}
-		return new FailResult("添加备注失败");
+		return new AppFailResult(-1,null,"添加备注失败");
 	}
 	//修改服务状态
 	@ResponseBody
 	@RequestMapping(value = "updateOrderByServiceStatus", method = RequestMethod.POST)
 	@ApiOperation(value = "修改服务状态", notes = "订单")
-	public Result updateOrderByServiceStatus(@RequestBody OrderInfo info){
+	public AppResult updateOrderByServiceStatus(@RequestBody OrderInfo info){
+		List<String> errList = errors(info, SavePersonalGroup.class);
+		if (errList != null && errList.size() > 0) {
+			return new AppFailResult(errList);
+		}
 		//参数 订单id 服务状态
 		info.setBusinessPhone("13508070808");
 		int i = orderInfoService.appSaveRemark(info);
 		if (i>0){
-			return new SuccResult("添加备注成功");
+			return new AppSuccResult(0,null,"修改服务状态成功");
 		}
-		return new FailResult("添加备注失败");
+		return new AppFailResult(-1,null,"修改服务状态失败");
 	}
 
 
 	@ResponseBody
 	@RequestMapping(value = "appDispatchTech", method = {RequestMethod.POST})
 	@ApiOperation("技师改派")
-	public Result appDispatchTech(@RequestBody OrderInfo orderInfo) {
+	public AppResult appDispatchTech(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
-		return new SuccResult(techList);
+		return new AppSuccResult(techList);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "appDispatchTechSave", method = {RequestMethod.POST})
 	@ApiOperation("技师改派保存")
-	public Result appDispatchTechSave(@RequestBody OrderInfo orderInfo) {
+	public AppResult appDispatchTechSave(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
-		return new SuccResult(techList);
+		return new AppSuccResult(techList);
 	}
 
 

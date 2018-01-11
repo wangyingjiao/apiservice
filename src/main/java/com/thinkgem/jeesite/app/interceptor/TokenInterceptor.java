@@ -41,17 +41,18 @@ public class TokenInterceptor implements HandlerInterceptor {
         String header = request.getHeader(TOKEN);
         loger.debug("token 值为 ==>" + header);
         Token token = tokenManager.verifyToken(new Token(header));
-        if (null == token) {
-            response.getWriter().print(JSON.toJSONString(new FailResult<>("token 无效或 已经过期，请重新登录")));
-            response.getWriter().flush();
-            loger.info("token 无效或 已经过期，请重新登录" + header);
-            return false;
-        } else {
-            request.setAttribute("token", token);
-            loger.debug("==> token 正常,刷新token 时间 "+token.toString());
-            tokenManager.updateToken(token);
-            return true;
-        }
+        return true;
+//        if (null == token) {
+//            response.getWriter().print(JSON.toJSONString(new FailResult<>("token 无效或 已经过期，请重新登录")));
+//            response.getWriter().flush();
+//            loger.info("token 无效或 已经过期，请重新登录" + header);
+//            return false;
+//        } else {
+//            request.setAttribute("token", token);
+//            loger.debug("==> token 正常,刷新token 时间 "+token.toString());
+//            tokenManager.updateToken(token);
+//            return true;
+//        }
     }
 
     @Override
