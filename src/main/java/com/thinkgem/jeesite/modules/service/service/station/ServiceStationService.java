@@ -120,4 +120,8 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	public int checkRepeatName(String name, String orgId) {
 		return	basicServiceStationDao.checkRepeatName(name,orgId);
 	}
+	//add by WYR编辑时同一机构下的服务站名称应不可重复
+	public int checkRepeatNameUpdate(String name, String orgId, String id) {
+		return	basicServiceStationDao.checkRepeatNameUpdate(name,orgId,id);
+	}
 }
