@@ -1221,9 +1221,16 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app订单列表
 	public Page<OrderInfo> appFindPage(Page<OrderInfo> page, OrderInfo orderInfo) {
 		orderInfo.setPage(page);
-		page.setList(dao.appFindList(orderInfo));
-
-		//Page<OrderInfo> pageResult = dao.appFindList(page, orderInfo);
+		List<OrderInfo> orderInfos = dao.appFindList(orderInfo);
+		for (OrderInfo info:orderInfos){
+			String majorSort = info.getMajorSort();
+			if (majorSort.equals("clean")){
+				info.setMajorSortName("保洁");
+			}else if (majorSort.equals("repair")){
+				info.setMajorSortName("家修");
+			}
+		}
+		page.setList(orderInfos);
 		return page;
 	}
 

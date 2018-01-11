@@ -79,6 +79,16 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			dao.update(entity);
 		}
 	}
+	@Transactional(readOnly = false)
+	public void save1(T entity) {
+		if (entity.getIsNewRecord()){
+			entity.appreInsert();
+			dao.insert(entity);
+		}else{
+			entity.preUpdate();
+			dao.update(entity);
+		}
+	}
 	
 	/**
 	 * 删除数据
@@ -86,7 +96,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	 */
 	@Transactional(readOnly = false)
 	public void delete(T entity) {
-		dao.delete(entity);
+		int a = dao.delete(entity);
 	}
 
 }

@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianFamilyMembers;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 
 import java.util.List;
@@ -55,8 +56,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     void deleteFamilyMembers(ServiceTechnicianInfo serviceTechnicianInfo);
 
     List<String> getSkillIds(ServiceTechnicianInfo serviceTechnicianInfo);
-    //app获取技师技能工作时间
-    List<ServiceTechnicianInfo> appFindSkillList(ServiceTechnicianInfo serviceTechnicianInfo);
     //app通讯录
     List<ServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo);
 
@@ -69,6 +68,10 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
 	int checkPhone(ServiceTechnicianInfo info);
 
 	List<ServiceTechnicianInfo> findTechList(ServiceTechnicianInfo info);
+    //app获取技师工作时间
+    List<ServiceTechnicianWorkTime> appGetWeekByTechId(ServiceTechnicianInfo info);
+    //app修改密码
+    int appUpdatePassword(ServiceTechnicianInfo info);
 
     List<ServiceTechnicianFamilyMembers> findFamilyMembersListByTechId(ServiceTechnicianInfo info);
 }
