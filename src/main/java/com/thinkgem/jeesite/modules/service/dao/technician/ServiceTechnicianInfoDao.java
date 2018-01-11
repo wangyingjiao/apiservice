@@ -48,7 +48,7 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
 
     AppServiceTechnicianInfo getTechnicianByPhone(LoginUser user);
 
-    List<BasicServiceStation> getStationsByOrgId(String orgId);
+    List<BasicServiceStation> getStationsByOrgId(BasicServiceStation serviceStation);
 
     List<SerSkillInfo> getSkillInfosByOrgId(String orgId);
 

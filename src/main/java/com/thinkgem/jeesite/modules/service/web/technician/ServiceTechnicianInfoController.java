@@ -98,7 +98,6 @@ public class ServiceTechnicianInfoController extends BaseController {
         User user = UserUtils.getUser();
         String orgId = user.getOrganization().getId();//机构ID
 //        List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
-
         List<BasicServiceStation> stations = serviceTechnicianInfoService.getStationsByOrgId(orgId);
         List<SerSkillInfo> skillInfos = serviceTechnicianInfoService.getSkillInfosByOrgId(orgId);
 

@@ -60,7 +60,10 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     public List<BasicServiceStation> getStationsByOrgId(String orgId) {
-        return technicianInfoDao.getStationsByOrgId(orgId);
+        BasicServiceStation serviceStationSerch = new BasicServiceStation();
+        serviceStationSerch.setOrgId(orgId);
+        serviceStationSerch.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
+        return technicianInfoDao.getStationsByOrgId(serviceStationSerch);
     }
 
     public List<SerSkillInfo> getSkillInfosByOrgId(String orgId) {
