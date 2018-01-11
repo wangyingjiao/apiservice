@@ -252,16 +252,13 @@ public class ServiceTechnicianInfoController extends BaseController {
      */
     @ResponseBody
     @ApiOperation("APP保存")
+    @RequiresPermissions("techni_app")
     @RequestMapping(value = "saveAppPassWordData", method = RequestMethod.POST)
     public Result saveAppPassWordData(@RequestBody ServiceTechnicianInfo info) {
-       /* List<String> errList = errors(info);
-        if (errList != null && errList.size() > 0) {
-            return new FailResult(errList);
-        }*/
         if(StringUtils.isBlank(info.getAppLoginPassword())){
             return new FailResult("保存失败");
         }
-        String appPwd = systemService.entryptPassword(info.getAppLoginPassword());//APP端登录密码默认为手机号的后4位
+        String appPwd = systemService.entryptPassword(info.getAppLoginPassword());//APP端登录密码加密
         info.setAppLoginPassword(appPwd);
         serviceTechnicianInfoService.saveApp(info);
 
