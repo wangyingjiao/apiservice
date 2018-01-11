@@ -144,6 +144,13 @@ public class ServiceStationController extends BaseController {
         } else {
             return new FailResult("用户没有具体的所属机构(全平台权限)");
         }
+      //add by WYR编辑时同一机构下的服务站名称应不可重复
+        String orgId = user.getOrganization().getId();//所属的机构id
+        String id = serviceStation.getId();
+        int i=serviceStationService.checkRepeatNameUpdate(serviceStation.getName(),orgId,id);
+        if (0!=i) {
+			return new FailResult("编辑时同一机构下的服务站名称应不可重复");
+		}
         serviceStationService.save(serviceStation);
         return new SuccResult("保存服务站" + serviceStation.getName() + "成功");
     }
