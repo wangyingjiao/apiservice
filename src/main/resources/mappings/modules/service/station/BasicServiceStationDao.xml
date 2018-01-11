@@ -220,4 +220,8 @@
         where del_flag = '0'
         ${sqlMap.dsf}
     </select>
+    <select id="checkRepeatName" resultType="int">
+    SELECT COUNT(*) FROM basic_service_station
+     WHERE `name`=#{name} AND org_id =#{orgId}
+    </select>
 </mapper>

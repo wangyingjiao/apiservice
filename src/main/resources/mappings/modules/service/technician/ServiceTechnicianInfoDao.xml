@@ -485,7 +485,7 @@
 		<if test="appLoginPassword !=null and appLoginPassword != ''">app_login_password = #{appLoginPassword},</if>
 		<if test="jobNature !=null and jobNature != ''">job_nature = #{jobNature},</if>
 		<if test="jobStatus !=null and jobStatus != ''">job_status = #{jobStatus},</if>
-		<if test="workTime !=null and workTime != ''">work_time = #{workTime},</if>
+		work_time = #{workTime},
 		email = #{email},
 		education = #{education},
 		height = #{height},
