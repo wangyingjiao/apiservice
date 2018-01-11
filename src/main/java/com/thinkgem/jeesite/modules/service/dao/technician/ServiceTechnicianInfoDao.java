@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianFamilyMembers;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 
@@ -68,4 +69,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
 	int checkPhone(ServiceTechnicianInfo info);
 
 	List<ServiceTechnicianInfo> findTechList(ServiceTechnicianInfo info);
+
+    List<ServiceTechnicianFamilyMembers> findFamilyMembersListByTechId(ServiceTechnicianInfo info);
 }

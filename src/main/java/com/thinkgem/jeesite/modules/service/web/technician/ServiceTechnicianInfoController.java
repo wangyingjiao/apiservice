@@ -280,7 +280,8 @@ public class ServiceTechnicianInfoController extends BaseController {
     @RequestMapping(value = "saveFamilyMembers", method = RequestMethod.POST)
     public Result saveFamilyMembers(@RequestBody ServiceTechnicianInfo info) {
         serviceTechnicianInfoService.saveFamilyMembers(info);
-        return new SuccResult("保存家庭成员成功");
+        List<ServiceTechnicianFamilyMembers> list = serviceTechnicianInfoService.findFamilyMembersListByTechId(info);
+        return new SuccResult(list);
     }
 
 

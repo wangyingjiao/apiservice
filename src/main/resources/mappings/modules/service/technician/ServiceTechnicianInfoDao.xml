@@ -307,6 +307,15 @@
 		where tech_id=#{reqId}
 		AND del_flag = '0'
 	</select>
+	<select id="findFamilyMembersListByTechId" resultType="ServiceTechnicianFamilyMembers">
+		select
+		id AS id,relation AS relation,member_name AS memberName,
+		member_phone AS memberPhone,member_company AS memberCompany,
+		member_job AS memberJob
+		from tech_family_members
+		where tech_id=#{id}
+		AND del_flag = '0'
+	</select>
 	<select id="selectStationsByTechId" parameterType="java.util.Map" resultType="BasicServiceStation">
 		SELECT
 			id,name
