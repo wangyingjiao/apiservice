@@ -371,6 +371,47 @@ public class RoleController extends BaseController {
     }
 
     @ResponseBody
+    @RequiresPermissions("role_update")
+    @RequestMapping(value = "upData", method = RequestMethod.POST)
+    @ApiOperation(value = "新建，更新岗位")
+    public Result upData(@RequestBody Role role) {
+        List<String> errList = errors(role,SaveRoleGroup.class);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }
+
+        if (StringUtils.isBlank(role.getId())) {
+
+            Role roleByName = systemService.getRoleByName(role.getName());
+            if (roleByName != null) {
+                return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+            }
+        }else{
+            //编辑岗位 是否修改名称
+            Role roleByName = systemService.getRoleByName(role.getName());
+            //根据名称查询出的岗位为空 没有该岗位
+            if (roleByName != null) {
+                //如果查询出来的岗位与传输的岗位名称相同 id不同 则不可以修改
+                if (!roleByName.getId().equals(role.getId())) {
+                    return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+                }else{
+
+                }
+            }
+        }
+        User user = UserUtils.getUser();
+        //获取岗位机构
+        BasicOrganization organization = user.getOrganization();
+        if (role.getOrganization() == null) {
+            role.setOrganization(organization);
+        }
+        systemService.saveRole(role);
+
+        return new SuccResult(role);
+
+    }
+
+    @ResponseBody
     @RequiresPermissions("role_delete")
     @RequestMapping(value = "deleteRole", method = RequestMethod.POST)
     @ApiOperation(value = "删除角色（岗位）")
