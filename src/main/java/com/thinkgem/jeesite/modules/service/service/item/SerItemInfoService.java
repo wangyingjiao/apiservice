@@ -55,10 +55,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		return super.get(id);
 	}
 
-	@Transactional(readOnly = false)
-	public void saveSort(SerItemInfo serItemInfo) {
-		super.save(serItemInfo);
-	}
 	/**
 	 * 保存
 	 * @param serItemInfo

@@ -24,5 +24,5 @@ public interface ServiceTechnicianHolidayDao extends CrudDao<ServiceTechnicianHo
 
     int getHolidayHistory(ServiceTechnicianHoliday info);
     //app获取技师休假列表
-    Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday);
+    List<ServiceTechnicianHoliday> appFindPage(ServiceTechnicianHoliday serviceTechnicianHoliday);
 }

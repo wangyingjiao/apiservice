@@ -53,6 +53,48 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		return super.findList(orderInfo);
 	}
 
+	//app查询详情
+	public OrderInfo appFormData(OrderInfo info) {
+		OrderInfo orderInfo = dao.formData(info);
+		OrderGoods goodsInfo = new OrderGoods();
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
+		if(goodsInfoList != null && goodsInfoList.size() != 0){
+			goodsInfo.setServiceTime(goodsInfoList.get(0).getServiceTime());
+			goodsInfo.setItemId(goodsInfoList.get(0).getItemId());
+			goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
+			goodsInfo.setGoods(goodsInfoList);
+		}
+		String pics = dao.appGetPics(orderInfo.getId());
+		List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
+		goodsInfo.setPicture("https://openservice.guoanshequ.com/"+picl.get(0));
+
+		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
+		orderInfo.setGoodsInfo(goodsInfo);
+		orderInfo.setTechList(techList);
+
+		String customerRemarkPic = orderInfo.getCustomerRemarkPic();
+		if(null != customerRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(customerRemarkPic,ArrayList.class);
+			orderInfo.setCustomerRemarkPics(pictureDetails);
+		}
+		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
+		if(null != businessRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
+			orderInfo.setBusinessRemarkPics(pictureDetails);
+		}
+		String shopRemarkPic = orderInfo.getShopRemarkPic();
+		if(null != shopRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
+			orderInfo.setShopRemarkPics(pictureDetails);
+		}
+		String orderRemarkPic = orderInfo.getOrderRemarkPic();
+		if(null != orderRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
+			orderInfo.setOrderRemarkPics(pictureDetails);
+		}
+		return orderInfo;
+	}
+
 	public OrderInfo formData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
@@ -648,10 +690,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(),holiday.getEndTime());
 					Iterator<String> it1 = workTimes.iterator();
 					while(it.hasNext()) {
-						String work = it1.next();
+						String work = (String)it1.next();
 						if(holidays.contains(work)){//去除休假时间
 							it1.remove();
-							continue;
+							//continue;
 						}
 					}
 				}
@@ -676,10 +718,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 							DateUtils.addSeconds(order.getEndTime(),intervalTime));
 					Iterator<String> it2 = workTimes.iterator();
 					while(it.hasNext()) {
-						String work = it2.next();
+						String work = (String)it2.next();
 						if(orders.contains(work)){//去除订单时间
 							it2.remove();
-							continue;
+							//continue;
 						}
 					}
 				}
@@ -700,9 +742,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				resTimeList.add(temp.toString());
 			}
 		}
+		//时间排序
+		String[] strings = new String[resTimeList.size()];
+		resTimeList.toArray(strings);
+		Arrays.sort(strings);//排序
+		List<String> list = java.util.Arrays.asList(strings);
 
 		List<OrderDispatch> listRe = new ArrayList<>();
-		for(String time : resTimeList){
+		for(String time : list){
 			OrderDispatch info = new OrderDispatch();
 			info.setServiceTimeStr(time);
 			listRe.add(info);
@@ -1173,8 +1220,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 	//app订单列表
 	public Page<OrderInfo> appFindPage(Page<OrderInfo> page, OrderInfo orderInfo) {
-		Page<OrderInfo> pageResult = dao.appFindList(page, orderInfo);
-		return pageResult;
+		orderInfo.setPage(page);
+		page.setList(dao.appFindList(orderInfo));
+
+		//Page<OrderInfo> pageResult = dao.appFindList(page, orderInfo);
+		return page;
 	}
 
     //根据权限获取对应的服务站
@@ -1183,7 +1233,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         return basicServiceStationDao.getServiceStationList(station);
     }
 	//订单编辑
+	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
+		orderInfo.preUpdate();
 		return dao.appUpdate(orderInfo);
 	}
 }

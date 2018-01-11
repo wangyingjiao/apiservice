@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 /**
  * 客户信息Entity
@@ -33,6 +34,8 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	private String source;		// 来源   本机构:own    第三方:other
 	private String stationId;		// 所属服务站ID
 	private String orgName;
+	private String customerRemark;		//备注
+	private List<String> customerRemarkPic;		//备注 图片
 
 	public OrderCustomInfo() {
 		super();
@@ -171,5 +174,21 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 
 	public void setOrgName(String orgName) {
 		this.orgName = orgName;
+	}
+
+	public String getCustomerRemark() {
+		return customerRemark;
+	}
+
+	public void setCustomerRemark(String customerRemark) {
+		this.customerRemark = customerRemark;
+	}
+
+	public List<String> getCustomerRemarkPic() {
+		return customerRemarkPic;
+	}
+
+	public void setCustomerRemarkPic(List<String> customerRemarkPic) {
+		this.customerRemarkPic = customerRemarkPic;
 	}
 }
