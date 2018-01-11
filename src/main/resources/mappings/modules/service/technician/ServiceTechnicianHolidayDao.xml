@@ -73,7 +73,7 @@
 		a.tech_id AS "techId",
 		b.name AS "techName",
 		b.phone AS "techPhone",
-		c.name AS "techStationName",
+		a.name AS "techStationName",
 		a.start_time AS "startTime",
 		a.end_time AS "endTime",
 		a.remark AS "remark"

@@ -55,7 +55,7 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
 
     List<String> getSkillIds(ServiceTechnicianInfo serviceTechnicianInfo);
     //app获取技师技能工作时间
-    Page<ServiceTechnicianInfo> appFindSkillList(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo);
+    List<ServiceTechnicianInfo> appFindSkillList(ServiceTechnicianInfo serviceTechnicianInfo);
     //app通讯录
     List<ServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo);
 

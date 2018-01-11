@@ -54,9 +54,13 @@ public class AppAop {
             logger.info("密文数据："+text);
             String decrypt = crypt.decrypt(text);
             logger.debug("解密值为："+decrypt);
+            //获取连接点方法运行时的入参列表 数组
             Object[] args = jp.getArgs();
-            Object o = JSON.parseObject(decrypt, args[0].getClass());
-            args[0] = o;
+            System.out.println(args);
+            if(args != null && args.length > 1) {
+                Object o = JSON.parseObject(decrypt, args[0].getClass());
+                args[0] = o;
+            }
             return jp.proceed(args);
         } catch (Exception e) {
             logger.info("解密异常！！");

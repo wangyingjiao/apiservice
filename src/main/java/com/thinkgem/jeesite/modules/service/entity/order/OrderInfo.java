@@ -63,6 +63,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	private String customerName;         //客户姓名
 	private String customerPhone;         //客户电话
+	private OrderCustomInfo customerInfo;
 	private String orgName;         //机构
 	private String stationName;         //服务站
 	private Timestamp orderTimeStart;		// 下单起始时
@@ -77,6 +78,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<String> techIdList; //技师List
 	private String dispatchTechId;//改派前技师ID
 	private String techName;
+	private BusinessInfo businessInfo; //业务人员
+	private ShopInfo shopInfo;	//门店信息
 
 	public OrderInfo() {
 		super();
@@ -530,5 +533,29 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setTechName(String techName) {
 		this.techName = techName;
+	}
+
+	public BusinessInfo getBusinessInfo() {
+		return businessInfo;
+	}
+
+	public void setBusinessInfo(BusinessInfo businessInfo) {
+		this.businessInfo = businessInfo;
+	}
+
+	public ShopInfo getShopInfo() {
+		return shopInfo;
+	}
+
+	public void setShopInfo(ShopInfo shopInfo) {
+		this.shopInfo = shopInfo;
+	}
+
+	public OrderCustomInfo getCustomerInfo() {
+		return customerInfo;
+	}
+
+	public void setCustomerInfo(OrderCustomInfo customerInfo) {
+		this.customerInfo = customerInfo;
 	}
 }

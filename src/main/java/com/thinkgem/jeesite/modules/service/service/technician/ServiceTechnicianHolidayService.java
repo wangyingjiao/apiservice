@@ -48,7 +48,9 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	}
 	//app获取技师列表
 	public Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		return dao.appFindPage(page, serviceTechnicianHoliday);
+		serviceTechnicianHoliday.setPage(page);
+		page.setList(dao.appFindPage(serviceTechnicianHoliday));
+		return page;
 	}
 
 	@Transactional(readOnly = false)
