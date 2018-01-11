@@ -106,7 +106,7 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
             return new FailResult("id 不能为空");
         }
         if (!(station.getStoreList().size() > 0)) {
-            return new FailResult("门店id为空");
+            return new FailResult("请选择门店");
         }
         serviceStoreDao.deletebyStation(station);
         serviceStoreDao.saveStationStore(station);
@@ -116,4 +116,8 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
     public List<User> getUserListByStationId(BasicServiceStation serviceStation) {
         return  dao.getUserListByStationId(serviceStation);
     }
+  //add by WYR同一机构下的服务站名称应不可重复
+	public int checkRepeatName(String name, String orgId) {
+		return	basicServiceStationDao.checkRepeatName(name,orgId);
+	}
 }

@@ -10,6 +10,8 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 /**
  * 服务站DAO接口
  * @author 服务站
@@ -23,4 +25,5 @@ public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
     List<BasicServiceStation> getServiceStationList(BasicServiceStation station);
 
     List<User> getUserListByStationId(BasicServiceStation serviceStation);
+	int checkRepeatName(@Param("name")String name,@Param("orgId") String orgId);
 }
