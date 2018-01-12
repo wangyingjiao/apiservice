@@ -42,6 +42,8 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private Double convertHours;		// 折算时长
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
 	private int cappingPerNum;		//封项人数
+
+	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
 	
 	public OrderGoods() {
 		super();
@@ -216,5 +218,13 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setPics(List<String> pics) {
 		this.pics = pics;
+	}
+
+	public String getMajorSort() {
+		return majorSort;
+	}
+
+	public void setMajorSort(String majorSort) {
+		this.majorSort = majorSort;
 	}
 }

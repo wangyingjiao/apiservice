@@ -5,10 +5,7 @@ package com.thinkgem.jeesite.common.utils;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -226,6 +223,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		ca.set(Calendar.DAY_OF_MONTH,ca.getActualMaximum(Calendar.DAY_OF_MONTH));
 		return parseDate(formatDate(ca.getTime()));
 	}
+
+    /**
+     * 生成 年月日时分秒 + 随机的十位数
+     * @return
+     */
+    public static String getDateAndRandomTenNum(String type) {
+    	if(!"01".equals(type) && !"02".equals(type) ){//01订单编号   02支付编号
+    		return formatDate(new Date(), "yyyyMMddHHmmss") + (int)((Math.random()*9+1)*1000000000);
+		}
+        return formatDate(new Date(), "yyyyMMddHHmmss") + type + (int)((Math.random()*9+1)*10000000);
+    }
 	/**
 	 * 取得同一天 某时间段内半小时和整点数据
 	 * @param startTime
@@ -331,6 +339,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 		//String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
 
+/*
 
 		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 07:00:00")));//不重复    返回 true
@@ -366,7 +375,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 				parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 11:00:00")));//不重复    返回 true
 
 		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true*/
+				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
+*/
 
-	}
+        System.out.println(getDateAndRandomTenNum("01"));
+    }
+
 }

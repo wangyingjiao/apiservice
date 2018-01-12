@@ -126,12 +126,17 @@
 		a.id AS id,
 		a.name AS name,
 		a.price AS price,
+		a.convert_hours AS convertHours,
+		a.start_per_num AS startPerNum,
+		a.capping_per_num AS cappingPerNum,
 		b.id AS itemId,
 		b.name AS itemName,
-		b.sort_id AS sortId,
+		c.id AS sortId,
+		c.name AS sortName,
 		b.major_sort AS majorSort
 		FROM ser_item_info_goods a
 		LEFT JOIN ser_item_info b ON b.id = a.item_id
+		LEFT JOIN ser_sort_info c on b.sort_id = c.id
 		WHERE a.id = #{id}
 	</select>
 </mapper>

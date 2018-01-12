@@ -40,6 +40,7 @@
 		a.order_remark AS "orderRemark",
 		a.order_remark_pic AS "orderRemarkPic",
 		a.order_content AS "orderContent",
+		a.cancel_reason AS "cancelReason",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -68,6 +69,7 @@
 			a.major_sort AS majorSort,
 			sta.name AS stationName,
 			a.order_content AS orderContent,
+			a.cancel_reason AS cancelReason,
 			a.pay_price AS payPrice,
 			a.service_time AS serviceTime,
 			a.order_status AS orderStatus,
@@ -229,6 +231,7 @@
 			order_remark,
 			order_remark_pic,
 			order_content,
+			cancel_reason,
 			create_by,
 			create_date,
 			update_by,
@@ -272,6 +275,7 @@
 			#{orderRemark},
 			#{orderRemarkPic},
 			#{orderContent},
+			#{cancelReason},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -318,6 +322,7 @@
 			<if test="orderRemark !=null and orderRemark != ''">order_remark = #{orderRemark},</if>
 			<if test="orderRemarkPic !=null and orderRemarkPic != ''">order_remark_pic = #{orderRemarkPic},</if>
 			<if test="orderContent !=null and orderContent != ''">order_content = #{orderContent},</if>
+			<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
@@ -389,6 +394,7 @@
 			a.order_remark AS "orderRemark",
 			a.order_remark_pic AS "orderRemarkPic",
 			a.order_content AS "orderContent",
+			a.cancel_reason AS "cancelReason",
 			a.business_name AS "businessName",
 			a.business_phone AS "businessPhone",
 			a.business_remark AS "businessRemark",
@@ -661,6 +667,7 @@
 
 		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
 		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
+		<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
 
 		WHERE id = #{id}
 	</update>

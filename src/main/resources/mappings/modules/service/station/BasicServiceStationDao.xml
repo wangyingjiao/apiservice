@@ -253,4 +253,11 @@
     SELECT COUNT(*) FROM basic_service_station
      WHERE `name`=#{name} AND org_id =#{orgId} AND id!=#{id} AND del_flag=0
     </select>
+
+    <select id="getStationListByStoreId" resultType="BasicServiceStation">
+        select
+			a.station_id AS id
+		from basic_service_store a
+		WHERE a.store_id = #{storeId}
+    </select>
 </mapper>
