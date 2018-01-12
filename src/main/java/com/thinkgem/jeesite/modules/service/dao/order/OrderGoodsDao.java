@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 
 /**
@@ -14,5 +15,6 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
  */
 @MyBatisDao
 public interface OrderGoodsDao extends CrudDao<OrderGoods> {
-	
+
+    SerItemCommodity findItemGoodsByGoodId(String cate_goods_id);
 }

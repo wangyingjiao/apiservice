@@ -120,5 +120,18 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<select id="findItemGoodsByGoodId" resultType="SerItemCommodity">
+		SELECT
+		a.id AS id,
+		a.name AS name,
+		a.price AS price,
+		b.id AS itemId,
+		b.name AS itemName,
+		b.sort_id AS sortId,
+		b.major_sort AS majorSort
+		FROM ser_item_info_goods a
+		LEFT JOIN ser_item_info b ON b.id = a.item_id
+		WHERE a.id = #{id}
+	</select>
 </mapper>
