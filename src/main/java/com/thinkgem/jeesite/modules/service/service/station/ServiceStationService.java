@@ -54,7 +54,7 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
         }
         if (!serviceStation.getOrgId().equals("0") && user.getStation().getId().equals("0")) {
             BasicServiceStation station = super.get("0");
-            station.setName("本机构");
+            station.setName("全平台");
             list.add(station);
         }
         List<BasicServiceStation> serviceStations = super.findList(serviceStation);

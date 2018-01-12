@@ -452,6 +452,19 @@ public class RoleController extends BaseController {
         }
         return new FailResult("未找到岗位");
     }
+    @ResponseBody
+    @RequestMapping(value = "listDataWithoutPermission", method = RequestMethod.POST)
+    @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
+    public Result listDataWithoutPermission(@RequestBody Role role) {
+        List<Role> list =new ArrayList<>();
+        if (StringUtils.isNotBlank(role.getOrganization().getId())) {
+            User user= UserUtils.getUser();
+            user.setOrganization(role.getOrganization());
+            list = systemService.findRole(user);
+            return new SuccResult(list);
+        }
+        return new FailResult("未找到岗位");
+    }
 
     @ResponseBody
     @RequiresPermissions("role_view")

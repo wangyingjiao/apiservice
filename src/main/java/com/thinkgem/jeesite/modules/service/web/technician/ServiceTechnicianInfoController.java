@@ -109,7 +109,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult(objectObjectHashMap);
     }
 
-    @ResponseBody
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
     @RequestMapping(value = "formData", method = {RequestMethod.POST})
     @ApiOperation("根据ID查找技师")
     public Result formData(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
