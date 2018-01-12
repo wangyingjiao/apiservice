@@ -100,14 +100,14 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <filter>
+<!--    <filter>
         <filter-name>CORS</filter-name>
         <filter-class>com.thinkgem.jeesite.common.filter.CorsFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>CORS</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
 
     <filter>
         <filter-name>requestWrapper</filter-name>
