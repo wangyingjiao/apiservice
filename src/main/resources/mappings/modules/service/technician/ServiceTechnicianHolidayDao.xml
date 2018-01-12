@@ -162,13 +162,11 @@
 		and a.service_time BETWEEN #{startTime} AND #{endTime}
 		and (a.order_status = 'dispatched' or a.order_status = 'started')
 	</select>
-	<select id="getHolidayHistory" resultType="int">
-		select count(*)
+	<select id="getHolidayHistory" resultType="ServiceTechnicianHoliday">
+		select a.tech_id AS techId,a.start_time AS startTime ,a.end_time AS endTime
 		from tech_holiday a
 		where a.del_flag = #{DEL_FLAG_NORMAL}
 		and a.tech_id = #{techId}
-		and ((a.start_time &gt; #{startTime} AND a.start_time &lt; #{endTime}) OR
-		(a.end_time &gt; #{startTime} AND a.end_time &lt; #{endTime}) )
 	</select>
 	<select id="getServiceTechnicianWorkTime" resultType="ServiceTechnicianHoliday">
 		SELECT

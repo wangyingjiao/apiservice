@@ -208,6 +208,15 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	}
 
 	public int getHolidayHistory(ServiceTechnicianHoliday info) {
-		return serviceTechnicianHolidayDao.getHolidayHistory(info);
+		List<ServiceTechnicianHoliday> list = serviceTechnicianHolidayDao.getHolidayHistory(info);
+		int num = 0;
+		if(null != list && list.size()>0){
+			for(ServiceTechnicianHoliday holiday : list){
+				if(!DateUtils.checkDatesRepeat(holiday.getStartTime(),holiday.getEndTime(),info.getStartTime(),info.getEndTime())){
+					num++;
+				}
+			}
+		}
+		return num;
 	}
 }
