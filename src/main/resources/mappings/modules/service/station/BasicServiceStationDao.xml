@@ -74,6 +74,12 @@
           from sys_user a
           where a.station_id=#{id} and a.del_flag = '0'
     </select>
+    <!--根据服务站id获取技师数量 wyr-->
+    <select id="getCountTech" resultType="int">
+           SELECT COUNT(1)
+          from tech_info a
+          where a.station_id=#{id} and a.del_flag = '0'
+    </select>
     <select id="getUserListByStationId" resultType="User">
         SELECT id,name
           from sys_user a

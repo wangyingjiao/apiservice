@@ -129,4 +129,8 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	public int checkRepeatNameUpdate(String name, String orgId, String id) {
 		return	basicServiceStationDao.checkRepeatNameUpdate(name,orgId,id);
 	}
+
+	public int getCountTech(BasicServiceStation serviceStation) {
+		return basicServiceStationDao.getCountTech(serviceStation);
+	}
 }

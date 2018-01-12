@@ -28,4 +28,5 @@ public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
     //add by WYR 服务站名重复校验
 	int checkRepeatName(@Param("name")String name,@Param("orgId") String orgId);
 	int checkRepeatNameUpdate(@Param("name")String name,@Param("orgId") String orgId, @Param("id")String id);
+	int getCountTech(BasicServiceStation serviceStation);
 }

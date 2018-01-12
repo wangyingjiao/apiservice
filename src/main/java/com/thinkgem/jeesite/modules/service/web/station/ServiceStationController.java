@@ -206,6 +206,12 @@ public class ServiceStationController extends BaseController {
         if (count > 0){
             return new FailResult("该服务站已有员工，不可删除！");
         }
+        //add by wyr
+        int countTech = serviceStationService.getCountTech(serviceStation);
+        if (countTech > 0){
+            return new FailResult("该服务站已有技师，不可删除！");
+        }
+        
         serviceStationService.delete(serviceStation);
         return new SuccResult("删除服务站成功");
     }
