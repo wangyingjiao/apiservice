@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @Api(tags = "APP登录类", description = "APP登录相关接口")
-//@RequestMapping(value = "${appPath}/appUser/user")
 public class AppLoginController extends BaseController {
     @Autowired
     ServiceTechnicianInfoService serviceTechnicianInfoService;
@@ -38,7 +37,7 @@ public class AppLoginController extends BaseController {
     private TokenManager tokenManager;
 
     @ResponseBody
-    @RequestMapping(value = "${appPath}/appLogin", method = RequestMethod.POST)
+    @RequestMapping(value = "${appPath}/appLogin",  method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "登入系统", notes = "用户登录")
     public Object appLogin( LoginUser user, HttpServletRequest request, HttpServletResponse response) {
         AppServiceTechnicianInfo entity = null;

@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author x
  */
 
-public class TokenInterceptor implements HandlerInterceptor {
+public class TokenInterceptor  extends HandlerInterceptorAdapter {
 
     private Log loger = LogFactory.getLog(getClass());
 
@@ -40,7 +41,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         loger.info("拦截器处理==>  进入app拦截处理");
         String header = request.getHeader(TOKEN);
         loger.debug("token 值为 ==>" + header);
-        Token token = tokenManager.verifyToken(new Token(header));
+//        Token token = tokenManager.verifyToken(new Token(header));
         return true;
 //        if (null == token) {
 //            response.getWriter().print(JSON.toJSONString(new FailResult<>("token 无效或 已经过期，请重新登录")));
