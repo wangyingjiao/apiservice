@@ -266,7 +266,7 @@ public class SystemService extends BaseService implements InitializingBean {
         return roleDao.get(id);
     }
 
-    public Role getRoleByName(String name) {
+    public List<Role> getRoleByName(String name) {
         Role r = new Role();
         r.setName(name);
         return roleDao.getByName(r);
@@ -623,6 +623,9 @@ public class SystemService extends BaseService implements InitializingBean {
 
         return list;
     }
+	public int checkUpdateName(String name, String orgId, String roleId) {
+		 return roleDao.checkUpdateName(name,orgId,roleId);
+	}
 
 
 //	public Page<Role> findRolePage(Page){

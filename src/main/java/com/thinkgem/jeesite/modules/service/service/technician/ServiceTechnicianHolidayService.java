@@ -82,7 +82,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		//循环插入
 		for (ServiceTechnicianHoliday saveInfo : list) {
-			super.save(saveInfo);
+			super.save1(saveInfo);
 		}
 	}
 
@@ -197,9 +197,10 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 	}
 
+	//app删除休假时间
 	@Transactional(readOnly = false)
-	public void delete(ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		super.delete(serviceTechnicianHoliday);
+	public int delete1(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		return dao.delete(serviceTechnicianHoliday);
 	}
 
 	public int getOrderTechRelationHoliday(ServiceTechnicianHoliday info) {
@@ -207,6 +208,15 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	}
 
 	public int getHolidayHistory(ServiceTechnicianHoliday info) {
-		return serviceTechnicianHolidayDao.getHolidayHistory(info);
+		List<ServiceTechnicianHoliday> list = serviceTechnicianHolidayDao.getHolidayHistory(info);
+		int num = 0;
+		if(null != list && list.size()>0){
+			for(ServiceTechnicianHoliday holiday : list){
+				if(!DateUtils.checkDatesRepeat(holiday.getStartTime(),holiday.getEndTime(),info.getStartTime(),info.getEndTime())){
+					num++;
+				}
+			}
+		}
+		return num;
 	}
 }

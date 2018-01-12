@@ -611,4 +611,59 @@
 		GROUP BY a.tech_id
 		ORDER BY num
 	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- 对接SQL begin-->
+	<update id="openUpdateGuoanxia">
+		UPDATE order_info SET
+		<if test="businessName !=null and businessName != ''">business_name = #{businessName},</if>
+		<if test="businessPhone !=null and businessPhone != ''">business_phone = #{businessPhone},</if>
+		<if test="businessRemark !=null and businessRemark != ''">business_remark = #{businessRemark},</if>
+		<if test="businessRemarkPic !=null and businessRemarkPic != ''">business_remark_pic = #{businessRemarkPic},</if>
+
+		<if test="customerRemark !=null and customerRemark != ''">customer_remark = #{customerRemark},</if>
+		<if test="customerRemarkPic !=null and customerRemarkPic != ''">customer_remark_pic = #{customerRemarkPic},</if>
+
+		<if test="shopName !=null and shopName != ''">shop_name = #{shopName},</if>
+		<if test="shopPhone !=null and shopPhone != ''">shop_phone = #{shopPhone},</if>
+		<if test="shopRemark !=null and shopRemark != ''">shop_remark = #{shopRemark},</if>
+		<if test="shopRemarkPic !=null and shopRemarkPic != ''">shop_remark_pic = #{shopRemarkPic},</if>
+
+		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
+		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
+
+		WHERE id = #{id}
+	</update>
+
+	<!-- 对接SQL end-->
 </mapper>

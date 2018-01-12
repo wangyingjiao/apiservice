@@ -16,7 +16,8 @@ public class RegexTool {
     /**
      * 正则表达式：验证手机号
      */
-    public static final String REGEX_MOBILE = "^((1[3,5,6,7,8,9][0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$";
+    //public static final String REGEX_MOBILE = "^((1[3,5,6,7,8,9][0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$";
+    public static final String REGEX_MOBILE = "^1[3|4|5|6|7|8|9][0-9]\\d{8}$";
  
     /**
      * 正则表达式：验证邮箱
@@ -31,7 +32,8 @@ public class RegexTool {
     /**
      * 正则表达式：验证身份证
      */
-    public static final String REGEX_ID_CARD = "(^\\d{18}$)|(^\\d{15}$)";
+    //public static final String REGEX_ID_CARD = "(^\\d{18}$)|(^\\d{15}$)";
+    public static final String REGEX_ID_CARD = "(^\\d{15}$)|(^\\d{18}$)|(^\\d{17}(\\d|X|x)$)";
  
     /**
      * 正则表达式：验证URL

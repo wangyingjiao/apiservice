@@ -52,9 +52,14 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
             list.add(super.get(user.getStation().getId()));
             return list;
         }
-        if (!serviceStation.getOrgId().equals("0") && user.getStation().getId().equals("0")) {
+        if (!user.getOrganization().getId().equals("0") && user.getStation().getId().equals("0")) {
             BasicServiceStation station = super.get("0");
             station.setName("本机构");
+            list.add(station);
+        }
+        if (user.getOrganization().getId().equals("0")) {
+            BasicServiceStation station = super.get("0");
+            station.setName("全平台");
             list.add(station);
         }
         List<BasicServiceStation> serviceStations = super.findList(serviceStation);
@@ -106,7 +111,7 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
             return new FailResult("id 不能为空");
         }
         if (!(station.getStoreList().size() > 0)) {
-            return new FailResult("门店id为空");
+            return new FailResult("请选择门店");
         }
         serviceStoreDao.deletebyStation(station);
         serviceStoreDao.saveStationStore(station);
@@ -116,4 +121,16 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
     public List<User> getUserListByStationId(BasicServiceStation serviceStation) {
         return  dao.getUserListByStationId(serviceStation);
     }
+  //add by WYR同一机构下的服务站名称应不可重复
+	public int checkRepeatName(String name, String orgId) {
+		return	basicServiceStationDao.checkRepeatName(name,orgId);
+	}
+	//add by WYR编辑时同一机构下的服务站名称应不可重复
+	public int checkRepeatNameUpdate(String name, String orgId, String id) {
+		return	basicServiceStationDao.checkRepeatNameUpdate(name,orgId,id);
+	}
+
+	public int getCountTech(BasicServiceStation serviceStation) {
+		return basicServiceStationDao.getCountTech(serviceStation);
+	}
 }

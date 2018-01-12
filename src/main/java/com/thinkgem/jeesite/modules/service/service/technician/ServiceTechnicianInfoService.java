@@ -6,10 +6,12 @@ package com.thinkgem.jeesite.modules.service.service.technician;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianFamilyMembersDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianWorkTimeDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -45,6 +47,11 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     //技能
     @Autowired
     private SerSkillTechnicianDao serSkillTechnicianDao;
+    @Autowired
+    private SerSkillInfoDao serSkillInfoDao;
+
+    @Autowired
+    private ServiceTechnicianInfoDao serviceTechnicianInfoDao;
 
     public ServiceTechnicianInfo get(String id) {
         return super.get(id);
@@ -60,7 +67,10 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     public List<BasicServiceStation> getStationsByOrgId(String orgId) {
-        return technicianInfoDao.getStationsByOrgId(orgId);
+        BasicServiceStation serviceStationSerch = new BasicServiceStation();
+        serviceStationSerch.setOrgId(orgId);
+        serviceStationSerch.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
+        return technicianInfoDao.getStationsByOrgId(serviceStationSerch);
     }
 
     public List<SerSkillInfo> getSkillInfosByOrgId(String orgId) {
@@ -330,10 +340,15 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     //app获取技师技能工作时间
-    public Page<ServiceTechnicianInfo> appFindSkillList(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo){
-        serviceTechnicianInfo.setPage(page);
-        page.setList(technicianInfoDao.appFindSkillList(serviceTechnicianInfo));
-        return page;
+    public ServiceTechnicianInfo appFindSkillList(ServiceTechnicianInfo serviceTechnicianInfo){
+        //工作时间
+        List<ServiceTechnicianWorkTime> serviceTechnicianWorkTimes = technicianInfoDao.appGetWeekByTechId(serviceTechnicianInfo);
+        //技师技能
+        List<SerSkillInfo> serSkillInfos = serSkillInfoDao.appGetSkillByTech(serviceTechnicianInfo);
+        serviceTechnicianInfo.setSkills(serSkillInfos);
+        serviceTechnicianInfo.setTimes(serviceTechnicianWorkTimes);
+
+        return serviceTechnicianInfo;
     }
 
     //app通讯录
@@ -345,8 +360,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     //编辑技师
+    @Transactional(readOnly = false)
     public int updateTech(ServiceTechnicianInfo serviceTechnicianInfo){
-        return dao.update(serviceTechnicianInfo);
+        return dao.appUpdatePassword(serviceTechnicianInfo);
     }
     //校验手机号重复
 	public int checkPhone(ServiceTechnicianInfo info) {
@@ -359,4 +375,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 		return technicianInfoDao.findTechList(info);
 	}
 
+    public List<ServiceTechnicianFamilyMembers> findFamilyMembersListByTechId(ServiceTechnicianInfo info) {
+        return dao.findFamilyMembersListByTechId(info);
+    }
 }

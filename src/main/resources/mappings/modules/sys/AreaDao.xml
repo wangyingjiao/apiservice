@@ -158,4 +158,12 @@
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY a.code
 	</select>
+
+	<select id="getNameByCode" resultType="Area">
+		SELECT
+			a.name
+		FROM sys_area a
+		WHERE a.code = #{code}
+		AND a.del_flag = '0'
+	</select>
 </mapper>

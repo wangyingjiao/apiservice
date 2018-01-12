@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,8 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "${adminPath}/service/order/orderDispatch")
 public class OrderDispatchController extends BaseController {
-
+	@Autowired
+	private OrderInfoService orderInfoService;
 	@Autowired
 	private OrderDispatchService orderDispatchService;
 	
@@ -54,6 +57,7 @@ public class OrderDispatchController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取改派列表")
+	@RequiresPermissions("dispatch_view")
 	public Result listData(@RequestBody(required = false) OrderDispatch dispatchInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(null == dispatchInfo){
 			dispatchInfo = new OrderDispatch();
@@ -65,9 +69,28 @@ public class OrderDispatchController extends BaseController {
 
 	@ResponseBody
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
-	@ApiOperation("查看订单")
+	@ApiOperation("查看订单改派记录")
+	@RequiresPermissions("dispatch_info")
 	public Result formData(@RequestBody OrderDispatch dispatchInfo) {
 		List<OrderDispatch> list = orderDispatchService.formData(dispatchInfo);
 		return new SuccResult(list);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "dispatchTech", method = {RequestMethod.POST})
+	@ApiOperation("技师改派")
+	@RequiresPermissions("dispatch_insert")
+	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
+		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+		return new SuccResult(techList);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "dispatchTechSave", method = {RequestMethod.POST})
+	@ApiOperation("技师改派保存")
+	@RequiresPermissions("dispatch_insert")
+	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
+		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
+		return new SuccResult(techList);
 	}
 }

@@ -364,4 +364,99 @@ public class UserController extends BaseController {
         }
         return new SuccResult(user);
     }
+
+    @ResponseBody
+    @RequiresPermissions("user_update")
+    @RequestMapping(value = "upData", method = RequestMethod.POST)
+    @ApiOperation(value = "保存用户！")
+    public Result upData(@RequestBody User user) {
+
+        // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
+        user.setOrganization(organizationService.get(user.getOfficeId()));
+        user.setStation(stationService.get(user.getStationId()));
+        user.setLoginName(user.getMobile());
+
+
+        if (StringUtils.isNotBlank(user.getNewPassword())) {
+            user.setPassword(SystemService.entryptPassword(user.getNewPassword()));
+            user.setNewPassword(null);
+        }
+        List<String> errors = errors(user);
+        if (errors.size() > 0) {
+            return new FailResult(errors);
+        }
+        if (StringUtils.isBlank(user.getId())) {
+            if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))) {
+                return new FailResult("保存用户'" + user.getLoginName() + "'失败，登陆账号已存在");
+            }
+        }else{
+            //编辑员工
+            User temUser = new User();
+            temUser.setMobile(user.getMobile());
+            User midUser = systemService.getByMobile(temUser);
+            //如果根据手机号查询出用户
+            if (midUser != null){
+                //如果id不相同不是同一用户 不能添加
+                if (!midUser.getId().equals(user.getId())){
+                    return new FailResult("保存用户失败，登陆账号已存在");
+                }
+            }
+        }
+        // 角色数据有效性验证，过滤不在授权内的角色
+        List<Role> roleList = Lists.newArrayList();
+        String[] roles = user.getRoles();
+        List<String> roleIdList = Lists.newArrayList(roles);
+
+        List<Role> role = new ArrayList<>();
+        User currUser = UserUtils.getUser();
+        if (currUser.getOrganization().getId().equals("0")) {
+            logger.info("全平台用户！");
+            role = systemService.findRole(new Role());
+        } else {
+            role = systemService.findRole(currUser);
+        }
+
+        for (Role r : role) {
+            if (roleIdList.contains(r.getId())) {
+                roleList.add(r);
+            }
+        }
+/*
+        //获取传过来的员工的服务站
+        String staId = user.getStation().getId();
+        BasicServiceStation station = serviceStationService.get(staId);
+        //获取服务站的员工数量
+        int employees = station.getEmployees();
+        //新增
+        if (StringUtils.isBlank(user.getId())){
+
+            station.setEmployees(employees+ 1);
+            serviceStationService.update(station);
+        }else{
+            //编辑 查询出来和传过来的员工服务站没变 不修改服务站数量
+            //根据用户id 去数据库查询出用户的服务站id
+            User temUser = systemService.getUser(user.getId());
+            String id = temUser.getStation().getId();
+            //查出来的服务站id和修改后的服务站id不同  修改两个服务站员工数量
+            if (!id.equals(staId)){
+                //新服务站数量+1
+                station.setEmployees(employees++);
+                serviceStationService.update(station);
+                //原服务站数量—1
+                BasicServiceStation oldStation =serviceStationService.get(temUser.getStation().getId());
+                oldStation.setEmployees(oldStation.getEmployees()-1);
+                serviceStationService.update(oldStation);
+            }
+        }
+        */
+        user.setRoleList(roleList);
+        // 保存用户信息
+        systemService.saveUser(user);
+
+        // 清除当前用户缓存
+        if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
+            UserUtils.clearCache();
+        }
+        return new SuccResult(user);
+    }
 }

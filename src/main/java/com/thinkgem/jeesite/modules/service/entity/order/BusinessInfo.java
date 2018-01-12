@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 服务人员Entity
+ * 业务人员Entity
  * @author a
  * @version 2017-12-26
  */
@@ -23,6 +23,7 @@ public class BusinessInfo extends DataEntity<BusinessInfo> {
 	private String businessName;
 	private String businessPhone;
 	private String businessRemark;
+	private List<String> businessRemarkPic;
 
 	public String getBusinessName() {
 		return businessName;
@@ -46,5 +47,13 @@ public class BusinessInfo extends DataEntity<BusinessInfo> {
 
 	public void setBusinessRemark(String businessRemark) {
 		this.businessRemark = businessRemark;
+	}
+
+	public List<String> getBusinessRemarkPic() {
+		return businessRemarkPic;
+	}
+
+	public void setBusinessRemarkPic(List<String> businessRemarkPic) {
+		this.businessRemarkPic = businessRemarkPic;
 	}
 }

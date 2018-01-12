@@ -31,6 +31,9 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
 	private int cappinPerNum;		//封项人数
 
+	private String sortId;//分类ID
+	private String itemName; //项目名
+	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
 
 	public int getStartPerNum() {
 		return startPerNum;
@@ -142,5 +145,29 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	public void setCommodityChecked(Boolean commodityChecked) {
 		this.commodityChecked = commodityChecked;
+	}
+
+	public String getSortId() {
+		return sortId;
+	}
+
+	public void setSortId(String sortId) {
+		this.sortId = sortId;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public String getMajorSort() {
+		return majorSort;
+	}
+
+	public void setMajorSort(String majorSort) {
+		this.majorSort = majorSort;
 	}
 }

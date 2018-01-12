@@ -1064,6 +1064,18 @@
             </properties>
         </profile>
         <profile>
+            <id>production</id>
+            <properties>
+                <package.environment>production</package.environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>preproduction</id>
+            <properties>
+                <package.environment>preproduction</package.environment>
+            </properties>
+        </profile>
+        <profile>
             <id>local</id>
             <properties>
                 <package.environment>local</package.environment>

@@ -308,6 +308,29 @@ public class RoleController extends BaseController {
         return new FailResult("名称不可用");
         //return "false";
     }
+    
+    
+    //add by wyr 编辑岗位时校验岗位名重复
+    @ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "chkNameUpdate", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation(value = "验证角色名是否有效")
+    public Result chkNameUpdate(@RequestParam(required = false) String oldName, @RequestParam String name,@RequestParam String roleId) {
+    	
+    	User user = UserUtils.getUser();
+    	String orgId = user.getOrganization().getId();//所属的机构id
+    	int i =systemService.checkUpdateName(name,orgId,roleId);
+    	if (0!=i) {
+    		return new FailResult("名称不可用"); 
+		}
+        if (name != null && name.equals(oldName)) {
+            return new SuccResult("名称可用");
+        } else if (name != null && systemService.getRoleByName(name) == null) {
+            return new SuccResult("名称可用");
+        }
+       // return new FailResult("名称不可用");
+        return new SuccResult("名称可用");
+    }
 
     /**
      * 验证角色英文名是否有效
@@ -340,6 +363,53 @@ public class RoleController extends BaseController {
         }
 
         if (StringUtils.isBlank(role.getId())) {
+        	List<Role> roleByName = systemService.getRoleByName(role.getName());
+            if (roleByName != null&&roleByName.size()>0) {
+            	for (Role role2 : roleByName) {
+					if (role2!=null) {
+						return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+					}
+				}
+            }
+        }else{
+            //编辑岗位 是否修改名称
+        	List<Role> roleByName = systemService.getRoleByName(role.getName());
+            //根据名称查询出的岗位为空 没有该岗位
+            if (roleByName != null&&roleByName.size()>0) {
+            	for (Role role2 : roleByName) {
+            		if (role2!=null) {
+            			 if (!role2.getId().equals(role.getId())) {
+                             return new FailResult("保存角色'" + role.getName() + "'失败, 角色名已存在");
+                         }else{
+
+                         }
+					}
+				}
+                           }
+        }
+        User user = UserUtils.getUser();
+        //获取岗位机构
+        BasicOrganization organization = user.getOrganization();
+        if (role.getOrganization() == null) {
+            role.setOrganization(organization);
+        }
+        systemService.saveRole(role);
+
+        return new SuccResult(role);
+
+    }
+
+    @ResponseBody
+    @RequiresPermissions("role_update")
+    @RequestMapping(value = "upData", method = RequestMethod.POST)
+    @ApiOperation(value = "新建，更新岗位")
+    public Result upData(@RequestBody Role role) {
+        List<String> errList = errors(role,SaveRoleGroup.class);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }
+        //add by wyr重复岗位名的校验已经调用chkNameUpdate接口，以下注释掉
+        /*if (StringUtils.isBlank(role.getId())) {
 
             Role roleByName = systemService.getRoleByName(role.getName());
             if (roleByName != null) {
@@ -357,7 +427,7 @@ public class RoleController extends BaseController {
 
                 }
             }
-        }
+        }*/
         User user = UserUtils.getUser();
         //获取岗位机构
         BasicOrganization organization = user.getOrganization();
@@ -402,6 +472,19 @@ public class RoleController extends BaseController {
     @RequestMapping(value = "listData", method = RequestMethod.POST)
     @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
     public Result listData(@RequestBody Role role) {
+        List<Role> list =new ArrayList<>();
+        if (StringUtils.isNotBlank(role.getOrganization().getId())) {
+            User user= UserUtils.getUser();
+            user.setOrganization(role.getOrganization());
+            list = systemService.findRole(user);
+            return new SuccResult(list);
+        }
+        return new FailResult("未找到岗位");
+    }
+    @ResponseBody
+    @RequestMapping(value = "listDataWithoutPermission", method = RequestMethod.POST)
+    @ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
+    public Result listDataWithoutPermission(@RequestBody Role role) {
         List<Role> list =new ArrayList<>();
         if (StringUtils.isNotBlank(role.getOrganization().getId())) {
             User user= UserUtils.getUser();

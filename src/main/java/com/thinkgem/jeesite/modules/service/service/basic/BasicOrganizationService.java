@@ -122,4 +122,9 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		List<BasicServiceCity> cityCodeList = basicServiceCityService.getCityCodesByOrgId(orgId);
 		return cityCodeList;
     }
+
+	public List<BasicOrganization> findListAll(BasicOrganization basicOrganization) {
+		basicOrganization.getSqlMap().put("dsf", BaseService.dataOrganFilter( UserUtils.getUser(), "a"));
+		return dao.findList(basicOrganization);
+	}
 }

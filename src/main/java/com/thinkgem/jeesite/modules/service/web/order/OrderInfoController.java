@@ -63,7 +63,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取订单列表")
-	//@RequiresPermissions("order")
+	@RequiresPermissions("order_view")
 	public Result listData(@RequestBody(required = false) OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(null == orderInfo){
 			orderInfo = new OrderInfo();
@@ -80,6 +80,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
 	@ApiOperation("查看订单")
+	@RequiresPermissions("order_info")
 	public Result formData(@RequestBody OrderInfo orderInfo) {
 		OrderInfo entity = null;
 		if (StringUtils.isNotBlank(orderInfo.getId())) {
@@ -95,6 +96,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
 	@ApiOperation("更换时间")
+	@RequiresPermissions("order_time")
 	public Result timeData(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
 		return new SuccResult(techList);
@@ -103,6 +105,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "saveTime", method = {RequestMethod.POST})
 	@ApiOperation("更换时间保存")
+	@RequiresPermissions("order_time")
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.saveTime(orderInfo);
 		return new SuccResult(techList);
@@ -111,6 +114,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "addTech", method = {RequestMethod.POST})
 	@ApiOperation("增加技师")
+	@RequiresPermissions("order_addTech")
 	public Result addTech(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 		return new SuccResult(techList);
@@ -119,6 +123,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "addTechSave", method = {RequestMethod.POST})
 	@ApiOperation("增加技师保存")
+	@RequiresPermissions("order_addTech")
 	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.addTechSave(orderInfo);
 		return new SuccResult(techList);
@@ -127,6 +132,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "dispatchTech", method = {RequestMethod.POST})
 	@ApiOperation("技师改派")
+	@RequiresPermissions("order_dispatch")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 		return new SuccResult(techList);
@@ -135,6 +141,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "dispatchTechSave", method = {RequestMethod.POST})
 	@ApiOperation("技师改派保存")
+	@RequiresPermissions("order_dispatch")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
 		return new SuccResult(techList);

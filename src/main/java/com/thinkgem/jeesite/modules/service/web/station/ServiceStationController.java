@@ -116,6 +116,13 @@ public class ServiceStationController extends BaseController {
         } else {
             return new FailResult("用户没有具体的所属机构(全平台权限)");
         }
+        //add by WYR同一机构下的服务站名称应不可重复
+        String orgId = user.getOrganization().getId();//所属的机构id
+        int i=serviceStationService.checkRepeatName(serviceStation.getName(),orgId);
+        if (0!=i) {
+			return new FailResult("同一机构下的服务站名称应不可重复");
+		}
+        
         serviceStationService.save(serviceStation);
         return new SuccResult("保存服务站" + serviceStation.getName() + "成功");
     }
@@ -137,6 +144,13 @@ public class ServiceStationController extends BaseController {
         } else {
             return new FailResult("用户没有具体的所属机构(全平台权限)");
         }
+      //add by WYR编辑时同一机构下的服务站名称应不可重复
+        String orgId = user.getOrganization().getId();//所属的机构id
+        String id = serviceStation.getId();
+        int i=serviceStationService.checkRepeatNameUpdate(serviceStation.getName(),orgId,id);
+        if (0!=i) {
+			return new FailResult("同一机构下的服务站名称应不可重复");
+		}
         serviceStationService.save(serviceStation);
         return new SuccResult("保存服务站" + serviceStation.getName() + "成功");
     }
@@ -159,7 +173,7 @@ public class ServiceStationController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "setManager", method = {RequestMethod.POST, RequestMethod.GET})
-    //@RequiresPermissions("station_manager")
+    @RequiresPermissions("station_manager")
     @ApiOperation("设置站长")
     public Result setManager(@RequestBody BasicServiceStation serviceStation) {
         if (null == serviceStation.getId()) {
@@ -172,7 +186,7 @@ public class ServiceStationController extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value = "getManager", method = {RequestMethod.POST, RequestMethod.GET})
-    //@RequiresPermissions("station_manager")
+    @RequiresPermissions("station_manager")
     @ApiOperation("设置站长")
     public Result getManager(@RequestBody BasicServiceStation serviceStation) {
         if (null == serviceStation.getId()) {
@@ -192,6 +206,12 @@ public class ServiceStationController extends BaseController {
         if (count > 0){
             return new FailResult("该服务站已有员工，不可删除！");
         }
+        //add by wyr
+        int countTech = serviceStationService.getCountTech(serviceStation);
+        if (countTech > 0){
+            return new FailResult("该服务站已有技师，不可删除！");
+        }
+        
         serviceStationService.delete(serviceStation);
         return new SuccResult("删除服务站成功");
     }

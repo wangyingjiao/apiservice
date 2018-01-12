@@ -690,10 +690,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(),holiday.getEndTime());
 					Iterator<String> it1 = workTimes.iterator();
 					while(it.hasNext()) {
-						String work = it1.next();
+						String work = (String)it1.next();
 						if(holidays.contains(work)){//去除休假时间
 							it1.remove();
-							continue;
+							//continue;
 						}
 					}
 				}
@@ -718,10 +718,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 							DateUtils.addSeconds(order.getEndTime(),intervalTime));
 					Iterator<String> it2 = workTimes.iterator();
 					while(it.hasNext()) {
-						String work = it2.next();
+						String work = (String)it2.next();
 						if(orders.contains(work)){//去除订单时间
 							it2.remove();
-							continue;
+							//continue;
 						}
 					}
 				}
@@ -742,9 +742,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				resTimeList.add(temp.toString());
 			}
 		}
+		//时间排序
+		String[] strings = new String[resTimeList.size()];
+		resTimeList.toArray(strings);
+		Arrays.sort(strings);//排序
+		List<String> list = java.util.Arrays.asList(strings);
 
 		List<OrderDispatch> listRe = new ArrayList<>();
-		for(String time : resTimeList){
+		for(String time : list){
 			OrderDispatch info = new OrderDispatch();
 			info.setServiceTimeStr(time);
 			listRe.add(info);
@@ -1216,9 +1221,16 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app订单列表
 	public Page<OrderInfo> appFindPage(Page<OrderInfo> page, OrderInfo orderInfo) {
 		orderInfo.setPage(page);
-		page.setList(dao.appFindList(orderInfo));
-
-		//Page<OrderInfo> pageResult = dao.appFindList(page, orderInfo);
+		List<OrderInfo> orderInfos = dao.appFindList(orderInfo);
+		for (OrderInfo info:orderInfos){
+			String majorSort = info.getMajorSort();
+			if (majorSort.equals("clean")){
+				info.setMajorSortName("保洁");
+			}else if (majorSort.equals("repair")){
+				info.setMajorSortName("家修");
+			}
+		}
+		page.setList(orderInfos);
 		return page;
 	}
 

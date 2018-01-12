@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.thinkgem.jeesite.app.tech;
+package com.thinkgem.jeesite.app.login;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
@@ -54,7 +54,7 @@ public class AppTechController extends BaseController {
 
 	//技师的服务信息列表
 	 @ResponseBody
-	 @RequestMapping(value = "getTechServiceList", method = RequestMethod.POST)
+	 @RequestMapping(value = "${appPath}/getTechServiceList",method = {RequestMethod.POST, RequestMethod.GET})
 	 @ApiOperation(value = "技师服务信息列表", notes = "技师")
 	 public AppResult getTechServiceList() {
 
@@ -76,7 +76,7 @@ public class AppTechController extends BaseController {
 
 	//技师同服务站的通讯录
 	@ResponseBody
-	@RequestMapping(value = "appGetFriendByStationId", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/appGetFriendByStationId",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "通讯录", notes = "通讯录")
 	public AppResult appGetFriendByStationId(HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id 服务站id
@@ -92,7 +92,7 @@ public class AppTechController extends BaseController {
 
 	//技师休假列表
 	@ResponseBody
-	@RequestMapping(value = "restTechList", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/restTechList",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "技师休假列表", notes = "技师休假")
 	public AppResult restTechList(HttpServletRequest request, HttpServletResponse response) {
 
@@ -112,9 +112,9 @@ public class AppTechController extends BaseController {
 
 	//新增休假
 	@ResponseBody
-	@RequestMapping(value = "insertTech", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/insertTech",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "新增休假", notes = "技师休假")
-	public AppResult insertTech(@RequestBody ServiceTechnicianHoliday info) {
+	public AppResult insertTech(ServiceTechnicianHoliday info,HttpServletRequest request, HttpServletResponse response) {
 
 		List<String> errList = errors(info, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
@@ -142,9 +142,9 @@ public class AppTechController extends BaseController {
 
 	@ResponseBody
 	//@RequiresPermissions("deleteTech")
-	@RequestMapping(value = "deleteTech", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/deleteTech", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "删除休假", notes = "技师休假")
-	public AppResult deleteTech(@RequestBody ServiceTechnicianHoliday serviceTechnicianHoliday) {
+	public AppResult deleteTech(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
 		int delete = holidayService.delete1(serviceTechnicianHoliday);
 		if (delete > 0){
 			return new AppSuccResult(0,null,"删除休假成功");
@@ -154,9 +154,9 @@ public class AppTechController extends BaseController {
 
 	//技师改密码
 	@ResponseBody
-	@RequestMapping(value = "appChangePassword", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/appChangePassword",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "技师修改登陆密码", notes = "技师")
-	public AppResult appChangePassword(@RequestBody ServiceTechnicianInfo tech) {
+	public AppResult appChangePassword(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		List<String> errList = errors(tech, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);

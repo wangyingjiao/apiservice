@@ -110,38 +110,6 @@
 		</choose>
 	</select>
 
-	<!--app技师服务列表-->
-	<select id="appFindSkillList" resultType="ServiceTechnicianInfo">
-		SELECT
-		a.id AS "skillsId",
-		a.name AS "name",
-		a.org_id AS "orgId",
-		b.id,
-		b.tech_id,
-		b.week,
-		b.start_time,
-		b.end_time,
-		a.station_id AS "stationId",
-		c.name AS "stationName",
-		d.skill_id AS "skillId"
-		FROM tech_info a
-		LEFT JOIN tech_work_time b ON a.id = b.tech_id AND b.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station c ON a.station_id = c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN ser_skill_tech d ON d.tech_id = a.id AND d.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN ser_skill_info e ON d.skill_id = e.id AND e.del_flag = #{DEL_FLAG_NORMAL}
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			AND a.id=#{id}
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.create_date DESC
-			</otherwise>
-		</choose>
-	</select>
 
 	<!--app获取通讯录-->
 	<select id="appGetFriendByStationId" resultType="ServiceTechnicianInfo">
@@ -167,6 +135,8 @@
 		WHERE
 		a.del_flag = '0'
 		AND a.org_id = #{orgId}
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
 	</select>
 
 	<select id="formData" resultMap="ServiceTechnicianInfoResultMap">
@@ -289,15 +259,29 @@
     </resultMap>
 -->
 	<select id="selectWorkTimeByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianWorkTime">
+	select
+	tech_id AS techId,
+	DATE_FORMAT(start_time,'%T') AS startTime, DATE_FORMAT(end_time,'%T') AS endTime,
+	GROUP_CONCAT(week) AS week
+	from tech_work_time
+	where tech_id=#{reqId}
+	AND del_flag = '0'
+	GROUP BY tech_id,start_time,end_time
+</select>
+	<!--app服务列表时间-->
+	<select id="appGetWeekByTechId"  resultType="ServiceTechnicianWorkTime">
 		select
-		tech_id AS techId,
-		DATE_FORMAT(start_time,'%T') AS startTime, DATE_FORMAT(end_time,'%T') AS endTime,
-		GROUP_CONCAT(week) AS week
-		from tech_work_time
-		where tech_id=#{reqId}
-		AND del_flag = '0'
-		GROUP BY tech_id,start_time,end_time
+		a.week,
+		a.start_time,
+		a.end_time,
+		a.tech_id,
+		a.id
+		from tech_work_time a
+		LEFT JOIN tech_info b on a.tech_id=b.id
+		where a.tech_id=#{id}
+		AND a.del_flag = '0'
 	</select>
+
 	<select id="selectFamilyMembersByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianFamilyMembers">
 		select
 		id AS id,relation AS relation,member_name AS memberName,
@@ -305,6 +289,15 @@
 		member_job AS memberJob
 		from tech_family_members
 		where tech_id=#{reqId}
+		AND del_flag = '0'
+	</select>
+	<select id="findFamilyMembersListByTechId" resultType="ServiceTechnicianFamilyMembers">
+		select
+		id AS id,relation AS relation,member_name AS memberName,
+		member_phone AS memberPhone,member_company AS memberCompany,
+		member_job AS memberJob
+		from tech_family_members
+		where tech_id=#{id}
 		AND del_flag = '0'
 	</select>
 	<select id="selectStationsByTechId" parameterType="java.util.Map" resultType="BasicServiceStation">
@@ -466,6 +459,14 @@
 		#{delFlag}
 		)
 	</insert>
+	<!--修改登录密码-->
+	<update id="appUpdatePassword">
+		UPDATE tech_info SET
+		app_login_password = #{appLoginPassword},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
 
 	<update id="update">
 		UPDATE tech_info SET
@@ -483,25 +484,25 @@
 		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
 		<if test="address !=null and address != ''">address = #{address},</if>
 		<if test="sex !=null and sex != ''">sex = #{sex},</if>
-		nation = #{nation},
+		<if test="nation !=null and nation != ''">nation = #{nation},</if>
 		<if test="birthDate !=null and birthDate != ''">birth_date = #{birthDate},</if>
 		<if test="status !=null and status != ''">status = #{status},</if>
 		<if test="appLoginPassword !=null and appLoginPassword != ''">app_login_password = #{appLoginPassword},</if>
 		<if test="jobNature !=null and jobNature != ''">job_nature = #{jobNature},</if>
 		<if test="jobStatus !=null and jobStatus != ''">job_status = #{jobStatus},</if>
-		<if test="workTime !=null and workTime != ''">work_time = #{workTime},</if>
-		email = #{email},
-		education = #{education},
-		height = #{height},
-		weight = #{weight},
-		marry_status = #{marryStatus},
-		native_province_code = #{nativeProvinceCode},
-		in_job_time = #{inJobTime},
-		job_level = #{jobLevel},
-		description = #{description},
-		remark = #{remark},
-		update_by = #{updateBy.id},
-		update_date = #{updateDate}
+		work_time = #{workTime},
+		<if test="email !=null and email != ''">email = #{email},</if>
+		<if test="education !=null and education != ''">education = #{education},</if>
+		<if test="height !=null and height != ''">height = #{height},</if>
+		<if test="weight !=null and weight != ''">weight = #{weight},</if>
+		<if test="marryStatus !=null and marryStatus != ''">marry_status = #{marryStatus},</if>
+		<if test="nativeProvinceCode !=null and nativeProvinceCode != ''">native_province_code = #{nativeProvinceCode},</if>
+		<if test="inJobTime !=null and inJobTime != ''">in_job_time = #{inJobTime},</if>
+		<if test="jobLevel !=null and jobLevel != ''">job_level = #{jobLevel},</if>
+		<if test="description !=null and description != ''">description = #{description},</if>
+		<if test="remark !=null and remark != ''">remark = #{remark},</if>
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
 

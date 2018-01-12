@@ -1,14 +1,13 @@
 /**
  * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.thinkgem.jeesite.app.order;
+package com.thinkgem.jeesite.app.login;
 
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,7 +33,6 @@ import java.util.Map;
  */
 @Controller
 @Api(tags = "APP订单类", description = "APP订单相关接口")
-@RequestMapping(value = "${appPath}/appOrder/appOrderInfo")
 public class AppOrderController extends BaseController {
 
 	@Autowired
@@ -42,9 +40,9 @@ public class AppOrderController extends BaseController {
 
 	//查询订单列表
 	@ResponseBody
-    @RequestMapping(value = "getOrderListPage",  method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "${appPath}/getOrderListPage",  method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "订单列表", notes = "订单")
-    public AppResult getOrderListPage(@RequestBody OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
+    public AppResult getOrderListPage(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		//获取登录用户id 获取用户手机set进去
 		orderInfo.setBusinessPhone("13508070808");
 		if (orderInfo.getServiceStatus()==null){
@@ -53,15 +51,15 @@ public class AppOrderController extends BaseController {
 		if (orderInfo.getMajorSort().equals("all")){
 			orderInfo.setMajorSort(null);
 		}
-		Page<OrderInfo> orderInfoPage = new Page<>(request, response);
-		Page<OrderInfo> page = orderInfoService.appFindPage(orderInfoPage,orderInfo);
+		Page<OrderInfo> serSortInfoPage = new Page<>(request, response);
+		Page<OrderInfo> page = orderInfoService.appFindPage(serSortInfoPage,orderInfo);
 		return new AppSuccResult(page);
     }
 	//订单详情
 	@ResponseBody
-	@RequestMapping(value = "getOrderById", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/getOrderById",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "订单详情", notes = "订单")
-	public AppResult getOrderById(@RequestBody OrderInfo Info){
+	public AppResult getOrderById(OrderInfo Info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
 		Info.setBusinessPhone("13508070808");
 		OrderInfo orderInfo = orderInfoService.appFormData(Info);
@@ -119,9 +117,9 @@ public class AppOrderController extends BaseController {
 
 	//技师添加订单备注
 	@ResponseBody
-	@RequestMapping(value = "saveRemark", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/saveRemark",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
-	public AppResult saveRemark(@RequestBody OrderInfo orderInfo){
+	public AppResult saveRemark(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response){
 		orderInfo.setBusinessPhone("13508070808");
 		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
@@ -140,9 +138,9 @@ public class AppOrderController extends BaseController {
 	}
 	//修改服务状态
 	@ResponseBody
-	@RequestMapping(value = "updateOrderByServiceStatus", method = RequestMethod.POST)
+	@RequestMapping(value = "${appPath}/updateOrderByServiceStatus",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "修改服务状态", notes = "订单")
-	public AppResult updateOrderByServiceStatus(@RequestBody OrderInfo info){
+	public AppResult updateOrderByServiceStatus(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		List<String> errList = errors(info, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
@@ -158,7 +156,7 @@ public class AppOrderController extends BaseController {
 
 
 	@ResponseBody
-	@RequestMapping(value = "appDispatchTech", method = {RequestMethod.POST})
+	@RequestMapping(value = "${appPath}/appDispatchTech",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师改派")
 	public AppResult appDispatchTech(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
@@ -166,7 +164,7 @@ public class AppOrderController extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "appDispatchTechSave", method = {RequestMethod.POST})
+	@RequestMapping(value = "${appPath}/appDispatchTechSave", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师改派保存")
 	public AppResult appDispatchTechSave(@RequestBody OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);

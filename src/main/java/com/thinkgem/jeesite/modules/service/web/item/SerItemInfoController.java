@@ -143,15 +143,15 @@ public class SerItemInfoController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "upDataSortNum", method = {RequestMethod.POST})
-    @RequiresPermissions("project_update")
-    @ApiOperation("保存服务项目排序")
+    @RequiresPermissions("project_detail")
+    @ApiOperation("保存服务项目图文详情")
     public Result upDataSortNum(@RequestBody SerItemInfo serItemInfo) {
         List<String> pictureDetails = serItemInfo.getPictureDetails();
         if(null != pictureDetails){
             String pictureDetail = JsonMapper.toJsonString(pictureDetails);
             serItemInfo.setPictureDetail(pictureDetail);
         }
-        serItemInfoService.saveSort(serItemInfo);
+        serItemInfoService.updateSerItemPicNum(serItemInfo);
         return new SuccResult("保存成功");
     }
 
