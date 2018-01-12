@@ -47,4 +47,6 @@ public interface RoleDao extends CrudDao<Role> {
 
     List<Role> findRoleListByUser(User user);
 
+	int checkUpdateName(@Param("name")String name, @Param("orgId")String orgId,@Param("roleId")String roleId);
+
 }

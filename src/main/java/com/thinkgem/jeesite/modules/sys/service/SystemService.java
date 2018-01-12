@@ -623,6 +623,9 @@ public class SystemService extends BaseService implements InitializingBean {
 
         return list;
     }
+	public int checkUpdateName(String name, String orgId, String roleId) {
+		 return roleDao.checkUpdateName(name,orgId,roleId);
+	}
 
 
 //	public Page<Role> findRolePage(Page){

@@ -308,6 +308,29 @@ public class RoleController extends BaseController {
         return new FailResult("名称不可用");
         //return "false";
     }
+    
+    
+    //add by wyr 编辑岗位时校验岗位名重复
+    @ResponseBody
+    @RequiresPermissions("user")
+    @RequestMapping(value = "chkNameUpdate", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation(value = "验证角色名是否有效")
+    public Result chkNameUpdate(@RequestParam(required = false) String oldName, @RequestParam String name,@RequestParam String roleId) {
+    	
+    	User user = UserUtils.getUser();
+    	String orgId = user.getOrganization().getId();//所属的机构id
+    	int i =systemService.checkUpdateName(name,orgId,roleId);
+    	if (0!=i) {
+    		return new FailResult("名称不可用"); 
+		}
+        if (name != null && name.equals(oldName)) {
+            return new SuccResult("名称可用");
+        } else if (name != null && systemService.getRoleByName(name) == null) {
+            return new SuccResult("名称可用");
+        }
+       // return new FailResult("名称不可用");
+        return new SuccResult("名称可用");
+    }
 
     /**
      * 验证角色英文名是否有效
