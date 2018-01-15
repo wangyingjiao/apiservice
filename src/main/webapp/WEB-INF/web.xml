@@ -117,7 +117,7 @@
     <filter-mapping>
         <filter-name>requestWrapper</filter-name>
         <!--这里获取需要带一个/-->
-        <url-pattern>/a/*</url-pattern>
+        <url-pattern>/${adminPath}/*</url-pattern>
     </filter-mapping>
 
 
