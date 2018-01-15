@@ -11,6 +11,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -40,6 +42,7 @@ public class AppAop {
     @Around("point()")
     public Object around(ProceedingJoinPoint jp) throws Throwable {
         logger.info("==>app aop环绕处理");
+//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("token");
         String md5 = request.getHeader("md5");
         BufferedReader reader = request.getReader();
@@ -56,7 +59,6 @@ public class AppAop {
             logger.debug("解密值为："+decrypt);
             //获取连接点方法运行时的入参列表 数组
             Object[] args = jp.getArgs();
-            System.out.println(args);
             if(args != null && args.length > 1) {
                 Object o = JSON.parseObject(decrypt, args[0].getClass());
                 args[0] = o;

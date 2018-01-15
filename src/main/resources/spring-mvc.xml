@@ -23,7 +23,8 @@
     <aop:aspectj-autoproxy expose-proxy="true" proxy-target-class="true" />
 
     <bean class="com.thinkgem.jeesite.common.aspect.ReqResAop" name="reqResAop" />
-    <bean class="com.thinkgem.jeesite.app.aop.AppAop" name="appAop"/>
+    <bean class="com.thinkgem.jeesite.app.aop.AppAop" name="appAop">
+    </bean>
 
 
     <!-- 默认的注解映射的支持，org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping -->
@@ -110,6 +111,7 @@
         <!--<mvc:mapping path="/**"/>-->
         <!--<bean class="com.thinkgem.jeesite.modules.sys.interceptor.MobileInterceptor"/>-->
         <!--</mvc:interceptor>-->
+        <!--tokenInteceper-->
         <!--<mvc:interceptor>-->
             <!--<mvc:mapping path="${appPath}/**"/>-->
             <!--<mvc:exclude-mapping path="${appPath}/appLogin"/>-->

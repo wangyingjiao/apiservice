@@ -77,14 +77,12 @@ public class AESCrypt {
     public static void main(String[] args) throws Exception{
 
         AESCrypt crypt = new AESCrypt("seed");
-//        String s3="{\"pageSize\":15,\"pageNo\":1,\"serviceStatus\":\"wait_service\",\"majorSort\":\"all\"}";
-        String s1="{\"username\":\"13508070808\",\"password\":\"asdf1234\",\"serviceStatus\":\"wait_service\",\"majorSort\":\"all\"}";
-        String s3="{\"pageSize\":15,\"pageNo\":1,\"serviceStatus\":\"wait_service\",\"majorSort\":\"all\"}";
+        String s3="{\"pageSize\":15,\"pageNo\":1}";
+        String s1="{\"username\":\"13508070808\",\"password\":\"1234qwer\"}";
+//        String s3="{\"id\":\"9\"}";
 //        String s2="{\"username\":\"15711445637\",\"password\":\"1234qwer\",\"serviceStatus\":wait_service,\"majorSort\":all}";
-        //base64加密
-        String baseEncode = Base64Encoder.encode(s1);
-        //aes加密
-        String aesEncode = crypt.encrypt(baseEncode);
+        String baseEncode = Base64Encoder.encode(s1);//base64加密
+        String aesEncode = crypt.encrypt(baseEncode);//aes加密
         System.out.println("2次加密"+aesEncode);
         //MD5获取MD5操作之后值
         String stringMD5 = MD5Util.getStringMD5(aesEncode);

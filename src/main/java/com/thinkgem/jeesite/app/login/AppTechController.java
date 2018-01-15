@@ -38,7 +38,6 @@ import java.util.Map;
  */
 @Controller
 @Api(tags = "APP通讯录类", description = "APP通讯录相关接口")
-@RequestMapping(value = "${appPath}/appTech/appTechInfo")
 public class AppTechController extends BaseController {
 
 	@Autowired
