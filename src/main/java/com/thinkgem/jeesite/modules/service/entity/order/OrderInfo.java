@@ -83,6 +83,33 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String techPhone;
 	private BusinessInfo businessInfo; //业务人员
 	private ShopInfo shopInfo;	//门店信息
+	private String serviceStatusName;//app
+	private String orderStatusName;//app
+	private String payStatusName;//app
+
+	public String getPayStatusName() {
+		return payStatusName;
+	}
+
+	public void setPayStatusName(String payStatusName) {
+		this.payStatusName = payStatusName;
+	}
+
+	public String getOrderStatusName() {
+		return orderStatusName;
+	}
+
+	public void setOrderStatusName(String orderStatusName) {
+		this.orderStatusName = orderStatusName;
+	}
+
+	public String getServiceStatusName() {
+		return serviceStatusName;
+	}
+
+	public void setServiceStatusName(String serviceStatusName) {
+		this.serviceStatusName = serviceStatusName;
+	}
 
 	public OrderInfo() {
 		super();

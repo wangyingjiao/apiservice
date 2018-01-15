@@ -53,6 +53,15 @@
         WHERE a.id = #{id}
     </select>
 
+	<select id="getByPhone" resultType="ServiceTechnicianInfo">
+		SELECT
+		a.id AS "id",
+		a.station_id AS "stationId"
+		FROM tech_info a
+		WHERE a.phone = #{phone}
+		AND a.del_flag='0'
+	</select>
+
 	<select id="findList" resultType="ServiceTechnicianInfo">
 		SELECT
 		a.id AS "id",

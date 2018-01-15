@@ -1229,6 +1229,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}else if (majorSort.equals("repair")){
 				info.setMajorSortName("家修");
 			}
+			String serviceStatus = info.getServiceStatus();
+			if (serviceStatus.equals("wait_service")){
+				info.setServiceStatusName("待服务");
+			}else if (serviceStatus.equals("started")){
+				info.setServiceStatusName("已上门");
+			}else if (serviceStatus.equals("finish")){
+				info.setServiceStatusName("已完成");
+			}
 		}
 		page.setList(orderInfos);
 		return page;

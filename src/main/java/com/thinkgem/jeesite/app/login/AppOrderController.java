@@ -53,7 +53,11 @@ public class AppOrderController extends BaseController {
 		}
 		Page<OrderInfo> serSortInfoPage = new Page<>(request, response);
 		Page<OrderInfo> page = orderInfoService.appFindPage(serSortInfoPage,orderInfo);
-		return new AppSuccResult(page);
+		if(page.getList().size()==0){
+			return new AppSuccResult(0,page,"列表查询");
+		}
+
+		return new AppSuccResult(1,page,"列表查询");
     }
 	//订单详情
 	@ResponseBody
@@ -71,6 +75,37 @@ public class AppOrderController extends BaseController {
 			orp.add(url);
 		}
 		orderInfo.setOrderRemarkPics(orp);
+		String serviceStatus = orderInfo.getServiceStatus();
+		if (serviceStatus.equals("wait_service")){
+			orderInfo.setServiceStatusName("待服务");
+		}else if (serviceStatus.equals("started")){
+			orderInfo.setServiceStatusName("已上门");
+		}else if (serviceStatus.equals("finish")){
+			orderInfo.setServiceStatusName("已完成");
+		}
+		String orderStatus = orderInfo.getOrderStatus();
+		if (orderStatus.equals("waitdispatch")){
+			orderInfo.setOrderStatusName("待派单");
+		}else if (orderStatus.equals("dispatched")){
+			orderInfo.setOrderStatusName("已派单");
+		}else if (orderStatus.equals("cancel")){
+			orderInfo.setOrderStatusName("已取消");
+		}else if (orderStatus.equals("started")){
+			orderInfo.setOrderStatusName("已上门");
+		}else if (orderStatus.equals("finish")){
+			orderInfo.setOrderStatusName("已完成");
+		}else if (orderStatus.equals("success")){
+			orderInfo.setOrderStatusName("已成功");
+		}else if (orderStatus.equals("stop")){
+			orderInfo.setOrderStatusName("已暂停");
+		}
+		String payStatus = orderInfo.getPayStatus();
+		if (payStatus.equals("waitpay")){
+			orderInfo.setPayStatusName("待支付");
+		}else if (payStatus.equals("payed")){
+			orderInfo.setPayStatusName("已支付");
+		}
+
 		//业务人员信息
 		BusinessInfo bus=new BusinessInfo();
 		bus.setBusinessName(orderInfo.getBusinessName());

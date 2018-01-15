@@ -74,4 +74,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     int appUpdatePassword(ServiceTechnicianInfo info);
 
     List<ServiceTechnicianFamilyMembers> findFamilyMembersListByTechId(ServiceTechnicianInfo info);
+
+    ServiceTechnicianInfo getByPhone(String phone);
 }

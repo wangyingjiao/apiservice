@@ -55,6 +55,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public ServiceTechnicianInfo get(String id) {
         return super.get(id);
     }
+    public ServiceTechnicianInfo getByPhone(String phone){
+        return technicianInfoDao.getByPhone(phone);
+    }
 
     public List<ServiceTechnicianInfo> findList(ServiceTechnicianInfo serviceTechnicianInfo) {
         return super.findList(serviceTechnicianInfo);
