@@ -160,6 +160,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 	//	serSkillInfo.setItems(itemList);
 		serSkillInfo.setSortIds(sortIds);
 		//技师关系
+		serSkillInfo.getSqlMap().put("dsf", dataStationIdRoleFilter(UserUtils.getUser(), "a"));
 		List<SerSkillTechnician> technicians = serSkillTechnicianDao.getSerSkillTechnicianBySkill(serSkillInfo);
 		serSkillInfo.setTechnicians(technicians);
 

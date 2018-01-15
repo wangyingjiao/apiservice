@@ -115,6 +115,22 @@ public abstract class BaseService {
             return " AND " + alias + ".org_id = '" + org.getId() + "'" + " AND " + alias + ".station_id = '" + sts.getId() + "'";
         }
     }
+    //无机构id权限
+    public static String dataStationIdRoleFilter(User user, String alias) {
+        BasicOrganization org = user.getOrganization();
+        BasicServiceStation sts = user.getStation();
+        if (null != org && org.getId().trim().equals("0")) {
+            log.info("机构权限过滤：当前用户为 |全平台| 用户 " + user.getId() + ":" + user.getName());
+            return "";
+        } else if (null != sts && sts.getId().trim().equals("0")) {
+            log.info("机构权限过滤：当前用户为 |全机构| 用户 " + user.getId() + ":" + user.getName());
+
+            return "";
+        } else {
+            log.info("机构权限过滤：当前用户为 |本服务站| 用户 " + user.getId() + ":" + user.getName());
+            return "" + " AND " + alias + ".station_id = '" + sts.getId() + "'";
+        }
+    }
     public static String dataOrderRoleFilter(User user, String alias) {
         BasicOrganization org = user.getOrganization();
         BasicServiceStation sts = user.getStation();

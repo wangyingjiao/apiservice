@@ -129,6 +129,8 @@
 		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.skill_id = #{id}
 		AND  a.del_flag = #{DEL_FLAG_NORMAL}
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
 	</select>
 
 	<update id="updateTechNum">
