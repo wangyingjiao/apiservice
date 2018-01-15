@@ -139,4 +139,9 @@
 		LEFT JOIN ser_sort_info c on b.sort_id = c.id
 		WHERE a.id = #{id}
 	</select>
+	<update id="deleteGoodsByOrderId">
+		UPDATE order_goods SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE order_id = #{orderId}
+	</update>
 </mapper>

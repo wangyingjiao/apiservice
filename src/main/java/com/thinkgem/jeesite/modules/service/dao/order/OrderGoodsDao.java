@@ -17,4 +17,6 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 public interface OrderGoodsDao extends CrudDao<OrderGoods> {
 
     SerItemCommodity findItemGoodsByGoodId(String cate_goods_id);
+
+    void deleteGoodsByOrderId(OrderGoods serchOrderGoods);
 }
