@@ -222,7 +222,9 @@
 		select
 			a.id AS id,
 			a.name AS name,
-			a.scope_type AS scopeType
+			a.scope_type AS scopeType,
+			a.work_start_time AS workStartTime,
+			a.work_end_time AS workEndTime
 		from basic_organization a
 		WHERE a.joint_eshop_code = #{jointEshopCode}
 		AND a.del_flag = #{DEL_FLAG_NORMAL}

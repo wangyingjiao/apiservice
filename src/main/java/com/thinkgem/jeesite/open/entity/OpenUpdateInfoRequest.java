@@ -17,7 +17,7 @@ public class OpenUpdateInfoRequest extends DataEntity<OpenUpdateInfoRequest> {
 	private static final long serialVersionUID = 1L;
 
 	private String service_order_id;//自营服务订单ID
-	private OpenServiceInfo service_info;//更新服务项目信息及数量
+	private List<OpenServiceInfo> service_info;//更新服务项目信息及数量
 	private OpenGuoanxiaInfo guoanxia_info;//国安侠信息
 	private OpenCostomerInfo costomer_info;//用户信息
 	private OpenStoreInfo store_info;//门店信息
@@ -31,11 +31,11 @@ public class OpenUpdateInfoRequest extends DataEntity<OpenUpdateInfoRequest> {
 		this.service_order_id = service_order_id;
 	}
 
-	public OpenServiceInfo getService_info() {
+	public List<OpenServiceInfo> getService_info() {
 		return service_info;
 	}
 
-	public void setService_info(OpenServiceInfo service_info) {
+	public void setService_info(List<OpenServiceInfo> service_info) {
 		this.service_info = service_info;
 	}
 
