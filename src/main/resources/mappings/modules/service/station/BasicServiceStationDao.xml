@@ -17,7 +17,7 @@
         <result column="orgId" property="orgId"/>
         <result column="isUseable" property="isUseable"></result>
         <result column="user.id" property="user.id"></result>
-        <result column="user.name" property="user.id"></result>
+        <result column="user.name" property="user.name"></result>
         <result column="organ.scopeType" property="organ.scopeType"></result>
         <result column="cityName" property="cityName"></result>
         <collection property="storeList" ofType="java.lang.String" javaType="list" select="basicStore" column="id"/>
