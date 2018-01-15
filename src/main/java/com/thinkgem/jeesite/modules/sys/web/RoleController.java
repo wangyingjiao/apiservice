@@ -485,6 +485,7 @@ public class RoleController extends BaseController {
 		}
 		return new FailResult("未找到岗位");
 	}
+	
 
 	@ResponseBody
 	@RequestMapping(value = "listDataWithoutPermission", method = RequestMethod.POST)
