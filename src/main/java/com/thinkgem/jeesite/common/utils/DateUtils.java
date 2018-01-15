@@ -244,9 +244,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		if(!startTime.before(endTime)){
 			return null;//开始时间在结束时间之前 否则返回null
 		}
-		if(!(DateUtils.formatDate(startTime, "yyyy").equals(DateUtils.formatDate(endTime, "yyyy"))) ||
-				!(DateUtils.formatDate(startTime, "MM").equals(DateUtils.formatDate(endTime, "MM"))) ||
-				!(DateUtils.formatDate(startTime, "dd").equals(DateUtils.formatDate(endTime, "dd")))){
+		if(!(DateUtils.formatDate(startTime, "yyyyMMdd").equals(DateUtils.formatDate(endTime, "yyyyMMdd")))){
 			return null;//开始时间和结束时间是同一天 否则返回null
 		}
 
@@ -254,23 +252,56 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			return null;//开始时间和结束时间之间相隔不到30分钟
 		}
 
-		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy") + "-" +
-				DateUtils.formatDate(startTime, "MM") + "-" +
-				DateUtils.formatDate(startTime, "dd") + " " +
+		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
 				DateUtils.formatDate(startTime, "HH") + ":30:00");
 		if(!startTime.before(heafHourTime)){
-			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy") + "-" +
-					DateUtils.formatDate(startTime, "MM") + "-" +
-					DateUtils.formatDate(startTime, "dd") + " " +
+			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
 					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
 		}
 		List<String> heafHourTimeList = new ArrayList<String>();
-		heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH") + ":" + DateUtils.formatDate(heafHourTime, "mm"));
+		heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
 		for (int i = 0; i < 48; i++) {
 
 			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
 			if(endTime.after(heafHourTime)){
-				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH") + ":" + DateUtils.formatDate(heafHourTime, "mm"));
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+				continue;
+			}
+			break;
+		}
+		return heafHourTimeList;
+	}
+	/**
+	 * 取得同一天 某时间段内半小时和整点数据 包含边界
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public static List<String> getHeafHourTimeListBorder(Date startTime, Date endTime) {
+		if(!startTime.before(endTime)){
+			return null;//开始时间在结束时间之前 否则返回null
+		}
+		if(!(DateUtils.formatDate(startTime, "yyyyMMdd").equals(DateUtils.formatDate(endTime, "yyyyMMdd")))){
+			return null;//开始时间和结束时间是同一天 否则返回null
+		}
+
+		if(!DateUtils.addMinutes(startTime,30).before(endTime)){
+			return null;//开始时间和结束时间之间相隔不到30分钟
+		}
+
+		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+				DateUtils.formatDate(startTime, "HH") + ":30:00");
+		if(!startTime.before(heafHourTime)){
+			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
+		}
+		List<String> heafHourTimeList = new ArrayList<String>();
+		heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+		for (int i = 0; i < 48; i++) {
+
+			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
+			if(endTime.after(heafHourTime)){
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
 				continue;
 			}
 			break;
@@ -278,6 +309,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return heafHourTimeList;
 	}
 
+	/**
+	 * 获取今天后15天的日期数组
+	 * @return
+	 */
+	public static List<Date> getAfterFifteenDays() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		list.add(day);
+		for(int i=0;i<14;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
+	}
 
 	/**
 	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回false
@@ -378,7 +423,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
 */
 
-        System.out.println(getDateAndRandomTenNum("01"));
-    }
+       // System.out.println(getDateAndRandomTenNum("01"));
+
+		/*System.out.println(getAfterFifteenDays().size());
+		for(Date d : getAfterFifteenDays()){
+			System.out.println(formatDate(d, "yyyy-MM-dd HH:mm:ss"));
+		}*/
+
+		System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
+	}
 
 }

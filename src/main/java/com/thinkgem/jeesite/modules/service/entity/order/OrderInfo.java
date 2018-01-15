@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.entity.order;
 
 import org.hibernate.validator.constraints.Length;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -83,6 +84,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String techPhone;
 	private BusinessInfo businessInfo; //业务人员
 	private ShopInfo shopInfo;	//门店信息
+	private BigDecimal openPrice;
 	private String serviceStatusName;//app
 	private String orderStatusName;//app
 	private String payStatusName;//app
@@ -619,5 +621,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setMajorSortName(String majorSortName) {
 		this.majorSortName = majorSortName;
+	}
+
+	public BigDecimal getOpenPrice() {
+		return openPrice;
+	}
+
+	public void setOpenPrice(BigDecimal openPrice) {
+		this.openPrice = openPrice;
 	}
 }

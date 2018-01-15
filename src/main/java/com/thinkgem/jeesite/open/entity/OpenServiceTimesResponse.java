@@ -23,6 +23,29 @@ public class OpenServiceTimesResponse extends DataEntity<OpenServiceTimesRespons
 	private static final long serialVersionUID = 1L;
 	private String format_date;		// 格式：2018-02-01
 	private String weekday;		// 格式：周一
-	private OpenHours hours;  //该日服务时间点列表
+	private List<OpenHours> hours;  //该日服务时间点列表
 
+	public String getFormat_date() {
+		return format_date;
+	}
+
+	public void setFormat_date(String format_date) {
+		this.format_date = format_date;
+	}
+
+	public String getWeekday() {
+		return weekday;
+	}
+
+	public void setWeekday(String weekday) {
+		this.weekday = weekday;
+	}
+
+	public List<OpenHours> getHours() {
+		return hours;
+	}
+
+	public void setHours(List<OpenHours> hours) {
+		this.hours = hours;
+	}
 }
