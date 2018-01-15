@@ -34,6 +34,8 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String headPic;		// 头像
     private String idCard;		// 身份证号
     private String idCardPic;		// 身份证照片(正反)
+    private String idCardPicBefor;		// 身份证照片(正)
+    private String idCardPicAfter;		// 身份证照片(反)
     private String lifePic;		// 生活照
     private String jobPic;		// 证件照
     private String phone;		// 手机号
@@ -154,6 +156,22 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setIdCardPic(String idCardPic) {
         this.idCardPic = idCardPic;
+    }
+
+    public String getIdCardPicBefor() {
+        return idCardPicBefor;
+    }
+
+    public void setIdCardPicBefor(String idCardPicBefor) {
+        this.idCardPicBefor = idCardPicBefor;
+    }
+
+    public String getIdCardPicAfter() {
+        return idCardPicAfter;
+    }
+
+    public void setIdCardPicAfter(String idCardPicAfter) {
+        this.idCardPicAfter = idCardPicAfter;
     }
 
     public String getLifePic() {

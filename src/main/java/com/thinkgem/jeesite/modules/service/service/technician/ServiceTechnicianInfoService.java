@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.service.technician;
 
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -23,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 服务技师基础信息Service
@@ -79,6 +78,15 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     public ServiceTechnicianInfo formData(ServiceTechnicianInfo serviceTechnicianInfo) {
         ServiceTechnicianInfo info = technicianInfoDao.formData(serviceTechnicianInfo);
+        if(StringUtils.isNotEmpty(info.getIdCardPic())){
+            Map map2 = (HashMap) JsonMapper.fromJsonString(info.getIdCardPic(), HashMap.class);
+            if(null != map2.get("befor")) {
+                info.setIdCardPicBefor(map2.get("befor").toString());
+            }
+            if(null != map2.get("after")) {
+                info.setIdCardPicAfter(map2.get("after").toString());
+            }
+        }
         if(null != info){
             List<ServiceTechnicianWorkTime> workTimes = info.getWorkTimes();
             if(null != workTimes){
@@ -158,6 +166,12 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     @Transactional(readOnly = false)
     public void save(ServiceTechnicianInfo serviceTechnicianInfo) {
+        Map map = new HashMap();//身份证照片(正反)
+        map.put("befor",serviceTechnicianInfo.getIdCardPicBefor());
+        map.put("after",serviceTechnicianInfo.getIdCardPicAfter());
+        String picture = JsonMapper.toJsonString(map);
+        serviceTechnicianInfo.setIdCardPic(picture);//身份证照片(正反)
+
         super.save(serviceTechnicianInfo);
 
         List<ServiceTechnicianWorkTime> times = serviceTechnicianInfo.getWorkTimes();
@@ -256,6 +270,18 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     @Transactional(readOnly = false)
     public void saveInfo(ServiceTechnicianInfo info) {
+        Map map = new HashMap();//身份证照片(正反)
+        if(StringUtils.isNotEmpty(info.getIdCardPicBefor())){
+            map.put("befor",info.getIdCardPicBefor());
+        }
+        if(StringUtils.isNotEmpty(info.getIdCardPicAfter())) {
+            map.put("after", info.getIdCardPicAfter());
+        }
+        if(map.size() != 0) {
+            String picture = JsonMapper.toJsonString(map);
+            info.setIdCardPic(picture);//身份证照片(正反)
+        }
+
         info.preUpdate();
         dao.updateInfo(info);
     }
