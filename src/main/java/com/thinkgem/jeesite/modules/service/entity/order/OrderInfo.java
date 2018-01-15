@@ -80,6 +80,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<String> techIdList; //技师List
 	private String dispatchTechId;//改派前技师ID
 	private String techName;
+	private String techPhone;
 	private BusinessInfo businessInfo; //业务人员
 	private ShopInfo shopInfo;	//门店信息
 
@@ -551,6 +552,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setTechName(String techName) {
 		this.techName = techName;
+	}
+
+	public String getTechPhone() {
+		return techPhone;
+	}
+
+	public void setTechPhone(String techPhone) {
+		this.techPhone = techPhone;
 	}
 
 	public BusinessInfo getBusinessInfo() {

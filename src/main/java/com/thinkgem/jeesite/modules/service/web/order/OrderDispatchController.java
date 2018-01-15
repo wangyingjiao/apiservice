@@ -11,6 +11,9 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +61,18 @@ public class OrderDispatchController extends BaseController {
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取改派列表")
 	@RequiresPermissions("dispatch_view")
-	public Result listData(@RequestBody(required = false) OrderDispatch dispatchInfo, HttpServletRequest request, HttpServletResponse response) {
+	public Result listData(@RequestBody(required = false) OrderInfo dispatchInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(null == dispatchInfo){
-			dispatchInfo = new OrderDispatch();
+			dispatchInfo = new OrderInfo();
 		}
-		Page<OrderDispatch> dispatchInfoPage = new Page<>(request, response);
-		Page<OrderDispatch> data = orderDispatchService.findPage(dispatchInfoPage, dispatchInfo);
+		Page<OrderInfo> dispatchInfoPage = new Page<>(request, response);
+		Page<OrderInfo> data = orderDispatchService.findPage(dispatchInfoPage, dispatchInfo);
+		//add by wyr 更改改派管理列表的总条数显示为订单的条数
+		User user = UserUtils.getUser();
+		dispatchInfo.setOrgId(user.getOrganization().getId());// 机构ID
+		Long count =orderDispatchService.findOrderCount(dispatchInfoPage, dispatchInfo);
+		data.setCount(count);
+	
 		return new SuccResult(data);
 	}
 

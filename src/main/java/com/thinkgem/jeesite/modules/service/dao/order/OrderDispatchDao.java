@@ -6,8 +6,11 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 派单DAO接口
@@ -18,4 +21,8 @@ import java.util.List;
 public interface OrderDispatchDao extends CrudDao<OrderDispatch> {
 
     List<OrderDispatch> formData(OrderDispatch info);
+
+	List<OrderInfo> findOrderList(OrderInfo orderDispatch);
+
+	Long findOrderCount(@Param("DEL_FLAG_NORMAL")String DEL_FLAG_NORMAL, @Param("orgId")String orgId);
 }

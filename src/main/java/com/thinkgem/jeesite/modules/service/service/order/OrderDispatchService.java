@@ -5,14 +5,16 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 派单Service
@@ -31,13 +33,24 @@ public class OrderDispatchService extends CrudService<OrderDispatchDao, OrderDis
 		return super.findList(orderDispatch);
 	}
 	
-	public Page<OrderDispatch> findPage(Page<OrderDispatch> page, OrderDispatch orderDispatch) {
+	public Page<OrderInfo> findPage(Page<OrderInfo> page, OrderInfo orderDispatch) {
 		orderDispatch.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
-		return super.findPage(page, orderDispatch);
+		orderDispatch.setPage(page);
+		page.setList(dao.findOrderList(orderDispatch));
+		
+		return page;
 	}
 
     public List<OrderDispatch> formData(OrderDispatch info) {
 		List<OrderDispatch> dispatchInfo = dao.formData(info);
 		return dispatchInfo;
     }
+
+	public Long findOrderCount(Page<OrderInfo> page, OrderInfo orderDispatch) {
+		orderDispatch.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
+		orderDispatch.setPage(page);
+		//page.setList(dao.findOrderList(orderDispatch));
+		Long count=dao.findOrderCount(orderDispatch.getDelFlag(),orderDispatch.getOrgId());
+		return count;
+	}
 }

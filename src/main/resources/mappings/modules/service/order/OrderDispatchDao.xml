@@ -37,7 +37,7 @@
 			<result column="techId" property="techId"></result>
 		</collection>
 	</resultMap>
-	<select id="findList" resultMap="orderDispatchMap">
+	<select id="findOrderList" resultMap="orderDispatchMap">
 		SELECT
 			a.id AS id,
 			a.order_number AS orderNumber,
@@ -148,5 +148,30 @@
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	  	AND a.status = 'no'
 	</select>
-
+	<select id="findOrderCount" resultType="java.lang.Long">
+	SELECT
+	count(1)
+FROM
+	(
+		SELECT
+			a.id AS id,
+			a.order_number AS orderNumber,
+			a.service_time AS serviceTime,
+			t.id AS techId,
+			t.head_pic AS headPic,
+			t. NAME AS techName,
+			t.phone AS techPhone,
+			t.sex AS techSex,
+			t.job_nature AS jobNature
+		FROM
+			order_info a
+		LEFT JOIN order_dispatch o ON o.order_id = a.id
+		AND o.del_flag =#{DEL_FLAG_NORMAL}
+		LEFT JOIN tech_info t ON o.tech_id = t.id
+		WHERE
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		AND o. STATUS = 'yes'
+		AND a.org_id =#{orgId} GROUP BY a.order_number
+	)tmp_count
+	</select>
 </mapper>
