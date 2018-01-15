@@ -23,4 +23,6 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
     void deleteCitysByOrgId(BasicOrganization basicOrganization);
 
     int getStationList(String id);
+
+    List<BasicOrganization> getOrganizationListByJointEshopCode(BasicOrganization organizationSerch);
 }

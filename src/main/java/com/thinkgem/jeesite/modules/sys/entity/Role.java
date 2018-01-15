@@ -282,4 +282,15 @@ public class Role extends DataEntity<Role> {
 		}
 		return StringUtils.join(menuNameList, ",");
 	}
+	//add by wyr判断岗位下是否有员工
+	private Boolean flag;
+
+	public Boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
+	}
+	
 }
