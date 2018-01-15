@@ -52,12 +52,12 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private int workTime;		// 工作年限
     private String email;		// 邮箱
     private String education;		// 学历(primary：小学 middle：初中 high：高中 special：中专 junior：大专 university：本科及以上)
-    private int height;		// 身高
-    private int weight;		// 体重
+    private Integer height;		// 身高
+    private Integer weight;		// 体重
     private String marryStatus;		// 婚姻状况(married：已婚 unmarried：未婚 widowed：丧偶 divorce：离婚)
     private String nativeProvinceCode;		// 籍贯
     private Date inJobTime;		// 入职日期
-    private int jobLevel;		// 级别
+    private Integer jobLevel;		// 级别
     private String description;		// 经验描述
     private String remark;		// 备注信息
 
@@ -316,19 +316,19 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.education = education;
     }
 
-    public int getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(Integer height) {
         this.height = height;
     }
 
-    public int getWeight() {
+    public Integer getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(Integer weight) {
         this.weight = weight;
     }
 
@@ -358,11 +358,11 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.inJobTime = inJobTime;
     }
 
-    public int getJobLevel() {
+    public Integer getJobLevel() {
         return jobLevel;
     }
 
-    public void setJobLevel(int jobLevel) {
+    public void setJobLevel(Integer jobLevel) {
         this.jobLevel = jobLevel;
     }
 
