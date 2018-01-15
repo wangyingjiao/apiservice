@@ -51,9 +51,11 @@ public interface RoleDao extends CrudDao<Role> {
 	List<Role> findRoleListByUser(User user);
 
 	// add by wyr
-	int checkUpdateName(@Param("name") String name, @Param("orgId") String orgId, @Param("roleId") String roleId);
+	int checkUpdateName(@Param("name") String name, @Param("id") String id, @Param("roleId") String roleId);
 
 	// add by wyr 判断岗位下是否有员工
 	int getUserCount(@Param("id") String id);
+	//同一下的机构，岗位名不可重复add by wyr
+	int checkAddName(@Param("name")String name,@Param("id") String id);
 
 }

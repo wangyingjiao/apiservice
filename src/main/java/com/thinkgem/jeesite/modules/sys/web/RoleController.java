@@ -293,19 +293,29 @@ public class RoleController extends BaseController {
 		// return new FailResult("名称不可用");
 		return "false";
 	}
-
+	// 加机构的id  若机构id为空直接返回不做操作
 	@ResponseBody
 	@RequiresPermissions("user")
 	@RequestMapping(value = "chkName", method = { RequestMethod.POST, RequestMethod.GET })
 	@ApiOperation(value = "验证角色名是否有效")
-	public Result chkName(@RequestParam(required = false) String oldName, @RequestParam String name) {
+	public Result chkName(@RequestParam(required = false) String id, @RequestParam(required = false) String oldName, @RequestParam String name) {
+		if (org.apache.commons.lang3.StringUtils.isEmpty(id)) {
+			return new FailResult("机构id不能为空");
+		}
+		//同一下的机构，岗位名不可重复add by wyr
+		int i=systemService.checkAddName(name, id);
+		if (i>0) {
+			return new FailResult("同一机构下岗位名不可重复");
+		}
 		if (name != null && name.equals(oldName)) {
 			// return "true";
 			return new SuccResult("名称可用");
-		} else if (name != null && systemService.getRoleByName(name) == null) {
+		} else if (name != null && systemService.getRoleByName(name).size() == 0) {
+			
 			return new SuccResult("名称可用");
 			// return "true";
 		}
+		
 		return new FailResult("名称不可用");
 		// return "false";
 	}
@@ -315,20 +325,20 @@ public class RoleController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "chkNameUpdate", method = { RequestMethod.POST, RequestMethod.GET })
 	@ApiOperation(value = "验证角色名是否有效")
-	public Result chkNameUpdate(@RequestParam(required = false) String oldName, @RequestParam String name,
+	public Result chkNameUpdate(@RequestParam String id,@RequestParam(required = false) String oldName, @RequestParam String name,
 			@RequestParam String roleId) {
-
-		User user = UserUtils.getUser();
-		String orgId = user.getOrganization().getId();// 所属的机构id
-		int i = systemService.checkUpdateName(name, orgId, roleId);
+		if (org.apache.commons.lang3.StringUtils.isEmpty(id)) {
+			return new FailResult("机构id不能为空");
+		}
+		int i = systemService.checkUpdateName(name, id, roleId);
 		if (0 != i) {
 			return new FailResult("名称不可用");
 		}
-		if (name != null && name.equals(oldName)) {
+		/*if (name != null && name.equals(oldName)) {
 			return new SuccResult("名称可用");
-		} else if (name != null && systemService.getRoleByName(name) == null) {
+		} else if (name != null && systemService.getRoleByName(name).size() == 0) {
 			return new SuccResult("名称可用");
-		}
+		}*/
 		// return new FailResult("名称不可用");
 		return new SuccResult("名称可用");
 	}

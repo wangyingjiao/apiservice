@@ -623,12 +623,15 @@ public class SystemService extends BaseService implements InitializingBean {
 
         return list;
     }
-	public int checkUpdateName(String name, String orgId, String roleId) {
-		 return roleDao.checkUpdateName(name,orgId,roleId);
+	public int checkUpdateName(String name, String id, String roleId) {
+		 return roleDao.checkUpdateName(name,id,roleId);
 	}
 	//add by wyr 判断岗位下是否有员工
 	public int getUserCount(String id) {
 		return roleDao.getUserCount(id);
+	}
+	public int checkAddName(String name, String id) {
+		return roleDao.checkAddName(name,id);
 	}
 
 
