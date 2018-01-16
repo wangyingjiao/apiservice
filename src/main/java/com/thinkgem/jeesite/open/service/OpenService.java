@@ -332,6 +332,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param info
 	 * @return
 	 */
+	@Transactional(readOnly = false)
 	public OpenCreateResponse openCreate(OpenCreateRequest info) {
 		OpenCreateResponse response = new OpenCreateResponse();
 		if(null == info){
@@ -826,6 +827,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param info
 	 * @return
 	 */
+	@Transactional(readOnly = false)
 	public OpenUpdateStautsResponse openUpdateStauts(OpenUpdateStautsRequest info) {
 		OpenUpdateStautsResponse response = new OpenUpdateStautsResponse();
 		if(null == info){
@@ -872,6 +874,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param info
 	 * @return
 	 */
+	@Transactional(readOnly = false)
 	public OpenUpdateInfoResponse openUpdateInfo(OpenUpdateInfoRequest info) {
 		OpenUpdateInfoResponse response = new OpenUpdateInfoResponse();
 		if(null == info){
@@ -1030,5 +1033,26 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 
 		return num;
+	}
+
+	/**
+	 *  国安社区开放接口 - 服务项目保存
+	 * @param info
+	 * @return
+	 */
+	public OpenUpdateStautsResponse openSendSaveItem(OpenUpdateStautsRequest info) {
+
+		return null;
+
+	}
+
+	/**
+	 *  国安社区开放接口 - 更新订单信息
+	 *  更新服务时间、改派服务人员、服务人员端备注
+	 * @param info
+	 * @return
+	 */
+	public OpenUpdateStautsResponse openSendSaveOrder(OpenUpdateStautsRequest info) {
+		return null;
 	}
 }
