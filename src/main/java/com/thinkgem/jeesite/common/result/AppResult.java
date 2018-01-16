@@ -1,6 +1,8 @@
 package com.thinkgem.jeesite.common.result;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class AppResult<T extends Object> {
     private int code;
     private T data;
@@ -27,6 +29,7 @@ public class AppResult<T extends Object> {
         this.code = code;
     }
 
+    @JsonInclude
     public T getData() {
         return data;
     }

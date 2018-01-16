@@ -289,6 +289,11 @@
 		LEFT JOIN tech_info b on a.tech_id=b.id
 		where a.tech_id=#{id}
 		AND a.del_flag = '0'
+		<choose>
+			<otherwise>
+				ORDER BY a.week
+			</otherwise>
+		</choose>
 	</select>
 
 	<select id="selectFamilyMembersByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianFamilyMembers">
@@ -363,7 +368,36 @@
 
 	<select id="findTech"  resultType="ServiceTechnicianInfo">
 		SELECT
-		<include refid="serviceTechnicianInfoColumns"/>
+		a.id AS "id",
+		a.org_id AS "orgId",
+		a.station_id AS "stationId",
+		a.name AS "name",
+		a.head_pic AS "headPic",
+		a.id_card AS "idCard",
+		a.id_card_pic AS "idCardPic",
+		a.life_pic AS "lifePic",
+		a.job_pic AS "jobPic",
+		a.phone AS "phone",
+		a.address AS "address",
+		a.sex AS "sex",
+		a.nation AS "nation",
+		a.birth_date AS "birthDate",
+		a.status AS "status",
+		a.app_login_password AS "appLoginPassword",
+		a.job_nature AS "jobNature",
+		a.job_status AS "jobStatus",
+		a.work_time AS "workTime",
+		a.email AS "email",
+		a.education AS "education",
+		a.height AS "height",
+		a.weight AS "weight",
+		a.marry_status AS "marryStatus",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
 		FROM tech_info a
 		WHERE
 			a.del_flag = #{DEL_FLAG_NORMAL}
