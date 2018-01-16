@@ -98,6 +98,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
                     List<ServiceTechnicianWorkTimeWeek> weeks = new ArrayList<ServiceTechnicianWorkTimeWeek>();
                     if(StringUtils.isNotBlank(week)){
                         String str[] = week.split(",");
+                        Arrays.sort(str);
                         List<String> weekList = Arrays.asList(str);
                         if(null != weekList && weekList.size()!=0){
                             for(String weekI : weekList){
