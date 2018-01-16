@@ -84,10 +84,24 @@ public class AppTechController extends BaseController {
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		Page<AppTech> page = new Page<AppTech>(request, response);
 		Page<AppTech> list = techService.appGetFriendByStationId(page,tech1);
-		if (list.getList().size() == 0){
-			return new AppSuccResult(1,list,"查询通讯录");
+		long count = page.getCount();
+		int pageSize = page.getPageSize();
+		long totalPage=0;
+		long l = count % pageSize;//取余
+		if (l > 0){
+			long l1 = count / pageSize;
+			totalPage = l1 + 1;
+		}else {
+			totalPage = count / pageSize;
 		}
-		return new AppSuccResult(0,list,"查询通讯录");
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("list",page.getList());
+		map.put("totalPage",totalPage);
+		map.put("pageNo",page.getPageSize());
+		if (list.getList().size() == 0){
+			return new AppSuccResult(1,map,"查询通讯录");
+		}
+		return new AppSuccResult(0,map,"查询通讯录");
 	}
 
 	//技师休假列表
@@ -106,11 +120,24 @@ public class AppTechController extends BaseController {
 		holiday.setTechId(tech1.getId());
 		Page<ServiceTechnicianHoliday> serSortInfoPage = new Page<>(request, response);
 		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(serSortInfoPage, holiday);
-
-		if (page.getList().size() == 0){
-			return new AppSuccResult(1,page,"技师休假列表");
+		long count = page.getCount();
+		int pageSize = page.getPageSize();
+		long totalPage=0;
+		long l = count % pageSize;//取余
+		if (l > 0){
+			long l1 = count / pageSize;
+			totalPage = l1 + 1;
+		}else {
+			totalPage = count / pageSize;
 		}
-		return new AppSuccResult(0,page,"技师休假列表");
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("list",page.getList());
+		map.put("totalPage",totalPage);
+		map.put("pageNo",page.getPageSize());
+		if (page.getList().size() == 0){
+			return new AppSuccResult(1,map,"技师休假列表");
+		}
+		return new AppSuccResult(0,map,"技师休假列表");
 
 	}
 

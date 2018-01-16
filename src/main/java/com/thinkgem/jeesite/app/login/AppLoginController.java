@@ -18,8 +18,10 @@ import com.thinkgem.jeesite.modules.service.service.station.ServiceStationServic
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 import com.thinkgem.jeesite.modules.sys.interceptor.SameUrlData;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +72,15 @@ public class AppLoginController extends BaseController {
             response.setHeader("token",token.getToken());
             return new AppSuccResult(0,entity,"登陆成功");
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "${appPath}/appLoginOut",  method = {RequestMethod.POST})
+    public Object appLoginOut() {
+        Subject subject = UserUtils.getSubject();
+        System.out.println(subject);
+        UserUtils.getSubject().logout();
+        return new AppSuccResult(1,null,"退出成功");
     }
 
 }

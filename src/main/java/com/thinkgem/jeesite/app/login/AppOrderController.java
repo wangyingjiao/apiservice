@@ -53,11 +53,25 @@ public class AppOrderController extends BaseController {
 		}
 		Page<OrderInfo> serSortInfoPage = new Page<>(request, response);
 		Page<OrderInfo> page = orderInfoService.appFindPage(serSortInfoPage,orderInfo);
+		long count = page.getCount();
+		int pageSize = page.getPageSize();
+		long totalPage=0;
+		long l = count % pageSize;//取余
+		if (l > 0){
+			long l1 = count / pageSize;
+			totalPage = l1 + 1;
+		}else {
+			totalPage = count / pageSize;
+		}
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("list",page.getList());
+		map.put("totalPage",totalPage);
+		map.put("pageNo",page.getPageSize());
 		if(page.getList().size()==0){
-			return new AppSuccResult(1,page,"列表查询");
+			return new AppSuccResult(1,map,"列表查询");
 		}
 
-		return new AppSuccResult(0,page,"列表查询");
+		return new AppSuccResult(0,map,"列表查询");
     }
 	//订单详情
 	@ResponseBody
