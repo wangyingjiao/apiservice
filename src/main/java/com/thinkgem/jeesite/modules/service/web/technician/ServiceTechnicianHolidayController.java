@@ -77,7 +77,10 @@ public class ServiceTechnicianHolidayController extends BaseController {
 			return new FailResult("请假时间冲突");
 		}
 
-		serviceTechnicianHolidayService.save(info);
+		int i = serviceTechnicianHolidayService.savePc(info);
+		if (i==0) {
+			return new FailResult("设置的时间不在工作时间内");
+		}
 		return new SuccResult("保存成功");
 	}
 

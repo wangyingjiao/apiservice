@@ -62,7 +62,8 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	}
 
 	@Transactional(readOnly = false)
-	public void save(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+	public int savePc(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		int i=0;
 		//最后休假日期List
 		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
 		//获取服务人员工作时间
@@ -90,10 +91,42 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		//循环插入
 		for (ServiceTechnicianHoliday saveInfo : list) {
-			super.save1(saveInfo);
+			 i = super.savePc(saveInfo);
+		}
+		return i;
+	}
+	@Transactional(readOnly = false)
+	public void appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		//最后休假日期List
+		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
+		//获取服务人员工作时间
+		List<ServiceTechnicianHoliday> workTimes = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
+		//请假List   00:00-23:59 周几
+		holidays = new ArrayList<ServiceTechnicianHoliday>();
+		getHolidays(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+
+		//循环请假时间
+		for (ServiceTechnicianHoliday holiday : holidays) {
+			int weekDay = Integer.parseInt(holiday.getHoliday());//当前是周几
+			//获取周几的工作时间
+			List<ServiceTechnicianHoliday> weekDayWorkTimes = getWeekDayWorkTimes(weekDay, workTimes);
+			//循环工作时间
+			for (ServiceTechnicianHoliday weekDayWorkTime : weekDayWorkTimes) {
+				ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
+				//判断请假时间是否在工作时间内，并返回在工作时间内的数据
+				info = getLastHolidays(weekDayWorkTime, holiday);
+				if (null != info) {//请假时间在工作时间内
+					info.setTechId(serviceTechnicianHoliday.getTechId());//技师ID
+					info.setRemark(serviceTechnicianHoliday.getRemark());//备注
+					list.add(info);
+				}
+			}
+		}
+		//循环插入
+		for (ServiceTechnicianHoliday saveInfo : list) {
+			super.saveAPP(saveInfo);
 		}
 	}
-
 	/**
 	 * 获取休假时间
 	 *

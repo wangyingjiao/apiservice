@@ -80,14 +80,28 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		}
 	}
 	@Transactional(readOnly = false)
-	public void save1(T entity) {
+	public int savePc(T entity) {
+		int i =0;
 		if (entity.getIsNewRecord()){
-			entity.appreInsert();
-			dao.insert(entity);
+			entity.preInsert();
+			i= dao.insert(entity);
 		}else{
 			entity.preUpdate();
-			dao.update(entity);
+			i=dao.update(entity);
 		}
+		return i;
+	}
+	@Transactional(readOnly = false)
+	public int saveAPP(T entity) {
+		int i =0;
+		if (entity.getIsNewRecord()){
+			entity.appreInsert();
+			i= dao.insert(entity);
+		}else{
+			entity.preUpdate();
+			i= dao.update(entity);
+		}
+		return i;
 	}
 	
 	/**
