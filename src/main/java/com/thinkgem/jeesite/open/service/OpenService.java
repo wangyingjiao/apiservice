@@ -957,7 +957,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String sortItemNames = "";//服务分类+服务项目
 		String goodsNames = "";//商品名称
 
-		int techDispatchNum = 0;//派人数量
 		double orderTotalTime = 0.0;//订单所需时间
 		double serviceHour = 0.0;//建议服务时长（小时）
 
@@ -989,30 +988,23 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			int goodsNum = buy_num;		// 订购商品数
 			Double convertHours = commodity.getConvertHours();		// 折算时长
-			int startPerNum = commodity.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
-			int cappinPerNum = commodity.getCappingPerNum();		//封项人数
 
-			int techNum = 0;//当前商品派人数量
-			int addTechNum=0;
 			Double goodsTime = convertHours * goodsNum;//gon
 			orderTotalTime = orderTotalTime + goodsTime;
-
-			if(goodsTime > 4){//每4小时增加1人
-				BigDecimal b1 = new BigDecimal(goodsTime);
-				BigDecimal b2 = new BigDecimal(new Double(4));
-				addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
-			}
-			techNum = startPerNum + addTechNum;
-			if(techNum > cappinPerNum){//每个商品的人数
-				techNum = cappinPerNum;
-			}
-			if(techNum > techDispatchNum){//订单的最大人数
-				techDispatchNum = techNum;
-			}
 		}
-		BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
-		serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 
+		OrderInfo orderInfoBefor = orderInfoDao.get(orderId);//当前订单
+		Date serviceTime = orderInfoBefor.getServiceTime();//服务时间
+
+		OrderInfo serchOrderInfo = new OrderInfo();
+		serchOrderInfo.setId(orderId);
+		List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(serchOrderInfo); //订单当前已有技师List
+		if(techList != null && techList.size() != 0){
+			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techList.size());//建议服务时长（小时） = 订单商品总时长/ 派人数量
+			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
+		}else{
+			return 0;
+		}
 
 		//删除 订单 原商品信息
 		OrderGoods serchOrderGoods = new OrderGoods();
@@ -1020,26 +1012,15 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderGoodsDao.deleteGoodsByOrderId(serchOrderGoods);
 
 		//更新订单信息
-		OrderInfo serchOrderInfo = new OrderInfo();
-		serchOrderInfo.setId(orderId);
-		List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(serchOrderInfo); //订单当前已有技师List
-		//Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
-
-
-		OrderInfo orderInfoBefor = orderInfoDao.get(orderId);//当前订单
-		Date serviceTime = orderInfoBefor.getServiceTime();//服务时间
-
 		OrderInfo orderInfo = new OrderInfo();
 		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
 		orderInfo.setPayPrice(openPrice.toString());            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
-
 		Double serviceSecond = serviceHour * 3600;
 		orderInfo.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
 		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));              //建议完成时间',
 		orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
-
 		orderInfo.preUpdate();
 		int num = orderInfoDao.update(orderInfo);
 
