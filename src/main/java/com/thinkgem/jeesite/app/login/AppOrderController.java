@@ -54,10 +54,10 @@ public class AppOrderController extends BaseController {
 		Page<OrderInfo> serSortInfoPage = new Page<>(request, response);
 		Page<OrderInfo> page = orderInfoService.appFindPage(serSortInfoPage,orderInfo);
 		if(page.getList().size()==0){
-			return new AppSuccResult(0,page,"列表查询");
+			return new AppSuccResult(1,page,"列表查询");
 		}
 
-		return new AppSuccResult(1,page,"列表查询");
+		return new AppSuccResult(0,page,"列表查询");
     }
 	//订单详情
 	@ResponseBody
@@ -193,7 +193,7 @@ public class AppOrderController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/appDispatchTech",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师改派")
-	public AppResult appDispatchTech(@RequestBody OrderInfo orderInfo) {
+	public AppResult appDispatchTech(OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 		return new AppSuccResult(techList);
 	}
@@ -201,7 +201,7 @@ public class AppOrderController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/appDispatchTechSave", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师改派保存")
-	public AppResult appDispatchTechSave(@RequestBody OrderInfo orderInfo) {
+	public AppResult appDispatchTechSave(OrderInfo orderInfo) {
 		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
 		return new AppSuccResult(techList);
 	}

@@ -6,10 +6,7 @@ package com.thinkgem.jeesite.app.login;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianHolidayService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
@@ -26,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,10 +82,10 @@ public class AppTechController extends BaseController {
 		tech.setPhone("13508070808");
 		tech.setDelFlag("0");
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		Page<ServiceTechnicianInfo> page = new Page<ServiceTechnicianInfo>(request, response);
-		Page<ServiceTechnicianInfo> list = techService.appGetFriendByStationId(page,tech1);
+		Page<AppTech> page = new Page<AppTech>(request, response);
+		Page<AppTech> list = techService.appGetFriendByStationId(page,tech1);
 		if (list.getList().size() == 0){
-			return new AppSuccResult(-1,list,"查询通讯录");
+			return new AppSuccResult(1,list,"查询通讯录");
 		}
 		return new AppSuccResult(0,list,"查询通讯录");
 	}
@@ -110,7 +108,7 @@ public class AppTechController extends BaseController {
 		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(serSortInfoPage, holiday);
 
 		if (page.getList().size() == 0){
-			return new AppSuccResult(-1,page,"技师休假列表");
+			return new AppSuccResult(1,page,"技师休假列表");
 		}
 		return new AppSuccResult(0,page,"技师休假列表");
 
@@ -144,7 +142,10 @@ public class AppTechController extends BaseController {
 			return new AppFailResult(-1,null,"请假时间冲突");
 		}
 
-		holidayService.save(info);
+		int i = holidayService.appSave(info);
+		if (i==0){
+			return new AppFailResult(-1,null,"设置的时间不在工作时间内");
+		}
 		return new AppSuccResult(0,null,"保存成功");
 	}
 
@@ -160,47 +161,4 @@ public class AppTechController extends BaseController {
 		return new AppFailResult(-1,null,"删除休假失败");
 	}
 
-	//技师改密码
-	@ResponseBody
-	@RequestMapping(value = "${appPath}/appChangePassword",method = {RequestMethod.POST, RequestMethod.GET})
-	@ApiOperation(value = "技师修改登陆密码", notes = "技师")
-	public AppResult appChangePassword(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
-		List<String> errList = errors(tech, SavePersonalGroup.class);
-		if (errList != null && errList.size() > 0) {
-			return new AppFailResult(errList);
-		}
-		//获取登陆技师的信息 id 去数据库查询出加密后的密码password
-//		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone("13508070808");
-		tech.setDelFlag("0");
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		//旧密码与数据库查询出来的密码验证
-		if (!systemService.validatePassword(tech.getOldPassword(),tech1.getAppLoginPassword())){
-			return new AppFailResult(-1,null,"旧密码输入不对");
-		}
-		String newEncrypt = systemService.entryptPassword(tech.getNewPassword());
-		tech1.setAppLoginPassword(newEncrypt);
-		int i = techService.updateTech(tech1);
-		if (i>0){
-			return new AppSuccResult(0,null,"修改密码成功");
-		}
-		return new AppFailResult(-1,null,"修改密码失败");
-	}
-	//技师列表
-	@ResponseBody
-	//@RequiresPermissions("deleteTech")
-	@RequestMapping(value = "${appPath}/getTechList", method = {RequestMethod.POST, RequestMethod.GET})
-	@ApiOperation(value = "改派技师列表", notes = "技师列表")
-	public AppResult getTechList(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone("13508070808");
-		tech.setDelFlag("0");
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-//		tech1.getStationId()
-		int delete = holidayService.delete1(serviceTechnicianHoliday);
-		if (delete > 0){
-			return new AppSuccResult(0,null,"删除休假成功");
-		}
-		return new AppFailResult(-1,null,"删除休假失败");
-	}
 }

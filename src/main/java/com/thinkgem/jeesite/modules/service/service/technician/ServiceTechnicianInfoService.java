@@ -382,10 +382,21 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     //app通讯录
-    public Page<ServiceTechnicianInfo> appGetFriendByStationId(Page<ServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo){
+    public Page<AppTech> appGetFriendByStationId(Page<AppTech> page,ServiceTechnicianInfo serviceTechnicianInfo){
 
-        serviceTechnicianInfo.setPage(page);
-        Page<ServiceTechnicianInfo> pageList = page.setList(technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo));
+        List<ServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
+        int totalPage=0;
+        AppTech tech=new AppTech();
+        List<AppTech> techs=new ArrayList<AppTech>();
+        for (ServiceTechnicianInfo t:serviceTechnicianInfos){
+            tech.setId(t.getId());
+            tech.setTechName(t.getName());
+            tech.setTechPhone(t.getPhone());
+            tech.setImgUrl("https://openservice.guoanshequ.com/"+t.getHeadPic());
+            techs.add(tech);
+        }
+        tech.setPage(page);
+        Page<AppTech> pageList = page.setList(techs);
         return pageList;
     }
 

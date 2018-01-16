@@ -60,6 +60,11 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		page.setList(serviceTechnicianHolidays);
 		return page;
 	}
+	//获取用户工作时间
+	public List<ServiceTechnicianHoliday> getServiceTechnicianWorkTime(ServiceTechnicianHoliday serviceTechnicianHoliday){
+		List<ServiceTechnicianHoliday> serviceTechnicianWorkTime = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
+		return serviceTechnicianWorkTime;
+	}
 
 	@Transactional(readOnly = false)
 	public int savePc(ServiceTechnicianHoliday serviceTechnicianHoliday) {
@@ -96,7 +101,8 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		return i;
 	}
 	@Transactional(readOnly = false)
-	public void appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		int i=0;
 		//最后休假日期List
 		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
 		//获取服务人员工作时间
@@ -124,8 +130,9 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		//循环插入
 		for (ServiceTechnicianHoliday saveInfo : list) {
-			super.saveAPP(saveInfo);
+			i=super.saveAPP(saveInfo);
 		}
+		return i;
 	}
 	/**
 	 * 获取休假时间
