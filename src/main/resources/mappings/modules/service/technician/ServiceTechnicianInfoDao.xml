@@ -52,6 +52,12 @@
         <include refid="serviceTechnicianInfoJoins"/>
         WHERE a.id = #{id}
     </select>
+	<select id="getById" resultType="ServiceTechnicianInfo">
+		SELECT
+		<include refid="serviceTechnicianInfoColumns"/>
+		FROM tech_info a
+		WHERE a.id = #{id}
+	</select>
 
 	<select id="getByPhone" resultType="ServiceTechnicianInfo">
 		SELECT

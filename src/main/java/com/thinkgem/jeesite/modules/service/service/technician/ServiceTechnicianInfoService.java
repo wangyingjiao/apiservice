@@ -304,6 +304,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         return technicianInfoDao.findTech(info);
     }
 
+    public ServiceTechnicianInfo getById(String id){
+        return technicianInfoDao.getById(id);
+    }
     @Transactional(readOnly = false)
     public void saveApp(ServiceTechnicianInfo serviceTechnicianInfo) {
         super.save(serviceTechnicianInfo);

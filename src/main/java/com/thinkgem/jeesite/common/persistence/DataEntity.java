@@ -88,14 +88,23 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 	 * 更新之前执行方法，需要手动调用
 	 */
 	@Override
-	public void preUpdate(){
+	 public void preUpdate(){
 		User user = UserUtils.getUser();
 		if (StringUtils.isNotBlank(user.getId())){
 			this.updateBy = user;
 		}
 		this.updateDate = new Date();
 	}
-	
+	//app
+	@Override
+	public void appPreUpdate(){
+		User user=new User();
+		user.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		if (StringUtils.isNotBlank(user.getId())){
+			this.updateBy = user;
+		}
+		this.updateDate = new Date();
+	}
 	@Length(min=0, max=255)
 	public String getRemarks() {
 		return remarks;

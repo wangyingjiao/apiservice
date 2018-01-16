@@ -123,7 +123,7 @@ public abstract class BaseEntity<T>implements Serializable {
 	 * 更新之前执行方法，子类实现
 	 */
 	public abstract void preUpdate();
-	
+	public abstract void appPreUpdate();
     /**
 	 * 是否是新记录（默认：false），调用setIsNewRecord()设置新记录，使用自定义ID。
 	 * 设置为true后强制执行插入语句，ID不会自动生成，需从手动传入。
@@ -154,7 +154,7 @@ public abstract class BaseEntity<T>implements Serializable {
 	 * 获取数据库名称
 	 */
 	@JsonIgnore
-	public String getDbName(){
+	public String getDbName() {
 		return Global.getConfig("jdbc.type");
 	}
 	

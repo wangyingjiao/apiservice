@@ -8,7 +8,9 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
+import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,8 @@ public class AppOrderController extends BaseController {
 
 	@Autowired
 	OrderInfoService orderInfoService;
+	@Autowired
+	ServiceTechnicianInfoService techService;
 
 	//查询订单列表
 	@ResponseBody
@@ -66,7 +70,7 @@ public class AppOrderController extends BaseController {
 		Map<String,Object> map=new HashMap<String,Object>();
 		map.put("list",page.getList());
 		map.put("totalPage",totalPage);
-		map.put("pageNo",page.getPageSize());
+		map.put("pageNo",page.getPageNo());
 		if(page.getList().size()==0){
 			return new AppSuccResult(1,map,"列表查询");
 		}
@@ -206,18 +210,40 @@ public class AppOrderController extends BaseController {
 
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/appDispatchTech",method = {RequestMethod.POST, RequestMethod.GET})
-	@ApiOperation("技师改派")
-	public AppResult appDispatchTech(OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
-		return new AppSuccResult(techList);
+	@ApiOperation("技师列表")
+	public AppResult appDispatchTech(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
+		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setPhone("13508070808");
+		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
+		for (OrderDispatch dis:techList){
+			ServiceTechnicianInfo byId = techService.getById(dis.getTechId());
+			dis.setTechPhone(byId.getPhone());
+			dis.setHeadPic("https://openservice.guoanshequ.com/"+dis.getHeadPic());
+		}
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("list",techList);
+		if (techList.size() == 0){
+			return new AppSuccResult(1,map,"技师列表");
+		}
+		return new AppSuccResult(0,map,"技师列表");
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/appDispatchTechSave", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师改派保存")
-	public AppResult appDispatchTechSave(OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
-		return new AppSuccResult(techList);
+	public AppResult appDispatchTechSave(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
+		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setPhone("13508070808");
+		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		orderInfo.setDispatchTechId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		List<OrderDispatch> techList = orderInfoService.appDispatchTechSave(orderInfo);
+		if (techList.size() > 0){
+			return new AppSuccResult(1,null,"改派成功");
+		}
+		return new AppFailResult(-1,null,"改派失败");
 	}
 
 

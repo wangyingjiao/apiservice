@@ -378,7 +378,10 @@ public class Act extends BaseEntity<Act> {
 	public void preUpdate() {
 		
 	}
+	@Override
+	public void appPreUpdate() {
 
+	}
 }
 
 

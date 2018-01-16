@@ -97,7 +97,7 @@ public class AppTechController extends BaseController {
 		Map<String,Object> map=new HashMap<String,Object>();
 		map.put("list",page.getList());
 		map.put("totalPage",totalPage);
-		map.put("pageNo",page.getPageSize());
+		map.put("pageNo",page.getPageNo());
 		if (list.getList().size() == 0){
 			return new AppSuccResult(1,map,"查询通讯录");
 		}
@@ -133,7 +133,7 @@ public class AppTechController extends BaseController {
 		Map<String,Object> map=new HashMap<String,Object>();
 		map.put("list",page.getList());
 		map.put("totalPage",totalPage);
-		map.put("pageNo",page.getPageSize());
+		map.put("pageNo",page.getPageNo());
 		if (page.getList().size() == 0){
 			return new AppSuccResult(1,map,"技师休假列表");
 		}
