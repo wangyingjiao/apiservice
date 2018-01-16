@@ -61,6 +61,8 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
             BasicServiceStation station = super.get("0");
             station.setName("全平台");
             list.add(station);
+            //add by wyr 员工管理 机构为全平台机构时  服务站下拉列表只显示：全平台
+            return list;
         }
         List<BasicServiceStation> serviceStations = super.findList(serviceStation);
         if (serviceStations.size() > 0) {
