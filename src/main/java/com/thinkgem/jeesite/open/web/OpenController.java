@@ -32,7 +32,7 @@ import java.util.List;
  * @version 2018-1-11
  */
 @Controller
-@RequestMapping(value = "${openPath}/open/order")
+@RequestMapping(value = "${openPath_gasq}/order")
 public class OpenController extends BaseController {
 
 	@Autowired
@@ -45,10 +45,10 @@ public class OpenController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "serviceTimes", method = {RequestMethod.POST})
-	public Result serviceTimes(@RequestBody OpenServiceTimesRequest info) {
+	public Result serviceTimes(OpenServiceTimesRequest info, HttpServletRequest request, HttpServletResponse response) {
 		List<OpenServiceTimesResponse> list = openService.openServiceTimes(info);
-		HashMap<Object,Object> response = new HashMap();
-		response.put("available_times",list);
+		HashMap<Object,Object> responseRe = new HashMap();
+		responseRe.put("available_times",list);
 		return new SuccResult(response);
 	}
 
@@ -59,9 +59,9 @@ public class OpenController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "create", method = {RequestMethod.POST})
-	public Result create(@RequestBody OpenCreateRequest info) {
-		OpenCreateResponse response = openService.openCreate(info);
-		return new SuccResult(response);
+	public Result create(OpenCreateRequest info, HttpServletRequest request, HttpServletResponse response) {
+		OpenCreateResponse responseRe = openService.openCreate(info);
+		return new SuccResult(responseRe);
 	}
 
 	/**
@@ -71,9 +71,9 @@ public class OpenController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateStauts", method = {RequestMethod.POST})
-	public Result updateStauts(@RequestBody OpenUpdateStautsRequest info) {
-		OpenUpdateStautsResponse response = openService.openUpdateStauts(info);
-		return new SuccResult(response);
+	public Result updateStauts(OpenUpdateStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
+		OpenUpdateStautsResponse responseRe = openService.openUpdateStauts(info);
+		return new SuccResult(responseRe);
 	}
 
 	/**
@@ -83,8 +83,8 @@ public class OpenController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateInfo", method = {RequestMethod.POST})
-	public Result updateInfo(@RequestBody OpenUpdateInfoRequest info) {
-		OpenUpdateInfoResponse response = openService.openUpdateInfo(info);
-		return new SuccResult(response);
+	public Result updateInfo(OpenUpdateInfoRequest info, HttpServletRequest request, HttpServletResponse response) {
+		OpenUpdateInfoResponse responseRe = openService.openUpdateInfo(info);
+		return new SuccResult(responseRe);
 	}
 }
