@@ -24,5 +24,5 @@ public interface OrderDispatchDao extends CrudDao<OrderDispatch> {
 
 	List<OrderInfo> findOrderList(OrderInfo orderDispatch);
 
-	Long findOrderCount(@Param("DEL_FLAG_NORMAL")String DEL_FLAG_NORMAL, @Param("orgId")String orgId);
+	Long findOrderCount(OrderInfo orderDispatch);
 }
