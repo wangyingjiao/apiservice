@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.utils.AESCrypt;
+import com.thinkgem.jeesite.common.utils.Base64Decoder;
+import com.thinkgem.jeesite.common.utils.MD5Util;
+import com.thinkgem.jeesite.common.web.Servlets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -24,10 +27,7 @@ public class OpenAop {
 
     Log logger = LogFactory.getLog(getClass());
 
-    @Autowired
-    private HttpServletRequest request;
-
-    @Pointcut("execution(* com.thinkgem.jeesite.app.login..*.*(..))")
+    @Pointcut("execution(* com.thinkgem.jeesite.open.web..*.*(..))")
     public void point() {
     }
 
@@ -39,29 +39,35 @@ public class OpenAop {
 
     @Around("point()")
     public Object around(ProceedingJoinPoint jp) throws Throwable {
-        logger.info("==>app aop环绕处理");
-        String token = request.getHeader("token");
-        String md5 = request.getHeader("md5");
+        logger.info("==> 环绕处理");
+        HttpServletRequest request = Servlets.getRequest();
+        //String token = request.getHeader("token");
+        String md5Content = request.getHeader("Content-MD5");
         BufferedReader reader = request.getReader();
         String str;
         StringBuilder sb = new StringBuilder();
         while ((str = reader.readLine()) != null) {
             sb.append(str);
         }
-        AESCrypt crypt = new AESCrypt(Global.getConfig("appAesPassword"));
+
+        AESCrypt crypt = new AESCrypt(Global.getConfig("openEncryptPassword_gasq"));
         try {
-            String text = sb.toString();
-            logger.info("密文数据："+text);
-            String decrypt = crypt.decrypt(text);
-            logger.debug("解密值为："+decrypt);
-            //获取连接点方法运行时的入参列表 数组
-            Object[] args = jp.getArgs();
-            System.out.println(args);
-            if(args != null && args.length > 1) {
-                Object o = JSON.parseObject(decrypt, args[0].getClass());
-                args[0] = o;
+            String text = sb.toString();//密文数据
+            String body = MD5Util.getStringMD5(text+Global.getConfig("openEncryptPassword_gasq"));//MD5 加密
+            if(md5Content.equals(body)){
+                String decode = Base64Decoder.decode(text);//解密值
+
+                //获取连接点方法运行时的入参列表 数组
+                Object[] args = jp.getArgs();
+
+                if(args != null && args.length > 1) {
+                    Object o = JSON.parseObject(decode, args[0].getClass());
+                    args[0] = o;
+                }
+                return jp.proceed(args);
+            }else{
+                return new FailResult<>("签名无效");
             }
-            return jp.proceed(args);
         } catch (Exception e) {
             logger.info("解密异常！！");
         }

@@ -76,12 +76,27 @@ public class ServiceTechnicianInfoController extends BaseController {
         //开始时间
         Date workStartTime = basicOrganization.getWorkStartTime();
         String start = sdf.format(workStartTime);
+        
         //结束时间
         Date workEndTime = basicOrganization.getWorkEndTime();
         String end = sdf.format(workEndTime);
+        
         Map<String,String> map=new HashMap<String,String>();
         map.put("start", start);
         map.put("end", end);
+        
+        //add by wyr 前台新加返回的两字段并处理时间
+        Calendar cal = Calendar.getInstance();  
+        cal.setTime(workStartTime);
+        cal.add(Calendar.MINUTE, -30);
+        String startNew = sdf.format(cal.getTime());
+        cal.setTime(workEndTime);
+        cal.add(Calendar.MINUTE, 30);
+        String endNew = sdf.format(cal.getTime());
+        
+        
+        map.put("startNew", startNew);
+        map.put("endNew", endNew);
         return new SuccResult(map);
     }
 

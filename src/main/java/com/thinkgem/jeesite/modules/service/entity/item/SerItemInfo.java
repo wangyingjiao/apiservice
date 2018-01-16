@@ -120,9 +120,9 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setPictureDetails(List<String> pictureDetails) {
 		this.pictureDetails = pictureDetails;
 	}
-
-	@NotBlank(message = "服务描述不可为空")
-	@Length(min=0, max=255, message="服务描述长度必须介于 0 和 255 之间")
+	//add by wyr 前台去掉此字段 无需传值校验
+	//@NotBlank(message = "服务描述不可为空")
+	//@Length(min=0, max=255, message="服务描述长度必须介于 0 和 255 之间")
 	public String getDescription() {
 		return description;
 	}

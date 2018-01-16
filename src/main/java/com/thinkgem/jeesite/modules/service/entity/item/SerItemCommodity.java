@@ -84,7 +84,7 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	}
 
 	@NotBlank(message = "商品名称不可为空")
-	@Length(min=2, max=10, message="商品名称长度必须介于 2 和 10 之间")
+	//@Length(min=2, max=10, message="商品名称长度必须介于 2 和 10 之间")
 	public String getName() {
 		return name;
 	}
