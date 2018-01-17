@@ -306,18 +306,16 @@ public class RoleController extends BaseController {
 		int i=systemService.checkAddName(name, id);
 		if (i>0) {
 			return new FailResult("同一机构下岗位名不可重复");
+		}else{
+			return new SuccResult("名称可用");
 		}
-		if (name != null && name.equals(oldName)) {
-			// return "true";
+		/*if (name != null && name.equals(oldName)) {
 			return new SuccResult("名称可用");
 		} else if (name != null && systemService.getRoleByName(name).size() == 0) {
-			
 			return new SuccResult("名称可用");
-			// return "true";
 		}
 		
-		return new FailResult("名称不可用");
-		// return "false";
+		return new FailResult("名称不可用");*/
 	}
 
 	// add by wyr 编辑岗位时校验岗位名重复
@@ -373,7 +371,7 @@ public class RoleController extends BaseController {
 			return new FailResult(errList);
 		}
 
-		if (StringUtils.isBlank(role.getId())) {
+		/*if (StringUtils.isBlank(role.getId())) {
 			List<Role> roleByName = systemService.getRoleByName(role.getName());
 			if (roleByName != null && roleByName.size() > 0) {
 				for (Role role2 : roleByName) {
@@ -397,7 +395,7 @@ public class RoleController extends BaseController {
 					}
 				}
 			}
-		}
+		}*/
 		User user = UserUtils.getUser();
 		// 获取岗位机构
 		BasicOrganization organization = user.getOrganization();
