@@ -10,6 +10,7 @@ import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.map.GaoDeMapUtil;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
@@ -64,9 +65,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
 			goodsInfo.setGoods(goodsInfoList);
 		}
+		PropertiesLoader loader = new PropertiesLoader("oss.properties");
+		String ossHost = loader.getProperty("OSS_HOST");
 		String pics = dao.appGetPics(orderInfo.getId());
 		List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
-		goodsInfo.setPicture("https://openservice.guoanshequ.com/"+picl.get(0));
+		goodsInfo.setPicture(ossHost+picl.get(0));
 
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
 		orderInfo.setGoodsInfo(goodsInfo);
@@ -1443,7 +1446,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//订单编辑
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
-		orderInfo.preUpdate();
+		orderInfo.appPreUpdate();
 		return dao.appUpdate(orderInfo);
 	}
 }

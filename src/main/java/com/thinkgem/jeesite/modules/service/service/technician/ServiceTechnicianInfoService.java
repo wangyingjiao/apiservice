@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.service.technician;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
@@ -400,12 +401,14 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
         List<ServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
         List<AppTech> techs=new ArrayList<AppTech>();
+        PropertiesLoader loader = new PropertiesLoader("oss.properties");
+        String ossHost = loader.getProperty("OSS_HOST");
         for (ServiceTechnicianInfo t:serviceTechnicianInfos){
             AppTech tech=new AppTech();
             tech.setId(t.getId());
             tech.setTechName(t.getName());
             tech.setTechPhone(t.getPhone());
-            tech.setImgUrl("https://openservice.guoanshequ.com/"+t.getHeadPic());
+            tech.setImgUrl(ossHost+t.getHeadPic());
             techs.add(tech);
         }
 

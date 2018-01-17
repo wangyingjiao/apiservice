@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.AppSuccResult;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -49,6 +50,8 @@ public class AppLoginController extends BaseController {
     @RequestMapping(value = "${appPath}/appLogin",  method = {RequestMethod.POST})
     public Object appLogin( LoginUser user, HttpServletRequest request, HttpServletResponse response) {
         AppServiceTechnicianInfo entity = null;
+        PropertiesLoader loader = new PropertiesLoader("oss.properties");
+        String ossHost = loader.getProperty("OSS_HOST");
         if (StringUtils.isNotBlank(user.getUsername()) && StringUtils.isNotBlank(user.getPassword())) {
             entity = serviceTechnicianInfoService.appLogin(user);
         }
@@ -57,7 +60,7 @@ public class AppLoginController extends BaseController {
         } else {
             Token token = tokenManager.createToken(entity);
             String imgUrlHead = entity.getImgUrlHead();
-            String url="https://openservice.guoanshequ.com/"+imgUrlHead;
+            String url=ossHost+imgUrlHead;
             entity.setImgUrlHead(url);
             entity.setToken(token.getToken());
 //            entity.setTechEmail(entity.getTechEmail());
@@ -65,7 +68,7 @@ public class AppLoginController extends BaseController {
 //            entity.setTechNation(entity.getTechNation());
             entity.setExperDesc(entity.getExperDesc());
             String imgUrlLife = entity.getImgUrlLife();
-            entity.setImgUrlLife("https://openservice.guoanshequ.com/"+imgUrlLife);
+            entity.setImgUrlLife(ossHost+imgUrlLife);
             ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.getByPhone(entity.getTechPhone());
             BasicServiceStation basicServiceStation = serviceStationService.get(serviceTechnicianInfo.getStationId());
             entity.setStationName(basicServiceStation.getName());

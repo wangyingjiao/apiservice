@@ -74,7 +74,7 @@ public class AppAop {
         } catch (Exception e) {
             logger.info("解密异常！！");
         }
-        return new AppFailResult<>(0,null,"未知错误！");
+        return new AppFailResult<>(-1,null,"未知错误！");
     }
 
     @AfterReturning("point()")

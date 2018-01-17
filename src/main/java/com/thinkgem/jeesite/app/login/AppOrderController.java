@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.app.login;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
@@ -88,8 +89,10 @@ public class AppOrderController extends BaseController {
 		//订单备注
 		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
 		List<String> orp=new ArrayList<String>();
+		PropertiesLoader loader = new PropertiesLoader("oss.properties");
+		String ossHost = loader.getProperty("OSS_HOST");
 		for (String pic:orderRemarkPics){
-			String url="https://openservice.guoanshequ.com/"+pic;
+			String url=ossHost+pic;
 			orp.add(url);
 		}
 		orderInfo.setOrderRemarkPics(orp);
@@ -133,7 +136,7 @@ public class AppOrderController extends BaseController {
 		List<String> busiPic = (List<String>) JsonMapper.fromJsonString(businessRemarkPic, ArrayList.class);
 		List<String> bp=new ArrayList<String>();
 		for (String pic:busiPic){
-			String url="https://openservice.guoanshequ.com/"+pic;
+			String url=ossHost+pic;
 			bp.add(url);
 		}
 		bus.setBusinessRemarkPic(bp);
@@ -149,7 +152,7 @@ public class AppOrderController extends BaseController {
 		List<String> shopPics = (List<String>) JsonMapper.fromJsonString(shopRemarkPic, ArrayList.class);
 		List<String> ls=new ArrayList<String>();
 		for (String pic:shopPics){
-			String url="https://openservice.guoanshequ.com/"+pic;
+			String url=ossHost+pic;
 			ls.add(url);
 		}
 		shop.setShopRemarkPic(ls);
@@ -160,7 +163,7 @@ public class AppOrderController extends BaseController {
 		List<String> customerRemarkPics = orderInfo.getCustomerRemarkPics();
 		List<String> ll=new ArrayList<String>();
 		for (String s:customerRemarkPics){
-			String url="https://openservice.guoanshequ.com/"+s;
+			String url=ossHost+s;
 			ll.add(url);
 		}
 		customerInfo.setCustomerRemarkPic(ll);
@@ -217,10 +220,12 @@ public class AppOrderController extends BaseController {
 		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
+		PropertiesLoader loader = new PropertiesLoader("oss.properties");
+		String ossHost = loader.getProperty("OSS_HOST");
 		for (OrderDispatch dis:techList){
 			ServiceTechnicianInfo byId = techService.getById(dis.getTechId());
 			dis.setTechPhone(byId.getPhone());
-			dis.setHeadPic("https://openservice.guoanshequ.com/"+dis.getHeadPic());
+			dis.setHeadPic(ossHost+dis.getHeadPic());
 		}
 		Map<String,Object> map=new HashMap<String,Object>();
 		map.put("list",techList);
