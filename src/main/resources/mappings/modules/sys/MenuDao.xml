@@ -76,7 +76,8 @@
         JOIN sys_user_role ur ON ur.role_id = r.id
         JOIN sys_user u ON u.id = ur.user_id AND u.id = #{userId}
         WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND r.del_flag = #{DEL_FLAG_NORMAL} AND u.del_flag = #{DEL_FLAG_NORMAL}
-        AND a.permission IN ('order',  'dispatch',   'user',  'role',  'class',  'office','clean','service','basic')
+        AND( a.permission IN ('order',  'dispatch',   'user',  'role',  'class',  'office','clean','service','basic') or 
+        p.permission IN ('order',  'dispatch',   'user',  'role',  'class',  'office','clean','service','basic'))
         ORDER BY a.sort
     </select>
 
