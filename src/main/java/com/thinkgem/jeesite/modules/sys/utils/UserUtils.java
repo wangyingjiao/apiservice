@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.sys.dao.*;
 import com.thinkgem.jeesite.modules.sys.entity.*;
@@ -177,12 +179,20 @@ public class UserUtils {
             if (user.isAdmin()) {
                 menuList = menuDao.findAllList(new Menu());
             } else {
-                Menu m = new Menu();
-                m.setUserId(user.getId());
-                menuList = menuDao.findByUserId(m);
+            	 BasicOrganization org = user.getOrganization();
+                 if (null != org && org.getId().trim().equals("0")) {//add by wyr全平台用户显示左侧菜单栏
+            		Menu m = new Menu();
+                	m.setUserId(user.getId());
+                	//menuList = menuDao.findByUserId(m);
+                	menuList=menuDao.findByUserIdFullPlatform(m);
+                }else {
+                	Menu m = new Menu();
+                	m.setUserId(user.getId());
+                	menuList = menuDao.findByUserId(m);
+				} 
             }
             putCache(CACHE_MENU_LIST, menuList);
-        }
+       }
         return menuList;
     }
 
