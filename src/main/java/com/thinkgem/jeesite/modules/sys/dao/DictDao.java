@@ -19,6 +19,9 @@ public interface DictDao extends CrudDao<Dict> {
 
 	public List<String> findTypeList(Dict dict);
 
+    //app
+    public List<Dict> appFindList(Dict dict);
+
     List<Dict> getAllDicts();
 
 }

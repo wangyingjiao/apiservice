@@ -24,4 +24,6 @@ public interface AreaDao extends TreeDao<Area> {
     List<Area> getListByLevel(Area info);
 
     List<Area> getNameByCode(String province_code);
+
+    List<Area> appFindAllList(Area info);
 }
