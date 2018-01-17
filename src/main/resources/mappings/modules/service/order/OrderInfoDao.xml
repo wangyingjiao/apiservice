@@ -130,7 +130,6 @@
 		a.id AS id,
 		a.order_number AS orderNumber,
 		a.org_id AS orgId,
-		org.name AS orgName,
 		a.station_id AS stationId,
 		a.major_sort AS majorSort,
 		sta.name AS stationName,
@@ -142,11 +141,11 @@
 		a.pay_status AS payStatus,
 		a.order_time AS orderTime
 		FROM order_info a
-		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_dispatch od ON a.id = od.order_id AND od.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN tech_info sta ON od.tech_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			 AND a.business_phone = #{businessPhone}
+			 AND sta.phone = #{techPhone}
 			<if test="orderStatus != null and orderStatus !=''">
 				AND a.order_status= #{orderStatus}
 			</if>
@@ -454,7 +453,7 @@
 		SELECT
 		b.picture AS "pictures"
 		FROM order_goods a
-		LEFT JOIN ser_item_info b ON  a.item_id=b.id AND b.del_flag = '0'
+		LEFT JOIN ser_item_info b ON  a.item_id=b.id
 		WHERE
 		a.order_id = #{orderId}
 		AND a.del_flag = '0'

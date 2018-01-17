@@ -49,7 +49,8 @@ public class AppTechController extends BaseController {
 	private ServiceTechnicianHolidayService holidayService;
 	@Autowired
 	private DictService dictService;
-
+	@Autowired
+	private SystemService systemService;
 	@Autowired
 	private AreaService areaService;
 
@@ -191,6 +192,33 @@ public class AppTechController extends BaseController {
 		}
 		return new AppFailResult(-1,null,"删除休假失败");
 	}
+
+
+	//技师改密码
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/appChangePassword",method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "技师修改登陆密码", notes = "技师")
+	public AppResult appChangePassword(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
+		List<String> errList = errors(tech, SavePersonalGroup.class);
+		if (errList != null && errList.size() > 0) {
+			return new AppFailResult(errList);
+		}
+		tech.setPhone("13508070808");
+		tech.setDelFlag("0");
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		//旧密码与数据库查询出来的密码验证
+		if (!systemService.validatePassword(tech.getOldPassword(),tech1.getAppLoginPassword())){
+			return new AppFailResult(-1,null,"旧密码输入不对");
+		}
+		String newEncrypt = systemService.entryptPassword(tech.getNewPassword());
+		tech1.setAppLoginPassword(newEncrypt);
+		int i = techService.updateTech(tech1);
+		if (i>0){
+			return new AppSuccResult(0,null,"修改密码成功");
+		}
+		return new AppFailResult(-1,null,"修改密码失败");
+	}
+
 	//修改资料保存
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/saveTech", method = {RequestMethod.POST, RequestMethod.GET})

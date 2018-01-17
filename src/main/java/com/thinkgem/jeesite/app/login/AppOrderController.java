@@ -48,7 +48,7 @@ public class AppOrderController extends BaseController {
     @ApiOperation(value = "订单列表", notes = "订单")
     public AppResult getOrderListPage(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		//获取登录用户id 获取用户手机set进去
-		orderInfo.setBusinessPhone("13508070808");
+		orderInfo.setTechPhone("13508070808");
 		if (orderInfo.getServiceStatus()==null){
 			return new AppFailResult("订单服务状态不可为空");
 		}
@@ -81,10 +81,10 @@ public class AppOrderController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/getOrderById",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "订单详情", notes = "订单")
-	public AppResult getOrderById(OrderInfo Info, HttpServletRequest request, HttpServletResponse response){
+	public AppResult getOrderById(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
-		Info.setBusinessPhone("13508070808");
-		OrderInfo orderInfo = orderInfoService.appFormData(Info);
+		info.setTechPhone("13508070808");
+		OrderInfo orderInfo = orderInfoService.appFormData(info);
 		//订单备注
 		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
 		List<String> orp=new ArrayList<String>();
@@ -173,7 +173,7 @@ public class AppOrderController extends BaseController {
 	@RequestMapping(value = "${appPath}/saveRemark",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
 	public AppResult saveRemark(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response){
-		orderInfo.setBusinessPhone("13508070808");
+		orderInfo.setTechPhone("13508070808");
 		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
@@ -199,7 +199,7 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(errList);
 		}
 		//参数 订单id 服务状态
-		info.setBusinessPhone("13508070808");
+		info.setTechPhone("13508070808");
 		int i = orderInfoService.appSaveRemark(info);
 		if (i>0){
 			return new AppSuccResult(0,null,"修改服务状态成功");
