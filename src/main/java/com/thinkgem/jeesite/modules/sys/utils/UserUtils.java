@@ -180,7 +180,7 @@ public class UserUtils {
                 menuList = menuDao.findAllList(new Menu());
             } else {
             	 BasicOrganization org = user.getOrganization();
-                 if (null != org && org.getId().trim().equals("0")) {//add by wyr全平台用户显示左侧菜单栏
+                 if (null != org && org.getId().trim().equals("0")) { //add by wyr全平台用户显示左侧菜单栏
             		Menu m = new Menu();
                 	m.setUserId(user.getId());
                 	//menuList = menuDao.findByUserId(m);
