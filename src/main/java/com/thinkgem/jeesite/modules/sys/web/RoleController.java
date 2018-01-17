@@ -432,7 +432,7 @@ public class RoleController extends BaseController {
 		 * } } }
 		 */
 		User user = UserUtils.getUser();
-		// 获取岗位机构
+		//获取岗位机构
 		BasicOrganization organization = user.getOrganization();
 		if (role.getOrganization() == null) {
 			role.setOrganization(organization);
