@@ -276,7 +276,7 @@
 	<select id="selectWorkTimeByTechId" parameterType="java.util.Map" resultType="ServiceTechnicianWorkTime">
 	select
 	tech_id AS techId,
-	DATE_FORMAT(start_time,'%T') AS startTime, DATE_FORMAT(end_time,'%T') AS endTime,
+	DATE_FORMAT(start_time,'%T') AS startTimeStr, DATE_FORMAT(end_time,'%T') AS endTimeStr,
 	GROUP_CONCAT(week) AS week
 	from tech_work_time
 	where tech_id=#{reqId}

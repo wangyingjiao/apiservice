@@ -94,6 +94,12 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             List<ServiceTechnicianWorkTime> workTimes = info.getWorkTimes();
             if(null != workTimes){
                 for(ServiceTechnicianWorkTime workTime : workTimes){
+                    if (workTime.getStartTimeStr() !=null&&workTime.getStartTimeStr() !="") {
+                        workTime.setStartTimeStr(workTime.getStartTimeStr().substring(0, 5));
+                    }
+                    if (workTime.getEndTimeStr() !=null&&workTime.getEndTimeStr() !="") {
+                        workTime.setEndTimeStr(workTime.getEndTimeStr().substring(0, 5));
+                    }
                     String week = workTime.getWeek();
                     List<ServiceTechnicianWorkTimeWeek> weeks = new ArrayList<ServiceTechnicianWorkTimeWeek>();
                     if(StringUtils.isNotBlank(week)){
