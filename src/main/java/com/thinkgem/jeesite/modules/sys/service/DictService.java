@@ -32,6 +32,11 @@ public class DictService extends CrudService<DictDao, Dict> {
     public List<String> findTypeList() {
         return dao.findTypeList(new Dict());
     }
+    //app
+    public List<Dict> appFindList(Dict dict) {
+
+        return dao.appFindList(dict);
+    }
 
     @Transactional(readOnly = false)
     public void save(Dict dict) {

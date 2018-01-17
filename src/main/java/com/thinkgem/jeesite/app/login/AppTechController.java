@@ -10,6 +10,10 @@ import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianHolidayService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
+import com.thinkgem.jeesite.modules.sys.service.AreaService;
+import com.thinkgem.jeesite.modules.sys.service.DictService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +44,14 @@ import java.util.Map;
 public class AppTechController extends BaseController {
 
 	@Autowired
-	ServiceTechnicianInfoService techService;
-	@Autowired
-	private SystemService systemService;
+	private ServiceTechnicianInfoService techService;
 	@Autowired
 	private ServiceTechnicianHolidayService holidayService;
+	@Autowired
+	private DictService dictService;
 
 	@Autowired
-	private SerSkillInfoService serSkillInfoService;
+	private AreaService areaService;
 
 
 	//技师的服务信息列表
@@ -177,7 +182,6 @@ public class AppTechController extends BaseController {
 	}
 
 	@ResponseBody
-	//@RequiresPermissions("deleteTech")
 	@RequestMapping(value = "${appPath}/deleteTech", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "删除休假", notes = "技师休假")
 	public AppResult deleteTech(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
@@ -187,5 +191,58 @@ public class AppTechController extends BaseController {
 		}
 		return new AppFailResult(-1,null,"删除休假失败");
 	}
+	//修改资料保存
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/saveTech", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "修改个人资料保存", notes = "修改个人资料")
+	public AppResult saveTech(HttpServletRequest request, HttpServletResponse response) {
+//		int delete = holidayService.delete1(serviceTechnicianHoliday);
+//		if (delete > 0){
+//			return new AppSuccResult(0,null,"删除休假成功");
+//		}
+		return new AppFailResult(-1,null,"删除休假失败");
+	}
 
+	//修改资料列表
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/selectList", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "个人信息下拉列表", notes = "下拉列表")
+	public AppResult selectList(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
+
+		Map<String,Object> map=new HashMap<String,Object>();
+
+		List<Map> sexList=new ArrayList<Map>();
+		Dict dict=new Dict();
+		dict.setType("sex");
+		List<Dict> sexs = dictService.appFindList(dict);
+		for (Dict sex:sexs){
+			Map<String,Object> sexMap=new HashMap<String,Object>();
+			sexMap.put("label",sex.getLabel());
+			sexMap.put("value",sex.getValue());
+			sexList.add(sexMap);
+		}
+
+		dict.setType("ethnic");
+		List<Dict> nations = dictService.appFindList(dict);
+		List naList=new ArrayList();
+		for (Dict nation:nations){
+			Map<String,Object> nationMap=new HashMap<String,Object>();
+			nationMap.put("label",nation.getLabel());
+			naList.add(nationMap);
+		}
+
+		Area area=new Area();
+		List<Area> areas = areaService.appFindAllList(area);
+		List proList=new ArrayList();
+		for (Area area1:areas){
+			Map<String,Object> ps=new HashMap<String,Object>();
+			ps.put("nativeProvinceCode",area1.getCode());
+			ps.put("name",area1.getName());
+			proList.add(ps);
+		}
+		map.put("sex",sexList);
+		map.put("nation",naList);
+		map.put("provinces",proList);
+		return new AppSuccResult(0,map,"下拉列表");
+	}
 }

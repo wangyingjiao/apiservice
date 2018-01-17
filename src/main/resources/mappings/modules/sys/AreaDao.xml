@@ -56,7 +56,14 @@
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY a.code
 	</select>
-	
+	<!--app-->
+	<select id="appFindAllList" resultType="Area">
+		SELECT
+		<include refid="areaColumns"/>
+		FROM sys_area a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.code
+	</select>
 	<select id="findByParentIdsLike" resultType="Area">
 		SELECT
 			a.id,

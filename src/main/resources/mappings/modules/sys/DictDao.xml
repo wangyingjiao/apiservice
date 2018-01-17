@@ -25,6 +25,15 @@
 		</if>
 		ORDER BY type, sort, update_date DESC
 	</select>
+	<!--app-->
+	<select id="appFindList" resultType="Dict">
+		SELECT
+		*
+		FROM sys_dict
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+			AND type = #{type}
+		ORDER BY type, sort DESC
+	</select>
 	
 	<select id="findAllList" resultType="Dict">
 		SELECT 
