@@ -65,15 +65,15 @@ public class SerItemInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-
-        if (!StringUtils.isNotBlank(serItemInfo.getId())) {//新增时验证重复
+        //add by wyr注释掉 测试讨论结果 ：项目名称不做验证
+       /* if (!StringUtils.isNotBlank(serItemInfo.getId())) {//新增时验证重复
             User user = UserUtils.getUser();
             serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
 
             if (0 != serItemInfoService.checkDataName(serItemInfo)) {
                 return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
             }
-        }
+        }*/
         List<String> sysTags = serItemInfo.getSysTags();
         if (null != sysTags){
             String sys = JsonMapper.toJsonString(sysTags);
