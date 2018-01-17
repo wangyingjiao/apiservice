@@ -107,19 +107,22 @@ public class SerItemInfoController extends BaseController {
         //判断名字是否重复
         SerItemInfo serItemInfo1=new SerItemInfo();
         serItemInfo1.setName(serItemInfo.getName());
-        SerItemInfo byName = serItemInfoService.getByName(serItemInfo1);
-        //不同id
-        if (byName != null){
-            if (! byName.getId().equals(serItemInfo.getId())){
-                //同机构
-                if (byName.getOrgId().equals(serItemInfo.getOrgId())){
-                    //同分类 （保洁 家修）
-                    if (byName.getMajorSort().equals(serItemInfo.getMajorSort())){
-                        return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
-                    }
-                }
-            }
-        }
+        //add by wyr返回类型修改为list类型
+        List<SerItemInfo> serItemInfoList = serItemInfoService.getByName(serItemInfo1);
+        for (SerItemInfo byName : serItemInfoList) {
+        	//不同id
+        	if (byName != null){
+        		if (! byName.getId().equals(serItemInfo.getId())){
+        			//同机构
+        			if (byName.getOrgId().equals(serItemInfo.getOrgId())){
+        				//同分类 （保洁 家修）
+        				if (byName.getMajorSort().equals(serItemInfo.getMajorSort())){
+        					return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
+        				}
+        			}
+        		}
+        	}
+		}
         List<String> sysTags = serItemInfo.getSysTags();
         if (null != sysTags){
             String sys = JsonMapper.toJsonString(sysTags);

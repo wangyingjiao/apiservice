@@ -60,7 +60,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 * @param serItemInfo
 	 */
 	@Transactional(readOnly = false)
-	public SerItemInfo getByName(SerItemInfo serItemInfo){
+	public List<SerItemInfo> getByName(SerItemInfo serItemInfo){
 		return serItemInfoDao.getByName(serItemInfo);
 	}
 	@Transactional(readOnly = false)
