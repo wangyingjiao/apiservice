@@ -108,7 +108,8 @@ public class SerItemInfoController extends BaseController {
         SerItemInfo serItemInfo1=new SerItemInfo();
         serItemInfo1.setName(serItemInfo.getName());
         //add by wyr返回类型修改为list类型
-        List<SerItemInfo> serItemInfoList = serItemInfoService.getByName(serItemInfo1);
+        //注释掉 测试讨论结果 ：项目名称不做验证
+       /* List<SerItemInfo> serItemInfoList = serItemInfoService.getByName(serItemInfo1);
         for (SerItemInfo byName : serItemInfoList) {
         	//不同id
         	if (byName != null){
@@ -122,7 +123,7 @@ public class SerItemInfoController extends BaseController {
         			}
         		}
         	}
-		}
+		}*/
         List<String> sysTags = serItemInfo.getSysTags();
         if (null != sysTags){
             String sys = JsonMapper.toJsonString(sysTags);
