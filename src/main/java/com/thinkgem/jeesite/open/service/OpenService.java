@@ -855,7 +855,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderInfo.setOrderStatus("success");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
 		}
 
-		int num = orderInfoDao.openUpdateGuoanxia(orderInfo);
+		orderInfo.setUpdateDate(new Date());
+		int num = orderInfoDao.openUpdateOrder(orderInfo);
 		if(num == 0){
 			response = new OpenUpdateStautsResponse();
 			response.setSuccess(false);// 状态：true 成功；false 失败
@@ -904,7 +905,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				String remarkPic = JsonMapper.toJsonString(remark_pic);
 				orderInfo.setBusinessRemarkPic(remarkPic);// 业务人员备注图片
 			}
-			num = num + orderInfoDao.openUpdateGuoanxia(orderInfo);
+			orderInfo.setUpdateDate(new Date());
+			num = num + orderInfoDao.openUpdateOrder(orderInfo);
 		}
 
 		OpenCostomerInfo costomer_info = info.getCostomer_info();//用户信息
@@ -917,7 +919,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				String remarkPic = JsonMapper.toJsonString(remark_pic);
 				orderInfo.setCustomerRemarkPic(remarkPic);// 用户备注图片
 			}
-			num = num + orderInfoDao.openUpdateGuoanxia(orderInfo);
+			orderInfo.setUpdateDate(new Date());
+			num = num + orderInfoDao.openUpdateOrder(orderInfo);
 		}
 
 		OpenStoreInfo store_info = info.getStore_info();//门店信息
@@ -932,7 +935,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				String remarkPic = JsonMapper.toJsonString(remark_pic);
 				orderInfo.setShopRemarkPic(remarkPic);// 门店备注图片
 			}
-			num = num + orderInfoDao.openUpdateGuoanxia(orderInfo);
+			orderInfo.setUpdateDate(new Date());
+			num = num + orderInfoDao.openUpdateOrder(orderInfo);
 		}
 
 		if(num == 0){//更新件数
@@ -1040,11 +1044,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param info
 	 * @return
 	 */
-	public OpenUpdateStautsResponse openSendSaveItem(OpenUpdateStautsRequest info) {
+/*	public OpenSendSaveItemResponse openSendSaveItem(OpenSendSaveItemRequest info) {
 
 		return null;
 
-	}
+	}*/
 
 	/**
 	 *  国安社区开放接口 - 更新订单信息
@@ -1052,7 +1056,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param info
 	 * @return
 	 */
-	public OpenUpdateStautsResponse openSendSaveOrder(OpenUpdateStautsRequest info) {
+/*	public OpenSendSaveOrderResponse openSendSaveOrder(OpenSendSaveOrderRequest info) {
 		return null;
-	}
+	}*/
 }

@@ -61,5 +61,5 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     //app获取图片
     String appGetPics(String id);
 
-    int openUpdateGuoanxia(OrderInfo orderInfo);
+    int openUpdateOrder(OrderInfo orderInfo);
 }

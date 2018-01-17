@@ -50,7 +50,6 @@ public class OpenAop {
             sb.append(str);
         }
 
-        AESCrypt crypt = new AESCrypt(Global.getConfig("openEncryptPassword_gasq"));
         try {
             String text = sb.toString();//密文数据
             String body = MD5Util.getStringMD5(text+Global.getConfig("openEncryptPassword_gasq"));//MD5 加密
@@ -69,9 +68,9 @@ public class OpenAop {
                 return new FailResult<>("签名无效");
             }
         } catch (Exception e) {
-            logger.info("解密异常！！");
+            logger.info("解密数据异常");
         }
-        return new FailResult<>("未知错误！");
+        return new FailResult<>("系统异常");
     }
 
     @AfterReturning("point()")

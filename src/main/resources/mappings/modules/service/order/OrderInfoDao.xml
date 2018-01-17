@@ -619,38 +619,8 @@
 	</select>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	<!-- 对接SQL begin-->
-	<update id="openUpdateGuoanxia">
+	<update id="openUpdateOrder">
 		UPDATE order_info SET
 		<if test="businessName !=null and businessName != ''">business_name = #{businessName},</if>
 		<if test="businessPhone !=null and businessPhone != ''">business_phone = #{businessPhone},</if>
@@ -668,6 +638,8 @@
 		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
 		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
 		<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
+
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 
 		WHERE id = #{id}
 	</update>
