@@ -1039,24 +1039,4 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		return num;
 	}
 
-	/**
-	 *  国安社区开放接口 - 服务项目保存
-	 * @param info
-	 * @return
-	 */
-/*	public OpenSendSaveItemResponse openSendSaveItem(OpenSendSaveItemRequest info) {
-
-		return null;
-
-	}*/
-
-	/**
-	 *  国安社区开放接口 - 更新订单信息
-	 *  更新服务时间、改派服务人员、服务人员端备注
-	 * @param info
-	 * @return
-	 */
-/*	public OpenSendSaveOrderResponse openSendSaveOrder(OpenSendSaveOrderRequest info) {
-		return null;
-	}*/
 }
