@@ -29,5 +29,115 @@ public class OpenSendSaveItemRequest extends DataEntity<OpenSendSaveItemRequest>
     private String joint_code;// 对接CODE；自定义编码
     private String eshop_code;// ESHOP_CODE
 
+    public String getType() {
+        return type;
+    }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getIs_combo() {
+        return is_combo;
+    }
+
+    public void setIs_combo(String is_combo) {
+        this.is_combo = is_combo;
+    }
+
+    public String getTags_system() {
+        return tags_system;
+    }
+
+    public void setTags_system(String tags_system) {
+        this.tags_system = tags_system;
+    }
+
+    public String getTags_custom() {
+        return tags_custom;
+    }
+
+    public void setTags_custom(String tags_custom) {
+        this.tags_custom = tags_custom;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public Integer getStock_quantity() {
+        return stock_quantity;
+    }
+
+    public void setStock_quantity(Integer stock_quantity) {
+        this.stock_quantity = stock_quantity;
+    }
+
+    public Integer getMin_number() {
+        return min_number;
+    }
+
+    public void setMin_number(Integer min_number) {
+        this.min_number = min_number;
+    }
+
+    public Integer getMax_number() {
+        return max_number;
+    }
+
+    public void setMax_number(Integer max_number) {
+        this.max_number = max_number;
+    }
+
+    public String getBanner_pic() {
+        return banner_pic;
+    }
+
+    public void setBanner_pic(String banner_pic) {
+        this.banner_pic = banner_pic;
+    }
+
+    public String getDescribe_pic() {
+        return describe_pic;
+    }
+
+    public void setDescribe_pic(String describe_pic) {
+        this.describe_pic = describe_pic;
+    }
+
+    public String getJoint_code() {
+        return joint_code;
+    }
+
+    public void setJoint_code(String joint_code) {
+        this.joint_code = joint_code;
+    }
+
+    public String getEshop_code() {
+        return eshop_code;
+    }
+
+    public void setEshop_code(String eshop_code) {
+        this.eshop_code = eshop_code;
+    }
 }

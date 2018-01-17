@@ -41,7 +41,7 @@ public class OpenAop {
     public Object around(ProceedingJoinPoint jp) throws Throwable {
         logger.info("==> 环绕处理");
         HttpServletRequest request = Servlets.getRequest();
-        //String token = request.getHeader("token");
+
         String md5Content = request.getHeader("Content-MD5");
         BufferedReader reader = request.getReader();
         String str;

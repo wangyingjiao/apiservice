@@ -14,4 +14,19 @@ public class OpenSendSaveOrderServiceTechInfo extends DataEntity<OpenSendSaveOrd
     private String tech_name;// 技师姓名
     private String tech_phone;// 技师手机号
 
+    public String getTech_name() {
+        return tech_name;
+    }
+
+    public void setTech_name(String tech_name) {
+        this.tech_name = tech_name;
+    }
+
+    public String getTech_phone() {
+        return tech_phone;
+    }
+
+    public void setTech_phone(String tech_phone) {
+        this.tech_phone = tech_phone;
+    }
 }
