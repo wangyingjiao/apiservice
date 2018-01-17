@@ -15,6 +15,7 @@
 		<constructor-arg>
 			<value>
 				${openPath_gasq}/** = anon
+				${appPath}/** = anon
 				/static/** = anon
 				/userfiles/** = anon
 				${adminPath}/cas = cas
