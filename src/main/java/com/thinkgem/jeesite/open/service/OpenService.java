@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
@@ -18,6 +19,7 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianH
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.open.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -396,8 +398,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		payInfo.setPayTime(null);//支付时间',
 		payInfo.setPayAccount(openPrice.toString());//支付总额',
 		payInfo.setPayStatus("waitpay");//支付状态(waitpay:待支付 payed:已支付)',
-		payInfo.preInsert();
-		orderPayInfoDao.insert(payInfo);
+
+        User user = new User();
+        user.setId("gasq001");
+        payInfo.setId(IdGen.uuid());
+        payInfo.setCreateBy(user);
+        payInfo.setCreateDate(new Date());
+        payInfo.setUpdateBy(user);
+        payInfo.setUpdateDate(payInfo.getCreateDate());
+
+        orderPayInfoDao.insert(payInfo);
 	}
 
 	/**
@@ -407,8 +417,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	private void openCreateForGoods(OrderInfo orderInfo, List<OrderGoods> orderGoods) {
 		for(OrderGoods goods : orderGoods){
 			goods.setOrderId(orderInfo.getId());//订单ID
-			goods.preInsert();
-			orderGoodsDao.insert(goods);
+
+            User user = new User();
+            user.setId("gasq001");
+            goods.setId(IdGen.uuid());
+            goods.setCreateBy(user);
+            goods.setCreateDate(new Date());
+            goods.setUpdateBy(user);
+            goods.setUpdateDate(goods.getCreateDate());
+
+            orderGoodsDao.insert(goods);
 		}
 	}
 
@@ -423,8 +441,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderDispatch.setOrderId(orderInfo.getId());//订单ID
 			orderDispatch.setTechId(dispatch.getTechId());//技师ID
 			orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
-			orderDispatch.preInsert();
-			orderDispatchDao.insert(orderDispatch);
+
+            User user = new User();
+            user.setId("gasq001");
+            orderDispatch.setId(IdGen.uuid());
+            orderDispatch.setCreateBy(user);
+            orderDispatch.setCreateDate(new Date());
+            orderDispatch.setUpdateBy(user);
+            orderDispatch.setUpdateDate(orderDispatch.getCreateDate());
+
+            orderDispatchDao.insert(orderDispatch);
 		}
 	}
 
@@ -439,7 +465,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String store_id = info.getStore_id();//门店ID
 		String eshop_code = info.getEshop_code();//E店编码
 		String remark = info.getRemark();//订单备注(用户备注)
-		List<OpenServiceInfo> serviceInfos = info.getServiceInfos();
+		List<OpenServiceInfo> serviceInfos = info.getService_info();
 		String servie_time = info.getServie_time();//服务时间
 		String latitude = info.getLatitude();//服务地址：纬度
 		String longitude = info.getLongitude();//服务地址：经度
@@ -474,6 +500,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				goods.setPayPrice(pay_price);//对接后单价
 				goods.setOriginPrice(commodity.getPrice().toString());//原价
 				goods.setMajorSort(commodity.getMajorSort());
+
+                goods.setConvertHours(commodity.getConvertHours());		// 折算时长
+                goods.setStartPerNum(commodity.getStartPerNum());   		//起步人数（第一个4小时时长派人数量）
+                goods.setCappingPerNum(commodity.getCappingPerNum());		//封项人数
+
 				orderGoods.add(goods);
 
 				originPrice = originPrice.add(commodity.getPrice());//商品总价
@@ -558,8 +589,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setCustomerRemark(remark);   // 客户备注
 		orderInfo.setCustomerRemarkPic(null);    //客户备注图片
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
-		orderInfo.preInsert();
-		orderInfoDao.insert(orderInfo);
+
+        User user = new User();
+        user.setId("gasq001");
+        orderInfo.setId(IdGen.uuid());
+        orderInfo.setCreateBy(user);
+        orderInfo.setCreateDate(new Date());
+        orderInfo.setUpdateBy(user);
+        orderInfo.setUpdateDate(orderInfo.getCreateDate());
+
+        orderInfoDao.insert(orderInfo);
 
 		orderInfo.setOpenPrice(openPrice);
 		orderInfo.setGoodsInfoList(orderGoods);//商品信息
@@ -802,7 +841,15 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderAddress.setAreaCode(area_code);//区_区号
 		orderAddress.setDetailAddress(address);//详细地址
 		orderAddress.setAddress(provinceName + cityName + areaName + address);//收货人完整地址
-		orderAddress.preInsert();
+
+        User user = new User();
+        user.setId("gasq001");
+        orderAddress.setId(IdGen.uuid());
+        orderAddress.setCreateBy(user);
+        orderAddress.setCreateDate(new Date());
+        orderAddress.setUpdateBy(user);
+        orderAddress.setUpdateDate(orderAddress.getCreateDate());
+
 		orderAddressDao.insert(orderAddress);
 
 		return orderAddress;
@@ -818,7 +865,15 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		OrderMasterInfo masterInfo = new OrderMasterInfo();
 		masterInfo.setOrderType(order_type);//订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
-		masterInfo.preInsert();
+
+        User user = new User();
+        user.setId("gasq001");
+        masterInfo.setId(IdGen.uuid());
+        masterInfo.setCreateBy(user);
+        masterInfo.setCreateDate(new Date());
+        masterInfo.setUpdateBy(user);
+        masterInfo.setUpdateDate(masterInfo.getCreateDate());
+
 		orderMasterInfoDao.insert(masterInfo);
 		return masterInfo;
 	}
@@ -906,8 +961,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				String remarkPic = JsonMapper.toJsonString(remark_pic);
 				orderInfo.setBusinessRemarkPic(remarkPic);// 业务人员备注图片
 			}
-			orderInfo.setUpdateDate(new Date());
-			num = num + orderInfoDao.openUpdateOrder(orderInfo);
+
+            User user = new User();
+            user.setId("gasq001");
+            orderInfo.setUpdateBy(user);
+            orderInfo.setUpdateDate(new Date());
+
+            num = num + orderInfoDao.openUpdateOrder(orderInfo);
 		}
 
 		OpenCostomerInfo costomer_info = info.getCostomer_info();//用户信息
@@ -920,8 +980,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				String remarkPic = JsonMapper.toJsonString(remark_pic);
 				orderInfo.setCustomerRemarkPic(remarkPic);// 用户备注图片
 			}
-			orderInfo.setUpdateDate(new Date());
-			num = num + orderInfoDao.openUpdateOrder(orderInfo);
+
+            User user = new User();
+            user.setId("gasq001");
+            orderInfo.setUpdateBy(user);
+            orderInfo.setUpdateDate(new Date());
+
+            num = num + orderInfoDao.openUpdateOrder(orderInfo);
 		}
 
 		OpenStoreInfo store_info = info.getStore_info();//门店信息
@@ -936,8 +1001,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				String remarkPic = JsonMapper.toJsonString(remark_pic);
 				orderInfo.setShopRemarkPic(remarkPic);// 门店备注图片
 			}
-			orderInfo.setUpdateDate(new Date());
-			num = num + orderInfoDao.openUpdateOrder(orderInfo);
+
+            User user = new User();
+            user.setId("gasq001");
+            orderInfo.setUpdateBy(user);
+            orderInfo.setUpdateDate(new Date());
+
+            num = num + orderInfoDao.openUpdateOrder(orderInfo);
 		}
 
 		if(num == 0){//更新件数
@@ -986,8 +1056,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			goods.setPayPrice(pay_price);//对接后单价
 			goods.setOriginPrice(commodity.getPrice().toString());//原价
 			goods.setMajorSort(commodity.getMajorSort());
-			goods.preInsert();
-			orderGoods.add(goods);
+
+            User user = new User();
+            user.setId("gasq001");
+            goods.setId(IdGen.uuid());
+            goods.setCreateBy(user);
+            goods.setCreateDate(new Date());
+            goods.setUpdateBy(user);
+            goods.setUpdateDate(goods.getCreateDate());
+
+            orderGoods.add(goods);
 
 			originPrice = originPrice.add(commodity.getPrice());//商品总价
 			openPrice = openPrice.add(new BigDecimal(pay_price));
@@ -1021,6 +1099,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		//更新订单信息
 		OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setId(orderId);
 		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
 		orderInfo.setPayPrice(openPrice.toString());            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
@@ -1029,8 +1108,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));              //建议完成时间',
 		orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
-		orderInfo.preUpdate();
-		int num = orderInfoDao.update(orderInfo);
+
+        User user = new User();
+        user.setId("gasq001");
+        orderInfo.setUpdateBy(user);
+        orderInfo.setUpdateDate(new Date());
+
+        int num = orderInfoDao.update(orderInfo);
 
 		//新增商品信息
 		for(OrderGoods goodsInsert : orderGoods){

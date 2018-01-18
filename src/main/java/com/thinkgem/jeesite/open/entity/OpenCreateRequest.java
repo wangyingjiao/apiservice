@@ -26,7 +26,7 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private String province_code;//省CODE
 	private String city_code;//市CODE
 	private OpenServiceInfo serviceInfo;//购买商品ID及数量
-	private List<OpenServiceInfo> serviceInfos;//购买商品ID及数量
+	private List<OpenServiceInfo> service_info;//购买商品ID及数量
 	private String servie_time;//服务时间
 	private String address;//服务地址：小区+详细地址
 	private String latitude;//服务地址：纬度
@@ -114,12 +114,12 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 		this.serviceInfo = serviceInfo;
 	}
 
-	public List<OpenServiceInfo> getServiceInfos() {
-		return serviceInfos;
+	public List<OpenServiceInfo> getService_info() {
+		return service_info;
 	}
 
-	public void setServiceInfos(List<OpenServiceInfo> serviceInfos) {
-		this.serviceInfos = serviceInfos;
+	public void setService_info(List<OpenServiceInfo> service_info) {
+		this.service_info = service_info;
 	}
 
 	public String getServie_time() {

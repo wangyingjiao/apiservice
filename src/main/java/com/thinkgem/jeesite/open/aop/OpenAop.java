@@ -42,7 +42,7 @@ public class OpenAop {
         logger.info("==> 环绕处理");
         HttpServletRequest request = Servlets.getRequest();
 
-        String md5Content = request.getHeader("Content-MD5");
+        String md5Content = request.getHeader("md5");
         BufferedReader reader = request.getReader();
         String str;
         StringBuilder sb = new StringBuilder();
