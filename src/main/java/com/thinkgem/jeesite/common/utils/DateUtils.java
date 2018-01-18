@@ -182,6 +182,24 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
+	 * 传入一个日期 返回日期年月日+00:00:00
+	 * @param date
+	 * @return
+	 */
+	public static Date getDateFirstTime(Date date) {
+		return parseDate(formatDate(date, "yyyy-MM-dd")+" 00:00:00");
+	}
+
+	/**
+	 * 传入一个日期 返回日期年月日+23:59:59
+	 * @param date
+	 * @return
+	 */
+	public static Date getDateLastTime(Date date) {
+		return parseDate(formatDate(date, "yyyy-MM-dd")+" 23:59:59");
+	}
+
+	/**
 	 * 获取传入时间是周几 1/2/3/4/5/6/7
 	 *
 	 * @param today
@@ -371,6 +389,109 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return false;
 	}
+
+	/**
+	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 07:00  不重复    返回 null
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 08:00  不重复    返回 null
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 09:00  重复    返回 8-9
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 10:00  重复    返回 8-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 11:00  重复    返回 8-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 09:00  重复    返回 8-9
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 10:00  重复    返回 8-10
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 11:00  重复    返回 8-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 09:10  重复    返回 9-9:10
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 10:00  重复    返回 9-10
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 11:00  重复    返回 9-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 10:00 2018-01-01 11:00  不重复    返回 null
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 11:00 2018-01-01 12:00  不重复    返回 null
+	 *
+	 *
+	 * @param startTimeOne
+	 * @param endTimeOne
+	 * @param startTimeTwo
+	 * @param endTimeTwo
+	 * @return
+	 */
+	public static DateUtilsEntity findDatesRepeatTime(Date startTimeOne, Date endTimeOne, Date startTimeTwo, Date endTimeTwo) {
+		if(startTimeOne!=null && endTimeOne!=null && startTimeTwo!=null && endTimeTwo!=null){
+
+			//数据库中工作时间只有时分秒 拼接年月日 比较一天内的时间区间
+			startTimeOne = parseDate(formatDate(startTimeTwo,"yyyy-MM-dd") + " " + formatDate(startTimeOne,"HH:mm:ss"));
+			endTimeOne = parseDate(formatDate(startTimeTwo,"yyyy-MM-dd") + " " + formatDate(endTimeOne,"HH:mm:ss"));
+
+			if(!startTimeOne.before(endTimeOne)){
+				return null;//开始时间在结束时间之前 否则返回null
+			}
+			if(!startTimeTwo.before(endTimeTwo)){
+				return null;//开始时间在结束时间之前 否则返回null
+			}
+
+			if(endTimeTwo.before(startTimeOne) || endTimeTwo.compareTo(startTimeOne)==0){
+				return null;
+			}
+
+			if(startTimeTwo.after(endTimeOne) || startTimeTwo.compareTo(endTimeOne)==0){
+				return null;
+			}
+			DateUtilsEntity entity = new DateUtilsEntity();
+
+
+			/* * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 09:00  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 10:00  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 11:00  重复    返回 false
+			 */
+			/*
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 09:00  重复    返回 false
+			 *
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 10:00  重复    返回 false
+			 *
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 11:00  重复    返回 false
+			 **/
+			if(startTimeOne.after(startTimeTwo) || startTimeOne.compareTo(startTimeTwo) == 0){
+				if(endTimeOne.after(endTimeTwo) || endTimeOne.compareTo(endTimeTwo) == 0){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeOne);
+					entity.setEndTime(endTimeTwo);
+					return  entity;
+				}
+				if(endTimeOne.before(endTimeTwo)){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeOne);
+					entity.setEndTime(endTimeOne);
+					return  entity;
+				}
+			}
+
+			/*
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 09:10  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 10:00  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 11:00  重复    返回 false
+			*/
+			if(startTimeOne.before(startTimeTwo)){
+				if(endTimeOne.after(endTimeTwo) || endTimeOne.compareTo(endTimeTwo) == 0){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeTwo);
+					entity.setEndTime(endTimeTwo);
+					return  entity;
+				}
+				if(endTimeOne.before(endTimeTwo)){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeTwo);
+					entity.setEndTime(endTimeOne);
+					return  entity;
+				}
+			}
+		}
+		return null;
+	}
 	/**
 	 * @param args
 	 * @throws ParseException
@@ -384,44 +505,44 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 		//String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
 
-/*
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 07:00:00")));//不重复    返回 true
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 08:00:00")));// 不重复    返回 true
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 09:00:00")));// 重复    返回 false
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 10:00:00")));// 重复    返回 false
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 11:00:00")));//重复    返回 false
 
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));// 重复    返回 false
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00")));// 重复    返回 false
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 11:00:00")));// 重复    返回 false
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 09:10:00")));//重复    返回 false
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 10:00:00")));//重复    返回 false
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 11:00:00")));//重复    返回 false
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 11:00:00")));//不重复    返回 true
 
-		System.out.println(checkDatesRepeat(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
-*/
+
 
        // System.out.println(getDateAndRandomTenNum("01"));
 
@@ -430,7 +551,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			System.out.println(formatDate(d, "yyyy-MM-dd HH:mm:ss"));
 		}*/
 
-		System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
+		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
 	}
 
 }
