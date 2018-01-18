@@ -177,7 +177,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else{
 			return null;
 		}
-
+/*
 		if(orderGoods != null && orderGoods.size() != 0 ){
 			for(OrderGoods goods :orderGoods){//
 				int goodsNum = goods.getGoodsNum();		// 订购商品数
@@ -204,7 +204,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}else{
 			throw new ServiceException("订单没有服务信息！");
-		}
+		}*/
 
 		int week = DateUtils.getWeekNum(date); //周几
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
@@ -257,7 +257,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				for(ServiceTechnicianHoliday holiday : holidayList){
 					List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(),holiday.getEndTime());
 					Iterator<String> it1 = workTimes.iterator();
-					while(it.hasNext()) {
+					while(it1.hasNext()) {
 						String work = (String)it1.next();
 						if(holidays.contains(work)){//去除休假时间
 							it1.remove();
@@ -285,7 +285,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 							DateUtils.addSeconds(order.getStartTime(),-serviceSecond.intValue()),
 							DateUtils.addSeconds(order.getEndTime(),intervalTime));
 					Iterator<String> it2 = workTimes.iterator();
-					while(it.hasNext()) {
+					while(it2.hasNext()) {
 						String work = (String)it2.next();
 						if(orders.contains(work)){//去除订单时间
 							it2.remove();
@@ -487,8 +487,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 				int techNum = 0;//当前商品派人数量
 				int addTechNum=0;
-				Double goodsTime = convertHours * goodsNum;//gon
-				orderTotalTime = orderTotalTime + goodsTime;
+				Double goodsTime = convertHours * goodsNum;//折算时长 * 订购商品数
+				orderTotalTime = orderTotalTime + goodsTime;//订单商品总时长
 
 				if(goodsTime > 4){//每4小时增加1人
 					BigDecimal b1 = new BigDecimal(goodsTime);

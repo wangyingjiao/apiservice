@@ -101,7 +101,7 @@ public class OrderDispatchController extends BaseController {
 	@ApiOperation("技师改派保存")
 	@RequiresPermissions("dispatch_insert")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
-		return new SuccResult(techList);
+		HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+		return new SuccResult(map.get("list"));
 	}
 }

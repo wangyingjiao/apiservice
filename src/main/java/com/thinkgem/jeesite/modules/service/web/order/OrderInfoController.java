@@ -107,8 +107,8 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("更换时间保存")
 	@RequiresPermissions("order_time")
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.saveTime(orderInfo);
-		return new SuccResult(techList);
+		HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
+		return new SuccResult(map);
 	}
 
 	@ResponseBody
@@ -125,8 +125,8 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("增加技师保存")
 	@RequiresPermissions("order_addTech")
 	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.addTechSave(orderInfo);
-		return new SuccResult(techList);
+		HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
+		return new SuccResult(map);
 	}
 
 	@ResponseBody
@@ -143,7 +143,7 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("技师改派保存")
 	@RequiresPermissions("order_dispatch")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
-		return new SuccResult(techList);
+		HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+		return new SuccResult(map);
 	}
 }
