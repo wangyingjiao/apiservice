@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.order;
 
+import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import org.hibernate.validator.constraints.Length;
 
 import java.math.BigDecimal;
@@ -88,7 +89,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String serviceStatusName;//app
 	private String orderStatusName;//app
 	private String payStatusName;//app
-
+	private String nowId;//app
+	private List<AppServiceTechnicianInfo> appTechList;//app技师列表
 	public String getPayStatusName() {
 		return payStatusName;
 	}
@@ -121,9 +123,25 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		super(id);
 	}
 
+	public List<AppServiceTechnicianInfo> getAppTechList() {
+		return appTechList;
+	}
+
+	public void setAppTechList(List<AppServiceTechnicianInfo> appTechList) {
+		this.appTechList = appTechList;
+	}
+
 	@Length(min=1, max=32, message="主订单ID长度必须介于 1 和 32 之间")
 	public String getMasterId() {
 		return masterId;
+	}
+
+	public String getNowId() {
+		return nowId;
+	}
+
+	public void setNowId(String nowId) {
+		this.nowId = nowId;
 	}
 
 	public void setMasterId(String masterId) {

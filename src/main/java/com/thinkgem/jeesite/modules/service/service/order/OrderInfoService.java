@@ -22,6 +22,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoodsTypeHouse;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
@@ -62,6 +63,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app查询详情
 	public OrderInfo appFormData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
+		orderInfo.setNowId(info.getNowId());
 		OrderGoods goodsInfo = new OrderGoods();
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
 		if(goodsInfoList != null && goodsInfoList.size() != 0){
@@ -72,14 +74,32 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_HOST");
+		//商品图片
 		String pics = dao.appGetPics(orderInfo.getId());
 		List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
 		goodsInfo.setPicture(ossHost+picl.get(0));
-
+		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
+		for(OrderGoods orderGoods : goodsInfoList){
+			String dj = orderGoods.getPayPrice();//商品单价
+			int num = orderGoods.getGoodsNum();//商品数量
+			BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
+			orderGoods.setPayPrice(price.toString());//总价
+		}
 		orderInfo.setGoodsInfo(goodsInfo);
 		orderInfo.setTechList(techList);
-
+		//app其他技师
+		List<AppServiceTechnicianInfo> appTechList=new ArrayList<AppServiceTechnicianInfo>();
+		for (OrderDispatch apt:techList){
+			ServiceTechnicianInfo temInfo=new ServiceTechnicianInfo();
+			temInfo.setId(apt.getTechId());
+			AppServiceTechnicianInfo technicianById = serviceTechnicianInfoDao.getTechnicianById(temInfo);
+			technicianById.setId(apt.getTechId());
+			if (!technicianById.getId().equals(orderInfo.getNowId())){
+				appTechList.add(technicianById);
+			}
+		}
+		orderInfo.setAppTechList(appTechList);
 		String customerRemarkPic = orderInfo.getCustomerRemarkPic();
 		if(null != customerRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(customerRemarkPic,ArrayList.class);
@@ -881,11 +901,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if(techNum > cappinPerNum){//每个商品需求的人数
 					techNum = cappinPerNum;
 				}
-				if(techNum > techDispatchNum){//订单需求的最少人数
+				if(techNum > techDispatchNum) {//订单需求的最少人数
 					techDispatchNum = techNum;
 				}
 			}
-		}else{
+		} else {
 			throw new ServiceException("订单没有服务信息！");
 		}
 		String stationId = orderInfo.getStationId();//服务站ID

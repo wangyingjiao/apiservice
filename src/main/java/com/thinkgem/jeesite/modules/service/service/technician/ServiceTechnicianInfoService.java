@@ -429,6 +429,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         String ossHost = loader.getProperty("OSS_HOST");
         for (AppServiceTechnicianInfo appTech:serviceTechnicianInfos){
             appTech.setImgUrlHead(ossHost+appTech.getImgUrlHead());
+            appTech.setImgUrl(appTech.getImgUrlHead());
         }
         page.setCount(page1.getCount());
         page.setPageNo(page1.getPageNo());

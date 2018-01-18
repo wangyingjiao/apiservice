@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.app.login;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
@@ -226,6 +227,10 @@ public class AppTechController extends BaseController {
 	@ApiOperation(value = "修改个人资料保存", notes = "修改个人资料")
 	public AppResult saveTech(AppServiceTechnicianInfo appTech,HttpServletRequest request, HttpServletResponse response) {
 		appTech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+
+		PropertiesLoader loader = new PropertiesLoader("oss.properties");
+		String ossHost = loader.getProperty("OSS_HOST");
+
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setId(appTech.getId());
 		tech.setHeadPic(appTech.getImgUrlHead());
@@ -243,33 +248,17 @@ public class AppTechController extends BaseController {
 		if (appTech.getTechWeight() != null){
 			tech.setWeight(Integer.valueOf(appTech.getTechWeight()));
 		}
-
 		tech.setNativeProvinceCode(appTech.getTechNativePlace());
 		tech.setNation(appTech.getTechNation());
 		tech.setDescription(appTech.getExperDesc());
 		tech.setLifePic(appTech.getImgUrlLife());
 		int i = techService.appUpdate(tech);
-//		AppServiceTechnicianInfo apt =new AppServiceTechnicianInfo();
 		if (i > 0){
 			AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tech);
-
-//			appTech.setId(byId.getId());
-//			appTech.setTechName(byId.getName());
-//			appTech.setImgUrlHead(byId.getHeadPic());
-//			appTech.setTechPhone(byId.getPhone());
-//			appTech.setImgUrlLife(byId.getLifePic());
-//			appTech.setTechPhone(byId.getPhone());
-//			appTech.setTechSex(byId.getSex());
-//			appTech.setTechBirthDate(byId.getBirthDate());
-//			appTech.setAddrDetailInfo(byId.getAddress());
-//			appTech.setTechIdCard(byId.getIdCard());
-//			appTech.setImgUrlCard(byId.getIdCardPicBefor());
-//			appTech.setTechEmail(byId.getEmail());
-//			appTech.setTechHeight(byId.getHeight().toString());
-//			appTech.setTechWeight(byId.getWeight().toString());
-//			appTech.setTechNativePlace(byId.getNativeProvinceCode());
-//			appTech.setTechNation(byId.getNation());
-//			appTech.setExperDesc(byId.getDescription());
+			technicianById.setImgUrl(ossHost+technicianById.getImgUrl());
+			technicianById.setImgUrlHead(ossHost+technicianById.getImgUrlHead());
+			technicianById.setImgUrlLife(ossHost+technicianById.getImgUrlLife());
+			technicianById.setImgUrlCard(ossHost+technicianById.getImgUrlCard());
 			return new AppSuccResult(0,technicianById,"保存成功");
 		}
 		return new AppFailResult(-1,null,"保存失败");

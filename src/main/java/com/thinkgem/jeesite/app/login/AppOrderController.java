@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
+import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
@@ -84,7 +85,10 @@ public class AppOrderController extends BaseController {
 	@ApiOperation(value = "订单详情", notes = "订单")
 	public AppResult getOrderById(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
+		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
 		info.setTechPhone("13508070808");
+		info.setNowId(tech.getId());
 		OrderInfo orderInfo = orderInfoService.appFormData(info);
 		//订单备注
 		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
@@ -219,19 +223,21 @@ public class AppOrderController extends BaseController {
 		tech.setPhone("13508070808");
 		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
 		List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
-		PropertiesLoader loader = new PropertiesLoader("oss.properties");
-		String ossHost = loader.getProperty("OSS_HOST");
-		for (OrderDispatch dis:techList){
-			ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
-			tec.setId(dis.getId());
-			ServiceTechnicianInfo byId = techService.getById(tec);
-			dis.setTechPhone(byId.getPhone());
-			dis.setHeadPic(ossHost+dis.getHeadPic());
-		}
 		Map<String,Object> map=new HashMap<String,Object>();
-		map.put("list",techList);
-		if (techList.size() == 0){
-			return new AppSuccResult(1,map,"技师列表");
+		if (techList == null){
+			return new AppFailResult(1,null,"没有可选择的技师");
+		}else {
+			PropertiesLoader loader = new PropertiesLoader("oss.properties");
+			String ossHost = loader.getProperty("OSS_HOST");
+			List<AppServiceTechnicianInfo> apt=new ArrayList<AppServiceTechnicianInfo>();
+			for (OrderDispatch dis:techList){
+				ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
+				tec.setId(dis.getTechId());
+				AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tec);
+				technicianById.setImgUrl(ossHost + technicianById.getImgUrlHead());
+				apt.add(technicianById);
+			}
+			map.put("list",apt);
 		}
 		return new AppSuccResult(0,map,"技师列表");
 	}

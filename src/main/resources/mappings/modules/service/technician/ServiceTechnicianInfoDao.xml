@@ -549,7 +549,7 @@
 		WHERE id = #{id}
 	</update>
 
-	<update id="appUpdate">
+	<update id="update">
 		UPDATE tech_info SET
 		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
 		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
@@ -588,7 +588,7 @@
 	</update>
 
 	<!--app编辑-->
-	<update id="update">
+	<update id="appUpdate">
 		UPDATE tech_info SET
 		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
 		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
@@ -686,7 +686,7 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	<!--app 根据id查询登陆表-->
+	<!--app 根据id查询 app技师子表-->
 	<select id="getTechnicianById" resultType="AppServiceTechnicianInfo">
 		SELECT
 		a.head_pic AS imgUrlHead,

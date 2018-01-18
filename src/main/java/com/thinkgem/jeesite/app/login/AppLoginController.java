@@ -68,6 +68,7 @@ public class AppLoginController extends BaseController {
 //            entity.setExperDesc(entity.getExperDesc());
             String imgUrlLife = entity.getImgUrlLife();
             entity.setImgUrlLife(ossHost+imgUrlLife);
+            entity.setImgUrl(ossHost+entity.getImgUrlHead());
             ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.getByPhone(entity.getTechPhone());
             BasicServiceStation basicServiceStation = serviceStationService.get(serviceTechnicianInfo.getStationId());
             entity.setStationName(basicServiceStation.getName());

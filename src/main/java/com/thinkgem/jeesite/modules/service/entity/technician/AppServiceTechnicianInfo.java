@@ -39,6 +39,15 @@ public class AppServiceTechnicianInfo extends DataEntity<AppServiceTechnicianInf
     private String techNation;//民族
     private String experDesc;//经验描述
     private String imgUrlLife;//生活照
+    private String imgUrl;//app头像
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     @JsonIgnore
     public String getPassword() {
