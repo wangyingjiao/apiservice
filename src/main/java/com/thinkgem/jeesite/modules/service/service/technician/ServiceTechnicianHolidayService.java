@@ -11,8 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.DateUtilsEntity;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,23 +75,20 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		//获取服务人员工作时间
 		List<ServiceTechnicianHoliday> workTimes = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
 		//请假List   00:00-23:59 周几
-		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		holidays = new ArrayList<ServiceTechnicianHoliday>();
+		getHolidays(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
 
 		//循环请假时间
-		for (ServiceTechnicianHoliday holiday : holidaysList) {
-			int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
+		for (ServiceTechnicianHoliday holiday : holidays) {
+			int weekDay = Integer.parseInt(holiday.getHoliday());//当前是周几
 			//获取周几的工作时间
 			List<ServiceTechnicianHoliday> weekDayWorkTimes = getWeekDayWorkTimes(weekDay, workTimes);
 			//循环工作时间
 			for (ServiceTechnicianHoliday weekDayWorkTime : weekDayWorkTimes) {
-
+				ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
 				//判断请假时间是否在工作时间内，并返回在工作时间内的数据
-				DateUtilsEntity entity = DateUtils.findDatesRepeatTime(weekDayWorkTime.getStartTime(),weekDayWorkTime.getEndTime(),
-																holiday.getStartTime(),holiday.getEndTime());
-				if (null != entity) {//请假时间在工作时间内
-					ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
-					info.setStartTime(entity.getStartTime());
-					info.setEndTime(entity.getEndTime());
+				info = getLastHolidays(weekDayWorkTime, holiday);
+				if (null != info) {//请假时间在工作时间内
 					info.setTechId(serviceTechnicianHoliday.getTechId());//技师ID
 					info.setRemark(serviceTechnicianHoliday.getRemark());//备注
 					list.add(info);
@@ -107,6 +104,25 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	@Transactional(readOnly = false)
 	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;
+		//服务人员在请假时间内是否有未完成的订单
+		int orderTechRelationHoliday = serviceTechnicianHolidayDao.getOrderTechRelationHoliday(serviceTechnicianHoliday);
+		if (orderTechRelationHoliday > 0){
+			throw new ServiceException("服务人员有未完成订单,不可请假");
+		}
+		//服务人员在请假时间内是否有请假
+		List<ServiceTechnicianHoliday> hoList = serviceTechnicianHolidayDao.getHolidayHistory(serviceTechnicianHoliday);
+		int num = 0;
+		if(null != hoList && hoList.size()>0){
+			for(ServiceTechnicianHoliday holiday : hoList){
+				if(!DateUtils.checkDatesRepeat(holiday.getStartTime(),holiday.getEndTime(),serviceTechnicianHoliday.getStartTime(),serviceTechnicianHoliday.getEndTime())){
+					num++;
+				}
+			}
+		}
+		if (num>0){
+			throw new ServiceException("请假时间冲突");
+		}
+
 		//最后休假日期List
 		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
 		//获取服务人员工作时间
@@ -248,51 +264,6 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 			getHolidays(newEndTime, workEndTime);
 		}
 	}
-
-	/**
-	 * 把请假时间按天分割
-	 * 如：2018-01-01 09:00:00  2018-01-03 18:00:00
-	 * 返回三条数据：
-	 * 	2018-01-01 09:00:00 2018-01-01 23:59:59
-	 * 	2018-01-02 00:00:00 2018-01-02 23:59:59
-	 * 	2018-01-03 00:00:00 2018-01-03 18:00:00
-	 *
-	 * @param workStartTime
-	 * @param workEndTime
-	 * @return
-	 */
-	private static List<ServiceTechnicianHoliday>  getHolidaysList(Date workStartTime, Date workEndTime) {
-		if(workStartTime != null && workEndTime != null){//开始结束时间不为空
-			List<ServiceTechnicianHoliday> holidayList = new ArrayList<>();
-			Date newFirstTime = workStartTime;
-			Date newEndTime = DateUtils.getDateLastTime(workStartTime);
-			while (workEndTime.after(newEndTime)){//结束时间在新的结束时间之后
-				ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
-				int weekDay = DateUtils.getWeekNum(newFirstTime);//周几
-				holiday.setStartTime(newFirstTime);
-				holiday.setEndTime(newEndTime);
-				holiday.setHoliday(String.valueOf(weekDay));
-				holidayList.add(holiday);
-
-				newFirstTime = DateUtils.getDateFirstTime(DateUtils.addDays(newFirstTime,1));//新的开始时间
-				newEndTime = DateUtils.addDays(newEndTime,1);//新的结束时间
-
-			}
-			if(newFirstTime.getTime() != workEndTime.getTime()) {//最后一天的数据(2018-01-03 00:00:00 2018-01-03 18:00:00) 如果只有00:00:00 则不考虑
-				ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
-				int weekDay = DateUtils.getWeekNum(newFirstTime);//周几
-				holiday.setStartTime(newFirstTime);
-				holiday.setEndTime(workEndTime);
-				holiday.setHoliday(String.valueOf(weekDay));
-				holidayList.add(holiday);
-			}
-
-			return holidayList;
-		}else {
-			return null;
-		}
-	}
-
 
 	//app删除休假时间
 	@Transactional(readOnly = false)

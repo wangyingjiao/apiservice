@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.app.login;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
@@ -166,21 +167,16 @@ public class AppTechController extends BaseController {
 		tech.setDelFlag("0");
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		info.setTechId(tech1.getId());
-		//服务人员在请假时间内是否有未完成的订单
-		if(holidayService.getOrderTechRelationHoliday(info) > 0){
-			return new AppFailResult(-1,null,"服务人员有未完成订单,不可请假.");
+		int i ;
+		try{
+			i = holidayService.appSave(info);
+			if (i>0){
+				return new AppSuccResult(0,null,"保存成功");
+			}
+			return new AppFailResult(-1,null,"保存失败，可能是设置的时间不在工作时间内");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
 		}
-		//服务人员在请假时间内是否有请假
-
-		if(holidayService.getHolidayHistory(info) > 0){
-			return new AppFailResult(-1,null,"请假时间冲突");
-		}
-
-		int i = holidayService.appSave(info);
-		if (i==0){
-			return new AppFailResult(-1,null,"设置的时间不在工作时间内");
-		}
-		return new AppSuccResult(0,null,"保存成功");
 	}
 
 	@ResponseBody
