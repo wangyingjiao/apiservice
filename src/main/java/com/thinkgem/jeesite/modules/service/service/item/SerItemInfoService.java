@@ -96,6 +96,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			//批量插入商品信息
 			for (SerItemCommodity commodity : commoditys) {
 				commodity.setItemId(serItemInfo.getId());
+				commodity.setSortId(serItemInfo.getSortId());
 				serItemCommodityService.save(commodity);
 			}
 		}

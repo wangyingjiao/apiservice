@@ -69,6 +69,7 @@
 	<insert id="insert">
 		INSERT INTO ser_item_info_goods(
 			id,
+			sort_id,
 			item_id,
 			name,
 			unit,
@@ -86,6 +87,7 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{sortId},
 			#{itemId},
 			#{name},
 			#{unit},
