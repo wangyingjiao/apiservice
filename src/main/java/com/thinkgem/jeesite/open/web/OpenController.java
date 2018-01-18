@@ -49,7 +49,7 @@ public class OpenController extends BaseController {
 		List<OpenServiceTimesResponse> list = openService.openServiceTimes(info);
 		HashMap<Object,Object> responseRe = new HashMap();
 		responseRe.put("available_times",list);
-		return new SuccResult(response);
+		return new SuccResult(responseRe);
 	}
 
 	/**

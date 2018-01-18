@@ -64,14 +64,15 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<Date> dateList = DateUtils.getAfterFifteenDays();
 		List<OpenServiceTimesResponse> list = new ArrayList<>();
 		for(Date date : dateList){
-			OpenServiceTimesResponse response = new OpenServiceTimesResponse();
-			response.setFormat_date(DateUtils.formatDate(date, "yyyy-MM-dd"));
-			response.setWeekday(DateUtils.formatDate(date, "E"));
+			OpenServiceTimesResponse responseRe = new OpenServiceTimesResponse();
+			responseRe.setFormat_date(DateUtils.formatDate(date, "yyyy-MM-dd"));
+			responseRe.setWeekday(DateUtils.formatDate(date, "E"));
 			//该日服务时间点列表
 			List<OpenHours> hours = openServiceTimesHours(date, info);
-			response.setHours(hours);
+			responseRe.setHours(hours);
+			list.add(responseRe);
 		}
-    	return null;
+    	return list;
     }
 
 	/**
