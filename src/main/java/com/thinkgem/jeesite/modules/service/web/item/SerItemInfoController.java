@@ -91,6 +91,9 @@ public class SerItemInfoController extends BaseController {
             String picture = JsonMapper.toJsonString(pictures);
             serItemInfo.setPicture(picture);
         }
+        //add by wyr编辑项目服务需要获取当前的机构id
+        User user = UserUtils.getUser();
+        serItemInfo.setOrgId(user.getOrganization().getId()); 
         serItemInfoService.save(serItemInfo);
         return new SuccResult("保存成功");
     }
