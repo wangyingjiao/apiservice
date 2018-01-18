@@ -195,6 +195,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
 		Date finishTime = orderInfo.getFinishTime();//完成时间
 
+		List<OrderDispatch> techListRe = new ArrayList<>();
+
 		//取得技师List
 		OrderDispatch serchInfo = new OrderDispatch();
 		//展示当前下单客户所在服务站的所有可服务的技师
@@ -212,6 +214,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchInfo.setTechName(techName);
 		serchInfo.setOrderId(orderInfo.getId());
 		List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
+		List<OrderDispatch> techListPart = new ArrayList<>();//兼职
+		List<OrderDispatch> techListFull = new ArrayList<>();//全职
+		if(null != techList){
+			for(OrderDispatch orderDispatch : techList){
+				if("part_time".equals(orderDispatch.getJobNature())){
+					techListPart.add(orderDispatch);
+				}else{
+					techListFull.add(orderDispatch);
+				}
+			}
+		}
 
 		//（3）考虑技师的工作时间
 		//取得当前机构下工作时间包括服务时间的技师
@@ -224,8 +237,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		List<OrderDispatch> beforTimeCheckTechList = new ArrayList<OrderDispatch>();
 		List<String> beforTimeCheckTechIdList = new ArrayList<String>();
-		if(techList != null){
-			for(OrderDispatch tech : techList){//有工作时间并且没有休假的技师 有时间接单 还未考虑是否有订单
+		if(techListFull != null){
+			for(OrderDispatch tech : techListFull){//有工作时间并且没有休假的技师 有时间接单 还未考虑是否有订单
 				if((workTechIdList!=null && workTechIdList.contains(tech.getTechId()))
 						&& (holidayTechIdList == null || (holidayTechIdList!=null && !holidayTechIdList.contains(tech.getTechId()))) ){
 					beforTimeCheckTechList.add(tech);
@@ -233,6 +246,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 			}
 		}
+
 		if(beforTimeCheckTechIdList.size() != 0){
 			serchInfo.setTechIds(beforTimeCheckTechIdList);
 			serchInfo.setServiceTime(DateUtils.addMinutes(serviceTime,90));//订单结束时间在当前订单上门时间前90分钟之后
@@ -306,7 +320,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				clashTechList.add(orderTech);
 			}
 
-			List<OrderDispatch> techListRe = new ArrayList<>();
+
 			//有时间接单 还未考虑是否有订单 的技师列表  去除 有订单并且时间冲突的技师
 			for(OrderDispatch beforTimeCheckTech: beforTimeCheckTechList){
 				boolean flag = true;
@@ -320,9 +334,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					techListRe.add(beforTimeCheckTech);
 				}
 			}
-			return techListRe;
+
 		}
-		return null;
+		if (null != techListPart){
+			for(OrderDispatch part : techListPart){
+				techListRe.add(part);
+			}
+		}
+		return techListRe;
 	}
 	//app 技师列表
 	public List<OrderDispatch> appTech(OrderInfo orderInfo) {
