@@ -212,18 +212,19 @@ public class AppOrderController extends BaseController {
 
 
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/appDispatchTech",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/techList",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师列表")
-	public AppResult appDispatchTech(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
+	public AppResult techList(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setPhone("13508070808");
 		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_HOST");
 		for (OrderDispatch dis:techList){
-			ServiceTechnicianInfo byId = techService.getById(dis.getTechId());
+			ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
+			tec.setId(dis.getId());
+			ServiceTechnicianInfo byId = techService.getById(tec);
 			dis.setTechPhone(byId.getPhone());
 			dis.setHeadPic(ossHost+dis.getHeadPic());
 		}
@@ -242,13 +243,19 @@ public class AppOrderController extends BaseController {
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setPhone("13508070808");
 		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		orderInfo = orderInfoService.appGet(orderInfo);
 		orderInfo.setDispatchTechId("d30d2e68ae1a48b3b8a80625b0abc39f");
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		List<OrderDispatch> techList = orderInfoService.appDispatchTechSave(orderInfo);
+		List<OrderDispatch> techList =null;
+		techList = orderInfoService.appDispatchTechSave(orderInfo);
+		if (techList == null){
+			return new AppFailResult(-1,null,"选择技师为空或者不属于该服务站");
+		}
 		if (techList.size() > 0){
-			return new AppSuccResult(1,null,"改派成功");
+			return new AppSuccResult(0,null,"改派成功");
 		}
 		return new AppFailResult(-1,null,"改派失败");
+//		}
 	}
 
 

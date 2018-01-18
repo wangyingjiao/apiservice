@@ -60,13 +60,12 @@ public class AppLoginController extends BaseController {
         } else {
             Token token = tokenManager.createToken(entity);
             String imgUrlHead = entity.getImgUrlHead();
-            String url=ossHost+imgUrlHead;
-            entity.setImgUrlHead(url);
+            entity.setImgUrlHead(ossHost+imgUrlHead);
             entity.setToken(token.getToken());
 //            entity.setTechEmail(entity.getTechEmail());
 //            entity.setTechNativePlace(entity.getTechNativePlace());
 //            entity.setTechNation(entity.getTechNation());
-            entity.setExperDesc(entity.getExperDesc());
+//            entity.setExperDesc(entity.getExperDesc());
             String imgUrlLife = entity.getImgUrlLife();
             entity.setImgUrlLife(ossHost+imgUrlLife);
             ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.getByPhone(entity.getTechPhone());
@@ -83,7 +82,7 @@ public class AppLoginController extends BaseController {
         Subject subject = UserUtils.getSubject();
         System.out.println(subject);
         UserUtils.getSubject().logout();
-        return new AppSuccResult(1,null,"退出成功");
+        return new AppSuccResult(0,null,"退出成功");
     }
 
 }

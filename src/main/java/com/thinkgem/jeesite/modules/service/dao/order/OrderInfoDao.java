@@ -22,6 +22,8 @@ import java.util.List;
  */
 @MyBatisDao
 public interface OrderInfoDao extends CrudDao<OrderInfo> {
+    //app
+    OrderInfo appGet(OrderInfo info);
 
     List<BasicOrganization> findOrganizationList(BasicOrganization organization);
 

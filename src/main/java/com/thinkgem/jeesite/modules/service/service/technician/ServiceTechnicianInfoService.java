@@ -321,12 +321,28 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         return technicianInfoDao.findTech(info);
     }
 
-    public ServiceTechnicianInfo getById(String id){
-        return technicianInfoDao.getById(id);
+    public AppServiceTechnicianInfo getTechnicianById(ServiceTechnicianInfo info){
+        AppServiceTechnicianInfo technicianById = technicianInfoDao.getTechnicianById(info);
+        return technicianById;
     }
+    //app
+    public ServiceTechnicianInfo getById(ServiceTechnicianInfo info){
+        ServiceTechnicianInfo byId = technicianInfoDao.getById(info);
+        return byId;
+    }
+    //app 新增
     @Transactional(readOnly = false)
-    public void saveApp(ServiceTechnicianInfo serviceTechnicianInfo) {
-        super.save(serviceTechnicianInfo);
+    public int saveApp(ServiceTechnicianInfo serviceTechnicianInfo) {
+        int i = super.saveAPP(serviceTechnicianInfo);
+        return i;
+    }
+
+    //app 编辑
+    @Transactional(readOnly = false)
+    public int appUpdate(ServiceTechnicianInfo serviceTechnicianInfo) {
+        serviceTechnicianInfo.appPreUpdate();
+        int i =dao.appUpdate(serviceTechnicianInfo);
+        return i;
     }
 
     //技师家庭成员
@@ -402,31 +418,22 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     //app通讯录
-    public Page<AppTech> appGetFriendByStationId(Page<AppTech> page,ServiceTechnicianInfo serviceTechnicianInfo){
+    public Page<AppServiceTechnicianInfo> appGetFriendByStationId(Page<AppServiceTechnicianInfo> page,ServiceTechnicianInfo serviceTechnicianInfo){
         Page<ServiceTechnicianInfo> page1 = new Page<>();
         page1.setCount(page.getCount());
         page1.setPageNo(page.getPageNo());
         page1.setPageSize(page.getPageSize());
         serviceTechnicianInfo.setPage(page1);
-
-        List<ServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
-        List<AppTech> techs=new ArrayList<AppTech>();
+        List<AppServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
         PropertiesLoader loader = new PropertiesLoader("oss.properties");
         String ossHost = loader.getProperty("OSS_HOST");
-        for (ServiceTechnicianInfo t:serviceTechnicianInfos){
-            AppTech tech=new AppTech();
-            tech.setId(t.getId());
-            tech.setTechName(t.getName());
-            tech.setTechPhone(t.getPhone());
-            tech.setImgUrl(ossHost+t.getHeadPic());
-            techs.add(tech);
+        for (AppServiceTechnicianInfo appTech:serviceTechnicianInfos){
+            appTech.setImgUrlHead(ossHost+appTech.getImgUrlHead());
         }
-
         page.setCount(page1.getCount());
         page.setPageNo(page1.getPageNo());
         page.setPageSize(page1.getPageSize());
-
-        page.setList(techs);
+        page.setList(serviceTechnicianInfos);
         return page;
     }
 

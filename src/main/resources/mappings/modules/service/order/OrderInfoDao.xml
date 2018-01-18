@@ -58,6 +58,14 @@
 		<include refid="orderInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
+	<!--app -->
+	<select id="appGet" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		WHERE a.id = #{id}
+	</select>
+
 
 	<select id="findList" resultType="OrderInfo">
 		SELECT

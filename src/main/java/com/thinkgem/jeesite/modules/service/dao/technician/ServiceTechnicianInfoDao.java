@@ -26,7 +26,10 @@ import java.util.List;
 public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo> {
 
     ServiceTechnicianInfo findTech(ServiceTechnicianInfo info);
-    ServiceTechnicianInfo getById(String id);
+    //app
+    AppServiceTechnicianInfo getTechnicianById(ServiceTechnicianInfo info);
+    ServiceTechnicianInfo getById(ServiceTechnicianInfo info);
+    int appUpdate(ServiceTechnicianInfo info);
 
     int getOrderTechRelation(ServiceTechnicianInfo serviceTechnicianInfo);
 
@@ -58,7 +61,7 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
 
     List<String> getSkillIds(ServiceTechnicianInfo serviceTechnicianInfo);
     //app通讯录
-    List<ServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo);
+    List<AppServiceTechnicianInfo> appGetFriendByStationId(ServiceTechnicianInfo serviceTechnicianInfo);
 
     void updateInfo(ServiceTechnicianInfo info);
 

@@ -52,9 +52,24 @@
         <include refid="serviceTechnicianInfoJoins"/>
         WHERE a.id = #{id}
     </select>
+	<!--app-->
 	<select id="getById" resultType="ServiceTechnicianInfo">
 		SELECT
-		<include refid="serviceTechnicianInfoColumns"/>
+		a.id AS "id",
+		a.name AS "name",
+		a.head_pic AS "headPic",
+		a.id_card AS "idCard",
+		a.life_pic AS "lifePic",
+		a.phone AS "phone",
+		a.address AS "address",
+		a.sex AS "sex",
+		a.nation AS "nation",
+		a.birth_date AS "birthDate",
+		a.email AS "email",
+		a.height AS "height",
+		a.weight AS "weight",
+		a.native_province_code AS "nativeProvinceCode",
+		a.description AS "description"
 		FROM tech_info a
 		WHERE a.id = #{id}
 	</select>
@@ -127,8 +142,24 @@
 
 
 	<!--app获取通讯录-->
-	<select id="appGetFriendByStationId" resultType="ServiceTechnicianInfo">
-		SELECT a.id,a.name,a.phone,a.head_pic AS "headPic"
+	<select id="appGetFriendByStationId" resultType="AppServiceTechnicianInfo">
+		SELECT
+		a.head_pic AS imgUrlHead,
+		a.phone AS techPhone,
+		a.name AS techName,
+		a.sex AS techSex,
+		a.birth_date AS techBirthDate,
+		a.address AS addrDetailInfo,
+		a.id_card AS techIdCard,
+		a.id_card_pic AS imgUrlCard,
+		a.email AS techEmail,
+		a.height AS techHeight,
+		a.weight AS techWeight,
+		a.native_province_code AS techNativePlace,
+		a.nation AS techNation,
+		a.description AS experDesc,
+		a.life_pic AS imgUrlLife,
+		a.app_login_password AS password
 		FROM tech_info a
 		WHERE
 		a.del_flag = '0'
@@ -518,7 +549,7 @@
 		WHERE id = #{id}
 	</update>
 
-	<update id="update">
+	<update id="appUpdate">
 		UPDATE tech_info SET
 		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
 		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
@@ -541,6 +572,45 @@
 		<if test="jobNature !=null and jobNature != ''">job_nature = #{jobNature},</if>
 		<if test="jobStatus !=null and jobStatus != ''">job_status = #{jobStatus},</if>
 		work_time = #{workTime},
+		<if test="email !=null and email != ''">email = #{email},</if>
+		<if test="education !=null and education != ''">education = #{education},</if>
+		<if test="height !=null and height != ''">height = #{height},</if>
+		<if test="weight !=null and weight != ''">weight = #{weight},</if>
+		<if test="marryStatus !=null and marryStatus != ''">marry_status = #{marryStatus},</if>
+		<if test="nativeProvinceCode !=null and nativeProvinceCode != ''">native_province_code = #{nativeProvinceCode},</if>
+		<if test="inJobTime !=null and inJobTime != ''">in_job_time = #{inJobTime},</if>
+		<if test="jobLevel !=null and jobLevel != ''">job_level = #{jobLevel},</if>
+		<if test="description !=null and description != ''">description = #{description},</if>
+		<if test="remark !=null and remark != ''">remark = #{remark},</if>
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+
+	<!--app编辑-->
+	<update id="update">
+		UPDATE tech_info SET
+		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
+		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
+		<if test="name !=null and name != ''">name = #{name},</if>
+		<if test="headPic !=null and headPic != ''">head_pic = #{headPic},</if>
+		<if test="idCard !=null and idCard != ''">id_card = #{idCard},</if>
+		<if test="idCardPic !=null and idCardPic != ''">id_card_pic = #{idCardPic},</if>
+		<if test="lifePic !=null and lifePic != ''">life_pic = #{lifePic},</if>
+		<if test="jobPic !=null and jobPic != ''">job_pic = #{jobPic},</if>
+		<if test="phone !=null and phone != ''">phone = #{phone},</if>
+		<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
+		<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
+		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
+		<if test="address !=null and address != ''">address = #{address},</if>
+		<if test="sex !=null and sex != ''">sex = #{sex},</if>
+		<if test="nation !=null and nation != ''">nation = #{nation},</if>
+		<if test="birthDate !=null and birthDate != ''">birth_date = #{birthDate},</if>
+		<if test="status !=null and status != ''">status = #{status},</if>
+		<if test="appLoginPassword !=null and appLoginPassword != ''">app_login_password = #{appLoginPassword},</if>
+		<if test="jobNature !=null and jobNature != ''">job_nature = #{jobNature},</if>
+		<if test="jobStatus !=null and jobStatus != ''">job_status = #{jobStatus},</if>
+		<if test="workTime !=null and workTime != ''">work_time = #{workTime},</if>
 		<if test="email !=null and email != ''">email = #{email},</if>
 		<if test="education !=null and education != ''">education = #{education},</if>
 		<if test="height !=null and height != ''">height = #{height},</if>
@@ -616,8 +686,32 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-
-
+	<!--app 根据id查询登陆表-->
+	<select id="getTechnicianById" resultType="AppServiceTechnicianInfo">
+		SELECT
+		a.head_pic AS imgUrlHead,
+		a.phone AS techPhone,
+		a.name AS techName,
+		a.sex AS techSex,
+		a.birth_date AS techBirthDate,
+		a.address AS addrDetailInfo,
+		a.id_card AS techIdCard,
+		a.id_card_pic AS imgUrlCard,
+		a.email AS techEmail,
+		a.height AS techHeight,
+		a.weight AS techWeight,
+		a.native_province_code AS techNativePlace,
+		a.nation AS techNation,
+		a.description AS experDesc,
+		a.life_pic AS imgUrlLife,
+		a.app_login_password AS password
+		FROM
+		tech_info a
+		WHERE
+		a.del_flag = '0'
+		AND a.id = #{id}
+	</select>
+	<!--app-->
 	<select id="getTechnicianByPhone" resultType="AppServiceTechnicianInfo">
 		SELECT
 			a.head_pic AS imgUrlHead,

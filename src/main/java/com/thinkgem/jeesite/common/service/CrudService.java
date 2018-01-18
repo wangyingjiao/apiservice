@@ -98,7 +98,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			entity.appreInsert();
 			i= dao.insert(entity);
 		}else{
-			entity.preUpdate();
+			entity.appPreUpdate();
 			i= dao.update(entity);
 		}
 		return i;

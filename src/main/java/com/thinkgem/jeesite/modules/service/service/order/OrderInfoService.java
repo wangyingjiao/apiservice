@@ -8,6 +8,7 @@ import java.util.*;
 
 import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -15,12 +16,14 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.map.GaoDeMapUtil;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoodsTypeHouse;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	OrderDispatchDao orderDispatchDao;
 	@Autowired
     BasicServiceStationDao basicServiceStationDao;
+	@Autowired
+	ServiceTechnicianInfoDao serviceTechnicianInfoDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -370,7 +375,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//serchInfo.setJobNature("full_time");
 		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
 		serchInfo.setOrderId(orderInfo.getId());
-		serchInfo.setOrderId(orderInfo.getId());
 		List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
 
 		//（3）考虑技师的工作时间
@@ -386,9 +390,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<String> beforTimeCheckTechIdList = new ArrayList<String>();
 		if(techList != null){
 			for(OrderDispatch tech : techList){//有工作时间并且没有休假的技师 有时间接单 还未考虑是否有订单
-//				String techId = tech.getTechId();
-//				boolean b =  workTechIdList.contains(techId);
-//				boolean b1 = holidayTechIdList == null || (holidayTechIdList != null && !holidayTechIdList.contains(tech.getTechId()));
+				String techId = tech.getTechId();
+				boolean b =  workTechIdList.contains(techId);
+				boolean b1 = holidayTechIdList == null || (holidayTechIdList != null && !holidayTechIdList.contains(tech.getTechId()));
 				if((workTechIdList!=null && workTechIdList.contains(tech.getTechId()))
 						&& (holidayTechIdList == null || (holidayTechIdList!=null && !holidayTechIdList.contains(tech.getTechId()))) ){
 					beforTimeCheckTechList.add(tech);
@@ -758,11 +762,28 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 		return techListRe;
 	}
+
+	//app
+	public OrderInfo appGet(OrderInfo info){
+		return dao.appGet(info);
+	}
 	//app改派保存
 	@Transactional(readOnly = false)
 	public List<OrderDispatch> appDispatchTechSave(OrderInfo orderInfo) {
 		String dispatchTechId = orderInfo.getDispatchTechId();//改派前技师ID
 		List<String> techIdList = orderInfo.getTechIdList();//改派技师List
+		for (String id:techIdList){
+			ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
+			tec.setId(id);
+			ServiceTechnicianInfo techInfo = serviceTechnicianInfoDao.getById(tec);
+			//订单的服务站id 与技师的服务站id匹配
+			if (techInfo!=null){
+				if (!techInfo.getStationId().equals(orderInfo.getStationId())){
+					return null;
+				}
+			}
+			return null;
+		}
 		orderInfo = get(orderInfo.getId());//当前订单
 		List<OrderDispatch> techList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
@@ -779,6 +800,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		info.appPreUpdate();
 		int update = dao.update(info);
 		for(OrderDispatch orderDispatch : techList){
+			//将改派前技师的订单状态设置为不可用
 			if(dispatchTechId.equals(orderDispatch.getTechId())){
 				//techList.remove(orderDispatch);//返回的技师列表删除改派前技师
 

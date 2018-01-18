@@ -84,12 +84,11 @@ public class AppTechController extends BaseController {
 	@ApiOperation(value = "通讯录", notes = "通讯录")
 	public AppResult appGetFriendByStationId(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id 服务站id
-//		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setPhone("13508070808");
 		tech.setDelFlag("0");
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		Page<AppTech> page = new Page<AppTech>(request, response);
-		Page<AppTech> list = techService.appGetFriendByStationId(page,tech1);
+		Page<AppServiceTechnicianInfo> page = new Page<AppServiceTechnicianInfo>(request, response);
+		Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page,tech1);
 		long count = page.getCount();
 		int pageSize = page.getPageSize();
 		long totalPage=0;
@@ -161,6 +160,7 @@ public class AppTechController extends BaseController {
 		//获取技师id
 		//获取登陆技师的信息  id
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
 		tech.setPhone("13508070808");
 		tech.setDelFlag("0");
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
@@ -186,6 +186,7 @@ public class AppTechController extends BaseController {
 	@RequestMapping(value = "${appPath}/deleteTech", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "删除休假", notes = "技师休假")
 	public AppResult deleteTech(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
+		serviceTechnicianHoliday.setTechId("d30d2e68ae1a48b3b8a80625b0abc39f");
 		int delete = holidayService.delete1(serviceTechnicianHoliday);
 		if (delete > 0){
 			return new AppSuccResult(0,null,"删除休假成功");
@@ -223,12 +224,55 @@ public class AppTechController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/saveTech", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "修改个人资料保存", notes = "修改个人资料")
-	public AppResult saveTech(HttpServletRequest request, HttpServletResponse response) {
-//		int delete = holidayService.delete1(serviceTechnicianHoliday);
-//		if (delete > 0){
-//			return new AppSuccResult(0,null,"删除休假成功");
-//		}
-		return new AppFailResult(-1,null,"删除休假失败");
+	public AppResult saveTech(AppServiceTechnicianInfo appTech,HttpServletRequest request, HttpServletResponse response) {
+		appTech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setId(appTech.getId());
+		tech.setHeadPic(appTech.getImgUrlHead());
+		tech.setName(appTech.getTechName());
+		tech.setPhone(appTech.getTechPhone());
+		tech.setSex(appTech.getTechSex());
+		tech.setBirthDate(appTech.getTechBirthDate());
+		tech.setAddress(appTech.getAddrDetailInfo());
+		tech.setIdCard(appTech.getTechIdCard());
+		tech.setIdCardPicBefor(appTech.getImgUrlCard());
+		tech.setEmail(appTech.getTechEmail());
+		if (appTech.getTechHeight() != null){
+			tech.setHeight(Integer.valueOf(appTech.getTechHeight()));
+		}
+		if (appTech.getTechWeight() != null){
+			tech.setWeight(Integer.valueOf(appTech.getTechWeight()));
+		}
+
+		tech.setNativeProvinceCode(appTech.getTechNativePlace());
+		tech.setNation(appTech.getTechNation());
+		tech.setDescription(appTech.getExperDesc());
+		tech.setLifePic(appTech.getImgUrlLife());
+		int i = techService.appUpdate(tech);
+//		AppServiceTechnicianInfo apt =new AppServiceTechnicianInfo();
+		if (i > 0){
+			AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tech);
+
+//			appTech.setId(byId.getId());
+//			appTech.setTechName(byId.getName());
+//			appTech.setImgUrlHead(byId.getHeadPic());
+//			appTech.setTechPhone(byId.getPhone());
+//			appTech.setImgUrlLife(byId.getLifePic());
+//			appTech.setTechPhone(byId.getPhone());
+//			appTech.setTechSex(byId.getSex());
+//			appTech.setTechBirthDate(byId.getBirthDate());
+//			appTech.setAddrDetailInfo(byId.getAddress());
+//			appTech.setTechIdCard(byId.getIdCard());
+//			appTech.setImgUrlCard(byId.getIdCardPicBefor());
+//			appTech.setTechEmail(byId.getEmail());
+//			appTech.setTechHeight(byId.getHeight().toString());
+//			appTech.setTechWeight(byId.getWeight().toString());
+//			appTech.setTechNativePlace(byId.getNativeProvinceCode());
+//			appTech.setTechNation(byId.getNation());
+//			appTech.setExperDesc(byId.getDescription());
+			return new AppSuccResult(0,technicianById,"保存成功");
+		}
+		return new AppFailResult(-1,null,"保存失败");
 	}
 
 	//修改资料列表
