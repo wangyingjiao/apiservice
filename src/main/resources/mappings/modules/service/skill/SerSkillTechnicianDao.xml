@@ -82,6 +82,7 @@
 			id,
 			skill_id,
 			tech_id,
+			station_id,
 			create_by,
 			create_date,
 			update_by,
@@ -91,6 +92,7 @@
 			#{id},
 			#{skillId},
 			#{techId},
+			#{techStationId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -123,8 +125,8 @@
 	</update>
 	<select id="getSerSkillTechnicianBySkill" resultType="SerSkillTechnician">
 		SELECT
-		a.tech_id AS "techId",
-		b.name AS "techName"
+		a.tech_id AS techId,
+		b.name AS techName
 		FROM ser_skill_tech a
 		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.skill_id = #{id}
@@ -132,6 +134,12 @@
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
 	</select>
+
+	<select id="getSkillByTechId" resultType="SerSkillTechnician">
+		SELECT a.skill_id AS skillId FROM ser_skill_tech a WHERE a.tech_id=#{id} and a.del_flag=#{DEL_FLAG_NORMAL}
+	</select>
+
+
 
 	<update id="updateTechNum">
 		UPDATE ser_skill_info SET

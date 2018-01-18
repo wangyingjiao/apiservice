@@ -263,13 +263,23 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         }
 
         List<String> skillIds = serviceTechnicianInfo.getSkillIds();
+
+
         if (null != skillIds) {
+            List<SerSkillTechnician> skills = serSkillTechnicianDao.getSkillByTechId(serviceTechnicianInfo);
             //删除时同时删除关联的技能
             delSerSkillTechnicianByTechnician(serviceTechnicianInfo);
+
+            for(SerSkillTechnician serSkillTechnician : skills){
+                //更新技师数量
+                serSkillTechnicianDao.updateTechNum(serSkillTechnician.getSkillId());
+            }
+
             for (String skillId : skillIds) {
                 SerSkillTechnician serSkillTechnician = new SerSkillTechnician();
                 serSkillTechnician.setSkillId(skillId);
                 serSkillTechnician.setTechId(serviceTechnicianInfo.getId());
+                serSkillTechnician.setTechStationId(serviceTechnicianInfo.getStationId());
                 serSkillTechnician.preInsert();
                 serSkillTechnicianDao.insert(serSkillTechnician);
 

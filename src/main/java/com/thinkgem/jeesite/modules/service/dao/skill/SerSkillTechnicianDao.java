@@ -26,4 +26,6 @@ public interface SerSkillTechnicianDao extends CrudDao<SerSkillTechnician> {
     List<SerSkillTechnician> getSerSkillTechnicianBySkill(SerSkillInfo serSkillInfo);
 
     void updateTechNum(String id);
+
+    List<SerSkillTechnician> getSkillByTechId(ServiceTechnicianInfo serviceTechnicianInfo);
 }
