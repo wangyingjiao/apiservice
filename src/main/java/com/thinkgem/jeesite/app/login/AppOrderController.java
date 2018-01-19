@@ -100,6 +100,11 @@ public class AppOrderController extends BaseController {
 			String url=ossHost+pic;
 			orp.add(url);
 		}
+		if (orderInfo.getOrderSource().equals("own")){
+			orderInfo.setOrderSource("本机构");
+		}else if (orderInfo.getOrderSource().equals("gasq")){
+			orderInfo.setOrderSource("国安社区");
+		}
 		orderInfo.setOrderRemarkPics(orp);
 		String serviceStatus = orderInfo.getServiceStatus();
 		if (serviceStatus.equals("wait_service")){

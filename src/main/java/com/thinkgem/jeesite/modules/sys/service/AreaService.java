@@ -65,6 +65,10 @@ public class AreaService extends CrudService<AreaDao, Area> {
 	public List<Area> appFindAllList(Area info){
 		return areaDao.appFindAllList(info);
 	}
+	//app登陆 修改用户使用
+	public List<Area> getNameByCode(String province_code){
+		return areaDao.getNameByCode(province_code);
+	}
 
     public List<AreaTree> getAreaTree() {
 		Area info = new Area();

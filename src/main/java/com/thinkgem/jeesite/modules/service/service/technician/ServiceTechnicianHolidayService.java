@@ -56,7 +56,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 			Date startTime = holi.getStartTime();
 			Date date=new Date();
 			if (startTime.after(date)){
-				holi.setIsExpire("yes");
+				holi.setIsExpire("no");
 			}
 		}
 		page.setList(serviceTechnicianHolidays);

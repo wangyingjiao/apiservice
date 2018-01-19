@@ -29,7 +29,7 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	private String techStationId;//服务站ID
 	private String techStationName;//服务站名称
 	private String remark;
-	private String isExpire="no";//app是否过期
+	private String isExpire="yes";//app是否过期
 
 	public String getIsExpire() {
 		return isExpire;

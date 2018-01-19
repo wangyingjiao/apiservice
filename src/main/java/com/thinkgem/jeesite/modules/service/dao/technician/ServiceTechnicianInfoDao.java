@@ -78,6 +78,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     int appUpdatePassword(ServiceTechnicianInfo info);
 
     List<ServiceTechnicianFamilyMembers> findFamilyMembersListByTechId(ServiceTechnicianInfo info);
-
+    //app 根据手机获取用户id和stationId
     ServiceTechnicianInfo getByPhone(String phone);
 }

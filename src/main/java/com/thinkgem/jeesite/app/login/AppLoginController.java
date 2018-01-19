@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.app.login;
 
 import com.thinkgem.jeesite.app.interceptor.Token;
 import com.thinkgem.jeesite.app.interceptor.TokenManager;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.AppSuccResult;
 import com.thinkgem.jeesite.common.result.FailResult;
@@ -17,8 +18,12 @@ import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnici
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 import com.thinkgem.jeesite.modules.sys.interceptor.SameUrlData;
+import com.thinkgem.jeesite.modules.sys.service.AreaService;
+import com.thinkgem.jeesite.modules.sys.service.DictService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +34,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 登录Controller
@@ -42,6 +49,11 @@ public class AppLoginController extends BaseController {
     ServiceTechnicianInfoService serviceTechnicianInfoService;
     @Autowired
     ServiceStationService serviceStationService;
+    @Autowired
+    private DictService dictService;
+    @Autowired
+    private AreaService areaService;
+
 
     @Autowired
     private TokenManager tokenManager;
@@ -62,13 +74,27 @@ public class AppLoginController extends BaseController {
             String imgUrlHead = entity.getImgUrlHead();
             entity.setImgUrlHead(ossHost+imgUrlHead);
             entity.setToken(token.getToken());
-//            entity.setTechEmail(entity.getTechEmail());
-//            entity.setTechNativePlace(entity.getTechNativePlace());
-//            entity.setTechNation(entity.getTechNation());
-//            entity.setExperDesc(entity.getExperDesc());
             String imgUrlLife = entity.getImgUrlLife();
+            String imgUrlCard = entity.getImgUrlCard();
+            //身份证正反面
+            Map<String, String> map = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
+            entity.setImgUrlCardAfter(ossHost + map.get("after"));
+            entity.setImgUrlCardBefor(ossHost + map.get("befor"));
+            entity.setImgUrlCard(imgUrlCard);
             entity.setImgUrlLife(ossHost+imgUrlLife);
+            //头像
             entity.setImgUrl(ossHost+entity.getImgUrlHead());
+            //民族籍贯
+            Dict dict=new Dict();
+            dict.setType("ethnic");
+            dict.setValue(entity.getTechNationValue());
+            Dict name = dictService.findName(dict);
+            entity.setTechNation(name.getLabel());
+            Area area=new Area();
+            List<Area> nameByCode = areaService.getNameByCode(entity.getTechNativePlaceValue());
+            entity.setTechNativePlace(nameByCode.get(0).getName());
+
+            //获取技师服务站名称
             ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.getByPhone(entity.getTechPhone());
             BasicServiceStation basicServiceStation = serviceStationService.get(serviceTechnicianInfo.getStationId());
             entity.setStationName(basicServiceStation.getName());

@@ -3,10 +3,12 @@
  */
 package com.thinkgem.jeesite.app.login;
 
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
@@ -226,7 +228,7 @@ public class AppTechController extends BaseController {
 
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_HOST");
-
+		//将apptech转成技师
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setId(appTech.getId());
 		tech.setHeadPic(appTech.getImgUrlHead());
@@ -244,17 +246,46 @@ public class AppTechController extends BaseController {
 		if (appTech.getTechWeight() != null){
 			tech.setWeight(Integer.valueOf(appTech.getTechWeight()));
 		}
+		//籍贯code
 		tech.setNativeProvinceCode(appTech.getTechNativePlace());
+		//民族code
 		tech.setNation(appTech.getTechNation());
 		tech.setDescription(appTech.getExperDesc());
 		tech.setLifePic(appTech.getImgUrlLife());
+		tech.setIdCardPicBefor(appTech.getImgUrlCardBefor());
+		tech.setIdCardPicAfter(appTech.getImgUrlCardAfter());
+		//身份证正反面
+		Map<String,String> map=new HashMap<String,String>();
+		map.put("befor",appTech.getImgUrlCardBefor());
+		map.put("after",appTech.getImgUrlCardAfter());
+		String s = JsonMapper.toJsonString(map);
+		if (StringUtils.isNotBlank(appTech.getImgUrlCardBefor()) || StringUtils.isNotBlank(appTech.getImgUrlCardAfter())){
+			tech.setIdCardPic(s);
+		}
 		int i = techService.appUpdate(tech);
 		if (i > 0){
+			//查询出来的appTech
 			AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tech);
 			technicianById.setImgUrl(ossHost+technicianById.getImgUrl());
 			technicianById.setImgUrlHead(ossHost+technicianById.getImgUrlHead());
 			technicianById.setImgUrlLife(ossHost+technicianById.getImgUrlLife());
-			technicianById.setImgUrlCard(ossHost+technicianById.getImgUrlCard());
+			//身份证正反面
+			String imgUrlCard = technicianById.getImgUrlCard();
+			technicianById.setImgUrlCard(imgUrlCard);
+			Map<String, String> getIdCardMap = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
+			technicianById.setImgUrlCardBefor(ossHost+getIdCardMap.get("befor"));
+			technicianById.setImgUrlCardAfter(ossHost+getIdCardMap.get("after"));
+			//民族
+			Dict dict=new Dict();
+			dict.setType("ethnic");
+			dict.setValue(technicianById.getTechNationValue());
+			Dict name = dictService.findName(dict);
+			technicianById.setTechNation(name.getLabel());
+			//籍贯
+			Area area=new Area();
+			List<Area> nameByCode = areaService.getNameByCode(technicianById.getTechNativePlaceValue());
+			technicianById.setTechNativePlace(nameByCode.get(0).getName());
+
 			return new AppSuccResult(0,technicianById,"保存成功");
 		}
 		return new AppFailResult(-1,null,"保存失败");

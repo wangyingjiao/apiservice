@@ -56,6 +56,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public ServiceTechnicianInfo get(String id) {
         return super.get(id);
     }
+    //app 根据手机获取用户id和stationId
     public ServiceTechnicianInfo getByPhone(String phone){
         return technicianInfoDao.getByPhone(phone);
     }

@@ -37,6 +37,10 @@ public class DictService extends CrudService<DictDao, Dict> {
 
         return dao.appFindList(dict);
     }
+    ////app登陆 修改用户使用 根据code取name
+    public Dict findName(Dict dict){
+        return dao.findName(dict);
+    }
 
     @Transactional(readOnly = false)
     public void save(Dict dict) {
