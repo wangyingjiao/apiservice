@@ -128,7 +128,8 @@
 	<select id="getSerSkillTechnicianBySkill" resultType="SerSkillTechnician">
 		SELECT
 		a.tech_id AS techId,
-		b.name AS techName
+		b.name AS techName,
+		b.station_id AS techStationId
 		FROM ser_skill_tech a
 		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.skill_id = #{id}
