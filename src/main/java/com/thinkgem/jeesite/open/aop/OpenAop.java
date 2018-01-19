@@ -42,7 +42,7 @@ public class OpenAop {
         logger.info("==> 环绕处理");
         HttpServletRequest request = Servlets.getRequest();
 
-        String md5Content = request.getHeader("md5");
+        String md5Content = request.getHeader("HTTP_MD5");
         BufferedReader reader = request.getReader();
         String str;
         StringBuilder sb = new StringBuilder();
@@ -65,10 +65,10 @@ public class OpenAop {
                 }
                 return jp.proceed(args);
             }else{
-                return new FailResult<>("签名无效");
+                return new FailResult<>("加密验证失败");
             }
         } catch (Exception e) {
-            logger.info("解密数据异常");
+            logger.info("请求参数类型异常");
         }
         return new FailResult<>("系统异常");
     }
