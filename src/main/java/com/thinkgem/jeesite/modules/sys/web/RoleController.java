@@ -463,7 +463,7 @@ public class RoleController extends BaseController {
 				return new FailResult("该岗位已有员工，暂时无法删除");
 			} else {
 				systemService.deleteRole(role);
-				UserUtils.clearCache();
+				//UserUtils.clearCache();
 				return new SuccResult("删除角色成功");
 			}
 		}
