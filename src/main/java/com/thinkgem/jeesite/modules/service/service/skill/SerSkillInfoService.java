@@ -70,6 +70,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 			serSkillInfo.getSqlMap().put("ert", dataStationIdRoleFilter(UserUtils.getUser(), "a"));
 			serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
 		}
+		super.save(serSkillInfo);
 		//List<SerItemInfo> serItems = serSkillInfo.getItems();
 		List<String> sortIds = serSkillInfo.getSortIds();
 		List<SerSkillTechnician> technicians = serSkillInfo.getTechnicians();
@@ -108,7 +109,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		}
 		//更新技师数量
 		serSkillTechnicianDao.updateTechNum(serSkillInfo.getId());
-		super.save(serSkillInfo);
+
 
 	}
 
