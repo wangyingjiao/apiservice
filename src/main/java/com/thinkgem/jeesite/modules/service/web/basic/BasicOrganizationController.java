@@ -19,6 +19,8 @@ import com.thinkgem.jeesite.modules.sys.service.AreaService;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thoughtworks.xstream.mapper.Mapper.Null;
+
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,6 +131,16 @@ public class BasicOrganizationController extends BaseController {
 	@ApiOperation(value = "机构详情")
 	public Result formData(@RequestBody BasicOrganization basicOrganization) {
 		BasicOrganization basicOrganizationRs = basicOrganizationService.formData(basicOrganization);
+		
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		if (null!=basicOrganizationRs.getWorkStartTime()) {
+			String WorkStartTimeNew = format.format(basicOrganizationRs.getWorkStartTime());
+			basicOrganizationRs.setWorkStartTimeNew(WorkStartTimeNew);
+		}
+		if(null!=basicOrganizationRs.getWorkEndTime()){
+			String WorkEndTimeNew = format.format(basicOrganizationRs.getWorkEndTime());
+			basicOrganizationRs.setWorkEndTimeNew(WorkEndTimeNew);
+		}
 		return new SuccResult<>(basicOrganizationRs);
 	}
 
