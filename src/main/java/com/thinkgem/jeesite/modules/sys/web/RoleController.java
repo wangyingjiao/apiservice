@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.sys.entity.DeleteRoleGroup;
+import com.thinkgem.jeesite.modules.sys.entity.Menu;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.SaveRoleGroup;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -35,6 +36,9 @@ import sun.security.util.Debug;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
+
+import static com.thinkgem.jeesite.modules.sys.utils.UserUtils.genTreeMenu;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -534,6 +538,7 @@ public class RoleController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "getRoleDetail", method = RequestMethod.GET)
 	public Result getRoleDetail(@RequestParam String id) {
+		//Role role = systemService.getRoleUnion(id);
 		Role role = systemService.getRole(id);
 		// add by wyr 判断岗位下是否有员工
 		int count = systemService.getUserCount(id);
@@ -542,7 +547,21 @@ public class RoleController extends BaseController {
 		} else {
 			role.setFlag(false);
 		}
-
+		/*//add by wyr:获取apiservice/a/sys/menu/getMenuList的岗位集合
+		List<Menu> menuList = UserUtils.getMenuListForPlatform();
+		List<Menu> menus = genTreeMenu("1", menuList);//A
+		
+		List<Menu> menuRoleList = role.getMenuList();
+		List<Menu> menusRole = genTreeMenu("1", menuRoleList);//B
+		
+		//与结果role的岗位集合menuRoleList去重取并集
+		menusRole.removeAll(menus);
+		for (Menu menu : menusRole) {
+			menu.setDisable(true);
+		}
+		menus.addAll(menusRole);
+		role.setMenuListUnion(menus);*/
+		
 		if (role != null) {
 			return new SuccResult(role);
 		}

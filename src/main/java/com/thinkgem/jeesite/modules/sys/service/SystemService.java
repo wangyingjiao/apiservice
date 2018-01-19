@@ -633,7 +633,10 @@ public class SystemService extends BaseService implements InitializingBean {
 	public int checkAddName(String name, String id) {
 		return roleDao.checkAddName(name,id);
 	}
-
+	//add by wyr 获取岗位表关联菜单表的数据
+	 public Role getRoleUnion(String id) {
+	        return roleDao.getRoleUnion(id);
+	    }
 
 //	public Page<Role> findRolePage(Page){
 //
