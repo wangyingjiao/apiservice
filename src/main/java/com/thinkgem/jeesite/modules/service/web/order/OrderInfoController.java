@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
@@ -98,8 +99,17 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("更换时间")
 	@RequiresPermissions("order_time")
 	public Result timeData(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
-		return new SuccResult(techList);
+		try {
+			List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
+			if(techList == null || techList.size() == 0){
+				return new FailResult("当前没有可服务的技师，请更换时间!");
+			}
+			return new SuccResult(techList);
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("当前没有可服务的技师，请更换时间!");
+		}
 	}
 
 	@ResponseBody
@@ -107,8 +117,14 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("更换时间保存")
 	@RequiresPermissions("order_time")
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
-		HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
-		return new SuccResult(map);
+		try {
+			HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败!");
+		}
 	}
 
 	@ResponseBody
@@ -116,8 +132,14 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("增加技师")
 	@RequiresPermissions("order_addTech")
 	public Result addTech(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
-		return new SuccResult(techList);
+		try{
+			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+			return new SuccResult(techList);
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("当前没有可服务的技师!");
+		}
 	}
 
 	@ResponseBody
@@ -125,8 +147,14 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("增加技师保存")
 	@RequiresPermissions("order_addTech")
 	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
-		HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
-		return new SuccResult(map);
+		try{
+			HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败!");
+		}
 	}
 
 	@ResponseBody
@@ -134,8 +162,14 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("技师改派")
 	@RequiresPermissions("order_dispatch")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
-		return new SuccResult(techList);
+		try{
+			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+			return new SuccResult(techList);
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("当前没有可服务的技师!");
+		}
 	}
 
 	@ResponseBody
@@ -143,7 +177,13 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("技师改派保存")
 	@RequiresPermissions("order_dispatch")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
-		HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
-		return new SuccResult(map);
+		try{
+			HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败!");
+		}
 	}
 }
