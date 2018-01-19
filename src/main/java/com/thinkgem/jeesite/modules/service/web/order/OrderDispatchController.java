@@ -67,14 +67,14 @@ public class OrderDispatchController extends BaseController {
 		}
 		Page<OrderInfo> dispatchInfoPage = new Page<>(request, response);
 		//add by wyr 更改改派管理列表的总条数显示为订单的条数
-		User user = UserUtils.getUser();
-		dispatchInfo.setOrgId(user.getOrganization().getId());// 机构ID
-		Long count =orderDispatchService.findOrderCount(dispatchInfoPage, dispatchInfo);
-		dispatchInfoPage.setCount(count);
+		//User user = UserUtils.getUser();
+		//dispatchInfo.setOrgId(user.getOrganization().getId());// 机构ID
+		//Long count =orderDispatchService.findOrderCount(dispatchInfoPage, dispatchInfo);
+		//dispatchInfoPage.setCount(count);
 		
 		
 		Page<OrderInfo> data = orderDispatchService.findPage(dispatchInfoPage, dispatchInfo);
-		data.setCount(count);
+		//data.setCount(count);
 		return new SuccResult(data);
 	}
 
