@@ -682,7 +682,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					throw new ServiceException("未找到当前订单服务商品信息的订购商品数");
 				}
 				Double convertHours = goods.getConvertHours();		// 折算时长
-				if(convertHours == null || 0 == convertHours.intValue()){
+				if(convertHours == null || 0 == convertHours){
 					throw new ServiceException("未找到当前订单服务商品信息的折算时长");
 				}
 				int startPerNum = goods.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
@@ -722,7 +722,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy-MM-dd") + " 00:00:00");
 		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy-MM-dd") + " 23:59:59");
 		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
-		if(serviceHour == null || 0 == serviceHour.intValue()){
+		if(serviceHour == null || 0 == serviceHour){
 			throw new ServiceException("未找到当前订单的建议服务时长");
 		}
 		Double serviceSecond = (serviceHour * 3600);
@@ -873,7 +873,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					throw new ServiceException("未找到当前订单服务商品信息的订购商品数");
 				}
 				Double convertHours = goods.getConvertHours();		// 折算时长
-				if(convertHours == null || 0 == convertHours.intValue()){
+				if(convertHours == null || 0 == convertHours){
 					throw new ServiceException("未找到当前订单服务商品信息的折算时长");
 				}
 				int startPerNum = goods.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
