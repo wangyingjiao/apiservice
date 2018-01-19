@@ -67,18 +67,13 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 			//删除技能分类
 			serSkillSortDao.delSerSkillSortBySkill(serSkillInfo);
 			//更新时，删除技师关系
+			serSkillInfo.getSqlMap().put("ert", dataStationIdRoleFilter(UserUtils.getUser(), "a"));
 			serSkillTechnicianDao.delSerSkillTechnicianBySkill(serSkillInfo);
 		}
 		//List<SerItemInfo> serItems = serSkillInfo.getItems();
 		List<String> sortIds = serSkillInfo.getSortIds();
 		List<SerSkillTechnician> technicians = serSkillInfo.getTechnicians();
-		if(technicians != null && technicians.size() != 0){
-			serSkillInfo.setTechNum(technicians.size());
-		}else{
-			serSkillInfo.setTechNum(0);
-		}
 
-		super.save(serSkillInfo);
 		//批量插入类别技能
 		for (String id:sortIds) {
 			SerSkillSort sortInfo = new SerSkillSort();
@@ -111,6 +106,10 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 				serSkillTechnicianDao.insert(technician);
 			}
 		}
+		//更新技师数量
+		serSkillTechnicianDao.updateTechNum(serSkillInfo.getId());
+		super.save(serSkillInfo);
+
 	}
 
 	public List<SerSkillInfo> findList(SerSkillInfo serSkillInfo) {

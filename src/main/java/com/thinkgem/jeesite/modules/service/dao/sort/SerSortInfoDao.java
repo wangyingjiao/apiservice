@@ -27,4 +27,6 @@ public interface SerSortInfoDao extends CrudDao<SerSortInfo> {
     List<SerSortInfo> findSortAllList(SerSortInfo serSortInfo);
 
 	int checkRepeatByNameMajorSort(SerSortInfo serSortInfo);
+
+    void deleteSkillSort(SerSortInfo serSortInfo);
 }

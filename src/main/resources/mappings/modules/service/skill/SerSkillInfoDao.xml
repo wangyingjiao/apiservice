@@ -96,9 +96,7 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="techNum != null">
-				tech_num = #{techNum},
-			</if>
+
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}

@@ -117,6 +117,7 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
     @Transactional(readOnly = false)
     public void delete(SerSortInfo serSortInfo) {
         super.delete(serSortInfo);
+        dao.deleteSkillSort(serSortInfo);
     }
 
     /**

@@ -110,6 +110,12 @@
 		WHERE id = #{id}
 	</update>
 
+	<update id="deleteSkillSort">
+		UPDATE ser_skill_sort SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE sort_id = #{id}
+	</update>
+
 	<!-- 验证此分类下是否有服务项目 -->
 	<select id="checkedSortItem" resultType="int">
 		SELECT COUNT(*) FROM ser_item_info s

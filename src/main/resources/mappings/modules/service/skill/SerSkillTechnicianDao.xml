@@ -118,10 +118,12 @@
 	</update>
 
 	<update id="delSerSkillTechnicianBySkill">
-		UPDATE ser_skill_tech SET
-		del_flag = #{DEL_FLAG_DELETE}
-		WHERE skill_id = #{id}
-		AND  del_flag = #{DEL_FLAG_NORMAL}
+		UPDATE ser_skill_tech a SET
+		a.del_flag = #{DEL_FLAG_DELETE}
+		WHERE a.skill_id = #{id}
+		AND  a.del_flag = #{DEL_FLAG_NORMAL}
+		<!-- 数据范围过滤 -->
+		${sqlMap.ert}
 	</update>
 	<select id="getSerSkillTechnicianBySkill" resultType="SerSkillTechnician">
 		SELECT
