@@ -154,6 +154,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			 AND sta.phone = #{techPhone}
+			 AND od.status='yes'
 			<if test="orderStatus != null and orderStatus !=''">
 				AND a.order_status= #{orderStatus}
 			</if>
