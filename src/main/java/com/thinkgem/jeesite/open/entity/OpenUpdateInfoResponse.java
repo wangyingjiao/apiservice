@@ -39,4 +39,15 @@ public class OpenUpdateInfoResponse extends DataEntity<OpenUpdateInfoResponse> {
 	public void setService_order_id(String service_order_id) {
 		this.service_order_id = service_order_id;
 	}
+
+	private String message;
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 }

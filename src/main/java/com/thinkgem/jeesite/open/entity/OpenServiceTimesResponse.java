@@ -48,4 +48,15 @@ public class OpenServiceTimesResponse extends DataEntity<OpenServiceTimesRespons
 	public void setHours(List<OpenHours> hours) {
 		this.hours = hours;
 	}
+
+	private String message;
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 }

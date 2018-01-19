@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 选择服务时间ResponseEntity
+ * 订单状态更新ResponseEntity
  * @author a
  * @version 2017-12-11
  */
@@ -39,4 +39,15 @@ public class OpenUpdateStautsResponse extends DataEntity<OpenUpdateStautsRespons
     public void setService_order_id(String service_order_id) {
         this.service_order_id = service_order_id;
     }
+
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
 }

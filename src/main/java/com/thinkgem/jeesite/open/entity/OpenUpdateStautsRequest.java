@@ -8,7 +8,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 import java.util.List;
 
 /**
- * 选择服务时间RequestEntity
+ * 订单状态更新RequestEntity
  * @author a
  * @version 2017-12-11
  */

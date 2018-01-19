@@ -69,9 +69,17 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			OpenServiceTimesResponse responseRe = new OpenServiceTimesResponse();
 			responseRe.setFormat_date(DateUtils.formatDate(date, "yyyy-MM-dd"));
 			responseRe.setWeekday(DateUtils.formatDate(date, "E"));
-			//该日服务时间点列表
-			List<OpenHours> hours = openServiceTimesHours(date, info);
-			responseRe.setHours(hours);
+			try {
+				//该日服务时间点列表
+				List<OpenHours> hours = openServiceTimesHours(date, info);
+				responseRe.setHours(hours);
+			}catch (ServiceException ex){
+				if(ex.getMessage() != null){
+					responseRe.setMessage(ex.getMessage());
+				}
+			}catch (Exception e){
+				responseRe.setMessage("未找到服务时间点列表");
+			}
 			list.add(responseRe);
 		}
     	return list;
@@ -85,7 +93,14 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	private List<OpenHours> openServiceTimesHours(Date date, OpenServiceTimesRequest info) {
 		String store_id = info.getStore_id();//门店ID
+		if(null == store_id){
+			throw new ServiceException("门店ID不能为空");
+		}
 		String eshop_code = info.getEshop_code();//E店编码
+		if(null == eshop_code){
+			throw new ServiceException("E店编码不能为空");
+		}
+
 		String latitude = info.getLatitude();//地址纬度
 		String longitude = info.getLongitude();//地址经度
 		List<OpenServiceInfo> serviceInfos = info.getService_info();//下单服务项目信息
@@ -105,11 +120,25 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null != serviceInfos && serviceInfos.size() > 0){
 			OrderGoods goods = new OrderGoods();
 			for(OpenServiceInfo openServiceInfo : serviceInfos){
+
 				String cate_goods_id = openServiceInfo.getCate_goods_id();
+				if(null == cate_goods_id){
+					throw new ServiceException("自营服务服务商品ID不能为空");
+				}
 				int buy_num = openServiceInfo.getBuy_num();
+				if(0 == buy_num){
+					throw new ServiceException("购买数量不能为空");
+				}
 				String pay_price = openServiceInfo.getPay_price();
+				if(null == pay_price){
+					throw new ServiceException("服务项目单价不能为空");
+				}
 
 				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
+				if(null == commodity){
+					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
+				}
+
 				goods = new OrderGoods();
 				goods.setSortId(commodity.getSortId());//服务分类ID
 				goods.setItemId(commodity.getItemId());//服务项目ID
@@ -153,7 +182,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
-			return null;
+			throw new ServiceException("下单服务项目商品信息不能为空");
 		}
 
 		//通过对接方E店CODE获取机构
@@ -168,7 +197,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			orgWorkStartTime = organization.get(0).getWorkStartTime();
 			orgWorkEndTime = organization.get(0).getWorkEndTime();
 		}else{
-			return null;
+			throw new ServiceException("未找到E店CODE对应的机构信息");
 		}
 		//通过门店ID获取服务站
 		BasicServiceStation stationSerch = new BasicServiceStation();
@@ -178,36 +207,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null != stations && stations.size() > 0){
 			stationId = stations.get(0).getId();
 		}else{
-			return null;
+			throw new ServiceException("未找到门店ID对应的服务站信息");
 		}
-/*
-		if(orderGoods != null && orderGoods.size() != 0 ){
-			for(OrderGoods goods :orderGoods){//
-				int goodsNum = goods.getGoodsNum();		// 订购商品数
-				Double convertHours = goods.getConvertHours();		// 折算时长
-				int startPerNum = goods.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
-				int cappinPerNum = goods.getCappingPerNum();		//封项人数
-
-				int techNum = 0;//当前商品派人数量
-				int addTechNum=0;
-				Double totalTime = convertHours * goodsNum;//商品需要时间
-
-				if(totalTime > 4){//每4小时增加1人
-					BigDecimal b1 = new BigDecimal(totalTime);
-					BigDecimal b2 = new BigDecimal(new Double(4));
-					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
-				}
-				techNum = startPerNum + addTechNum;
-				if(techNum > cappinPerNum){//每个商品需求的人数
-					techNum = cappinPerNum;
-				}
-				if(techNum > techDispatchNum){//订单需求的最少人数
-					techDispatchNum = techNum;
-				}
-			}
-		}else{
-			throw new ServiceException("订单没有服务信息！");
-		}*/
 
 		int week = DateUtils.getWeekNum(date); //周几
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
@@ -231,7 +232,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
 
 		if(techList.size() < techDispatchNum){//技师数量不够
-			return null;
+			throw new ServiceException("技师数量不满足当前商品的需求人数");
 		}
 		Iterator<OrderDispatch> it = techList.iterator();
 		while(it.hasNext()) {
@@ -245,7 +246,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				it.remove();
 
 				if(techList.size() < techDispatchNum){//技师数量不够
-					return null;
+					throw new ServiceException("技师数量不满足当前商品的需求人数");
 				}
 				continue;
 			}
@@ -342,40 +343,152 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			response = new OpenCreateResponse();
 			response.setSuccess(false);
 			response.setService_order_id("");
+			response.setMessage("未接收到订单信息");
 			return response;
 		}
 
 		// order_master_info  订单主表 ---------------------------------------------------------------------------
-		OrderMasterInfo masterInfo = openCreateForMaster(info);
-
+		OrderMasterInfo masterInfo = new OrderMasterInfo();
+		try {
+			masterInfo = openCreateForMaster(info);
+		}catch (ServiceException ex){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			if(ex.getMessage() != null){
+				response.setMessage(ex.getMessage());
+			}
+			return response;
+		}catch (Exception e){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			response.setMessage("保存订单主表信息失败");
+			return response;
+		}
 
 		// order_address  订单地址表---------------------------------------------------------------------------------
-		OrderAddress orderAddress = openCreateForAddress(info);
+		OrderAddress orderAddress = new OrderAddress();
+		try{
+			orderAddress = openCreateForAddress(info);
+		}catch (ServiceException ex){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			if(ex.getMessage() != null){
+				response.setMessage(ex.getMessage());
+			}
+			return response;
+		}catch (Exception e){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			response.setMessage("保存订单地址表信息失败");
+			return response;
+		}
 
 		// order_info  子订单信息 -------------------------------------------------------------------------------
-		OrderInfo orderInfo = openCreateForOrder(info, masterInfo, orderAddress);
+		OrderInfo orderInfo = new OrderInfo();
+		try{
+			orderInfo = openCreateForOrder(info, masterInfo, orderAddress);
+		}catch (ServiceException ex){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			if(ex.getMessage() != null){
+				response.setMessage(ex.getMessage());
+			}
+			return response;
+		}catch (Exception e){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			response.setMessage("保存子订单信息表信息失败!");
+			return response;
+		}
 		if(null == orderInfo){
 			response = new OpenCreateResponse();
 			response.setSuccess(false);
 			response.setService_order_id("");
-			return null;
+			response.setMessage("保存子订单信息表信息失败");
+			return response;
 		}
 
 		// order_dispatch -派单表----------------------------------------------------------------------------------
 		List<OrderDispatch> orderDispatches = orderInfo.getTechList();//派单信息
 		if(null != orderDispatches && orderDispatches.size() > 0) {
-			openCreateForDispatch(orderInfo, orderDispatches);
+			try{
+				openCreateForDispatch(orderInfo, orderDispatches);
+			}catch (ServiceException ex){
+				response = new OpenCreateResponse();
+				response.setSuccess(false);
+				response.setService_order_id("");
+				if(ex.getMessage() != null){
+					response.setMessage(ex.getMessage());
+				}
+				return response;
+			}catch (Exception e){
+				response = new OpenCreateResponse();
+				response.setSuccess(false);
+				response.setService_order_id("");
+				response.setMessage("保存派单信息表失败!");
+				return response;
+			}
+		}else {
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			response.setMessage("未找到派单信息");
+			return response;
 		}
 
 		// order_goods-订单服务关联--------------------------------------------------------------------
 		List<OrderGoods> orderGoods = orderInfo.getGoodsInfoList();//商品信息
 		if(null != orderGoods && orderGoods.size() > 0){
-			openCreateForGoods(orderInfo, orderGoods);
+			try{
+				openCreateForGoods(orderInfo, orderGoods);
+			}catch (ServiceException ex){
+				response = new OpenCreateResponse();
+				response.setSuccess(false);
+				response.setService_order_id("");
+				if(ex.getMessage() != null){
+					response.setMessage(ex.getMessage());
+				}
+				return response;
+			}catch (Exception e){
+				response = new OpenCreateResponse();
+				response.setSuccess(false);
+				response.setService_order_id("");
+				response.setMessage("保存订单商品信息表失败!");
+				return response;
+			}
+		}else {
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			response.setMessage("未找到商品信息");
+			return response;
 		}
 
 		// order_pay_info  支付信息 ------------------------------------------------------------------------------
-		BigDecimal openPrice = orderInfo.getOpenPrice();//对接总价
-		openCreateForPay( masterInfo, openPrice);
+		try{
+			BigDecimal openPrice = orderInfo.getOpenPrice();//对接总价
+			openCreateForPay( masterInfo, openPrice);
+		}catch (ServiceException ex){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			if(ex.getMessage() != null){
+				response.setMessage(ex.getMessage());
+			}
+			return response;
+		}catch (Exception e){
+			response = new OpenCreateResponse();
+			response.setSuccess(false);
+			response.setService_order_id("");
+			response.setMessage("保存订单支付信息表失败!");
+			return response;
+		}
 
 		//------------------------------------------------------------------------------------------------
 		response = new OpenCreateResponse();
@@ -463,14 +576,26 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	private OrderInfo openCreateForOrder(OpenCreateRequest info, OrderMasterInfo masterInfo, OrderAddress orderAddress) {
 		String store_id = info.getStore_id();//门店ID
+		if(null == store_id){
+			throw new ServiceException("门店ID不能为空");
+		}
 		String eshop_code = info.getEshop_code();//E店编码
+		if(null == eshop_code){
+			throw new ServiceException("E店编码不能为空");
+		}
 		String remark = info.getRemark();//订单备注(用户备注)
 		List<OpenServiceInfo> serviceInfos = info.getService_info();
 		String servie_time = info.getServie_time();//服务时间
+		if(null == servie_time){
+			throw new ServiceException("服务时间不能为空");
+		}
 		String latitude = info.getLatitude();//服务地址：纬度
 		String longitude = info.getLongitude();//服务地址：经度
 		String sum_price = info.getSum_price();//订单总支付价格
 		String order_type = info.getOrder_type();//订单类型：common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单
+		if(null == order_type){
+			throw new ServiceException("订单类型不能为空");
+		}
 
 		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
 		BigDecimal originPrice = new BigDecimal(0);//商品总价
@@ -486,10 +611,22 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			OrderGoods goods = new OrderGoods();
 			for(OpenServiceInfo openServiceInfo : serviceInfos){
 				String cate_goods_id = openServiceInfo.getCate_goods_id();
+				if(null == cate_goods_id){
+					throw new ServiceException("自营服务服务商品ID不能为空");
+				}
 				int buy_num = openServiceInfo.getBuy_num();
+				if(0 == buy_num){
+					throw new ServiceException("购买数量不能为空");
+				}
 				String pay_price = openServiceInfo.getPay_price();
+				if(null == pay_price){
+					throw new ServiceException("服务项目单价不能为空");
+				}
 
 				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
+				if(null == commodity){
+					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
+				}
 				goods = new OrderGoods();
 				goods.setSortId(commodity.getSortId());//服务分类ID
 				goods.setItemId(commodity.getItemId());//服务项目ID
@@ -538,7 +675,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
-			return null;
+			throw new ServiceException("商品信息不能为空");
 		}
 
 		//通过对接方E店CODE获取机构
@@ -549,7 +686,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null != organization && organization.size() > 0){
 			orgId = organization.get(0).getId();
 		}else{
-			return null;
+			throw new ServiceException("未找到E店CODE对应的机构信息");
 		}
 		//通过门店ID获取服务站
 		BasicServiceStation stationSerch = new BasicServiceStation();
@@ -559,7 +696,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null != stations && stations.size() > 0){
 			stationId = stations.get(0).getId();
 		}else{
-			return null;
+			throw new ServiceException("未找到门店ID对应的服务站信息");
 		}
 
 		//--------------------------------------------------
@@ -657,6 +794,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchInfo.setStationId(stationId);
 		//（1）会此技能的
 		String skillId = orderInfoDao.getSkillIdBySortId(goodsInfoList.get(0).getSortId());//通过服务分类ID取得技能ID
+		if(null == skillId){
+			throw new ServiceException("未找到当前商品对应的技能信息");
+		}
 		serchInfo.setSkillId(skillId);
 		//（2）上线、在职
 		serchInfo.setTechStatus("yes");
@@ -668,6 +808,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		//serchInfo.setTechName(techName);
 		//serchInfo.setOrderId(orderInfo.getId());
 		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
+
+		if(techList.size() < techDispatchNum){//技师数量不够
+			throw new ServiceException("技师数量不满足当前商品的需求人数");
+		}
 
 		//（3）考虑技师的工作时间
 		//取得当前机构下工作时间包括服务时间的技师
@@ -777,7 +921,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 			}
 			if(techListRe.size() < techDispatchNum){//技师数量不够
-				return null;
+				throw new ServiceException("技师数量不满足当前商品的需求人数");
 			}
 
 			//一个自然月内，根据当前服务站内各个技师的订单数量，优先分配给订单数量少的技师
@@ -797,8 +941,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				dispatchTechs.add(techListOrderByNum.get(i));
 			}
 			return dispatchTechs;
+		}else {
+			throw new ServiceException("技师数量不满足当前商品的需求人数");
 		}
-		return null;
 	}
 
 	/**
@@ -808,9 +953,18 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	private OrderAddress openCreateForAddress(OpenCreateRequest info) {
 		String phone = info.getPhone();//用户电话
-		String area_code = info.getArea_code();//区CODE
 		String province_code = info.getProvince_code();//省CODE
+		if(null == province_code){
+			throw new ServiceException("省CODE不能为空");
+		}
 		String city_code = info.getCity_code();//市CODE
+		if(null == province_code){
+			throw new ServiceException("市CODE不能为空");
+		}
+		String area_code = info.getArea_code();//区CODE
+		if(null == province_code){
+			throw new ServiceException("区CODE不能为空");
+		}
 		String address = info.getAddress();//服务地址：小区+详细地址
 
 		//省名称
@@ -818,18 +972,24 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String provinceName = "";
 		if(provinceList != null && provinceList.size() > 0){
 			provinceName = provinceList.get(0).getName();
+		}else {
+			throw new ServiceException("未找到省CODE对应的省份名称");
 		}
 		//市名称
 		List<Area>  cityList = areaDao.getNameByCode(province_code);
 		String cityName = "";
 		if(cityList != null && cityList.size() > 0){
 			cityName = cityList.get(0).getName();
+		}else {
+			throw new ServiceException("未找到市CODE对应的市名称");
 		}
 		//区名称
 		List<Area>  areaList = areaDao.getNameByCode(province_code);
 		String areaName = "";
 		if(areaList != null && areaList.size() > 0){
 			areaName = areaList.get(0).getName();
+		}else {
+			throw new ServiceException("未找到区CODE对应的区名称");
 		}
 		//--------------------------------------
 		OrderAddress orderAddress = new OrderAddress();
@@ -862,7 +1022,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	private OrderMasterInfo openCreateForMaster(OpenCreateRequest info) {
 		String order_type = info.getOrder_type();//订单类型：common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单
-
+		if(null == order_type){
+			throw new ServiceException("订单类型不能为空");
+		}
 		OrderMasterInfo masterInfo = new OrderMasterInfo();
 		masterInfo.setOrderType(order_type);//订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
 
@@ -890,40 +1052,56 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			response = new OpenUpdateStautsResponse();
 			response.setSuccess(false);
 			response.setService_order_id("");
+            response.setMessage("未接收到订单信息");
 			return response;
 		}
 		String platform = info.getPlatform();//对接平台代号
 		String orderId = info.getService_order_id();// 自营服务订单ID
 		String cancelReason = info.getComment();//取消原因
 		String status = info.getStatus();//cancel 取消；finish 已签收；success 完成
-
-		OrderInfo orderInfo = new OrderInfo();
-		orderInfo.setId(orderId);// 自营服务订单ID
-		if("cancel".equals(status)){
-			orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
-			orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-			orderInfo.setCancelReason(cancelReason);//取消原因
-		}else if("finish".equals(status)){
-			orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
-			orderInfo.setOrderStatus("finish");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-		}else if("success".equals(status)){
-			orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
-			orderInfo.setOrderStatus("success");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-		}
-
-		orderInfo.setUpdateDate(new Date());
-		int num = orderInfoDao.openUpdateOrder(orderInfo);
-		if(num == 0){
+		if(null == orderId){
 			response = new OpenUpdateStautsResponse();
 			response.setSuccess(false);// 状态：true 成功；false 失败
-			response.setService_order_id(orderId);// 自营服务订单ID
-			return response;
-		}else{
-			response = new OpenUpdateStautsResponse();
-			response.setSuccess(true);// 状态：true 成功；false 失败
-			response.setService_order_id(orderId);// 自营服务订单ID
+			response.setService_order_id("");// 自营服务订单ID
+			response.setMessage("接收到自营服务订单ID信息为空");
 			return response;
 		}
+
+		try{
+            OrderInfo orderInfo = new OrderInfo();
+            orderInfo.setId(orderId);// 自营服务订单ID
+            if("cancel".equals(status)){
+                orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+                orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+                orderInfo.setCancelReason(cancelReason);//取消原因
+            }else if("finish".equals(status)){
+                orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+                orderInfo.setOrderStatus("finish");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+            }else if("success".equals(status)){
+                orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+                orderInfo.setOrderStatus("success");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+            }
+
+            orderInfo.setUpdateDate(new Date());
+            int num = orderInfoDao.openUpdateOrder(orderInfo);
+            if(num == 0){
+                response = new OpenUpdateStautsResponse();
+                response.setSuccess(false);// 状态：true 成功；false 失败
+                response.setService_order_id(orderId);// 自营服务订单ID
+                return response;
+            }else{
+                response = new OpenUpdateStautsResponse();
+                response.setSuccess(true);// 状态：true 成功；false 失败
+                response.setService_order_id(orderId);// 自营服务订单ID
+                return response;
+            }
+		}catch (Exception e){
+            response = new OpenUpdateStautsResponse();
+            response.setSuccess(false);// 状态：true 成功；false 失败
+            response.setService_order_id(orderId);// 自营服务订单ID
+            response.setMessage("订单状态更新失败");
+            return response;
+        }
 	}
 
 	/**
@@ -938,87 +1116,128 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			response = new OpenUpdateInfoResponse();
 			response.setSuccess(false);// 状态：true 成功；false 失败
 			response.setService_order_id("");// 自营服务订单ID
+            response.setMessage("未接收到订单信息");
 			return response;
 		}
 		String orderId = info.getService_order_id();// 自营服务订单ID
-
+        if(null == orderId){
+            response = new OpenUpdateInfoResponse();
+            response.setSuccess(false);// 状态：true 成功；false 失败
+            response.setService_order_id("");// 自营服务订单ID
+            response.setMessage("接收到自营服务订单ID信息为空");
+            return response;
+        }
 
 		int num = 0;//更新件数
 		List<OpenServiceInfo> serviceInfos = info.getService_info();//更新服务项目信息及数量
 		if(null != serviceInfos && serviceInfos.size() > 0){
-			num = num + openUpdateInfoServiceInfos(orderId, serviceInfos);
+			try{
+			    num = num + openUpdateInfoServiceInfos(orderId, serviceInfos);
+            }catch (Exception e){
+                response = new OpenUpdateInfoResponse();
+                response.setSuccess(false);// 状态：true 成功；false 失败
+                response.setService_order_id(orderId);// 自营服务订单ID
+                response.setMessage("更新服务项目信息及数量失败");
+                return response;
+            }
 		}
 
 		OpenGuoanxiaInfo guoanxia_info = info.getGuoanxia_info();//国安侠信息
 		if(null != guoanxia_info){
-			OrderInfo orderInfo = new OrderInfo();
-			orderInfo.setId(info.getService_order_id());// 自营服务订单ID
-			orderInfo.setBusinessName(guoanxia_info.getName());//业务人员姓名
-			orderInfo.setBusinessPhone(guoanxia_info.getPhone());//业务人员电话
-			orderInfo.setBusinessRemark(guoanxia_info.getRemark());//业务人员备注
-			List<String> remark_pic = guoanxia_info.getRemark_pic();
-			if(null != remark_pic){
-				String remarkPic = JsonMapper.toJsonString(remark_pic);
-				orderInfo.setBusinessRemarkPic(remarkPic);// 业务人员备注图片
-			}
+            try{
+                OrderInfo orderInfo = new OrderInfo();
+                orderInfo.setId(info.getService_order_id());// 自营服务订单ID
+                orderInfo.setBusinessName(guoanxia_info.getName());//业务人员姓名
+                orderInfo.setBusinessPhone(guoanxia_info.getPhone());//业务人员电话
+                orderInfo.setBusinessRemark(guoanxia_info.getRemark());//业务人员备注
+                List<String> remark_pic = guoanxia_info.getRemark_pic();
+                if(null != remark_pic){
+                    String remarkPic = JsonMapper.toJsonString(remark_pic);
+                    orderInfo.setBusinessRemarkPic(remarkPic);// 业务人员备注图片
+                }
 
-            User user = new User();
-            user.setId("gasq001");
-            orderInfo.setUpdateBy(user);
-            orderInfo.setUpdateDate(new Date());
+                User user = new User();
+                user.setId("gasq001");
+                orderInfo.setUpdateBy(user);
+                orderInfo.setUpdateDate(new Date());
 
-            num = num + orderInfoDao.openUpdateOrder(orderInfo);
+                num = num + orderInfoDao.openUpdateOrder(orderInfo);
+            }catch (Exception e){
+                response = new OpenUpdateInfoResponse();
+                response.setSuccess(false);// 状态：true 成功；false 失败
+                response.setService_order_id(orderId);// 自营服务订单ID
+                response.setMessage("更新国安侠信息失败");
+                return response;
+            }
 		}
 
 		OpenCostomerInfo costomer_info = info.getCostomer_info();//用户信息
 		if(null != costomer_info){
-			OrderInfo orderInfo = new OrderInfo();
-			orderInfo.setId(info.getService_order_id());// 自营服务订单ID
-			orderInfo.setCustomerRemark(costomer_info.getRemark());//用户备注
-			List<String> remark_pic = costomer_info.getRemark_pic();
-			if(null != remark_pic){
-				String remarkPic = JsonMapper.toJsonString(remark_pic);
-				orderInfo.setCustomerRemarkPic(remarkPic);// 用户备注图片
-			}
+            try{
+                OrderInfo orderInfo = new OrderInfo();
+                orderInfo.setId(info.getService_order_id());// 自营服务订单ID
+                orderInfo.setCustomerRemark(costomer_info.getRemark());//用户备注
+                List<String> remark_pic = costomer_info.getRemark_pic();
+                if(null != remark_pic){
+                    String remarkPic = JsonMapper.toJsonString(remark_pic);
+                    orderInfo.setCustomerRemarkPic(remarkPic);// 用户备注图片
+                }
 
-            User user = new User();
-            user.setId("gasq001");
-            orderInfo.setUpdateBy(user);
-            orderInfo.setUpdateDate(new Date());
+                User user = new User();
+                user.setId("gasq001");
+                orderInfo.setUpdateBy(user);
+                orderInfo.setUpdateDate(new Date());
 
-            num = num + orderInfoDao.openUpdateOrder(orderInfo);
+                num = num + orderInfoDao.openUpdateOrder(orderInfo);
+            }catch (Exception e){
+                response = new OpenUpdateInfoResponse();
+                response.setSuccess(false);// 状态：true 成功；false 失败
+                response.setService_order_id(orderId);// 自营服务订单ID
+                response.setMessage("更新用户信息失败");
+                return response;
+            }
 		}
 
 		OpenStoreInfo store_info = info.getStore_info();//门店信息
 		if(null != store_info){
-			OrderInfo orderInfo = new OrderInfo();
-			orderInfo.setId(info.getService_order_id());// 自营服务订单ID
-			orderInfo.setShopName(store_info.getName());//门店名
-			orderInfo.setShopPhone(store_info.getTelephone());//门店电话
-			orderInfo.setShopRemark(store_info.getRemark());//门店备注
-			List<String> remark_pic = store_info.getRemark_pic();
-			if(null != remark_pic){
-				String remarkPic = JsonMapper.toJsonString(remark_pic);
-				orderInfo.setShopRemarkPic(remarkPic);// 门店备注图片
-			}
+            try{
+                OrderInfo orderInfo = new OrderInfo();
+                orderInfo.setId(info.getService_order_id());// 自营服务订单ID
+                orderInfo.setShopName(store_info.getName());//门店名
+                orderInfo.setShopPhone(store_info.getTelephone());//门店电话
+                orderInfo.setShopRemark(store_info.getRemark());//门店备注
+                List<String> remark_pic = store_info.getRemark_pic();
+                if(null != remark_pic){
+                    String remarkPic = JsonMapper.toJsonString(remark_pic);
+                    orderInfo.setShopRemarkPic(remarkPic);// 门店备注图片
+                }
 
-            User user = new User();
-            user.setId("gasq001");
-            orderInfo.setUpdateBy(user);
-            orderInfo.setUpdateDate(new Date());
+                User user = new User();
+                user.setId("gasq001");
+                orderInfo.setUpdateBy(user);
+                orderInfo.setUpdateDate(new Date());
 
-            num = num + orderInfoDao.openUpdateOrder(orderInfo);
+                num = num + orderInfoDao.openUpdateOrder(orderInfo);
+            }catch (Exception e){
+                response = new OpenUpdateInfoResponse();
+                response.setSuccess(false);// 状态：true 成功；false 失败
+                response.setService_order_id(orderId);// 自营服务订单ID
+                response.setMessage("更新门店信息失败");
+                return response;
+            }
 		}
 
 		if(num == 0){//更新件数
 			response = new OpenUpdateInfoResponse();
 			response.setSuccess(false);// 状态：true 成功；false 失败
-			response.setService_order_id(info.getService_order_id());// 自营服务订单ID
+			response.setService_order_id(orderId);// 自营服务订单ID
+            response.setMessage("操作失败！");
 			return response;
 		}else{
 			response = new OpenUpdateInfoResponse();
 			response.setSuccess(true);// 状态：true 成功；false 失败
-			response.setService_order_id(info.getService_order_id());// 自营服务订单ID
+			response.setService_order_id(orderId);// 自营服务订单ID
+            response.setMessage("操作成功！");
 			return response;
 		}
 	}
