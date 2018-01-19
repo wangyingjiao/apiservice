@@ -427,6 +427,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					beforTimeCheckTechIdList.add(tech.getTechId());
 				}
 			}
+		}else {
+			throw new ServiceException("没有可选择的技师");
 		}
 		if(beforTimeCheckTechIdList.size() != 0){
 			serchInfo.setTechIds(beforTimeCheckTechIdList);
@@ -808,65 +810,40 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 	//app改派保存
 	@Transactional(readOnly = false)
-	public List<OrderDispatch> appDispatchTechSave(OrderInfo orderInfo) {
+	public int appDispatchTechSave(OrderInfo orderInfo) {
 		String dispatchTechId = orderInfo.getDispatchTechId();//改派前技师ID
-		List<String> techIdList = orderInfo.getTechIdList();//改派技师List
-		for (String id:techIdList){
-			ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
-			tec.setId(id);
-			ServiceTechnicianInfo techInfo = serviceTechnicianInfoDao.getById(tec);
-			//订单的服务站id 与技师的服务站id匹配
-			if (techInfo!=null){
-				if (!techInfo.getStationId().equals(orderInfo.getStationId())){
-					return null;
-				}
+		String techId = orderInfo.getTechId();//改派技师id
+		ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
+		tec.setId(dispatchTechId);
+		//订单当前技师
+		ServiceTechnicianInfo oldTech = serviceTechnicianInfoDao.getById(tec);
+		tec.setId(techId);
+		ServiceTechnicianInfo newTech = serviceTechnicianInfoDao.getById(tec);
+		//订单的服务站id 与技师的服务站id匹配
+		if (newTech!=null){
+			if (!newTech.getStationId().equals(orderInfo.getStationId())){
+				throw new ServiceException("选择技师不属于该服务站！");
 			}
-			return null;
+		}else{
+			throw new ServiceException("选择技师不可为空！");
 		}
-		orderInfo = get(orderInfo.getId());//当前订单
-		List<OrderDispatch> techList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
-		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
+		//根据订单技师  获取老派单
+		OrderDispatch orderDispatch = dao.appGetOrderDispatch(orderInfo);
 
-		Date serviceTime = orderInfo.getServiceTime();//服务时间
-		//建议完成时间 增加人数后的时间计算 秒
-		Double serviceSecond = ((serviceHour * 3600) * techList.size())/( techList.size() - 1 + techIdList.size());
+		OrderDispatch orderDispatchUpdate = new OrderDispatch();
+		orderDispatchUpdate.setId(oldTech.getId());//ID
+		orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
+		orderDispatch.appPreUpdate();
+		//数据库改派前技师派单 设为不可用
+		int update1 = orderDispatchDao.update(orderDispatch);
 
-		OrderInfo info = new OrderInfo();
-		info.setId(orderInfo.getId());
-		info.setServiceHour(serviceSecond/3600);//建议服务时长（小时）
-		info.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
-		info.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
-		info.appPreUpdate();
-		int update = dao.update(info);
-		for(OrderDispatch orderDispatch : techList){
-			//将改派前技师的订单状态设置为不可用
-			if(dispatchTechId.equals(orderDispatch.getTechId())){
-				//techList.remove(orderDispatch);//返回的技师列表删除改派前技师
-
-				OrderDispatch orderDispatchUpdate = new OrderDispatch();
-				orderDispatchUpdate.setId(orderDispatch.getId());//ID
-				orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
-				orderDispatch.appPreUpdate();
-				int update1 = orderDispatchDao.update(orderDispatch);//数据库改派前技师设为不可用
-
-				break;
-			}
-		}
-
-		for(String techId : techIdList){//改派技师List  insert
-			OrderDispatch orderDispatch = new OrderDispatch();
-			orderDispatch.setTechId(techId);//技师ID
-			orderDispatch.setOrderId(orderInfo.getId());//订单ID
-			orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
-			orderDispatch.appreInsert();
-			int insert = orderDispatchDao.insert(orderDispatch);
-
-			//techList.add(orderDispatch);
-		}
-		//return techList;
-
-		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
-		return techListRe;
+		OrderDispatch newDis = new OrderDispatch();
+		newDis.setTechId(techId);//技师ID
+		newDis.setOrderId(orderInfo.getId());//订单ID
+		newDis.setStatus("yes");//状态(yes：可用 no：不可用)
+		newDis.appreInsert();
+		int insert = orderDispatchDao.insert(newDis);
+		return insert;
 	}
 
 	/**

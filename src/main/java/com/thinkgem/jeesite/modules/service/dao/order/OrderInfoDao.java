@@ -22,7 +22,7 @@ import java.util.List;
  */
 @MyBatisDao
 public interface OrderInfoDao extends CrudDao<OrderInfo> {
-    //app
+    //app根据订单id获取订单
     OrderInfo appGet(OrderInfo info);
 
     List<BasicOrganization> findOrganizationList(BasicOrganization organization);
@@ -32,7 +32,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<OrderGoods> getOrderGoodsList(OrderInfo info);
 
     List<OrderDispatch> getOrderDispatchList(OrderInfo info);
-
+    //app改派根据订单id技师id获取改派表
+    OrderDispatch appGetOrderDispatch(OrderInfo info);
     void cancelData(OrderInfo orderInfo);
 
     void saveTime(OrderInfo orderInfo);

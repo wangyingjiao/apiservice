@@ -58,7 +58,7 @@
 		<include refid="orderInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	<!--app -->
+	<!--app 根据订单id获取订单-->
 	<select id="appGet" resultType="OrderInfo">
 		SELECT
 		<include refid="orderInfoColumns"/>
@@ -434,6 +434,24 @@
 		AND a.status = 'yes'
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
+	<!--app改派用  app改派根据订单id技师id获取改派表-->
+	<select id="appGetOrderDispatch" resultType="OrderDispatch">
+		SELECT
+		a.id AS id,
+		a.tech_id AS techId,
+		b.name  AS techName,
+		b.head_pic  AS headPic,
+		b.sex  AS techSex,
+		b.phone  AS techPhone
+		FROM
+		order_dispatch a
+		LEFT JOIN tech_info b ON a.tech_id = b.id
+		WHERE a.order_id = #{id}
+		AND b.id = #{dispatchTechId}
+		AND a.status = 'yes'
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
 	<select id="getOrderGoodsList" resultType="OrderGoods">
 		SELECT
 			a.service_time AS "serviceTime",

@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.app.login;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
@@ -224,9 +225,7 @@ public class AppOrderController extends BaseController {
 		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
 		List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
 		Map<String,Object> map=new HashMap<String,Object>();
-		if (techList == null){
-			return new AppFailResult(1,null,"没有可选择的技师");
-		}else {
+		try{
 			PropertiesLoader loader = new PropertiesLoader("oss.properties");
 			String ossHost = loader.getProperty("OSS_HOST");
 			List<AppServiceTechnicianInfo> apt=new ArrayList<AppServiceTechnicianInfo>();
@@ -238,6 +237,8 @@ public class AppOrderController extends BaseController {
 				apt.add(technicianById);
 			}
 			map.put("list",apt);
+		}catch (ServiceException e){
+			return new AppFailResult(e.getMessage());
 		}
 		return new AppSuccResult(0,map,"技师列表");
 	}
@@ -249,20 +250,21 @@ public class AppOrderController extends BaseController {
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setPhone("13508070808");
 		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		String techId = orderInfo.getTechId();
+		//获取订单信息
 		orderInfo = orderInfoService.appGet(orderInfo);
+		orderInfo.setTechId(techId);
+		//改派前技师id
 		orderInfo.setDispatchTechId("d30d2e68ae1a48b3b8a80625b0abc39f");
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		List<OrderDispatch> techList =null;
-		techList = orderInfoService.appDispatchTechSave(orderInfo);
-		if (techList == null){
-			return new AppFailResult(-1,null,"选择技师为空或者不属于该服务站");
+		try {
+			int i = orderInfoService.appDispatchTechSave(orderInfo);
+			if (i > 0){
+				return new AppSuccResult(0,null,"改派成功");
+			}
+			return new AppFailResult(-1,null,"改派失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
 		}
-		if (techList.size() > 0){
-			return new AppSuccResult(0,null,"改派成功");
-		}
-		return new AppFailResult(-1,null,"改派失败");
-//		}
 	}
-
 
 }

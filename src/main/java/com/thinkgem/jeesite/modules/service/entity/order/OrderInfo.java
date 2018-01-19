@@ -91,6 +91,16 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String payStatusName;//app
 	private String nowId;//app
 	private List<AppServiceTechnicianInfo> appTechList;//app技师列表
+	private String techId; //app改派接收的技师id
+
+	public String getTechId() {
+		return techId;
+	}
+
+	public void setTechId(String techId) {
+		this.techId = techId;
+	}
+
 	public String getPayStatusName() {
 		return payStatusName;
 	}

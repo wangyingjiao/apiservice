@@ -285,6 +285,7 @@ public class AppTechController extends BaseController {
 		for (Dict nation:nations){
 			Map<String,Object> nationMap=new HashMap<String,Object>();
 			nationMap.put("label",nation.getLabel());
+			nationMap.put("value",nation.getValue());
 			naList.add(nationMap);
 		}
 

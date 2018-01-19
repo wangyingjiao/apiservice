@@ -56,6 +56,7 @@
 	<select id="getById" resultType="ServiceTechnicianInfo">
 		SELECT
 		a.id AS "id",
+		a.station_id AS "stationId",
 		a.name AS "name",
 		a.head_pic AS "headPic",
 		a.id_card AS "idCard",
@@ -73,7 +74,6 @@
 		FROM tech_info a
 		WHERE a.id = #{id}
 	</select>
-
 	<select id="getByPhone" resultType="ServiceTechnicianInfo">
 		SELECT
 		a.id AS "id",
@@ -689,6 +689,7 @@
 	<!--app 根据id查询 app技师子表-->
 	<select id="getTechnicianById" resultType="AppServiceTechnicianInfo">
 		SELECT
+		a.id AS id,
 		a.head_pic AS imgUrlHead,
 		a.phone AS techPhone,
 		a.name AS techName,
@@ -714,6 +715,7 @@
 	<!--app-->
 	<select id="getTechnicianByPhone" resultType="AppServiceTechnicianInfo">
 		SELECT
+			a.id AS id,
 			a.head_pic AS imgUrlHead,
 			a.phone AS techPhone,
 			a.name AS techName,
