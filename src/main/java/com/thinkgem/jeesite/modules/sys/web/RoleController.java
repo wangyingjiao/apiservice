@@ -509,7 +509,6 @@ public class RoleController extends BaseController {
 	@ApiOperation(value = "得到当前用户能看到的（默认当前机构）角色列表")
 	public Result listPageData(@RequestBody(required = false) Role role, HttpServletRequest request,
 			HttpServletResponse response) {
-		@SuppressWarnings("rawtypes")
 		Page<Role> page = new Page<>(request, response);
 		Page<Role> list = systemService.findRole(page, role);
 		return new SuccResult(list);
@@ -552,7 +551,7 @@ public class RoleController extends BaseController {
 		/*List<Menu> menuList = UserUtils.getMenuListForPlatform();
 		List<Menu> menuRoleList = role.getMenuList();
 		menuRoleList.removeAll(menuList);
-		List<Menu> menusRoleDis = genTreeMenusUnion("1", menuRoleList);
+		List<Menu> menusRoleDis = genTreeMenusRole("1", menuRoleList);
 		List<Menu> menus = genTreeMenu("1", menuList);
 		menus.addAll(menusRoleDis);*/
 		//方案二
@@ -565,12 +564,11 @@ public class RoleController extends BaseController {
 		
 		//与结果role的岗位集合menuRoleList去重取并集
 		menusRole.removeAll(menus);
-		//List<Menu> menusRoleDis = genTreeMenusUnion("1", menusRole);
+		//List<Menu> menusRoleDis = genTreeMenusRole("1", menusRole);
 		for (Menu menu : menusRole) {
 			menu.setDisable(true);
 		}
 		menus.addAll(menusRole);*/
-		
 		//role.setMenuListUnion(menus);
 		
 		if (role != null) {
@@ -580,13 +578,13 @@ public class RoleController extends BaseController {
 	}
 	
 	
-	private  List<Menu> genTreeMenusUnion(String id, List<Menu> menusRole) {
+	private  List<Menu> genTreeMenusRole(String id, List<Menu> menusRole) {
         ArrayList<Menu> list = new ArrayList<>();
         for (Menu menu : menusRole) {
         	menu.setDisable(true);
             //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
             if (menu.getParentId().equals(id)) {
-                List<Menu> menus1 = genTreeMenusUnion(menu.getId(), menusRole);
+                List<Menu> menus1 = genTreeMenusRole(menu.getId(), menusRole);
                 menu.setSubMenus(menus1);
                 menu.setDisable(true);
                 list.add(menu);
