@@ -312,6 +312,16 @@ public class Role<T> extends DataEntity<Role> {
 	public void setRoleUnion(T roleUnion) {
 		this.roleUnion = roleUnion;
 	}
+	private boolean  flagOrgId;
+
+	public boolean isFlagOrgId() {
+		return flagOrgId;
+	}
+
+	public void setFlagOrgId(boolean flagOrgId) {
+		this.flagOrgId = flagOrgId;
+	}
+	
 	
 	
 	

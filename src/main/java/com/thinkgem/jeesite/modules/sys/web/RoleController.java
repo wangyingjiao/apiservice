@@ -468,6 +468,7 @@ public class RoleController extends BaseController {
 			} else {
 				systemService.deleteRole(role);
 				//UserUtils.clearCache();
+				UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
 				return new SuccResult("删除角色成功");
 			}
 		}
@@ -547,6 +548,16 @@ public class RoleController extends BaseController {
 		} else {
 			role.setFlag(false);
 		}
+		User user = UserUtils.getUser();
+		String orgId = user.getOrganization().getId();
+		if (org.apache.commons.lang3.StringUtils.isNoneEmpty(orgId)) {
+			if (orgId==id) {
+				role.setFlagOrgId(true);
+			}else{
+				role.setFlagOrgId(false);
+			}
+		}
+		
 		//方案一
 		/*List<Menu> menuList = UserUtils.getMenuListForPlatform();
 		List<Menu> menuRoleList = role.getMenuList();
