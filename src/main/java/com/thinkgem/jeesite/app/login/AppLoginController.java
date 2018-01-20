@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.web.Servlets;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
@@ -68,7 +69,7 @@ public class AppLoginController extends BaseController {
             entity = serviceTechnicianInfoService.appLogin(user);
         }
         if (entity == null) {
-            return new AppFailResult(-1,null,"登陆失败");
+            return new AppFailResult(-1,null,"登陆失败，用户名或者密码错误");
         } else {
             Token token = tokenManager.createToken(entity);
             String imgUrlHead = entity.getImgUrlHead();
@@ -106,6 +107,9 @@ public class AppLoginController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "${appPath}/appLoginOut",  method = {RequestMethod.POST})
     public Object appLoginOut() {
+        Token token = (Token) Servlets.getRequest().getAttribute("token");
+        tokenManager.clearToken(token);
+        String phone = token.getPhone();
         Subject subject = UserUtils.getSubject();
         System.out.println(subject);
         UserUtils.getSubject().logout();

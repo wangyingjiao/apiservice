@@ -404,7 +404,7 @@
 		where tech_id=#{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</select>
-
+	<!--根据手机号获取登陆用户信息-->
 	<select id="findTech"  resultType="ServiceTechnicianInfo">
 		SELECT
 		a.id AS "id",

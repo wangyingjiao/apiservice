@@ -45,7 +45,6 @@ public class AppAop {
     @Around("point()")
     public Object around(ProceedingJoinPoint jp) throws Throwable {
         logger.info("==>app aop环绕处理");
-//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("token");
         String md5 = request.getHeader("md5");
         BufferedReader reader = request.getReader();

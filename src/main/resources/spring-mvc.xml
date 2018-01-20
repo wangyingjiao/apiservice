@@ -111,14 +111,14 @@
         <!--<mvc:mapping path="/**"/>-->
         <!--<bean class="com.thinkgem.jeesite.modules.sys.interceptor.MobileInterceptor"/>-->
         <!--</mvc:interceptor>-->
-        <!--tokenInteceper-->
-        <!--<mvc:interceptor>-->
-            <!--<mvc:mapping path="${appPath}/**"/>-->
-            <!--<mvc:exclude-mapping path="${appPath}/appLogin"/>-->
+        <!--tokenInteceper 拦截app操作 排除登陆-->
+        <mvc:interceptor>
+        <mvc:mapping path="${appPath}/**"/>
+        <mvc:exclude-mapping path="${appPath}/appLogin"/>
 
-           <!--&lt;!&ndash; <mvc:exclude-mapping path="${appPath}/getOrderListPage"/>&ndash;&gt;-->
-            <!--<bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>-->
-        <!--</mvc:interceptor>-->
+        <!-- <mvc:exclude-mapping path="${appPath}/getOrderListPage"/>-->
+        <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
+        </mvc:interceptor>
 
         <mvc:interceptor>
             <mvc:mapping path="/**"/>

@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.app.login;
 
+import com.thinkgem.jeesite.app.interceptor.Token;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
@@ -51,7 +52,9 @@ public class AppOrderController extends BaseController {
     @ApiOperation(value = "订单列表", notes = "订单")
     public AppResult getOrderListPage(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		//获取登录用户id 获取用户手机set进去
-		orderInfo.setTechPhone("13508070808");
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		orderInfo.setTechPhone(phone);
 		if (orderInfo.getServiceStatus()==null){
 			return new AppFailResult("订单服务状态不可为空");
 		}
@@ -86,10 +89,13 @@ public class AppOrderController extends BaseController {
 	@ApiOperation(value = "订单详情", notes = "订单")
 	public AppResult getOrderById(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
-		info.setTechPhone("13508070808");
-		info.setNowId(tech.getId());
+		tech.setPhone(phone);
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		info.setTechPhone(phone);
+		info.setNowId(tech1.getId());
 		OrderInfo orderInfo = orderInfoService.appFormData(info);
 		//订单备注
 		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
@@ -186,7 +192,9 @@ public class AppOrderController extends BaseController {
 	@RequestMapping(value = "${appPath}/saveRemark",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
 	public AppResult saveRemark(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response){
-		orderInfo.setTechPhone("13508070808");
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		orderInfo.setTechPhone(phone);
 		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
@@ -212,7 +220,10 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(errList);
 		}
 		//参数 订单id 服务状态
-		info.setTechPhone("13508070808");
+
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		info.setTechPhone(phone);
 		int i = orderInfoService.appSaveRemark(info);
 		if (i>0){
 			return new AppSuccResult(0,null,"修改服务状态成功");
@@ -225,9 +236,9 @@ public class AppOrderController extends BaseController {
 	@RequestMapping(value = "${appPath}/techList",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师列表")
 	public AppResult techList(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone("13508070808");
-		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		orderInfo.setTechPhone(phone);
 		List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
 		Map<String,Object> map=new HashMap<String,Object>();
 		try{
@@ -252,15 +263,18 @@ public class AppOrderController extends BaseController {
 	@RequestMapping(value = "${appPath}/appDispatchTechSave", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("技师改派保存")
 	public AppResult appDispatchTechSave(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone("13508070808");
-		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		tech.setPhone(phone);
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		//传的参数 改派技师的id
 		String techId = orderInfo.getTechId();
 		//获取订单信息
 		orderInfo = orderInfoService.appGet(orderInfo);
 		orderInfo.setTechId(techId);
 		//改派前技师id
-		orderInfo.setDispatchTechId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		orderInfo.setDispatchTechId(tech1.getId());
 		try {
 			int i = orderInfoService.appDispatchTechSave(orderInfo);
 			if (i > 0){

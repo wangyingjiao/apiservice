@@ -3,12 +3,14 @@
  */
 package com.thinkgem.jeesite.app.login;
 
+import com.thinkgem.jeesite.app.interceptor.Token;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.Servlets;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
@@ -88,8 +90,12 @@ public class AppTechController extends BaseController {
 	@ApiOperation(value = "通讯录", notes = "通讯录")
 	public AppResult appGetFriendByStationId(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id 服务站id
-		tech.setPhone("13508070808");
-		tech.setDelFlag("0");
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+//		String token1 = token.getToken();
+//		System.out.println("token1:"+token1);
+//		System.out.println("phone:"+phone);
+		tech.setPhone(phone);
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		Page<AppServiceTechnicianInfo> page = new Page<AppServiceTechnicianInfo>(request, response);
 		Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page,tech1);
@@ -118,13 +124,11 @@ public class AppTechController extends BaseController {
 	@RequestMapping(value = "${appPath}/restTechList",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "技师休假列表", notes = "技师休假")
 	public AppResult restTechList(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
-
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
 		//获取登陆技师的信息  id
-		//ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone("13508070808");
-		tech.setDelFlag("0");
+		tech.setPhone(phone);
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-
 		ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
 		holiday.setTechId(tech1.getId());
 		Page<ServiceTechnicianHoliday> serSortInfoPage = new Page<>(request, response);
@@ -161,12 +165,11 @@ public class AppTechController extends BaseController {
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
 		}
-		//获取技师id
 		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
-		tech.setPhone("13508070808");
-		tech.setDelFlag("0");
+		tech.setPhone(phone);
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		info.setTechId(tech1.getId());
 		int i ;
@@ -185,7 +188,14 @@ public class AppTechController extends BaseController {
 	@RequestMapping(value = "${appPath}/deleteTech", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "删除休假", notes = "技师休假")
 	public AppResult deleteTech(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
-		serviceTechnicianHoliday.setTechId("d30d2e68ae1a48b3b8a80625b0abc39f");
+
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setPhone(phone);
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		serviceTechnicianHoliday.setTechId(tech1.getId());
 		int delete = holidayService.delete1(serviceTechnicianHoliday);
 		if (delete > 0){
 			return new AppSuccResult(0,null,"删除休假成功");
@@ -203,8 +213,10 @@ public class AppTechController extends BaseController {
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
 		}
-		tech.setPhone("13508070808");
-		tech.setDelFlag("0");
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		tech.setPhone(phone);
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		//旧密码与数据库查询出来的密码验证
 		if (!systemService.validatePassword(tech.getOldPassword(),tech1.getAppLoginPassword())){
@@ -224,8 +236,13 @@ public class AppTechController extends BaseController {
 	@RequestMapping(value = "${appPath}/saveTech", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "修改个人资料保存", notes = "修改个人资料")
 	public AppResult saveTech(AppServiceTechnicianInfo appTech,HttpServletRequest request, HttpServletResponse response) {
-		appTech.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
 
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		ServiceTechnicianInfo tech2=new ServiceTechnicianInfo();
+		tech2.setPhone(phone);
+		ServiceTechnicianInfo tech1 = techService.findTech(tech2);
+		appTech.setId(tech1.getId());
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_HOST");
 		//将apptech转成技师
@@ -298,7 +315,6 @@ public class AppTechController extends BaseController {
 	public AppResult selectList(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 
 		Map<String,Object> map=new HashMap<String,Object>();
-
 		List<Map> sexList=new ArrayList<Map>();
 		Dict dict=new Dict();
 		dict.setType("sex");
