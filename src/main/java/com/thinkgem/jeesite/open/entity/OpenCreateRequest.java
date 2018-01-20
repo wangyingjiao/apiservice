@@ -27,7 +27,7 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private String city_code;//市CODE
 	private OpenServiceInfo serviceInfo;//购买商品ID及数量
 	private List<OpenServiceInfo> service_info;//购买商品ID及数量
-	private String servie_time;//服务时间
+	private String service_time;//服务时间
 	private String address;//服务地址：小区+详细地址
 	private String latitude;//服务地址：纬度
 	private String longitude;//服务地址：经度
@@ -122,12 +122,12 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 		this.service_info = service_info;
 	}
 
-	public String getServie_time() {
-		return servie_time;
+	public String getService_time() {
+		return service_time;
 	}
 
-	public void setServie_time(String servie_time) {
-		this.servie_time = servie_time;
+	public void setService_time(String service_time) {
+		this.service_time = service_time;
 	}
 
 	public String getAddress() {

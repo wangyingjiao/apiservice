@@ -21,24 +21,24 @@ import java.util.List;
 public class OpenServiceTimesResponse extends DataEntity<OpenServiceTimesResponse> {
 
 	private static final long serialVersionUID = 1L;
-	private String format_date;		// 格式：2018-02-01
-	private String weekday;		// 格式：周一
+	private String format;		// 格式：2018-02-01
+	private String dayOfWeek;		// 格式：周一
 	private List<OpenHours> hours;  //该日服务时间点列表
 
-	public String getFormat_date() {
-		return format_date;
+	public String getFormat() {
+		return format;
 	}
 
-	public void setFormat_date(String format_date) {
-		this.format_date = format_date;
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
-	public String getWeekday() {
-		return weekday;
+	public String getDayOfWeek() {
+		return dayOfWeek;
 	}
 
-	public void setWeekday(String weekday) {
-		this.weekday = weekday;
+	public void setDayOfWeek(String dayOfWeek) {
+		this.dayOfWeek = dayOfWeek;
 	}
 
 	public List<OpenHours> getHours() {
@@ -47,16 +47,6 @@ public class OpenServiceTimesResponse extends DataEntity<OpenServiceTimesRespons
 
 	public void setHours(List<OpenHours> hours) {
 		this.hours = hours;
-	}
-
-	private String message;
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
 	}
 
 }

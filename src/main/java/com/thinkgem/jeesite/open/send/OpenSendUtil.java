@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.open.send;
 
 import com.alibaba.fastjson.JSON;
+import com.squareup.okhttp.*;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.Result;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 调用国安社区接口
@@ -45,11 +47,11 @@ public class OpenSendUtil {
 	 * @param sendType 0:新增 1：编辑
 	 * @return
 	 */
-	public OpenSendSaveItemResponse openSendSaveItem(SerItemInfo serItemInfo, String sendType) {
+	public static OpenSendSaveItemResponse openSendSaveItem(SerItemInfo serItemInfo, String sendType) {
 		if (serItemInfo == null) {
 			OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
 			responseRe.setCode(1);
-			responseRe.setMessage("服务项目为空");
+			responseRe.setMessage("对接保存信息失败-服务项目为空");
 			return responseRe;
 		}
 
@@ -108,7 +110,7 @@ public class OpenSendUtil {
 		}else{
 			OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
 			responseRe.setCode(1);
-			responseRe.setMessage("未找到商品信息");
+			responseRe.setMessage("对接保存信息失败-未找到商品信息");
 			return responseRe;
 		}
 
@@ -122,16 +124,29 @@ public class OpenSendUtil {
 		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
 		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
 
-		if("0".equals(sendType)){
+		if("0".equals(sendType)){//0:新增 1：编辑
+			String url =  Global.getConfig("openSendPath_gasq_updateOrderInfo");
+			try {
+				String result = OkHttpClientUtil.doPost(url,md5Content, encode);
 
+				OpenSendSaveItemResponse response = JSON.parseObject(result, OpenSendSaveItemResponse.class);
+				return response;
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
+			failRe.setMessage("对接保存信息失败-系统异常");
+			failRe.setCode(0);
+			return failRe;
 		}else if("1".equals(sendType)){
 
 		}else {
 			OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
 			responseRe.setCode(1);
-			responseRe.setMessage("传入参数有误");
+			responseRe.setMessage("对接保存信息失败-传入参数有误");
 			return responseRe;
 		}
+
 		return null;
 
 	}
@@ -142,23 +157,24 @@ public class OpenSendUtil {
 	 * @param info
 	 * @return
 	 */
-	public OpenSendSaveOrderResponse openSendSaveOrder(OrderInfo info) {
+	public static OpenSendSaveOrderResponse openSendSaveOrder(OrderInfo info) {
 		if (info == null) {
 			OpenSendSaveOrderResponse responseRe = new OpenSendSaveOrderResponse();
 			responseRe.setCode(1);
-			responseRe.setMessage("上门服务时间和服务人员备注必传其一");
+			responseRe.setMessage("对接保存信息失败-上门服务时间,服务人员,备注必传其一");
 			return responseRe;
 		}
 		String service_time = DateUtils.formatDateTime(info.getServiceTime());//上门服务时间；上门服务时间和服务人员备注必传其一
 		String order_remark = info.getOrderRemark();//服务人员备注 ；上门服务时间和服务人员备注必传其一
-		if(StringUtils.isBlank(service_time) && StringUtils.isBlank(order_remark)){
-			OpenSendSaveOrderResponse responseRe = new OpenSendSaveOrderResponse();
-			responseRe.setCode(1);
-			responseRe.setMessage("上门服务时间和服务人员备注必传其一");
-			return responseRe;
-		}
 		String order_id = info.getId();//订单ID
 		List<OrderDispatch> techList = info.getTechList();//技师信息
+
+		if(StringUtils.isBlank(service_time) && StringUtils.isBlank(order_remark) && techList==null){
+			OpenSendSaveOrderResponse responseRe = new OpenSendSaveOrderResponse();
+			responseRe.setCode(1);
+			responseRe.setMessage("对接保存信息失败-上门服务时间,服务人员,备注必传其一");
+			return responseRe;
+		}
 		List<OpenSendSaveOrderServiceTechInfo> techListSend = new ArrayList<>();
 		if(techList != null){
 			for(OrderDispatch dispatch : techList){
@@ -167,11 +183,6 @@ public class OpenSendUtil {
 				techInfo.setTech_phone(dispatch.getTechPhone());
 				techListSend.add(techInfo);
 			}
-		}else{
-			OpenSendSaveOrderResponse responseRe = new OpenSendSaveOrderResponse();
-			responseRe.setCode(1);
-			responseRe.setMessage("未找到技师信息");
-			return responseRe;
 		}
 
 		OpenSendSaveOrderRequest send = new OpenSendSaveOrderRequest();
@@ -184,12 +195,18 @@ public class OpenSendUtil {
 		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
 		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
 
+		String url =  Global.getConfig("openSendPath_gasq_updateOrderInfo");
+		try {
+			String result = OkHttpClientUtil.doPost(url,md5Content, encode);
 
-
-
-		return null;
+			OpenSendSaveOrderResponse response = JSON.parseObject(result, OpenSendSaveOrderResponse.class);
+			return response;
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		OpenSendSaveOrderResponse failRe = new OpenSendSaveOrderResponse();
+		failRe.setMessage("对接保存信息失败-系统异常");
+		failRe.setCode(0);
+		return failRe;
 	}
-
-
-
 }

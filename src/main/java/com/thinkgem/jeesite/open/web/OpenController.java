@@ -4,9 +4,8 @@
 package com.thinkgem.jeesite.open.web;
 
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.result.FailResult;
-import com.thinkgem.jeesite.common.result.Result;
-import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.result.*;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
@@ -25,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 对接Controller
@@ -45,11 +45,15 @@ public class OpenController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "serviceTimes", method = {RequestMethod.POST})
-	public Result serviceTimes(OpenServiceTimesRequest info, HttpServletRequest request, HttpServletResponse response) {
-		List<OpenServiceTimesResponse> list = openService.openServiceTimes(info);
-		HashMap<Object,Object> responseRe = new HashMap();
-		responseRe.put("available_times",list);
-		return new SuccResult(responseRe);
+	public OpenResult serviceTimes(OpenServiceTimesRequest info, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			Map<String,Object> value = openService.openServiceTimes(info);
+			return new OpenSuccResult(value, "操作成功");
+		}catch (ServiceException ex){
+			return new OpenFailResult(ex.getMessage());
+		}catch (Exception e){
+			return new OpenFailResult("操作失败");
+		}
 	}
 
 	/**
@@ -59,9 +63,15 @@ public class OpenController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "create", method = {RequestMethod.POST})
-	public Result create(OpenCreateRequest info, HttpServletRequest request, HttpServletResponse response) {
-		OpenCreateResponse responseRe = openService.openCreate(info);
-		return new SuccResult(responseRe);
+	public OpenResult create(OpenCreateRequest info, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			OpenCreateResponse responseRe = openService.openCreate(info);
+			return new OpenSuccResult(responseRe, "操作成功");
+		}catch (ServiceException ex){
+			return new OpenFailResult(ex.getMessage());
+		}catch (Exception e){
+			return new OpenFailResult("操作失败");
+		}
 	}
 
 	/**
@@ -70,10 +80,16 @@ public class OpenController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "updateStauts", method = {RequestMethod.POST})
-	public Result updateStauts(OpenUpdateStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
-		OpenUpdateStautsResponse responseRe = openService.openUpdateStauts(info);
-		return new SuccResult(responseRe);
+	@RequestMapping(value = "updateStatus", method = {RequestMethod.POST})
+	public OpenResult updateStatus(OpenUpdateStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			OpenUpdateStautsResponse responseRe = openService.openUpdateStauts(info);
+			return new OpenSuccResult(responseRe, "操作成功");
+		}catch (ServiceException ex){
+			return new OpenFailResult(ex.getMessage());
+		}catch (Exception e){
+			return new OpenFailResult("操作失败");
+		}
 	}
 
 	/**
@@ -83,8 +99,14 @@ public class OpenController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateInfo", method = {RequestMethod.POST})
-	public Result updateInfo(OpenUpdateInfoRequest info, HttpServletRequest request, HttpServletResponse response) {
-		OpenUpdateInfoResponse responseRe = openService.openUpdateInfo(info);
-		return new SuccResult(responseRe);
+	public OpenResult updateInfo(OpenUpdateInfoRequest info, HttpServletRequest request, HttpServletResponse response) {
+		try{
+			OpenUpdateInfoResponse responseRe = openService.openUpdateInfo(info);
+			return new OpenSuccResult(responseRe,"操作成功");
+		}catch (ServiceException ex){
+			return new OpenFailResult(ex.getMessage());
+		}catch (Exception e){
+			return new OpenFailResult("操作失败");
+		}
 	}
 }

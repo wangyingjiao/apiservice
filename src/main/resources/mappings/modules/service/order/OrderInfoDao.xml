@@ -626,13 +626,19 @@
 		AND a.tech_id  = #{techId}
 	</select>
 	<select id="getTechListOrderByNum" resultType="OrderDispatch">
+
 		SELECT
-			a.tech_id ,COUNT(1) AS num
+		t1.id AS techId
+		from
+		tech_info t1
+		LEFT JOIN (
+		SELECT
+		a.tech_id ,COUNT(1) AS num
 		FROM
 		order_dispatch a
 		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE
-		a.del_flag = #{DEL_FLAG_NORMAL}
+		a.del_flag =  #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
 		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
 		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
@@ -641,7 +647,14 @@
 			#{techId}
 		</foreach>
 		GROUP BY a.tech_id
-		ORDER BY num
+		) t2 on t1.id = t2.tech_id
+		WHERE
+		t1.id in
+		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+		ORDER BY t2.num
+
 	</select>
 
 

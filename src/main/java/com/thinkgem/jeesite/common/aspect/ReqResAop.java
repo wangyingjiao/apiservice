@@ -29,7 +29,8 @@ import java.net.URLDecoder;
 public class ReqResAop {
 	Log logger = LogFactory.getLog(getClass());
 
-	@Pointcut("within(@org.springframework.stereotype.Controller *)")
+	//@Pointcut("within(@org.springframework.stereotype.Controller *)")
+	@Pointcut("execution(* com.thinkgem.jeesite.modules..*.*(..))")
 	public void point() {
 		logger.info("-----------------------------------------");
 	}
@@ -95,7 +96,7 @@ public class ReqResAop {
 	public Object around(ProceedingJoinPoint jp) throws Throwable {
 
 		Object proceed = jp.proceed();
-		logger.info("返回值：" + JsonMapper.toJsonString(proceed));
+		//logger.info("返回值：" + JsonMapper.toJsonString(proceed));
 		return proceed;
 	}
  
