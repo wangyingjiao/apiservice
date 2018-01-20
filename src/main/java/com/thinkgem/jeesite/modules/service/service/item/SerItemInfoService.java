@@ -66,32 +66,13 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	@Transactional(readOnly = false)
 	public void save(SerItemInfo serItemInfo) {
 		if (StringUtils.isNotBlank(serItemInfo.getId())) {
-			//更新时，删除定向城市
-	//		serCityScopeDao.delSerCityScopeByMaster(serItemInfo.getId());
-
 			//删除商品信息
 			serItemCommodityDao.delSerItemCommodity(serItemInfo);
 		}
-//		List<String> cityCodes = serItemInfo.getCityCodes();
-//		if(cityCodes==null || 0==cityCodes.size()){
-//			serItemInfo.setAllCity("yes");
-//		}else{
-//			serItemInfo.setAllCity("no");
-//		}
 
 		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
 
 		super.save(serItemInfo);
-		//批量插入定向城市
-//		if(cityCodes != null){
-//			for(String cityCode : cityCodes){
-//				SerCityScope serCityScope = new SerCityScope();
-//				serCityScope.setMasterId(serItemInfo.getId());
-//				serCityScope.setType("1");//0:服务分类 1:服务项目
-//				serCityScope.setCityCode(cityCode);//市_区号
-//				serCityScopeService.save(serCityScope);
-//			}
-//		}
 		if(commoditys != null) {
 			//批量插入商品信息
 			for (SerItemCommodity commodity : commoditys) {
@@ -129,35 +110,16 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 */
 	public SerItemInfo getData(String id) {
 		SerItemInfo serItemInfo = super.get(id);
-		//获取定向城市
-//		List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(id);
-//		List<String> cityCodes = null;
-//		if(null != citys){
-//			cityCodes = new ArrayList<String>();
-//			for(SerCityScope city : citys){
-//				cityCodes.add(city.getCityCode());
-//			}
-//		}
-//		serItemInfo.setCityCodes(cityCodes);
 
 		List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
 		serItemInfo.setCommoditys(commoditys);
 
-//		SerItemInfo serItemInfoForAllCity = new SerItemInfo();
-//		User user = UserUtils.getUser();
-//		serItemInfoForAllCity.setOrgId(user.getOrganization().getId());//机构ID
-//		serItemInfoForAllCity.setSortId(serItemInfo.getSortId());
-//		List<SerCityScope>  allCitys = getAllCityCodes(serItemInfoForAllCity);
-//		serItemInfo.setAllCitys(allCitys);
 		return serItemInfo;
 	}
 
 	
 	@Transactional(readOnly = false)
 	public void delete(SerItemInfo serItemInfo) {
-		//删除定向城市
-//		serCityScopeDao.delSerCityScopeByMaster(serItemInfo.getId());
-
 		//删除商品信息
 		List<SerItemCommodity> commoditys = dao.getSerItemCommoditys(serItemInfo);
 		for(SerItemCommodity commodity : commoditys){
@@ -188,36 +150,5 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
     public List<Dict> getSerSortInfoList(SerItemInfo serItemInfo) {
 		return dao.getSerSortInfoList(serItemInfo);
     }
-
-	/*public List<SerCityScope> getAllCityCodes(SerItemInfo serItemInfo) {
-		List<SerCityScope> citys = new ArrayList<SerCityScope>();
-		if(StringUtils.isNotBlank(serItemInfo.getSortId())){
-			SerSortInfo serSortInfo = dao.getSerSortInfo(serItemInfo.getSortId());
-			if(serSortInfo == null){
-				List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
-				if(null != list){
-					for(BasicServiceCity city : list){
-						SerCityScope cityScope = new SerCityScope();
-						cityScope.setCityCode(city.getCityCode());
-						cityScope.setCityName(city.getCityName());
-						citys.add(cityScope);
-					}
-				}
-			}else{
-				citys = serCityScopeDao.getSerCityScopeByMaster(serItemInfo.getSortId());
-			}
-		}else{
-			List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
-			if(null != list){
-				for(BasicServiceCity city : list){
-					SerCityScope cityScope = new SerCityScope();
-					cityScope.setCityCode(city.getCityCode());
-					cityScope.setCityName(city.getCityName());
-					citys.add(cityScope);
-				}
-			}
-		}
-		return  citys;
-	}*/
 
 }
