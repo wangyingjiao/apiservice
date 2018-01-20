@@ -69,6 +69,7 @@
 			id,
 			skill_id,
 			sort_id,
+			org_id,
 			create_by,
 			create_date,
 			update_by,
@@ -78,6 +79,7 @@
 			#{id},
 			#{skillId},
 			#{sortId},
+			#{orgId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -101,19 +103,18 @@
 		WHERE id = #{id}
 	</update>
 
-	<update id="delSerSkillSortBySkill">
-		UPDATE ser_skill_sort SET
-		del_flag = #{DEL_FLAG_DELETE}
+	<delete id="delSerSkillSortBySkill">
+		DELETE FROM ser_skill_sort
 		WHERE skill_id = #{id}
-		AND del_flag = #{DEL_FLAG_NORMAL}
-	</update>
+	</delete>
 
 	<select id="findSortIdList" resultType="String">
 		SELECT a.sort_id
 		from ser_skill_sort a
 		<where>
 		a.del_flag = '0'
-		<if test="sortIds != null">
+		AND a.org_id = #{orgId}
+		<if test="sortIds != null and sortIds.size() != 0">
 			and a.sort_id NOT in
 			<foreach item="sortId" index="index" collection="sortIds" open="(" separator="," close=")">
 				#{sortId}

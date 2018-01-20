@@ -79,6 +79,7 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		for (String id:sortIds) {
 			SerSkillSort sortInfo = new SerSkillSort();
 			sortInfo.setSkillId(serSkillInfo.getId());
+			sortInfo.setOrgId(serSkillInfo.getOrgId());
 			sortInfo.setSortId(id);
 			sortInfo.preInsert();
 			serSkillSortDao.insert(sortInfo);
