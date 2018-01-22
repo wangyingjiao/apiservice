@@ -37,6 +37,7 @@ public class User extends DataEntity<User> {
     private String companyId;//公司id
     private String companyName;//公司名称
     private BasicOrganization organization;    // 归属部门
+    private String orgId;//机构id
     private String officeId; //机构id
     private String officeName; //机构名称
     private BasicServiceStation station;//服务站
@@ -427,4 +428,15 @@ public class User extends DataEntity<User> {
     public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
+
+
+	public String getOrgId() {
+		return orgId;
+	}
+
+
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+    
 }
