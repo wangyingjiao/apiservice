@@ -552,12 +552,13 @@ public class RoleController extends BaseController {
 			role.setFlag(false);
 		}
 		User user = UserUtils.getUser();
-		String orgId = user.getOrganization().getId();
-		if (org.apache.commons.lang3.StringUtils.isNoneEmpty(orgId)) {
-			if (orgId == id) {
-				role.setFlagOrgId(true);
+		String roleId = user.getRole().getId();
+		//String orgId = user.getOrganization().getId();//获取当前登录用户的所属机构id
+		if (org.apache.commons.lang3.StringUtils.isNoneEmpty(roleId)) {
+			if (roleId.equals(id)) {
+				role.setFlagRoleId(true);
 			} else {
-				role.setFlagOrgId(false);
+				role.setFlagRoleId(false);
 			}
 		}
 
