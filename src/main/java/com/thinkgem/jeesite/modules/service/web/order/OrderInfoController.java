@@ -19,6 +19,8 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -119,6 +122,26 @@ public class OrderInfoController extends BaseController {
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
 		try {
 			HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
+
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setServiceTime((Date) map.get("serviceDate"));//上门服务时间
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						return new FailResult("对接失败N");
+					} else if (!"0".equals(sendResponse.getCode())) {
+						return new FailResult(sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				return new FailResult("对接失败E");
+			}
+
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult(ex.getMessage());
@@ -149,6 +172,25 @@ public class OrderInfoController extends BaseController {
 	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
 		try{
 			HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
+
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						return new FailResult("对接失败N");
+					} else if (!"0".equals(sendResponse.getCode())) {
+						return new FailResult(sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				return new FailResult("对接失败E");
+			}
+
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult(ex.getMessage());
@@ -179,6 +221,25 @@ public class OrderInfoController extends BaseController {
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
 		try{
 			HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						return new FailResult("对接失败N");
+					} else if (!"0".equals(sendResponse.getCode())) {
+						return new FailResult(sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				return new FailResult("对接失败E");
+			}
+
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult(ex.getMessage());

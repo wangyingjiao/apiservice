@@ -466,7 +466,8 @@
 
 			good2.convert_hours AS "convertHours",
 			good2.start_per_num AS "startPerNum",
-			good2.capping_per_num AS "cappingPerNum"
+			good2.capping_per_num AS "cappingPerNum",
+			good2.joint_goods_code AS "jointGoodsCode"
 
 		FROM
 		order_info a
@@ -683,5 +684,12 @@
 		WHERE id = #{id}
 	</update>
 
+	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
+		select
+		a.id AS id, a.name AS name ,
+		a.joint_eshop_code AS jointEshopCode
+		from basic_organization a
+		WHERE a.id= #{orgId}
+	</select>
 	<!-- 对接SQL end-->
 </mapper>

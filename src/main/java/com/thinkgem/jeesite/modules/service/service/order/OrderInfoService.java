@@ -549,9 +549,32 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 
+		String jointGoodsCodes ="";//对接方商品CODE
+		String jointEshopCode = "";//对接方E店CODE
+
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
+		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
+			for(OrderGoods goods :goodsInfoList){//
+				jointGoodsCodes = jointGoodsCodes + goods.getJointGoodsCode();//对接方商品CODE
+			}
+		}else{
+			throw new ServiceException("未找到当前订单服务商品信息");
+		}
+
+
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(orderInfo);
+
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+
 		HashMap<String,Object> map = new HashMap<>();
 		map.put("serviceHour",serviceHourRe);
 		map.put("list",techListRe);
+
+		map.put("orderId",orderInfo.getId());
+		map.put("jointGoodsCodes",jointGoodsCodes);
+		map.put("jointEshopCode", jointEshopCode);
 		return map;
 	}
 
@@ -607,9 +630,34 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 
+
+		String jointGoodsCodes ="";//对接方商品CODE
+		String jointEshopCode = "";//对接方E店CODE
+
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
+		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
+			for(OrderGoods goods :goodsInfoList){//
+				jointGoodsCodes = jointGoodsCodes + goods.getJointGoodsCode();//对接方商品CODE
+			}
+		}else{
+			throw new ServiceException("未找到当前订单服务商品信息");
+		}
+
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(orderInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}else{
+			throw new ServiceException("未找到当前订单对应的机构信息");
+		}
+
 		HashMap<String,Object> map = new HashMap<>();
 		map.put("serviceHour",serviceHourRe);
 		map.put("list",techListRe);
+
+		map.put("orderId",orderInfo.getId());
+		map.put("jointGoodsCodes",jointGoodsCodes);
+		map.put("jointEshopCode", jointEshopCode);
+
 		return map;
 	}
 
@@ -851,11 +899,12 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	@Transactional(readOnly = false)
 	public HashMap<String,Object> saveTime(OrderInfo orderInfo) {
+		String jointGoodsCodes ="";
 		if(null == orderInfo){
 			throw new ServiceException("服务时间不可为空,请选择日期");
 		}
 		Double serviceHourRe = 0.0;
-        Date serviceDate = orderInfo.getServiceTime();//服务时间年月日
+        Date serviceDate = orderInfo.getServiceTime();
 		if(null == serviceDate){
 			throw new ServiceException("服务时间不可为空,请选择日期");
 		}
@@ -868,6 +917,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		int techDispatchNum = 0;//派人数量
 		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
 			for(OrderGoods goods :goodsInfoList){//
+				jointGoodsCodes = jointGoodsCodes + goods.getJointGoodsCode();//对接方商品CODE
+
 				int goodsNum = goods.getGoodsNum();		// 订购商品数
 				if(0 == goodsNum){
 					throw new ServiceException("未找到当前订单服务商品信息的订购商品数");
@@ -1088,9 +1139,21 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<OrderDispatch> techLastList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
             //return techLastList;
 
+			BasicOrganization organization = dao.getBasicOrganizationByOrgId(orderInfo);
+			String jointEshopCode = "";
+			if(organization != null){
+				jointEshopCode = organization.getJointEshopCode();
+			}else{
+				throw new ServiceException("未找到当前订单对应的机构信息");
+			}
+
 			HashMap<String,Object> map = new HashMap<>();
 			map.put("serviceHour",serviceHourRe);
 			map.put("list",techLastList);
+			map.put("orderId",orderInfo.getId());
+			map.put("serviceDate",serviceDate);
+			map.put("jointGoodsCodes",jointGoodsCodes);
+			map.put("jointEshopCode", jointEshopCode);
 			return map;
         }
         return null;

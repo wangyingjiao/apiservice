@@ -65,4 +65,6 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     String appGetPics(String id);
 
     int openUpdateOrder(OrderInfo orderInfo);
+
+    BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo);
 }
