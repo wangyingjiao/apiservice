@@ -181,9 +181,9 @@
 			<if test="workEndTime != null and workEndTime != ''">
 				work_end_time = #{workEndTime},
 			</if>
-			<if test="jointEshopCode != null and jointEshopCode != ''">
+			<!-- <if test="jointEshopCode != null and jointEshopCode != ''"> -->
 				joint_eshop_code = #{jointEshopCode},
-			</if>
+			<!-- </if> -->
 			url = #{url},
 			fax = #{fax},
 			tel_400 = #{tel400},

@@ -105,8 +105,10 @@ public class BasicOrganizationController extends BaseController {
 			return new FailResult("机构名称不能重复");
 		}
 		//E店编码不能重复
-		if (basicOrganizationService.getByECode(basicOrganization)) {
-			return new FailResult("E店编码不能重复");
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+			if (basicOrganizationService.getByECode(basicOrganization)) {
+				return new FailResult("E店编码不能重复");
+			}
 		}
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
@@ -127,8 +129,10 @@ public class BasicOrganizationController extends BaseController {
 			return new FailResult("机构名称不能重复");
 		}
 		//E店编码不能重复
-		if (basicOrganizationService.getByECode(basicOrganization)) {
-			return new FailResult("E店编码不能重复");
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+			if (basicOrganizationService.getByECode(basicOrganization)) {
+				return new FailResult("E店编码不能重复");
+			}
 		}
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
