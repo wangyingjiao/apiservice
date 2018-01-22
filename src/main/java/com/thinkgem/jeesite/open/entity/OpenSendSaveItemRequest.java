@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.open.entity;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import io.swagger.models.auth.In;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,14 +12,19 @@ import java.util.List;
  * @author a
  * @version 2017-12-11
  */
-public class OpenSendSaveItemRequest extends DataEntity<OpenSendSaveItemRequest> {
-
-    private static final long serialVersionUID = 1L;
+public class OpenSendSaveItemRequest {
 
     private HashMap<String,Object> product;
     private String eshop_code;// ESHOP_CODE
-    private List<String> carousel;
-    private List<String> info;
+    private HashMap<String,Object> attachments;
+
+    public HashMap<String, Object> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(HashMap<String, Object> attachments) {
+        this.attachments = attachments;
+    }
 
     public HashMap<String, Object> getProduct() {
         return product;
@@ -36,19 +42,67 @@ public class OpenSendSaveItemRequest extends DataEntity<OpenSendSaveItemRequest>
         this.eshop_code = eshop_code;
     }
 
-    public List<String> getCarousel() {
-        return carousel;
+    private String com;
+    private String client;
+    private String ver;
+    private Date requestTimestamp;
+    private String method;
+    private String app_com;
+    private String task;
+
+    public String getCom() {
+        return com;
     }
 
-    public void setCarousel(List<String> carousel) {
-        this.carousel = carousel;
+    public void setCom(String com) {
+        this.com = com;
     }
 
-    public List<String> getInfo() {
-        return info;
+    public String getClient() {
+        return client;
     }
 
-    public void setInfo(List<String> info) {
-        this.info = info;
+    public void setClient(String client) {
+        this.client = client;
+    }
+
+    public String getVer() {
+        return ver;
+    }
+
+    public void setVer(String ver) {
+        this.ver = ver;
+    }
+
+    public Date getRequestTimestamp() {
+        return requestTimestamp;
+    }
+
+    public void setRequestTimestamp(Date requestTimestamp) {
+        this.requestTimestamp = requestTimestamp;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getApp_com() {
+        return app_com;
+    }
+
+    public void setApp_com(String app_com) {
+        this.app_com = app_com;
+    }
+
+    public String getTask() {
+        return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
     }
 }

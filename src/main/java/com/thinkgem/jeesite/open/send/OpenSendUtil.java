@@ -28,10 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 调用国安社区接口
@@ -85,7 +82,7 @@ public class OpenSendUtil {
 				String content_name = new StringBuilder(itemName).append("(").append(commodity.getName()).append(")").toString();// 商品名称格式：项目名称（商品名）
 				String content_price = commodity.getPrice().toString();// 商品价格
 				String content_unit = commodity.getUnit();// 商品单位格式：次/个/间
-				String self_code = commodity.getId();   //自营平台商品code  ID
+				String self_code = commodity.getSelfCode();   //自营平台商品code  ID
 				String min_number = String.valueOf(commodity.getMinPurchase());// 最小购买数量，起购数量
 
 				OpenSendSaveItemProduct itemProduct = new OpenSendSaveItemProduct();
@@ -115,27 +112,44 @@ public class OpenSendUtil {
 
 		//--SEND------------------------------------------------------------------
 		OpenSendSaveItemRequest request = new OpenSendSaveItemRequest();
-		request.setCarousel(carousel);
-		request.setInfo(info);
+		//request.setCarousel(carousel);
+		//request.setInfo(info);
 		request.setEshop_code(eshopCode);
+		HashMap<String,Object> attachmentsMap = new HashMap<String,Object>();
 		HashMap<String,Object> productMap = new HashMap<String,Object>();
+		HashMap<String,Object> pictureMap = new HashMap<String,Object>();
+		pictureMap.put("banner_pic",carousel);
+		pictureMap.put("describe_pic",info);
 		for (OpenSendSaveItemProduct product :productList){
 			productMap.put(product.getSelf_code(),product);
+			attachmentsMap.put(product.getSelf_code(),pictureMap);
 		}
 		request.setProduct(productMap);
+		request.setAttachments(attachmentsMap);
+
+		//com=com_appService&client=6&ver=1.1&requestTimestamp=2018-01-22+18%3A44%3A16&method=appSev&app_com=com_pcgoods&task=addselfgoods
+		request.setCom("com_appService");
+		request.setClient("6");
+		request.setVer("1.1");
+		request.setRequestTimestamp(new Date());
+		request.setMethod("appSev");
+		request.setApp_com("com_pcgoods");
+		request.setTask("addselfgoods");
 
 		String json = JsonMapper.toJsonString(request);
 		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
 		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
 
 		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
+		//String url = "https://seller-api.guoanshequ.wang/index.php?com=com_appService&client=6&ver=1.1&requestTimestamp=2018-01-22+18%3A44%3A16&method=appSev&app_com=com_pcgoods&task=addselfgoods";
+		//String url = "https://seller-api.guoanshequ.wang/index.php";
 		try {
 			Map<String, String> params = new HashMap<>();
 			params.put("md5",md5Content);
 			params.put("appid", "selfService");
 
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-
+			System.out.println(postClientResponse);
 			OpenSendSaveItemResponse response = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
 			return response;
 		}catch (Exception e){
