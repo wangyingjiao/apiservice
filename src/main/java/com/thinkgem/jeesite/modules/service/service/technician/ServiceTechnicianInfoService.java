@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.service.technician;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillInfoDao;
@@ -18,6 +19,11 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
+import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
+import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
+import com.thinkgem.jeesite.modules.sys.dao.DictDao;
+import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -49,6 +55,12 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     private SerSkillTechnicianDao serSkillTechnicianDao;
     @Autowired
     private SerSkillInfoDao serSkillInfoDao;
+    @Autowired
+    private AreaDao areaDao;
+    @Autowired
+    private DictDao dictDao;
+    @Autowired
+    private ServiceStationService serviceStationService;
 
     @Autowired
     private ServiceTechnicianInfoDao serviceTechnicianInfoDao;
@@ -397,13 +409,51 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         }
     }
 
-
+    //登陆
     public AppServiceTechnicianInfo appLogin(LoginUser user) {
         AppServiceTechnicianInfo technician = technicianInfoDao.getTechnicianByPhone(user);
-        if (SystemService.validatePassword(user.getPassword(), technician.getPassword())) {
-            return technician;
+        if (technician == null){
+            throw new ServiceException("用户名输入错误，没有该用户");
         }
-        return null;
+        if (!SystemService.validatePassword(user.getPassword(), technician.getPassword())) {
+           throw new ServiceException("用户密码输入错误");
+        }
+        PropertiesLoader loader = new PropertiesLoader("oss.properties");
+        String ossHost = loader.getProperty("OSS_HOST");
+        String imgUrlHead = technician.getImgUrlHead();
+        technician.setImgUrlHead(ossHost + imgUrlHead);
+        String imgUrlLife = technician.getImgUrlLife();
+        String imgUrlCard = technician.getImgUrlCard();
+        //身份证正反面
+        if (StringUtils.isNotBlank(imgUrlCard)){
+            Map<String, String> map = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
+            technician.setImgUrlCardAfter(ossHost + map.get("after"));
+            technician.setImgUrlCardBefor(ossHost + map.get("befor"));
+        }
+        technician.setImgUrlCard(imgUrlCard);
+        technician.setImgUrlLife(ossHost+imgUrlLife);
+        //头像
+        technician.setImgUrl(ossHost+technician.getImgUrlHead());
+        //民族
+        if (StringUtils.isNotBlank(technician.getTechNationValue())){
+            Dict dict=new Dict();
+            dict.setType("ethnic");
+            dict.setValue(technician.getTechNationValue());
+            Dict name = dictDao.findName(dict);
+            technician.setTechNation(name.getLabel());
+        }
+        //籍贯
+        if (StringUtils.isNotBlank(technician.getTechNativePlaceValue())){
+            List<Area> nameByCode = areaDao.getNameByCode(technician.getTechNativePlaceValue());
+            technician.setTechNativePlace(nameByCode.get(0).getName());
+        }
+        //获取技师服务站名称
+        if (StringUtils.isNotBlank(technician.getTechPhone())){
+            ServiceTechnicianInfo serviceTechnicianInfo = technicianInfoDao.getByPhone(technician.getTechPhone());
+            BasicServiceStation basicServiceStation = serviceStationService.get(serviceTechnicianInfo.getStationId());
+            technician.setStationName(basicServiceStation.getName());
+        }
+        return technician;
     }
 
     //app获取技师技能工作时间

@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.AppSuccResult;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -65,49 +66,16 @@ public class AppLoginController extends BaseController {
         AppServiceTechnicianInfo entity = null;
         PropertiesLoader loader = new PropertiesLoader("oss.properties");
         String ossHost = loader.getProperty("OSS_HOST");
-        if (StringUtils.isNotBlank(user.getUsername()) && StringUtils.isNotBlank(user.getPassword())) {
-            entity = serviceTechnicianInfoService.appLogin(user);
-        }
-        if (entity == null) {
-            return new AppFailResult(-1,null,"登陆失败，用户名或者密码错误");
-        } else {
+        try {
+            if (StringUtils.isNotBlank(user.getUsername()) && StringUtils.isNotBlank(user.getPassword())) {
+                entity = serviceTechnicianInfoService.appLogin(user);
+            }
             Token token = tokenManager.createToken(entity);
-            String imgUrlHead = entity.getImgUrlHead();
-            entity.setImgUrlHead(ossHost+imgUrlHead);
             entity.setToken(token.getToken());
-            String imgUrlLife = entity.getImgUrlLife();
-            String imgUrlCard = entity.getImgUrlCard();
-            //身份证正反面
-            if (StringUtils.isNotBlank(imgUrlCard)){
-                Map<String, String> map = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
-                entity.setImgUrlCardAfter(ossHost + map.get("after"));
-                entity.setImgUrlCardBefor(ossHost + map.get("befor"));
-            }
-            entity.setImgUrlCard(imgUrlCard);
-            entity.setImgUrlLife(ossHost+imgUrlLife);
-            //头像
-            entity.setImgUrl(ossHost+entity.getImgUrlHead());
-            //民族
-            if (StringUtils.isNotBlank(entity.getTechNationValue())){
-                Dict dict=new Dict();
-                dict.setType("ethnic");
-                dict.setValue(entity.getTechNationValue());
-                Dict name = dictService.findName(dict);
-                entity.setTechNation(name.getLabel());
-            }
-            //籍贯
-            if (StringUtils.isNotBlank(entity.getTechNativePlaceValue())){
-                List<Area> nameByCode = areaService.getNameByCode(entity.getTechNativePlaceValue());
-                entity.setTechNativePlace(nameByCode.get(0).getName());
-            }
-            //获取技师服务站名称
-            if (StringUtils.isNotBlank(entity.getTechPhone())){
-                ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.getByPhone(entity.getTechPhone());
-                BasicServiceStation basicServiceStation = serviceStationService.get(serviceTechnicianInfo.getStationId());
-                entity.setStationName(basicServiceStation.getName());
-            }
-            response.setHeader("token",token.getToken());
-            return new AppSuccResult(0,entity,"登陆成功");
+            response.setHeader("token", token.getToken());
+            return new AppSuccResult(0, entity, "登陆成功");
+        }catch (ServiceException e){
+            return new AppFailResult(-1,null,e.getMessage());
         }
     }
 
