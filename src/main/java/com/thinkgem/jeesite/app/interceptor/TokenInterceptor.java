@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.app.interceptor;
 
 import com.alibaba.fastjson.JSON;
+import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.FailResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,8 +43,8 @@ public class TokenInterceptor implements HandlerInterceptor {
         loger.debug("token 值为 ==>" + header);
         Token token = tokenManager.verifyToken(new Token(header));
         if (null == token) {
-            response.getWriter().print(JSON.toJSONString(new FailResult<>("token 无效或 已经过期，请重新登录")));
-            response.getWriter().flush();
+            response.getWriter().print(JSON.toJSONString(new AppFailResult(-2,null,"token 无效或 已经过期，请重新登录")));
+//            response.getWriter().flush();
             loger.info("token 无效或 已经过期，请重新登录" + header);
             return false;
         } else {

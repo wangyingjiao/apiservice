@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.Servlets;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
@@ -68,9 +69,11 @@ public class AppTechController extends BaseController {
 	 public AppResult getTechServiceList() {
 
 		 //获取登陆技师的信息  id 服务站id
+		 Token token = (Token) Servlets.getRequest().getAttribute("token");
+		 String phone = token.getPhone();
 		 ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		 tech.setPhone("13508070808");
 		 tech.setDelFlag("0");
+		 tech.setPhone(phone);
 		 ServiceTechnicianInfo tech1 = techService.findTech(tech);
 
 		 ServiceTechnicianInfo serviceTechnicianInfo = techService.appFindSkillList(tech1);
