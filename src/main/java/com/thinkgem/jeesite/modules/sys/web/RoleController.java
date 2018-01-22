@@ -337,7 +337,7 @@ public class RoleController extends BaseController {
 		}
 		int i = systemService.checkUpdateName(name, id, roleId);
 		if (0 != i) {
-			return new FailResult("名称不可用");
+			return new FailResult("岗位名称重复");
 		}
 		/*
 		 * if (name != null && name.equals(oldName)) { return new
@@ -443,7 +443,7 @@ public class RoleController extends BaseController {
 		String orgId = role.getOrganization().getId();
 		int i = systemService.checkUpdateName(role.getName(), orgId, role.getId());
 		if (0 != i) {
-			return new FailResult("名称不可用");
+			return new FailResult("岗位名称重复");
 		}
 		systemService.saveRole(role);
 
