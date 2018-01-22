@@ -530,7 +530,9 @@ public class Page<T> implements Serializable{
 	public int getFirstResult(){
 		int firstResult = (getPageNo() - 1) * getPageSize();
 		if (firstResult >= getCount()) {
-			firstResult = 0;
+			int pageNoRe = (getCount()%getPageSize() == 0) ? ((int)getCount()/getPageSize() - 1) : ((int)getCount()/getPageSize());
+			firstResult =  (pageNoRe * getPageSize());
+			//firstResult = 0;
 		}
 		return firstResult;
 	}
