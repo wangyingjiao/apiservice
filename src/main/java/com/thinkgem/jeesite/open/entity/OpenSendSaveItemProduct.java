@@ -13,7 +13,6 @@ public class OpenSendSaveItemProduct extends DataEntity<OpenSendSaveItemProduct>
 
     private static final long serialVersionUID = 1L;
 
-    private String eshop_id;// ESHOP_CODE
     private String content_name;// 商品名称格式：项目名称（商品名）
     private String tags_system;//系统标签格式：系统标签1,系统标签2,系统标签3,
     private String tags_custom;// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
@@ -30,14 +29,6 @@ public class OpenSendSaveItemProduct extends DataEntity<OpenSendSaveItemProduct>
     private String content_type;//service 类型：商品 product / 服务 service
     private String is_combo;//no 单一商品 no / 组合商品 yes
     private String content_number;//999999
-
-    public String getEshop_id() {
-        return eshop_id;
-    }
-
-    public void setEshop_id(String eshop_id) {
-        this.eshop_id = eshop_id;
-    }
 
     public String getContent_name() {
         return content_name;

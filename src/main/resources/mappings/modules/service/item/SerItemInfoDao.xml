@@ -95,7 +95,9 @@
 		<!--<association property="citys" column="{reqId=id}" select="selectCitysById"></association>-->
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
-		select id,name,unit,type,price from ser_item_info_goods
+		select
+		id,name,unit,type,price,joint_goods_code AS jointGoodsCode
+		from ser_item_info_goods
 		where item_id=#{reqId}
 		and del_flag = '0'
 	</select>
@@ -238,12 +240,7 @@
 
 	<update id="updateSerItemPicNum">
 		UPDATE ser_item_info SET
-		<if test="pictureDetail != null and pictureDetail != ''">
-			picture_detail = #{pictureDetail},
-		</if>
-		<if test="sortNum != null and sortNum != ''">
-			sort_num = #{sortNum},
-		</if>
+		picture_detail = #{pictureDetail},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
@@ -264,4 +261,11 @@
 		<!--a.id = #{id}-->
 		<!--AND  a.del_flag = '0'-->
 	<!--</select>-->
+	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
+		select
+		a.id AS id, a.name AS name ,
+		a.joint_eshop_code AS jointEshopCode
+		from basic_organization a
+		WHERE a.id= #{orgId}
+	</select>
 </mapper>

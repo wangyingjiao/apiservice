@@ -12,12 +12,15 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import com.thinkgem.jeesite.modules.service.service.item.SerItemInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.entity.OpenSendSaveItemResponse;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -27,8 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 服务项目Controller
@@ -93,8 +95,35 @@ public class SerItemInfoController extends BaseController {
         }
         //add by wyr编辑项目服务需要获取当前的机构id
         User user = UserUtils.getUser();
-        serItemInfo.setOrgId(user.getOrganization().getId()); 
-        serItemInfoService.save(serItemInfo);
+        serItemInfo.setOrgId(user.getOrganization().getId());
+        HashMap<String,Object> map = serItemInfoService.saveItem(serItemInfo);
+
+        try {
+            // 机构有对接方E店CODE
+            if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+                OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
+                if (sendResponse == null) {
+                    return new FailResult("对接失败N");
+                } else if (!"0".equals(sendResponse.getCode())) {
+                    return new FailResult(sendResponse.getMessage());
+                }else {
+                    HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
+                    //List<SerItemCommodity> goodsList = new ArrayList<>();
+                    Iterator iter = responseData.entrySet().iterator();
+                    while (iter.hasNext()) {
+                        Map.Entry entry = (Map.Entry) iter.next();
+                        SerItemCommodity goods = new SerItemCommodity();
+                        goods.setId(entry.getKey().toString());
+                        goods.setJointGoodsCode(entry.getValue().toString());
+                        //goodsList.add(goods);
+                        serItemInfoService.updateCommodityJointCode(goods);
+                    }
+                }
+            }
+        }catch (Exception e){
+            return new FailResult("对接失败E");
+        }
+
         return new SuccResult("保存成功");
     }
 
@@ -144,7 +173,35 @@ public class SerItemInfoController extends BaseController {
             String picture = JsonMapper.toJsonString(pictures);
             serItemInfo.setPicture(picture);
         }
-        serItemInfoService.save(serItemInfo);
+        HashMap<String,Object> map = serItemInfoService.saveItem(serItemInfo);
+
+        try {
+            // 机构有对接方E店CODE
+            if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+                OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
+
+                if (sendResponse == null) {
+                    return new FailResult("对接失败N");
+                } else if (!"0".equals(sendResponse.getCode())) {
+                    return new FailResult(sendResponse.getMessage());
+                }else {
+                    HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
+                    //List<SerItemCommodity> goodsList = new ArrayList<>();
+                    Iterator iter = responseData.entrySet().iterator();
+                    while (iter.hasNext()) {
+                        Map.Entry entry = (Map.Entry) iter.next();
+                        SerItemCommodity goods = new SerItemCommodity();
+                        goods.setId(entry.getKey().toString());
+                        goods.setJointGoodsCode(entry.getValue().toString());
+                        //goodsList.add(goods);
+                        serItemInfoService.updateCommodityJointCode(goods);
+                    }
+                }
+            }
+        }catch (Exception e){
+            return new FailResult("对接失败E");
+        }
+
         return new SuccResult("保存成功");
     }
 
@@ -158,7 +215,34 @@ public class SerItemInfoController extends BaseController {
             String pictureDetail = JsonMapper.toJsonString(pictureDetails);
             serItemInfo.setPictureDetail(pictureDetail);
         }
-        serItemInfoService.updateSerItemPicNum(serItemInfo);
+
+        HashMap<String,Object> map =  serItemInfoService.updateSerItemPicNum(serItemInfo);
+        try {
+            // 机构有对接方E店CODE
+            if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+                OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
+                if (sendResponse == null) {
+                    return new FailResult("对接失败N");
+                } else if (!"0".equals(sendResponse.getCode())) {
+                    return new FailResult(sendResponse.getMessage());
+                }else {
+                    HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
+                   //List<SerItemCommodity> goodsList = new ArrayList<>();
+                    Iterator iter = responseData.entrySet().iterator();
+                    while (iter.hasNext()) {
+                        Map.Entry entry = (Map.Entry) iter.next();
+                        SerItemCommodity goods = new SerItemCommodity();
+                        goods.setId(entry.getKey().toString());
+                        goods.setJointGoodsCode(entry.getValue().toString());
+                        //goodsList.add(goods);
+                        serItemInfoService.updateCommodityJointCode(goods);
+                    }
+                }
+            }
+        }catch (Exception e){
+            return new FailResult("对接失败E");
+        }
+
         return new SuccResult("保存成功");
     }
 

@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.open.entity;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import io.swagger.models.auth.In;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,16 +15,25 @@ public class OpenSendSaveItemRequest extends DataEntity<OpenSendSaveItemRequest>
 
     private static final long serialVersionUID = 1L;
 
-    private List<OpenSendSaveItemProduct> product;
+    private HashMap<String,Object> product;
+    private String eshop_code;// ESHOP_CODE
     private List<String> carousel;
     private List<String> info;
 
-    public List<OpenSendSaveItemProduct> getProduct() {
+    public HashMap<String, Object> getProduct() {
         return product;
     }
 
-    public void setProduct(List<OpenSendSaveItemProduct> product) {
+    public void setProduct(HashMap<String, Object> product) {
         this.product = product;
+    }
+
+    public String getEshop_code() {
+        return eshop_code;
+    }
+
+    public void setEshop_code(String eshop_code) {
+        this.eshop_code = eshop_code;
     }
 
     public List<String> getCarousel() {

@@ -13,7 +13,7 @@
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS "startPerNum",
 		a.capping_per_num AS "cappingPerNum",
-		a.joint_goods_code AS "jointGoodsCode",
+		a.joint_goods_code AS "jointGoodsCode"
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -137,6 +137,12 @@
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateJointGoodsCode">
+		UPDATE ser_item_info_goods SET
+		joint_goods_code = #{jointGoodsCode}
 		WHERE id = #{id}
 	</update>
 	

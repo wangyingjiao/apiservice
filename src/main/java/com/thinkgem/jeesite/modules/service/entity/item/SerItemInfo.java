@@ -34,7 +34,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String orgId;//机构ID
 	private List<String> sysTags;			//系统标签
 	private List<String> customTags;		//自定义标签
-	private String eshopCode; //e点code 对接用
+	//private String eshopCode; //e点code 对接用
 
 	private String tags;
 	private String cusTags;
@@ -207,12 +207,12 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setCustomTags(List<String> customTags) {
 		this.customTags = customTags;
 	}
-
+/*
 	public String getEshopCode() {
 		return eshopCode;
 	}
 
 	public void setEshopCode(String eshopCode) {
 		this.eshopCode = eshopCode;
-	}
+	}*/
 }

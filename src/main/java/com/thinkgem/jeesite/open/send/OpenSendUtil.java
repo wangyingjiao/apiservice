@@ -44,10 +44,10 @@ public class OpenSendUtil {
 	/**
 	 *  国安社区开放接口 - 服务项目保存
 	 * @param serItemInfo
-	 * @param sendType 0:新增 1：编辑
+	 * @param eshopCode eshopCode
 	 * @return
 	 */
-	public static OpenSendSaveItemResponse openSendSaveItem(SerItemInfo serItemInfo, String sendType) {
+	public static OpenSendSaveItemResponse openSendSaveItem(SerItemInfo serItemInfo, String eshopCode) {
 		if (serItemInfo == null) {
 			OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
 			responseRe.setCode(1);
@@ -61,7 +61,7 @@ public class OpenSendUtil {
 
 		//--项目信息----------------------------------------------------
 		String itemName = serItemInfo.getName();
-		String eshop_id = serItemInfo.getEshopCode();// ESHOP_CODE
+		//String eshop_id = serItemInfo.getEshopCode();// ESHOP_CODE
 		String tags_system = serItemInfo.getTags();//系统标签格式：系统标签1,系统标签2,系统标签3,
 		String tags_custom = serItemInfo.getCusTags();// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
 		String content_shelf = "yes".equals(serItemInfo.getSale()) ? "on" : "off";//上架 下架 on off
@@ -89,7 +89,6 @@ public class OpenSendUtil {
 				String min_number = String.valueOf(commodity.getMinPurchase());// 最小购买数量，起购数量
 
 				OpenSendSaveItemProduct itemProduct = new OpenSendSaveItemProduct();
-				itemProduct.setEshop_id(eshop_id);// ESHOP_CODE
 				itemProduct.setContent_name(content_name);// 商品名称格式：项目名称（商品名）
 				itemProduct.setTags_system(tags_system);//系统标签格式：系统标签1,系统标签2,系统标签3,
 				itemProduct.setTags_custom(tags_custom);// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
@@ -118,37 +117,34 @@ public class OpenSendUtil {
 		OpenSendSaveItemRequest request = new OpenSendSaveItemRequest();
 		request.setCarousel(carousel);
 		request.setInfo(info);
-		request.setProduct(productList);
+		request.setEshop_code(eshopCode);
+		HashMap<String,Object> productMap = new HashMap<String,Object>();
+		for (OpenSendSaveItemProduct product :productList){
+			productMap.put(product.getSelf_code(),product);
+		}
+		request.setProduct(productMap);
 
 		String json = JsonMapper.toJsonString(request);
 		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
 		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
 
-		if("0".equals(sendType)){//0:新增 1：编辑
-			String url =  Global.getConfig("openSendPath_gasq_updateOrderInfo");
-			try {
-				String result = OkHttpClientUtil.doPost(url,md5Content, encode);
+		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("md5",md5Content);
+			params.put("appid", "selfService");
 
-				OpenSendSaveItemResponse response = JSON.parseObject(result, OpenSendSaveItemResponse.class);
-				return response;
-			}catch (Exception e){
-				e.printStackTrace();
-			}
-			OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
-			failRe.setMessage("对接保存信息失败-系统异常");
-			failRe.setCode(0);
-			return failRe;
-		}else if("1".equals(sendType)){
+			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
 
-		}else {
-			OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
-			responseRe.setCode(1);
-			responseRe.setMessage("对接保存信息失败-传入参数有误");
-			return responseRe;
+			OpenSendSaveItemResponse response = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
+			return response;
+		}catch (Exception e){
+			e.printStackTrace();
 		}
-
-		return null;
-
+		OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
+		failRe.setMessage("对接保存信息失败-系统异常");
+		failRe.setCode(0);
+		return failRe;
 	}
 
 	/**
@@ -197,9 +193,13 @@ public class OpenSendUtil {
 
 		String url =  Global.getConfig("openSendPath_gasq_updateOrderInfo");
 		try {
-			String result = OkHttpClientUtil.doPost(url,md5Content, encode);
+			Map<String, String> params = new HashMap<>();
+			params.put("md5",md5Content);
+			params.put("appid", "selfService");
 
-			OpenSendSaveOrderResponse response = JSON.parseObject(result, OpenSendSaveOrderResponse.class);
+			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
+
+			OpenSendSaveOrderResponse response = JSON.parseObject(postClientResponse, OpenSendSaveOrderResponse.class);
 			return response;
 		}catch (Exception e){
 			e.printStackTrace();

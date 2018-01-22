@@ -25,4 +25,6 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     List<SerItemCommodity> getSerItemCommodityByItem(SerItemInfo serItemInfo);
 
     List<SerItemCommodity> findListByItemId(SerItemInfo serItemInfo);
+
+    void updateJointGoodsCode(SerItemCommodity goods);
 }
