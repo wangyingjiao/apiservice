@@ -62,7 +62,8 @@
 			a.telephone AS "telephone",
 			a.master_name AS "masterName",
 			a.master_phone AS "masterPhone",
-			a.address AS "address"
+			a.address AS "address",
+			a.joint_eshop_code AS jointEshopCode
 		FROM basic_organization a
 		<include refid="basicOrganizationJoins"/>
 		<where>
