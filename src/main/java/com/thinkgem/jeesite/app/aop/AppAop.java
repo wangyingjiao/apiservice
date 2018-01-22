@@ -57,11 +57,7 @@ public class AppAop {
         try {
             String text = sb.toString();
             logger.info("密文数据："+text);
-            if (text == null){
-                return null;
-            }
             String decode = Base64Decoder.decode(text);
-//            String decrypt = crypt.decrypt(text);
             logger.debug("解密值为："+decode);
             //获取连接点方法运行时的入参列表 数组
             Object[] args = jp.getArgs();

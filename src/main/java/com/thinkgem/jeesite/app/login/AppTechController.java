@@ -10,10 +10,10 @@ import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.Servlets;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
-import com.thinkgem.jeesite.modules.service.service.skill.SerSkillInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianHolidayService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
@@ -21,7 +21,6 @@ import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.service.AreaService;
 import com.thinkgem.jeesite.modules.sys.service.DictService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,6 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +57,8 @@ public class AppTechController extends BaseController {
 	private SystemService systemService;
 	@Autowired
 	private AreaService areaService;
+	@Autowired
+	private MessageInfoService messageInfoService;
 
 
 	//技师的服务信息列表
@@ -92,9 +92,7 @@ public class AppTechController extends BaseController {
 		//获取登陆技师的信息  id 服务站id
 		Token token = (Token) request.getAttribute("token");
 		String phone = token.getPhone();
-//		String token1 = token.getToken();
-//		System.out.println("token1:"+token1);
-//		System.out.println("phone:"+phone);
+//		System.out.println(token);
 		tech.setPhone(phone);
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		Page<AppServiceTechnicianInfo> page = new Page<AppServiceTechnicianInfo>(request, response);
@@ -289,20 +287,25 @@ public class AppTechController extends BaseController {
 			//身份证正反面
 			String imgUrlCard = technicianById.getImgUrlCard();
 			technicianById.setImgUrlCard(imgUrlCard);
-			Map<String, String> getIdCardMap = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
-			technicianById.setImgUrlCardBefor(ossHost+getIdCardMap.get("befor"));
-			technicianById.setImgUrlCardAfter(ossHost+getIdCardMap.get("after"));
-			//民族
-			Dict dict=new Dict();
-			dict.setType("ethnic");
-			dict.setValue(technicianById.getTechNationValue());
-			Dict name = dictService.findName(dict);
-			technicianById.setTechNation(name.getLabel());
-			//籍贯
-			Area area=new Area();
-			List<Area> nameByCode = areaService.getNameByCode(technicianById.getTechNativePlaceValue());
-			technicianById.setTechNativePlace(nameByCode.get(0).getName());
+			if (StringUtils.isNotBlank(imgUrlCard)){
+				Map<String, String> getIdCardMap = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
+				technicianById.setImgUrlCardBefor(ossHost+getIdCardMap.get("befor"));
+				technicianById.setImgUrlCardAfter(ossHost+getIdCardMap.get("after"));
+			}
 
+			//民族
+			if (StringUtils.isNotBlank(technicianById.getTechNationValue())){
+				Dict dict=new Dict();
+				dict.setType("ethnic");
+				dict.setValue(technicianById.getTechNationValue());
+				Dict name = dictService.findName(dict);
+				technicianById.setTechNation(name.getLabel());
+			}
+			//籍贯
+			if (StringUtils.isNotBlank(technicianById.getTechNativePlaceValue())){
+				List<Area> nameByCode = areaService.getNameByCode(technicianById.getTechNativePlaceValue());
+				technicianById.setTechNativePlace(nameByCode.get(0).getName());
+			}
 			return new AppSuccResult(0,technicianById,"保存成功");
 		}
 		return new AppFailResult(-1,null,"保存失败");
@@ -350,4 +353,56 @@ public class AppTechController extends BaseController {
 		map.put("provinces",proList);
 		return new AppSuccResult(0,map,"下拉列表");
 	}
+
+	//查看单个消息
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/get", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "查看消息详情", notes = "查看消息详情")
+	public AppResult get(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		//根据消息的id 收件人查看
+		messageInfo.setReceivePhone(phone);
+		MessageInfo messageInfo1 = messageInfoService.get(messageInfo);
+		if (messageInfo1 == null){
+			return new AppFailResult(-1,null,"没有该消息");
+		}
+		return new AppSuccResult(0,messageInfo1,"查看消息");
+	}
+		//查看消息列表
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/findList", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "消息列表", notes = "消息列表")
+	public AppResult findList(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		//根据消息的id 收件人查看
+		messageInfo.setReceivePhone(phone);
+		List<MessageInfo> list = messageInfoService.findList(messageInfo);
+
+		if (list.size() == 0){
+			return new AppFailResult(1,null,"没有消息");
+		}
+		return new AppSuccResult(0,list,"查看消息列表");
+	}
+	//增加消息到数据库
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/insertMessage", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "添加消息", notes = "添加消息")
+	public AppResult insertMessage(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		String phone = token.getPhone();
+		//根据消息的id 收件人查看
+		messageInfo.setReceivePhone(phone);
+		List<MessageInfo> list = messageInfoService.findList(messageInfo);
+
+		if (list.size() == 0){
+			return new AppFailResult(1,null,"没有消息");
+		}
+		return new AppSuccResult(0,list,"查看消息列表");
+	}
+
 }

@@ -78,27 +78,34 @@ public class AppLoginController extends BaseController {
             String imgUrlLife = entity.getImgUrlLife();
             String imgUrlCard = entity.getImgUrlCard();
             //身份证正反面
-            Map<String, String> map = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
-            entity.setImgUrlCardAfter(ossHost + map.get("after"));
-            entity.setImgUrlCardBefor(ossHost + map.get("befor"));
+            if (StringUtils.isNotBlank(imgUrlCard)){
+                Map<String, String> map = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
+                entity.setImgUrlCardAfter(ossHost + map.get("after"));
+                entity.setImgUrlCardBefor(ossHost + map.get("befor"));
+            }
             entity.setImgUrlCard(imgUrlCard);
             entity.setImgUrlLife(ossHost+imgUrlLife);
             //头像
             entity.setImgUrl(ossHost+entity.getImgUrlHead());
-            //民族籍贯
-            Dict dict=new Dict();
-            dict.setType("ethnic");
-            dict.setValue(entity.getTechNationValue());
-            Dict name = dictService.findName(dict);
-            entity.setTechNation(name.getLabel());
-            Area area=new Area();
-            List<Area> nameByCode = areaService.getNameByCode(entity.getTechNativePlaceValue());
-            entity.setTechNativePlace(nameByCode.get(0).getName());
-
+            //民族
+            if (StringUtils.isNotBlank(entity.getTechNationValue())){
+                Dict dict=new Dict();
+                dict.setType("ethnic");
+                dict.setValue(entity.getTechNationValue());
+                Dict name = dictService.findName(dict);
+                entity.setTechNation(name.getLabel());
+            }
+            //籍贯
+            if (StringUtils.isNotBlank(entity.getTechNativePlaceValue())){
+                List<Area> nameByCode = areaService.getNameByCode(entity.getTechNativePlaceValue());
+                entity.setTechNativePlace(nameByCode.get(0).getName());
+            }
             //获取技师服务站名称
-            ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.getByPhone(entity.getTechPhone());
-            BasicServiceStation basicServiceStation = serviceStationService.get(serviceTechnicianInfo.getStationId());
-            entity.setStationName(basicServiceStation.getName());
+            if (StringUtils.isNotBlank(entity.getTechPhone())){
+                ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.getByPhone(entity.getTechPhone());
+                BasicServiceStation basicServiceStation = serviceStationService.get(serviceTechnicianInfo.getStationId());
+                entity.setStationName(basicServiceStation.getName());
+            }
             response.setHeader("token",token.getToken());
             return new AppSuccResult(0,entity,"登陆成功");
         }
