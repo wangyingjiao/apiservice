@@ -51,6 +51,15 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		List<BasicOrganization> basicOrganization = dao.getByName(organization);
 		return basicOrganization.size() != 0;
 	}
+	/**
+	 * E店编码不能重复
+	 * @param organization
+	 * @return
+	 */
+	public boolean getByECode(BasicOrganization organization) {
+		List<BasicOrganization> basicOrganization = dao.getByECode(organization);
+		return basicOrganization.size() != 0;
+	}
 
 	@Transactional(readOnly = false)
 	public void save(BasicOrganization basicOrganization) {

@@ -207,6 +207,14 @@
 			AND id &lt;&gt; #{id}
 		</if>
 	</select>
+	<select id="getByECode" resultType="BasicOrganization">
+		select * from basic_organization
+		WHERE 1=1
+		AND joint_eshop_code = #{jointEshopCode}
+		<if test="id != null and id != ''">
+			AND id &lt;&gt; #{id}
+		</if>
+	</select>
 	<update id="deleteCitysByOrgId">
 		UPDATE basic_service_city SET
 			del_flag = #{DEL_FLAG_DELETE}
