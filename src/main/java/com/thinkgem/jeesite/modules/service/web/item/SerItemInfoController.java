@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.web.item;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -107,15 +108,15 @@ public class SerItemInfoController extends BaseController {
                 } else if (sendResponse.getCode() != 0) {
                     return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
-                    HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
-                    //List<SerItemCommodity> goodsList = new ArrayList<>();
+                    Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
                     Iterator iter = responseData.entrySet().iterator();
                     while (iter.hasNext()) {
                         Map.Entry entry = (Map.Entry) iter.next();
                         SerItemCommodity goods = new SerItemCommodity();
-                        goods.setId(entry.getKey().toString());
+                        String key = entry.getKey().toString();
+                        String goodsId = key.substring(key.indexOf("-") + 1);
+                        goods.setId(goodsId);
                         goods.setJointGoodsCode(entry.getValue().toString());
-                        //goodsList.add(goods);
                         serItemInfoService.updateCommodityJointCode(goods);
                     }
                 }
@@ -185,15 +186,15 @@ public class SerItemInfoController extends BaseController {
                 } else if (sendResponse.getCode() != 0) {
                     return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
-                    HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
-                    //List<SerItemCommodity> goodsList = new ArrayList<>();
+                    Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
                     Iterator iter = responseData.entrySet().iterator();
                     while (iter.hasNext()) {
                         Map.Entry entry = (Map.Entry) iter.next();
                         SerItemCommodity goods = new SerItemCommodity();
-                        goods.setId(entry.getKey().toString());
+                        String key = entry.getKey().toString();
+                        String goodsId = key.substring(key.indexOf("-") + 1);
+                        goods.setId(goodsId);
                         goods.setJointGoodsCode(entry.getValue().toString());
-                        //goodsList.add(goods);
                         serItemInfoService.updateCommodityJointCode(goods);
                     }
                 }
@@ -226,15 +227,15 @@ public class SerItemInfoController extends BaseController {
                 } else if (sendResponse.getCode() != 0) {
                     return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
-                    HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
-                   //List<SerItemCommodity> goodsList = new ArrayList<>();
+                    Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
                     Iterator iter = responseData.entrySet().iterator();
                     while (iter.hasNext()) {
                         Map.Entry entry = (Map.Entry) iter.next();
                         SerItemCommodity goods = new SerItemCommodity();
-                        goods.setId(entry.getKey().toString());
+                        String key = entry.getKey().toString();
+                        String goodsId = key.substring(key.indexOf("-") + 1);
+                        goods.setId(goodsId);
                         goods.setJointGoodsCode(entry.getValue().toString());
-                        //goodsList.add(goods);
                         serItemInfoService.updateCommodityJointCode(goods);
                     }
                 }

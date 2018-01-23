@@ -257,6 +257,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		return dao.getSerSortInfoList(serItemInfo);
     }
 
+	@Transactional(readOnly = false)
 	public void updateCommodityJointCode(SerItemCommodity goods) {
 		serItemCommodityDao.updateJointGoodsCode(goods);
 	}
