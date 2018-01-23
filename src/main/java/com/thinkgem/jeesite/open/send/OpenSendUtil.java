@@ -39,6 +39,55 @@ import java.util.*;
 public class OpenSendUtil {
 
 	/**
+	 *  国安社区开放接口 - 服务机构E店Code是否有效
+	 * @param eshopCode E店编码
+	 * @return
+	 */
+	public static OpenSendSaveItemResponse openSendCheckEshopCode(String eshopCode) {
+		if (StringUtils.isEmpty(eshopCode)) {
+			OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
+			responseRe.setCode(1);
+			responseRe.setMessage("对接验证信息失败-E店编码为空");
+			return responseRe;
+		}
+
+		//--SEND------------------------------------------------------------------
+		OpenSendSaveItemRequest request = new OpenSendSaveItemRequest();
+		request.setEshop_code(eshopCode);
+
+		request.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
+		request.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
+		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
+		request.setRequestTimestamp(new Date());
+		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
+		request.setApp_com(Global.getConfig("openSendPath_gasq_php_eshopCode_appCom"));
+		request.setTask(Global.getConfig("openSendPath_gasq_php_eshopCode_task"));
+
+		String json = JsonMapper.toJsonString(request);
+		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
+		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
+
+		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
+
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("md5",md5Content);
+			params.put("appid", "selfService");
+
+			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
+			System.out.println(postClientResponse);
+			OpenSendSaveItemResponse response = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
+			return response;
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
+		failRe.setMessage("对接验证信息失败-系统异常");
+		failRe.setCode(1);
+		return failRe;
+	}
+
+	/**
 	 *  国安社区开放接口 - 服务项目保存
 	 * @param serItemInfo
 	 * @param eshopCode eshopCode
@@ -58,7 +107,6 @@ public class OpenSendUtil {
 
 		//--项目信息----------------------------------------------------
 		String itemName = serItemInfo.getName();
-		//String eshop_id = serItemInfo.getEshopCode();// ESHOP_CODE
 		String tags_system = serItemInfo.getTags();//系统标签格式：系统标签1,系统标签2,系统标签3,
 		String tags_custom = serItemInfo.getCusTags();// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
 		String content_shelf = "yes".equals(serItemInfo.getSale()) ? "on" : "off";//上架 下架 on off
@@ -112,8 +160,6 @@ public class OpenSendUtil {
 
 		//--SEND------------------------------------------------------------------
 		OpenSendSaveItemRequest request = new OpenSendSaveItemRequest();
-		//request.setCarousel(carousel);
-		//request.setInfo(info);
 		request.setEshop_code(eshopCode);
 		HashMap<String,Object> attachmentsMap = new HashMap<String,Object>();
 		HashMap<String,Object> productMap = new HashMap<String,Object>();
@@ -132,16 +178,15 @@ public class OpenSendUtil {
 		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
 		request.setRequestTimestamp(new Date());
 		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
-		request.setApp_com(Global.getConfig("openSendPath_gasq_phpGoods_appCom"));
-		request.setTask(Global.getConfig("openSendPath_gasq_phpGoods_task"));
+		request.setApp_com(Global.getConfig("openSendPath_gasq_php_goods_appCom"));
+		request.setTask(Global.getConfig("openSendPath_gasq_php_goods_task"));
 
 		String json = JsonMapper.toJsonString(request);
 		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
 		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
 
 		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
-		//String url = "https://seller-api.guoanshequ.wang/index.php?com=com_appService&client=6&ver=1.1&requestTimestamp=2018-01-22+18%3A44%3A16&method=appSev&app_com=com_pcgoods&task=addselfgoods";
-		//String url = "https://seller-api.guoanshequ.wang/index.php";
+
 		try {
 			Map<String, String> params = new HashMap<>();
 			params.put("md5",md5Content);

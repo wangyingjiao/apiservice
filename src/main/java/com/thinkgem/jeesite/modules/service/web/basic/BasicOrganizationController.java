@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
@@ -19,6 +20,8 @@ import com.thinkgem.jeesite.modules.sys.service.AreaService;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.entity.OpenSendSaveItemResponse;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import com.thoughtworks.xstream.mapper.Mapper.Null;
 
 import io.swagger.annotations.ApiOperation;
@@ -110,6 +113,21 @@ public class BasicOrganizationController extends BaseController {
 				return new FailResult("E店编码不能重复");
 			}
 		}
+
+		try {
+			// 验证服务机构E店Code是否有效
+			if(StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+				OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendCheckEshopCode(basicOrganization.getJointEshopCode());
+				if (sendResponse == null) {
+					return new FailResult("对接失败-返回值为空");
+				} else if (sendResponse.getCode() != 0) {
+					return new FailResult("E店编码验证失败");
+				}
+			}
+		}catch (Exception e){
+			return new FailResult("对接失败-系统异常");
+		}
+
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
 	}
@@ -134,6 +152,21 @@ public class BasicOrganizationController extends BaseController {
 				return new FailResult("E店编码不能重复");
 			}
 		}
+
+		try {
+			// 验证服务机构E店Code是否有效
+			if(StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+				OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendCheckEshopCode(basicOrganization.getJointEshopCode());
+				if (sendResponse == null) {
+					return new FailResult("对接失败-返回值为空");
+				} else if (sendResponse.getCode() != 0) {
+					return new FailResult("E店编码验证失败");
+				}
+			}
+		}catch (Exception e){
+			return new FailResult("对接失败-系统异常");
+		}
+
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
 	}
