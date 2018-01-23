@@ -107,9 +107,40 @@ public class OpenSendUtil {
 
 		//--项目信息----------------------------------------------------
 		String itemName = serItemInfo.getName();
-		String tags_system = serItemInfo.getTags();//系统标签格式：系统标签1,系统标签2,系统标签3,
-		String tags_custom = serItemInfo.getCusTags();// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
-		String content_shelf = "yes".equals(serItemInfo.getSale()) ? "on" : "off";//上架 下架 on off
+
+		List<String> haveTags = new ArrayList<>();
+		//系统标签格式：系统标签1,系统标签2,系统标签3,
+		List<String> sysTags = (List<String>) JsonMapper.fromJsonString(serItemInfo.getTags(), ArrayList.class);
+		String tags_system = "";
+		if(sysTags!=null){
+			for(String sysTag : sysTags){
+				if(haveTags.contains(sysTag)){
+					OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
+					responseRe.setCode(1);
+					responseRe.setMessage("对接保存信息失败-标签重复");
+					return responseRe;
+				}else{
+					tags_system = tags_system + sysTag + ",";
+				}
+			}
+		}
+		// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
+		List<String> cusTags = (List<String>) JsonMapper.fromJsonString(serItemInfo.getCusTags(), ArrayList.class);
+		String tags_custom = "";
+		if(sysTags!=null){
+			for(String cusTag : cusTags){
+				if(haveTags.contains(cusTag)){
+					OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
+					responseRe.setCode(1);
+					responseRe.setMessage("对接保存信息失败-标签重复");
+					return responseRe;
+				}else{
+					tags_custom = tags_custom + cusTag + ",";
+				}
+			}
+		}
+
+		//String content_shelf = "yes".equals(serItemInfo.getSale()) ? "on" : "off";//上架 下架 on off
 		String content_img = "";
 		if(carousel != null){
 			content_img = carousel.get(0);//图片 一张
@@ -132,8 +163,10 @@ public class OpenSendUtil {
 				String content_unit = commodity.getUnit();// 商品单位格式：次/个/间
 				String self_code = commodity.getSelfCode();   //自营平台商品code  ID
 				String min_number = String.valueOf(commodity.getMinPurchase());// 最小购买数量，起购数量
+				String joint_goods_code = commodity.getJointGoodsCode();
 
 				OpenSendSaveItemProduct itemProduct = new OpenSendSaveItemProduct();
+				itemProduct.setId(joint_goods_code);
 				itemProduct.setContent_name(content_name);// 商品名称格式：项目名称（商品名）
 				itemProduct.setTags_system(tags_system);//系统标签格式：系统标签1,系统标签2,系统标签3,
 				itemProduct.setTags_custom(tags_custom);// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
@@ -141,7 +174,7 @@ public class OpenSendUtil {
 				itemProduct.setContent_unit(content_unit);// 商品单位格式：次/个/间
 				itemProduct.setSelf_code(self_code); //自营平台商品code  ID
 				itemProduct.setMin_number(min_number);// 最小购买数量，起购数量
-				itemProduct.setContent_shelf(content_shelf);//上架 下架 on off
+				//itemProduct.setContent_shelf(content_shelf);//上架 下架 on off
 				itemProduct.setContent_img(content_img);//图片 一张
 				itemProduct.setWarn_number(warn_number);// 0
 				itemProduct.setMax_number(max_number);// 最大购买数量，默认999999
@@ -220,10 +253,11 @@ public class OpenSendUtil {
 		}
 		String service_time = DateUtils.formatDateTime(info.getServiceTime());//上门服务时间；上门服务时间和服务人员备注必传其一
 		String order_remark = info.getOrderRemark();//服务人员备注 ；上门服务时间和服务人员备注必传其一
+		List<String>  order_remark_pic = info.getOrderRemarkPics();//服务人员备注 ；上门服务时间和服务人员备注必传其一
 		String order_id = info.getId();//订单ID
 		List<OrderDispatch> techList = info.getTechList();//技师信息
 
-		if(StringUtils.isBlank(service_time) && StringUtils.isBlank(order_remark) && techList==null){
+		if(StringUtils.isBlank(service_time) && (StringUtils.isBlank(order_remark) && order_remark_pic==null) && techList==null){
 			OpenSendSaveOrderResponse responseRe = new OpenSendSaveOrderResponse();
 			responseRe.setCode(1);
 			responseRe.setMessage("对接保存信息失败-上门服务时间,服务人员,备注必传其一");
@@ -243,6 +277,7 @@ public class OpenSendUtil {
 		send.setOrder_id(order_id);// 订单ID
 		send.setService_time(service_time);//上门服务时间
 		send.setOrder_remark(order_remark);//服务人员备注
+		send.setOrder_remark_pic(order_remark_pic);//服务人员备注
 		send.setService_tech_info(techListSend);// 技师信息
 
 		String json = JsonMapper.toJsonString(send);

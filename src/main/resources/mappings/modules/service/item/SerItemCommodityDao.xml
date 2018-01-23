@@ -142,7 +142,9 @@
 
 	<update id="updateJointGoodsCode">
 		UPDATE ser_item_info_goods SET
-		joint_goods_code = #{jointGoodsCode}
+		joint_goods_code = #{jointGoodsCode},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	

@@ -62,148 +62,79 @@ public class SerItemInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "saveData", method = {RequestMethod.POST})
     @RequiresPermissions("project_insert")
-    @ApiOperation("保存服务项目")
+    @ApiOperation("新增保存服务项目")
     public Result saveData(@RequestBody SerItemInfo serItemInfo) {
         List<String> errList = errors(serItemInfo);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-        //add by wyr注释掉 测试讨论结果 ：项目名称不做验证
-       /* if (!StringUtils.isNotBlank(serItemInfo.getId())) {//新增时验证重复
-            User user = UserUtils.getUser();
-            serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
 
-            if (0 != serItemInfoService.checkDataName(serItemInfo)) {
-                return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
-            }
-        }*/
+        List<String> haveTags = new ArrayList<>();
         List<String> sysTags = serItemInfo.getSysTags();
+        //系统标签格式：系统标签1,系统标签2,系统标签3,
         if (null != sysTags){
+            for(String sysTag : sysTags){
+                if(haveTags.contains(sysTag)){
+                    return new FailResult("标签重复");
+                }
+            }
             String sys = JsonMapper.toJsonString(sysTags);
             serItemInfo.setTags(sys);
         }
 
         List<String> customTags = serItemInfo.getCustomTags();
+        // 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
         if (null != customTags){
+            for(String cusTag : customTags){
+                if(haveTags.contains(cusTag)){
+                    return new FailResult("标签重复");
+                }
+            }
             String tags = JsonMapper.toJsonString(customTags);
             serItemInfo.setCusTags(tags);
         }
 
-        List<String> pictures = serItemInfo.getPictures();
-        if(null != pictures){
-            String picture = JsonMapper.toJsonString(pictures);
-            serItemInfo.setPicture(picture);
-        }
-        //add by wyr编辑项目服务需要获取当前的机构id
-        User user = UserUtils.getUser();
-        serItemInfo.setOrgId(user.getOrganization().getId());
         HashMap<String,Object> map = serItemInfoService.saveItem(serItemInfo);
-
-        try {
-            // 机构有对接方E店CODE
-            if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
-                OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
-                if (sendResponse == null) {
-                    return new FailResult("对接失败-返回值为空");
-                } else if (sendResponse.getCode() != 0) {
-                    return new FailResult("对接失败-"+sendResponse.getMessage());
-                }else {
-                    Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
-                    Iterator iter = responseData.entrySet().iterator();
-                    while (iter.hasNext()) {
-                        Map.Entry entry = (Map.Entry) iter.next();
-                        SerItemCommodity goods = new SerItemCommodity();
-                        String key = entry.getKey().toString();
-                        String goodsId = key.substring(key.indexOf("-") + 1);
-                        goods.setId(goodsId);
-                        goods.setJointGoodsCode(entry.getValue().toString());
-                        serItemInfoService.updateCommodityJointCode(goods);
-                    }
-                }
-            }
-        }catch (Exception e){
-            return new FailResult("对接失败-系统异常");
-        }
-
-        return new SuccResult("保存成功");
+        return doSendItem(map);
     }
 
     @ResponseBody
     @RequestMapping(value = "upData", method = {RequestMethod.POST})
     @RequiresPermissions("project_update")
-    @ApiOperation("保存服务项目")
+    @ApiOperation("编辑保存服务项目")
     public Result upData(@RequestBody SerItemInfo serItemInfo) {
         List<String> errList = errors(serItemInfo);
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-        //判断名字是否重复
-        SerItemInfo serItemInfo1=new SerItemInfo();
-        serItemInfo1.setName(serItemInfo.getName());
-        //add by wyr返回类型修改为list类型
-        //注释掉 测试讨论结果 ：项目名称不做验证
-       /* List<SerItemInfo> serItemInfoList = serItemInfoService.getByName(serItemInfo1);
-        for (SerItemInfo byName : serItemInfoList) {
-        	//不同id
-        	if (byName != null){
-        		if (! byName.getId().equals(serItemInfo.getId())){
-        			//同机构
-        			if (byName.getOrgId().equals(serItemInfo.getOrgId())){
-        				//同分类 （保洁 家修）
-        				if (byName.getMajorSort().equals(serItemInfo.getMajorSort())){
-        					return new FailResult("当前机构已经包含服务项目名称" + serItemInfo.getName() + "");
-        				}
-        			}
-        		}
-        	}
-		}*/
+
+        List<String> haveTags = new ArrayList<>();
         List<String> sysTags = serItemInfo.getSysTags();
+        //系统标签格式：系统标签1,系统标签2,系统标签3,
         if (null != sysTags){
+            for(String sysTag : sysTags){
+                if(haveTags.contains(sysTag)){
+                    return new FailResult("标签重复");
+                }
+            }
             String sys = JsonMapper.toJsonString(sysTags);
             serItemInfo.setTags(sys);
         }
 
         List<String> customTags = serItemInfo.getCustomTags();
+        // 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
         if (null != customTags){
+            for(String cusTag : customTags){
+                if(haveTags.contains(cusTag)){
+                    return new FailResult("标签重复");
+                }
+            }
             String tags = JsonMapper.toJsonString(customTags);
             serItemInfo.setCusTags(tags);
         }
 
-        List<String> pictures = serItemInfo.getPictures();
-        if(null != pictures){
-            String picture = JsonMapper.toJsonString(pictures);
-            serItemInfo.setPicture(picture);
-        }
         HashMap<String,Object> map = serItemInfoService.saveItem(serItemInfo);
-
-        try {
-            // 机构有对接方E店CODE
-            if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
-                OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
-
-                if (sendResponse == null) {
-                    return new FailResult("对接失败-返回值为空");
-                } else if (sendResponse.getCode() != 0) {
-                    return new FailResult("对接失败-"+sendResponse.getMessage());
-                }else {
-                    Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
-                    Iterator iter = responseData.entrySet().iterator();
-                    while (iter.hasNext()) {
-                        Map.Entry entry = (Map.Entry) iter.next();
-                        SerItemCommodity goods = new SerItemCommodity();
-                        String key = entry.getKey().toString();
-                        String goodsId = key.substring(key.indexOf("-") + 1);
-                        goods.setId(goodsId);
-                        goods.setJointGoodsCode(entry.getValue().toString());
-                        serItemInfoService.updateCommodityJointCode(goods);
-                    }
-                }
-            }
-        }catch (Exception e){
-            return new FailResult("对接失败-系统异常");
-        }
-
-        return new SuccResult("保存成功");
+        return doSendItem(map);
     }
 
     @ResponseBody
@@ -211,22 +142,24 @@ public class SerItemInfoController extends BaseController {
     @RequiresPermissions("project_detail")
     @ApiOperation("保存服务项目图文详情")
     public Result upDataSortNum(@RequestBody SerItemInfo serItemInfo) {
-        List<String> pictureDetails = serItemInfo.getPictureDetails();
-        if(null != pictureDetails){
-            String pictureDetail = JsonMapper.toJsonString(pictureDetails);
-            serItemInfo.setPictureDetail(pictureDetail);
-        }
-
         HashMap<String,Object> map =  serItemInfoService.updateSerItemPicNum(serItemInfo);
+        return doSendItem(map);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "sendData", method = {RequestMethod.POST})
+    @ApiOperation("对接")
+    public Result sendData(@RequestBody SerItemInfo serItemInfo) {
+        HashMap<String,Object> map =  serItemInfoService.sendItemData(serItemInfo);
+        return doSendItem(map);
+    }
+    public Result doSendItem(HashMap<String,Object> map){
+        SerItemInfo serItemInfo = (SerItemInfo) map.get("item");
         try {
             // 机构有对接方E店CODE
             if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
                 OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
-                if (sendResponse == null) {
-                    return new FailResult("对接失败-返回值为空");
-                } else if (sendResponse.getCode() != 0) {
-                    return new FailResult("对接失败-"+sendResponse.getMessage());
-                }else {
+                if(sendResponse != null && sendResponse.getCode() == 0){
                     Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
                     Iterator iter = responseData.entrySet().iterator();
                     while (iter.hasNext()) {
@@ -236,12 +169,36 @@ public class SerItemInfoController extends BaseController {
                         String goodsId = key.substring(key.indexOf("-") + 1);
                         goods.setId(goodsId);
                         goods.setJointGoodsCode(entry.getValue().toString());
+                        User user = new User();
+                        user.setId("gasq001");
+                        goods.setUpdateBy(user);
+                        goods.setUpdateDate(new Date());
                         serItemInfoService.updateCommodityJointCode(goods);
                     }
+                    serItemInfo.setJointStatus("yes");
+                    User user = new User();
+                    user.setId("gasq001");
+                    serItemInfo.setUpdateBy(user);
+                    serItemInfo.setUpdateDate(new Date());
+                    serItemInfoService.updateJointStatus(serItemInfo);
+                }else{
+                    serItemInfo.setJointStatus("no");
+                    User user = new User();
+                    user.setId("gasq001");
+                    serItemInfo.setUpdateBy(user);
+                    serItemInfo.setUpdateDate(new Date());
+                    serItemInfoService.updateJointStatus(serItemInfo);
+                    return new SuccResult("保存成功；对接商品失败，请点击列表中对接按钮，手动完成商品对接");
                 }
             }
         }catch (Exception e){
-            return new FailResult("对接失败-系统异常");
+            serItemInfo.setJointStatus("no");
+            User user = new User();
+            user.setId("gasq001");
+            serItemInfo.setUpdateBy(user);
+            serItemInfo.setUpdateDate(new Date());
+            serItemInfoService.updateJointStatus(serItemInfo);
+            return new SuccResult("保存成功；对接商品失败，请点击列表中对接按钮，手动完成商品对接");
         }
 
         return new SuccResult("保存成功");

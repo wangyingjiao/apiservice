@@ -17,6 +17,7 @@ public class OpenSendSaveOrderRequest extends DataEntity<OpenSendSaveOrderReques
     private List<OpenSendSaveOrderServiceTechInfo> service_tech_info;// 技师信息
     private String order_id;// 订单ID
     private String order_remark;// 服务人员备注 ；上门服务时间和服务人员备注必传其一
+    private List<String> order_remark_pic;// 服务人员备注 ；上门服务时间和服务人员备注必传其一
 
     public String getService_time() {
         return service_time;
@@ -48,5 +49,13 @@ public class OpenSendSaveOrderRequest extends DataEntity<OpenSendSaveOrderReques
 
     public void setOrder_remark(String order_remark) {
         this.order_remark = order_remark;
+    }
+
+    public List<String> getOrder_remark_pic() {
+        return order_remark_pic;
+    }
+
+    public void setOrder_remark_pic(List<String> order_remark_pic) {
+        this.order_remark_pic = order_remark_pic;
     }
 }
