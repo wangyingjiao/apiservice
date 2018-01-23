@@ -595,12 +595,12 @@ public class RoleController extends BaseController {
 	private List<Menu> genTreeMenusRole(String id, List<Menu> menusRole) {
 		ArrayList<Menu> list = new ArrayList<>();
 		for (Menu menu : menusRole) {
-			menu.setDisable(true);
+			menu.setDisabled(true);
 			// 如果对象的父id等于传进来的id，则进行递归，进入下一轮；
 			if (menu.getParentId().equals(id)) {
 				List<Menu> menus1 = genTreeMenusRole(menu.getId(), menusRole);
 				menu.setSubMenus(menus1);
-				menu.setDisable(true);
+				menu.setDisabled(true);
 				list.add(menu);
 			}
 		}
