@@ -18,9 +18,7 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderGoodsTypeHouse;
+import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
@@ -33,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
 
 /**
@@ -71,15 +68,25 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			goodsInfo.setItemId(goodsInfoList.get(0).getItemId());
 			goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
 			goodsInfo.setGoods(goodsInfoList);
+		}else {
+			throw new ServiceException("没有商品信息");
 		}
+
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_HOST");
 		//商品图片
 		String pics = dao.appGetPics(orderInfo.getId());
-		List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
-		goodsInfo.setPicture(ossHost+picl.get(0));
+		if (pics !=null){
+			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
+			if (picl.size()>0){
+				goodsInfo.setPicture(ossHost+picl.get(0));
+			}
+		}
 		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
+		if (techList.size()==0){
+			throw new ServiceException("没有技师");
+		}
 		for(OrderGoods orderGoods : goodsInfoList){
 			String dj = orderGoods.getPayPrice();//商品单价
 			int num = orderGoods.getGoodsNum();//商品数量
@@ -93,33 +100,123 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		for (OrderDispatch apt:techList){
 			ServiceTechnicianInfo temInfo=new ServiceTechnicianInfo();
 			temInfo.setId(apt.getTechId());
+			//当前登陆用户信息
 			AppServiceTechnicianInfo technicianById = serviceTechnicianInfoDao.getTechnicianById(temInfo);
-			technicianById.setId(apt.getTechId());
+			//当前登陆用户的id是否与当前订单的用有人id
 			if (!technicianById.getId().equals(orderInfo.getNowId())){
 				appTechList.add(technicianById);
 			}
 		}
 		orderInfo.setAppTechList(appTechList);
+		//客户信息
+		OrderCustomInfo customerInfo=new OrderCustomInfo();
+		customerInfo.setCustomerRemark(orderInfo.getCustomerRemark());
+		List<String> ll=new ArrayList<String>();
 		String customerRemarkPic = orderInfo.getCustomerRemarkPic();
 		if(null != customerRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(customerRemarkPic,ArrayList.class);
+			if (pictureDetails.size()>0){
+				for (String s:pictureDetails){
+					String url=ossHost+s;
+					ll.add(url);
+				}
+			}
 			orderInfo.setCustomerRemarkPics(pictureDetails);
 		}
+		customerInfo.setCustomerRemarkPic(ll);
+		orderInfo.setCustomerInfo(customerInfo);
+		//业务人员信息
+		BusinessInfo bus=new BusinessInfo();
+		bus.setBusinessName(orderInfo.getBusinessName());
+		bus.setBusinessPhone(orderInfo.getBusinessPhone());
+		bus.setBusinessRemark(orderInfo.getBusinessRemark());
+		List<String> bp=new ArrayList<String>();
 		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
 		if(null != businessRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
 			orderInfo.setBusinessRemarkPics(pictureDetails);
+			if (pictureDetails.size()>0){
+				for (String pic:pictureDetails){
+					String url=ossHost+pic;
+					bp.add(url);
+				}
+			}
 		}
+		bus.setBusinessRemarkPic(bp);
+		orderInfo.setBusinessInfo(bus);
+
+		//门店信息
+		ShopInfo shop=new ShopInfo();
+		shop.setId(orderInfo.getStationId());
+		shop.setShopName(orderInfo.getShopName());
+		shop.setShopPhone(orderInfo.getShopPhone());
+		shop.setShopAddress(orderInfo.getShopAddr());
+		shop.setShopRemark(orderInfo.getShopRemark());
+		List<String> ls=new ArrayList<String>();
 		String shopRemarkPic = orderInfo.getShopRemarkPic();
 		if(null != shopRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
+			if (pictureDetails.size()>0){
+				for (String pic:pictureDetails){
+					String url=ossHost+pic;
+					ls.add(url);
+				}
+			}
 			orderInfo.setShopRemarkPics(pictureDetails);
 		}
-		String orderRemarkPic = orderInfo.getOrderRemarkPic();
-		if(null != orderRemarkPic){
-			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
-			orderInfo.setOrderRemarkPics(pictureDetails);
+		shop.setShopRemarkPic(ls);
+		orderInfo.setShopInfo(shop);
+
+		if (orderInfo.getOrderSource().equals("own")){
+			orderInfo.setOrderSource("本机构");
+		}else if (orderInfo.getOrderSource().equals("gasq")){
+			orderInfo.setOrderSource("国安社区");
 		}
+
+		String serviceStatus = orderInfo.getServiceStatus();
+		if (serviceStatus.equals("wait_service")){
+			orderInfo.setServiceStatusName("待服务");
+		}else if (serviceStatus.equals("started")){
+			orderInfo.setServiceStatusName("已上门");
+		}else if (serviceStatus.equals("finish")){
+			orderInfo.setServiceStatusName("已完成");
+		}
+		String orderStatus = orderInfo.getOrderStatus();
+		if (orderStatus.equals("waitdispatch")){
+			orderInfo.setOrderStatusName("待派单");
+		}else if (orderStatus.equals("dispatched")){
+			orderInfo.setOrderStatusName("已派单");
+		}else if (orderStatus.equals("cancel")){
+			orderInfo.setOrderStatusName("已取消");
+		}else if (orderStatus.equals("started")){
+			orderInfo.setOrderStatusName("已上门");
+		}else if (orderStatus.equals("finish")){
+			orderInfo.setOrderStatusName("已完成");
+		}else if (orderStatus.equals("success")){
+			orderInfo.setOrderStatusName("已成功");
+		}else if (orderStatus.equals("stop")){
+			orderInfo.setOrderStatusName("已暂停");
+		}
+		String payStatus = orderInfo.getPayStatus();
+		if (payStatus.equals("waitpay")){
+			orderInfo.setPayStatusName("待支付");
+		}else if (payStatus.equals("payed")){
+			orderInfo.setPayStatusName("已支付");
+		}
+		//订单备注 数据库中的json 存的是list
+		String orderRemarkPic = orderInfo.getOrderRemarkPic();
+		List<String> orp=new ArrayList<String>();
+		if (null != orderRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
+			if(pictureDetails.size()>0){
+				for (String pic:pictureDetails){
+					String url=ossHost+pic;
+					orp.add(url);
+				}
+			}
+		}
+		orderInfo.setOrderRemarkPics(orp);
+
 		return orderInfo;
 	}
 

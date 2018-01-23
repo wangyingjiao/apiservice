@@ -475,17 +475,19 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         page1.setPageNo(page.getPageNo());
         page1.setPageSize(page.getPageSize());
         serviceTechnicianInfo.setPage(page1);
-        List<AppServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
-        PropertiesLoader loader = new PropertiesLoader("oss.properties");
-        String ossHost = loader.getProperty("OSS_HOST");
-        for (AppServiceTechnicianInfo appTech:serviceTechnicianInfos){
-            appTech.setImgUrlHead(ossHost+appTech.getImgUrlHead());
-            appTech.setImgUrl(appTech.getImgUrlHead());
+        if (StringUtils.isNotBlank(serviceTechnicianInfo.getStationId()) && StringUtils.isNotBlank(serviceTechnicianInfo.getId())){
+            List<AppServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
+            PropertiesLoader loader = new PropertiesLoader("oss.properties");
+            String ossHost = loader.getProperty("OSS_HOST");
+            for (AppServiceTechnicianInfo appTech:serviceTechnicianInfos){
+                appTech.setImgUrlHead(ossHost+appTech.getImgUrlHead());
+                appTech.setImgUrl(appTech.getImgUrlHead());
+            }
+            page.setCount(page1.getCount());
+            page.setPageNo(page1.getPageNo());
+            page.setPageSize(page1.getPageSize());
+            page.setList(serviceTechnicianInfos);
         }
-        page.setCount(page1.getCount());
-        page.setPageNo(page1.getPageNo());
-        page.setPageSize(page1.getPageSize());
-        page.setList(serviceTechnicianInfos);
         return page;
     }
 

@@ -51,15 +51,17 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	//app获取技师列表
 	public Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		serviceTechnicianHoliday.setPage(page);
-		List<ServiceTechnicianHoliday> serviceTechnicianHolidays = dao.appFindPage(serviceTechnicianHoliday);
-		for (ServiceTechnicianHoliday holi:serviceTechnicianHolidays){
-			Date startTime = holi.getStartTime();
-			Date date=new Date();
-			if (startTime.after(date)){
-				holi.setIsExpire("no");
+		if (StringUtils.isNotBlank(serviceTechnicianHoliday.getTechId())){
+			List<ServiceTechnicianHoliday> serviceTechnicianHolidays = dao.appFindPage(serviceTechnicianHoliday);
+			for (ServiceTechnicianHoliday holi:serviceTechnicianHolidays){
+				Date startTime = holi.getStartTime();
+				Date date=new Date();
+				if (startTime.after(date)){
+					holi.setIsExpire("no");
+				}
 			}
+			page.setList(serviceTechnicianHolidays);
 		}
-		page.setList(serviceTechnicianHolidays);
 		return page;
 	}
 	//获取用户工作时间

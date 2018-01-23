@@ -24,6 +24,8 @@ public class MessageInfo extends DataEntity<MessageInfo> {
     private String targetType;  //订单类型 order
     private String targetId;    //订单id
     private Date pushTime;      //推送时间
+    private Date createTime;    //app展示的推送时间
+    private String orderId; //订单id
 
     public String getTitle() {
         return title;
@@ -89,4 +91,19 @@ public class MessageInfo extends DataEntity<MessageInfo> {
         this.type = type;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
 }

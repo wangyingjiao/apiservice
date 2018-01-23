@@ -62,6 +62,12 @@
 		<include refid="areaColumns"/>
 		FROM sys_area a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="level != null and level != ''">
+			AND a.level=#{level}
+		</if>
+		<if test="parentCode != null and parentCode != ''">
+			AND a.parent_code=#{parentCode}
+		</if>
 		ORDER BY a.code
 	</select>
 	<select id="findByParentIdsLike" resultType="Area">

@@ -38,6 +38,10 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
     public Page<MessageInfo> findList(Page<MessageInfo> page,MessageInfo messageInfo){
         messageInfo.setPage(page);
         List<MessageInfo> list = messageInfoDao.findList(messageInfo);
+        for (MessageInfo info:list){
+            info.setCreateTime(info.getPushTime());
+            info.setOrderId(info.getTargetId());
+        }
         page.setList(list);
         return page;
     }

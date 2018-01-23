@@ -431,7 +431,7 @@
 			b.phone  AS techPhone
 		FROM
 		order_dispatch a
-		LEFT JOIN tech_info b ON a.tech_id = b.id
+		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.order_id = #{id}
 		AND a.status = 'yes'
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
@@ -473,7 +473,7 @@
 		FROM
 		order_info a
 		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id
+		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id AND good2.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE
 		a.id = #{id}
 	</select>
@@ -482,7 +482,7 @@
 		SELECT
 		b.picture AS "pictures"
 		FROM order_goods a
-		LEFT JOIN ser_item_info b ON  a.item_id=b.id
+		LEFT JOIN ser_item_info b ON a.item_id=b.id AND b.del_flag = '0'
 		WHERE
 		a.order_id = #{orderId}
 		AND a.del_flag = '0'
