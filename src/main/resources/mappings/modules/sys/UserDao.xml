@@ -143,7 +143,7 @@
         <include refid="userJoins"/>
 
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-        AND sr.data_scope  &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)
+        <!-- AND sr.data_scope  &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)-->
 
        <!--  <if test="organization != null and organization.id != null and organization.id != ''">
             AND (o.id = #{organization.id}
