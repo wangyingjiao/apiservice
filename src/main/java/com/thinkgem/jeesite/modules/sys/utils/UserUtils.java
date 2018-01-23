@@ -69,7 +69,22 @@ public class UserUtils {
         }
         return user;
     }
-
+    /**
+     * 根据ID获取用户
+     *
+     * @param id
+     * @return 取不到返回null
+     */
+    public static User getUser(String id) {
+           User user = userDao.get(id);
+            if (user == null) {
+                return null;
+            }
+            user.setRoleList(roleDao.findList(new Role(user)));
+            CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + user.getId(), user);
+            CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName(), user);
+        return user;
+    }
     /**
      * 根据登录名获取用户
      *

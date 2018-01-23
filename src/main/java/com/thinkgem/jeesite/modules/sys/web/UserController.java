@@ -457,6 +457,7 @@ public class UserController extends BaseController {
         if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
             UserUtils.clearCache();
         }
+        UserUtils.getUser(user.getId());
         return new SuccResult(user);
     }
 }
