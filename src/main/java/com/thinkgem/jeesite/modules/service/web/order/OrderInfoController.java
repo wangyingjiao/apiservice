@@ -87,13 +87,19 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_info")
 	public Result formData(@RequestBody OrderInfo orderInfo) {
 		OrderInfo entity = null;
-		if (StringUtils.isNotBlank(orderInfo.getId())) {
-			entity = orderInfoService.formData(orderInfo);
-		}
-		if (entity == null) {
-			return new FailResult("未找到此id对应的订单");
-		} else {
-			return new SuccResult(entity);
+		try {
+			if (StringUtils.isNotBlank(orderInfo.getId())) {
+				entity = orderInfoService.formData(orderInfo);
+			}
+			if (entity == null) {
+				return new FailResult("未找到此id对应的订单");
+			} else {
+				return new SuccResult(entity);
+			}
+		}catch (ServiceException ex){
+			return new FailResult("查看失败失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("未找到订单详情!");
 		}
 	}
 
@@ -134,7 +140,7 @@ public class OrderInfoController extends BaseController {
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						return new FailResult("对接失败-返回值为空");
-					} else if (!"0".equals(sendResponse.getCode())) {
+					} else if (sendResponse.getCode() != 0) {
 						return new FailResult("对接失败-"+sendResponse.getMessage());
 					}
 				}
@@ -183,7 +189,7 @@ public class OrderInfoController extends BaseController {
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						return new FailResult("对接失败-返回值为空");
-					} else if (!"0".equals(sendResponse.getCode())) {
+					} else if (sendResponse.getCode() != 0) {
 						return new FailResult("对接失败-"+sendResponse.getMessage());
 					}
 				}
@@ -232,7 +238,7 @@ public class OrderInfoController extends BaseController {
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						return new FailResult("对接失败-返回值为空");
-					} else if (!"0".equals(sendResponse.getCode())) {
+					} else if (sendResponse.getCode() != 0) {
 						return new FailResult("对接失败-"+sendResponse.getMessage());
 					}
 				}

@@ -104,7 +104,7 @@ public class SerItemInfoController extends BaseController {
                 OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
                 if (sendResponse == null) {
                     return new FailResult("对接失败-返回值为空");
-                } else if (!"0".equals(sendResponse.getCode())) {
+                } else if (sendResponse.getCode() != 0) {
                     return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
                     HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
@@ -182,7 +182,7 @@ public class SerItemInfoController extends BaseController {
 
                 if (sendResponse == null) {
                     return new FailResult("对接失败-返回值为空");
-                } else if (!"0".equals(sendResponse.getCode())) {
+                } else if (sendResponse.getCode() != 0) {
                     return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
                     HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
@@ -223,7 +223,7 @@ public class SerItemInfoController extends BaseController {
                 OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
                 if (sendResponse == null) {
                     return new FailResult("对接失败-返回值为空");
-                } else if (!"0".equals(sendResponse.getCode())) {
+                } else if (sendResponse.getCode() != 0) {
                     return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
                     HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();

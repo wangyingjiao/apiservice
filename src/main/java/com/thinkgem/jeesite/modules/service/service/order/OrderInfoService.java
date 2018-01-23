@@ -134,6 +134,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			for(OrderGoods orderGoods : goodsInfoList){
 				String dj = orderGoods.getPayPrice();//商品单价
+				if(StringUtils.isEmpty(dj)){
+					dj = "0";
+				}
 				int num = orderGoods.getGoodsNum();//商品数量
 				BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
 				orderGoods.setPayPrice(price.toString());//总价
