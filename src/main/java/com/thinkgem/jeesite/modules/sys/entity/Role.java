@@ -322,6 +322,15 @@ public class Role<T> extends DataEntity<Role> {
 		this.flagRoleId = flagRoleId;
 	}
 
+	private List<String> menuIdListEdit;
+
+	public List<String> getMenuIdListEdit() {
+		return menuIdListEdit;
+	}
+
+	public void setMenuIdListEdit(List<String> menuIdListEdit) {
+		this.menuIdListEdit = menuIdListEdit;
+	}
 	
 	
 	
