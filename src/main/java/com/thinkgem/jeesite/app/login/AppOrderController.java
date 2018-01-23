@@ -9,12 +9,15 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
+import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -96,95 +99,12 @@ public class AppOrderController extends BaseController {
 		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		info.setTechPhone(phone);
 		info.setNowId(tech1.getId());
-		OrderInfo orderInfo = orderInfoService.appFormData(info);
-		//订单备注
-		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
-		List<String> orp=new ArrayList<String>();
-		PropertiesLoader loader = new PropertiesLoader("oss.properties");
-		String ossHost = loader.getProperty("OSS_HOST");
-		for (String pic:orderRemarkPics){
-			String url=ossHost+pic;
-			orp.add(url);
+		try{
+			OrderInfo orderInfo = orderInfoService.appFormData(info);
+			return new AppSuccResult(0,orderInfo,"查询订单详情");
+		}catch (ServiceException e ){
+			return new AppFailResult(-1,null,e.getMessage());
 		}
-		if (orderInfo.getOrderSource().equals("own")){
-			orderInfo.setOrderSource("本机构");
-		}else if (orderInfo.getOrderSource().equals("gasq")){
-			orderInfo.setOrderSource("国安社区");
-		}
-		orderInfo.setOrderRemarkPics(orp);
-		String serviceStatus = orderInfo.getServiceStatus();
-		if (serviceStatus.equals("wait_service")){
-			orderInfo.setServiceStatusName("待服务");
-		}else if (serviceStatus.equals("started")){
-			orderInfo.setServiceStatusName("已上门");
-		}else if (serviceStatus.equals("finish")){
-			orderInfo.setServiceStatusName("已完成");
-		}
-		String orderStatus = orderInfo.getOrderStatus();
-		if (orderStatus.equals("waitdispatch")){
-			orderInfo.setOrderStatusName("待派单");
-		}else if (orderStatus.equals("dispatched")){
-			orderInfo.setOrderStatusName("已派单");
-		}else if (orderStatus.equals("cancel")){
-			orderInfo.setOrderStatusName("已取消");
-		}else if (orderStatus.equals("started")){
-			orderInfo.setOrderStatusName("已上门");
-		}else if (orderStatus.equals("finish")){
-			orderInfo.setOrderStatusName("已完成");
-		}else if (orderStatus.equals("success")){
-			orderInfo.setOrderStatusName("已成功");
-		}else if (orderStatus.equals("stop")){
-			orderInfo.setOrderStatusName("已暂停");
-		}
-		String payStatus = orderInfo.getPayStatus();
-		if (payStatus.equals("waitpay")){
-			orderInfo.setPayStatusName("待支付");
-		}else if (payStatus.equals("payed")){
-			orderInfo.setPayStatusName("已支付");
-		}
-
-		//业务人员信息
-		BusinessInfo bus=new BusinessInfo();
-		bus.setBusinessName(orderInfo.getBusinessName());
-		bus.setBusinessPhone(orderInfo.getBusinessPhone());
-		bus.setBusinessRemark(orderInfo.getBusinessRemark());
-		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
-		List<String> busiPic = (List<String>) JsonMapper.fromJsonString(businessRemarkPic, ArrayList.class);
-		List<String> bp=new ArrayList<String>();
-		for (String pic:busiPic){
-			String url=ossHost+pic;
-			bp.add(url);
-		}
-		bus.setBusinessRemarkPic(bp);
-		orderInfo.setBusinessInfo(bus);
-		//门店信息
-		ShopInfo shop=new ShopInfo();
-		shop.setId(orderInfo.getStationId());
-		shop.setShopName(orderInfo.getShopName());
-		shop.setShopPhone(orderInfo.getShopPhone());
-		shop.setShopAddress(orderInfo.getShopAddr());
-		shop.setShopRemark(orderInfo.getShopRemark());
-		String shopRemarkPic = orderInfo.getShopRemarkPic();
-		List<String> shopPics = (List<String>) JsonMapper.fromJsonString(shopRemarkPic, ArrayList.class);
-		List<String> ls=new ArrayList<String>();
-		for (String pic:shopPics){
-			String url=ossHost+pic;
-			ls.add(url);
-		}
-		shop.setShopRemarkPic(ls);
-		orderInfo.setShopInfo(shop);
-		//客户信息
-		OrderCustomInfo customerInfo=new OrderCustomInfo();
-		customerInfo.setCustomerRemark(orderInfo.getCustomerRemark());
-		List<String> customerRemarkPics = orderInfo.getCustomerRemarkPics();
-		List<String> ll=new ArrayList<String>();
-		for (String s:customerRemarkPics){
-			String url=ossHost+s;
-			ll.add(url);
-		}
-		customerInfo.setCustomerRemarkPic(ll);
-		orderInfo.setCustomerInfo(customerInfo);
-		return new AppSuccResult(0,orderInfo,"查询订单详情");
 	}
 
 	//技师添加订单备注
@@ -204,11 +124,29 @@ public class AppOrderController extends BaseController {
 			String sys = JsonMapper.toJsonString(orderRemarkPics);
 			orderInfo.setOrderRemarkPic(sys);
 		}
-		int i = orderInfoService.appSaveRemark(orderInfo);
-		if (i>0){
-			return new AppSuccResult(0,null,"添加备注成功");
+		try{
+			int i = orderInfoService.appSaveRemark(orderInfo);
+			if (i>0){
+				//获取商品对接code 和 机构对接code
+//				if (StringUtils.isNotBlank(orderInfo.get)){
+//
+//				}
+				OrderInfo sendOrder = new OrderInfo();
+				sendOrder.setId(orderInfo.getId());
+				sendOrder.setOrderRemark(orderInfo.getOrderRemark());
+				sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
+				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+				if (sendResponse == null) {
+					return new AppFailResult(-1,null,"对接失败N");
+				} else if (!"0".equals(sendResponse.getCode())) {
+					return new AppFailResult(-1,null,sendResponse.getMessage());
+				}
+				return new AppSuccResult(0,null,"添加备注成功");
+			}
+			return new AppFailResult(-1,null,"添加备注失败");
+		}catch (Exception e){
+			return new AppFailResult(-1,null,e.getMessage());
 		}
-		return new AppFailResult(-1,null,"添加备注失败");
 	}
 	//修改服务状态
 	@ResponseBody
@@ -220,7 +158,6 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(errList);
 		}
 		//参数 订单id 服务状态
-
 		Token token = (Token) request.getAttribute("token");
 		String phone = token.getPhone();
 		info.setTechPhone(phone);

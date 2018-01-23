@@ -103,8 +103,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			//当前登陆用户信息
 			AppServiceTechnicianInfo technicianById = serviceTechnicianInfoDao.getTechnicianById(temInfo);
 			//当前登陆用户的id是否与当前订单的用有人id
-			if (!technicianById.getId().equals(orderInfo.getNowId())){
-				appTechList.add(technicianById);
+			if (technicianById !=null){
+				if (!technicianById.getId().equals(orderInfo.getNowId())){
+					appTechList.add(technicianById);
+				}
 			}
 		}
 		orderInfo.setAppTechList(appTechList);
