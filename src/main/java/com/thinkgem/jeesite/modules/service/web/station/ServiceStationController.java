@@ -186,7 +186,7 @@ public class ServiceStationController extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value = "getManager", method = {RequestMethod.POST, RequestMethod.GET})
-    @RequiresPermissions("station_manager")
+    //@RequiresPermissions("station_manager")
     @ApiOperation("设置站长")
     public Result getManager(@RequestBody BasicServiceStation serviceStation) {
         if (null == serviceStation.getId()) {
@@ -248,7 +248,7 @@ public class ServiceStationController extends BaseController {
 
     @ResponseBody
     @RequiresPermissions("user")
-    @RequestMapping(value = "getStoreList")
+    //@RequestMapping(value = "getStoreList")
     public Result getStoreList(@RequestBody BasicStore basicStore) {
         List<BasicStore> list = basicStoreService.findList(basicStore);
         if (list.size() > 0) {
