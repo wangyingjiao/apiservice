@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.sys.service;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.modules.sys.dao.MessageInfoDao;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,10 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         messageInfo.setPage(page);
         List<MessageInfo> list = messageInfoDao.findList(messageInfo);
         for (MessageInfo info:list){
-            info.setCreateTime(info.getPushTime());
             info.setOrderId(info.getTargetId());
+            Date createTime = info.getPushTime();
+            String s = DateUtils.formatDateTime(createTime);
+            info.setCreateTime(s);
         }
         page.setList(list);
         return page;

@@ -90,8 +90,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		for(OrderGoods orderGoods : goodsInfoList){
 			String dj = orderGoods.getPayPrice();//商品单价
 			int num = orderGoods.getGoodsNum();//商品数量
-			BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
-			orderGoods.setPayPrice(price.toString());//总价
+//			BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
+//			orderGoods.setPayPrice(price.toString());//总价
 		}
 		orderInfo.setGoodsInfo(goodsInfo);
 		orderInfo.setTechList(techList);
@@ -507,7 +507,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		List<OrderDispatch> beforTimeCheckTechList = new ArrayList<OrderDispatch>();
 		List<String> beforTimeCheckTechIdList = new ArrayList<String>();
-		if(techList != null){
+		if(techList != null && techList.size()!=0){
 			for(OrderDispatch tech : techList){//有工作时间并且没有休假的技师 有时间接单 还未考虑是否有订单
 				String techId = tech.getTechId();
 				boolean b =  workTechIdList.contains(techId);

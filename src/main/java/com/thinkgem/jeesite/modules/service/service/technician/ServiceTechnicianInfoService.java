@@ -418,6 +418,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         if (!SystemService.validatePassword(user.getPassword(), technician.getPassword())) {
            throw new ServiceException("用户密码输入错误");
         }
+        if (technician.getJobStatus().equals("leave")){
+            throw new ServiceException("用户已离职不可登录");
+        }
         PropertiesLoader loader = new PropertiesLoader("oss.properties");
         String ossHost = loader.getProperty("OSS_HOST");
         String imgUrlHead = technician.getImgUrlHead();
@@ -446,6 +449,21 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         if (StringUtils.isNotBlank(technician.getTechNativePlaceValue())){
             List<Area> nameByCode = areaDao.getNameByCode(technician.getTechNativePlaceValue());
             technician.setTechNativePlace(nameByCode.get(0).getName());
+        }
+        //省
+        if (StringUtils.isNotBlank(technician.getProvinceCode())){
+            List<Area> sheng = areaDao.getNameByCode(technician.getProvinceCode());
+            technician.setProvinceCodeName(sheng.get(0).getName());
+        }
+        //市
+        if (StringUtils.isNotBlank(technician.getCityCode())){
+            List<Area> shi = areaDao.getNameByCode(technician.getCityCode());
+            technician.setCityCodeName(shi.get(0).getName());
+        }
+        //区
+        if (StringUtils.isNotBlank(technician.getAreaCode())){
+            List<Area> qu = areaDao.getNameByCode(technician.getAreaCode());
+            technician.setAreaCodeName(qu.get(0).getName());
         }
         //获取技师服务站名称
         if (StringUtils.isNotBlank(technician.getTechPhone())){

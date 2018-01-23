@@ -174,7 +174,7 @@
 
 	<select id="getNameByCode" resultType="Area">
 		SELECT
-			a.name
+		<include refid="areaColumns"/>
 		FROM sys_area a
 		WHERE a.code = #{code}
 		AND a.del_flag = '0'

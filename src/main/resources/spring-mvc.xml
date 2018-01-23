@@ -116,9 +116,10 @@
         <mvc:mapping path="${appPath}/**"/>
         <mvc:exclude-mapping path="${appPath}/appLogin"/>
             <!--排除修改籍贯民族下拉列表-->
-        <mvc:exclude-mapping path="${appPath}/selectList"/>
-            <!--排除现住地址下拉列表-->
-        <mvc:exclude-mapping path="${appPath}/selectListArea"/>
+            <mvc:exclude-mapping path="${appPath}/selectList"/>
+                <!--排除 根据省，市code获取  市 区-->
+            <mvc:exclude-mapping path="${appPath}/selectListArea"/>
+            <mvc:exclude-mapping path="${appPath}/selectListCity"/>
         <!-- <mvc:exclude-mapping path="${appPath}/getOrderListPage"/>-->
         <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
         </mvc:interceptor>

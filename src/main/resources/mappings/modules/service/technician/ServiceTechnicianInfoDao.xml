@@ -729,9 +729,13 @@
 			a.height AS techHeight,
 			a.weight AS techWeight,
 			a.native_province_code AS techNativePlaceValue,
+			a.province_code AS provinceCode,
+			a.city_code AS cityCode,
+			a.area_code AS areaCode,
 			a.nation AS techNationValue,
 			a.description AS experDesc,
 			a.life_pic AS imgUrlLife,
+			a.job_status AS jobStatus,
 			a.app_login_password AS password
 		FROM
 			tech_info a

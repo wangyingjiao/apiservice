@@ -35,6 +35,7 @@
 		a.target_type AS targetType,
 		a.target_id AS targetId,
 		a.push_time AS pushTime,
+		a.push_time AS createTime,
 		a.create_by AS createBy,
 		a.create_date AS createDate,
 		a.update_by AS updateBy,

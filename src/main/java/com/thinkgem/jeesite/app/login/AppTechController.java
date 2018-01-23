@@ -14,14 +14,12 @@ import com.thinkgem.jeesite.common.web.Servlets;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
-import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
+import com.thinkgem.jeesite.modules.sys.service.*;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianHolidayService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
-import com.thinkgem.jeesite.modules.sys.service.AreaService;
-import com.thinkgem.jeesite.modules.sys.service.DictService;
-import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +58,9 @@ public class AppTechController extends BaseController {
 	private AreaService areaService;
 	@Autowired
 	private MessageInfoService messageInfoService;
+	@Autowired
+	private VersionInfoService versionInfoService;
+
 
 
 	//技师的服务信息列表
@@ -343,6 +344,7 @@ public class AppTechController extends BaseController {
 		}
 
 		Area area=new Area();
+		area.setLevel(1);
 		List<Area> areas = areaService.appFindAllList(area);
 		List proList=new ArrayList();
 		for (Area area1:areas){
@@ -354,6 +356,75 @@ public class AppTechController extends BaseController {
 		map.put("sex",sexList);
 		map.put("nation",naList);
 		map.put("provinces",proList);
+		return new AppSuccResult(0,map,"下拉列表");
+	}
+	//现住地址下拉列表
+
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/selectListPro", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "现住地址下拉列表省", notes = "地址下拉列表")
+	public AppResult selectListPro(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
+		Token token = (Token)request.getAttribute("token");
+		tech.setPhone(token.getPhone());
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		Map map=new HashMap();
+		//根据省号查询省
+		Area area=new Area();
+		area.setCode(tech1.getProvinceCode());
+		List<Area> pro = areaService.appFindAllList(area);
+		List<Map<String,String>> proList=new ArrayList<Map<String,String>>();
+		if (pro.size()>0){
+			Map<String,String> ps=new HashMap<String,String>();
+			ps.put("provinceCode", pro.get(0).getCode());
+			ps.put("provinceCodeName",pro.get(0).getName());
+			proList.add(ps);
+		}
+		map.put("province",proList);
+		return new AppSuccResult(0,map,"下拉列表");
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/selectListCity", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "现住地址下拉列表市", notes = "地址下拉列表")
+	public AppResult selectListCity(AppServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
+		Map map=new HashMap();
+		//根据省号查询所有市
+		Area area=new Area();
+		area.setLevel(2);
+		area.setParentCode(tech.getProvinceCode());
+		List<Area> pro = areaService.appFindAllList(area);
+		List<Map<String,String>> cityList=new ArrayList<Map<String,String>>();
+		if (pro.size()>0){
+			for (Area area1:pro){
+				Map<String,String> ps=new HashMap<String,String>();
+				ps.put("cityCode",area1.getCode());
+				ps.put("cityCodeName",area1.getName());
+				cityList.add(ps);
+			}
+		}
+		map.put("city",cityList);
+		return new AppSuccResult(0,map,"下拉列表");
+	}
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/selectListArea", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "现住地址下拉列表区", notes = "地址下拉列表")
+	public AppResult selectListArea(AppServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
+		Map map=new HashMap();
+		//根据市号查询所有区
+		Area area=new Area();
+		area.setLevel(3);
+		area.setParentCode(tech.getCityCode());
+		List<Area> qu = areaService.appFindAllList(area);
+		List areaList=new ArrayList();
+		if (qu.size()>0) {
+			for (Area area2 : qu) {
+				Map<String, String> cs = new HashMap<String, String>();
+				cs.put("areaCode", area2.getCode());
+				cs.put("areaCodeName", area2.getName());
+				areaList.add(cs);
+			}
+		}
+		map.put("area",areaList);
 		return new AppSuccResult(0,map,"下拉列表");
 	}
 
@@ -375,20 +446,34 @@ public class AppTechController extends BaseController {
 	}
 		//查看消息列表
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/findList", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/getMessageList", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "消息列表", notes = "消息列表")
-	public AppResult findList(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
+	public AppResult getMessageList(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		String phone = token.getPhone();
 		//根据消息的id 收件人查看
 		messageInfo.setReceivePhone(phone);
-		List<MessageInfo> list = messageInfoService.findList(messageInfo);
-
-		if (list.size() == 0){
+		Page<MessageInfo> page=new Page<MessageInfo>(request, response);
+		Page<MessageInfo> list = messageInfoService.findList(page, messageInfo);
+		long count = page.getCount();
+		int pageSize = page.getPageSize();
+		long totalPage=0;
+		long l = count % pageSize;//取余
+		if (l > 0){
+			long l1 = count / pageSize;
+			totalPage = l1 + 1;
+		}else {
+			totalPage = count / pageSize;
+		}
+		Map map=new HashMap();
+		map.put("list",list.getList());
+		map.put("totalPage",totalPage);
+		map.put("pageNo",page.getPageNo());
+		if (list.getList().size() == 0){
 			return new AppFailResult(1,null,"没有消息");
 		}
-		return new AppSuccResult(0,list,"查看消息列表");
+		return new AppSuccResult(0,map,"查看消息列表");
 	}
 	//增加消息到数据库
 	@ResponseBody
@@ -398,14 +483,25 @@ public class AppTechController extends BaseController {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		String phone = token.getPhone();
-		//根据消息的id 收件人查看
-		messageInfo.setReceivePhone(phone);
-		List<MessageInfo> list = messageInfoService.findList(messageInfo);
-
-		if (list.size() == 0){
-			return new AppFailResult(1,null,"没有消息");
+		int insert = messageInfoService.insert(messageInfo);
+		if (insert > 0){
+			return new AppSuccResult(0,null,"添加消息成功");
 		}
-		return new AppSuccResult(0,list,"查看消息列表");
+		return new AppFailResult(-1,null,"添加消息失败");
 	}
 
+	//版本
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/updateVersion", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "版本更新", notes = "版本更新")
+	public AppResult updateVersion(VersionInfo versionInfo,HttpServletRequest request, HttpServletResponse response) {
+		//获取传过来的code
+		String build = (String)request.getAttribute("appBuild");
+		versionInfo.setBuild(build);
+		VersionInfo byTime = versionInfoService.getByTime(versionInfo);
+		if(byTime ==null){
+			return new AppSuccResult(-1,null,"版本已是最新版本");
+		}
+		return new AppSuccResult(0,byTime,"版本更新");
+	}
 }

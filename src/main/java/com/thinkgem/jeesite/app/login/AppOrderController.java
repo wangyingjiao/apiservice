@@ -176,22 +176,24 @@ public class AppOrderController extends BaseController {
 		Token token = (Token) request.getAttribute("token");
 		String phone = token.getPhone();
 		orderInfo.setTechPhone(phone);
-		List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
 		Map<String,Object> map=new HashMap<String,Object>();
 		try{
+			List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
 			PropertiesLoader loader = new PropertiesLoader("oss.properties");
 			String ossHost = loader.getProperty("OSS_HOST");
 			List<AppServiceTechnicianInfo> apt=new ArrayList<AppServiceTechnicianInfo>();
-			for (OrderDispatch dis:techList){
-				ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
-				tec.setId(dis.getTechId());
-				AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tec);
-				technicianById.setImgUrl(ossHost + technicianById.getImgUrlHead());
-				apt.add(technicianById);
+			if (techList.size()>0){
+				for (OrderDispatch dis:techList){
+					ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
+					tec.setId(dis.getTechId());
+					AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tec);
+					technicianById.setImgUrl(ossHost + technicianById.getImgUrlHead());
+					apt.add(technicianById);
+				}
 			}
 			map.put("list",apt);
 		}catch (ServiceException e){
-			return new AppFailResult(e.getMessage());
+			return new AppFailResult(1,null,e.getMessage());
 		}
 		return new AppSuccResult(0,map,"技师列表");
 	}
