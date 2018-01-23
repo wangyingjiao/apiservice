@@ -103,9 +103,9 @@ public class SerItemInfoController extends BaseController {
             if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
                 OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
                 if (sendResponse == null) {
-                    return new FailResult("对接失败N");
+                    return new FailResult("对接失败-返回值为空");
                 } else if (!"0".equals(sendResponse.getCode())) {
-                    return new FailResult(sendResponse.getMessage());
+                    return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
                     HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
                     //List<SerItemCommodity> goodsList = new ArrayList<>();
@@ -121,7 +121,7 @@ public class SerItemInfoController extends BaseController {
                 }
             }
         }catch (Exception e){
-            return new FailResult("对接失败E");
+            return new FailResult("对接失败-系统异常");
         }
 
         return new SuccResult("保存成功");
@@ -181,9 +181,9 @@ public class SerItemInfoController extends BaseController {
                 OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
 
                 if (sendResponse == null) {
-                    return new FailResult("对接失败N");
+                    return new FailResult("对接失败-返回值为空");
                 } else if (!"0".equals(sendResponse.getCode())) {
-                    return new FailResult(sendResponse.getMessage());
+                    return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
                     HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
                     //List<SerItemCommodity> goodsList = new ArrayList<>();
@@ -199,7 +199,7 @@ public class SerItemInfoController extends BaseController {
                 }
             }
         }catch (Exception e){
-            return new FailResult("对接失败E");
+            return new FailResult("对接失败-系统异常");
         }
 
         return new SuccResult("保存成功");
@@ -222,9 +222,9 @@ public class SerItemInfoController extends BaseController {
             if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
                 OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendSaveItem((SerItemInfo)map.get("info"),map.get("jointEshopCode").toString());
                 if (sendResponse == null) {
-                    return new FailResult("对接失败N");
+                    return new FailResult("对接失败-返回值为空");
                 } else if (!"0".equals(sendResponse.getCode())) {
-                    return new FailResult(sendResponse.getMessage());
+                    return new FailResult("对接失败-"+sendResponse.getMessage());
                 }else {
                     HashMap<String,String> responseData = (HashMap<String,String>)sendResponse.getData();
                    //List<SerItemCommodity> goodsList = new ArrayList<>();
@@ -240,7 +240,7 @@ public class SerItemInfoController extends BaseController {
                 }
             }
         }catch (Exception e){
-            return new FailResult("对接失败E");
+            return new FailResult("对接失败-系统异常");
         }
 
         return new SuccResult("保存成功");

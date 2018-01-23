@@ -127,14 +127,13 @@ public class OpenSendUtil {
 		request.setProduct(productMap);
 		request.setAttachments(attachmentsMap);
 
-		//com=com_appService&client=6&ver=1.1&requestTimestamp=2018-01-22+18%3A44%3A16&method=appSev&app_com=com_pcgoods&task=addselfgoods
-		request.setCom("com_appService");
-		request.setClient("6");
-		request.setVer("1.1");
+		request.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
+		request.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
+		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
 		request.setRequestTimestamp(new Date());
-		request.setMethod("appSev");
-		request.setApp_com("com_pcgoods");
-		request.setTask("addselfgoods");
+		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
+		request.setApp_com(Global.getConfig("openSendPath_gasq_phpGoods_appCom"));
+		request.setTask(Global.getConfig("openSendPath_gasq_phpGoods_task"));
 
 		String json = JsonMapper.toJsonString(request);
 		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
@@ -157,7 +156,7 @@ public class OpenSendUtil {
 		}
 		OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
 		failRe.setMessage("对接保存信息失败-系统异常");
-		failRe.setCode(0);
+		failRe.setCode(1);
 		return failRe;
 	}
 
@@ -220,7 +219,7 @@ public class OpenSendUtil {
 		}
 		OpenSendSaveOrderResponse failRe = new OpenSendSaveOrderResponse();
 		failRe.setMessage("对接保存信息失败-系统异常");
-		failRe.setCode(0);
+		failRe.setCode(1);
 		return failRe;
 	}
 }

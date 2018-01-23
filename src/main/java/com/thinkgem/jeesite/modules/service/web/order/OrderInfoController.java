@@ -109,7 +109,7 @@ public class OrderInfoController extends BaseController {
 			}
 			return new SuccResult(techList);
 		}catch (ServiceException ex){
-			return new FailResult(ex.getMessage());
+			return new FailResult("获取时间列表失败-"+ex.getMessage());
 		}catch (Exception e){
 			return new FailResult("当前没有可服务的技师，请更换时间!");
 		}
@@ -133,18 +133,18 @@ public class OrderInfoController extends BaseController {
 					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
-						return new FailResult("对接失败N");
+						return new FailResult("对接失败-返回值为空");
 					} else if (!"0".equals(sendResponse.getCode())) {
-						return new FailResult(sendResponse.getMessage());
+						return new FailResult("对接失败-"+sendResponse.getMessage());
 					}
 				}
 			}catch (Exception e){
-				return new FailResult("对接失败E");
+				return new FailResult("对接失败-系统异常");
 			}
 
 			return new SuccResult(map);
 		}catch (ServiceException ex){
-			return new FailResult(ex.getMessage());
+			return new FailResult("保存失败-"+ex.getMessage());
 		}catch (Exception e){
 			return new FailResult("保存失败!");
 		}
@@ -159,7 +159,7 @@ public class OrderInfoController extends BaseController {
 			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 			return new SuccResult(techList);
 		}catch (ServiceException ex){
-			return new FailResult(ex.getMessage());
+			return new FailResult("获取技师列表失败-"+ex.getMessage());
 		}catch (Exception e){
 			return new FailResult("当前没有可服务的技师!");
 		}
@@ -182,18 +182,18 @@ public class OrderInfoController extends BaseController {
 					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
-						return new FailResult("对接失败N");
+						return new FailResult("对接失败-返回值为空");
 					} else if (!"0".equals(sendResponse.getCode())) {
-						return new FailResult(sendResponse.getMessage());
+						return new FailResult("对接失败-"+sendResponse.getMessage());
 					}
 				}
 			}catch (Exception e){
-				return new FailResult("对接失败E");
+				return new FailResult("对接失败-系统异常");
 			}
 
 			return new SuccResult(map);
 		}catch (ServiceException ex){
-			return new FailResult(ex.getMessage());
+			return new FailResult("保存失败-"+ex.getMessage());
 		}catch (Exception e){
 			return new FailResult("保存失败!");
 		}
@@ -208,7 +208,7 @@ public class OrderInfoController extends BaseController {
 			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 			return new SuccResult(techList);
 		}catch (ServiceException ex){
-			return new FailResult(ex.getMessage());
+			return new FailResult("获取技师列表失败-"+ex.getMessage());
 		}catch (Exception e){
 			return new FailResult("当前没有可服务的技师!");
 		}
@@ -231,20 +231,20 @@ public class OrderInfoController extends BaseController {
 					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
-						return new FailResult("对接失败N");
+						return new FailResult("对接失败-返回值为空");
 					} else if (!"0".equals(sendResponse.getCode())) {
-						return new FailResult(sendResponse.getMessage());
+						return new FailResult("对接失败-"+sendResponse.getMessage());
 					}
 				}
 			}catch (Exception e){
-				return new FailResult("对接失败E");
+				return new FailResult("对接失败-系统异常");
 			}
 
 			return new SuccResult(map);
 		}catch (ServiceException ex){
-			return new FailResult(ex.getMessage());
+			return new FailResult("保存失败-"+ex.getMessage());
 		}catch (Exception e){
-			return new FailResult("保存失败!");
+			return new FailResult("保存失败-系统异常");
 		}
 	}
 }
