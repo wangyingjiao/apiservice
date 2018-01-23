@@ -179,6 +179,8 @@ public class SerSkillInfoController extends BaseController {
 		BasicServiceStation station = new BasicServiceStation();
 		List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
 		SerSortInfo serSortInfo = new SerSortInfo();
+		User user = UserUtils.getUser();
+		serSortInfo.setOrgId(user.getOrganization().getId());// 机构ID
 		// 获取分类表
 		List<SerSortInfo> list = serSortInfoService.findList(serSortInfo);
 
