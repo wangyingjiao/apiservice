@@ -506,6 +506,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		//String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
 
 
+/*
 
 		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 07:00:00")));//不重复    返回 true
@@ -543,6 +544,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
 
+*/
 
        // System.out.println(getDateAndRandomTenNum("01"));
 
@@ -552,6 +554,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}*/
 
 		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
+		System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
 	}
 
+    public static boolean timeBeforeNow(Date date) {
+		Date date1 = parseDate("2018-01-01 "+formatDate(new Date(),"HH:mm:ss"));
+		Date date2 = parseDate("2018-01-01 "+formatDate(date,"HH:mm:ss"));
+		return date2.before(date1);
+    }
 }

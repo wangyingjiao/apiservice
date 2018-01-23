@@ -253,9 +253,24 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 					throw new ServiceException("技师数量不满足当前商品的需求人数");
 				}
 				continue;
+			}else {
+				if(DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())){
+					it.remove();
+
+					if(techList.size() < techDispatchNum){//技师数量不够
+						return null;
+					}
+					continue;
+				}
 			}
 			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
-			List<String> workTimes = DateUtils.getHeafHourTimeList(workTime.getStartTime(),workTime.getEndTime());
+			Date startDateForWork = workTime.getStartTime();
+			if(DateUtils.timeBeforeNow(workTime.getStartTime())){
+				startDateForWork = DateUtils.parseDate(
+						DateUtils.formatDate(startDateForWork,"yyyy-MM-dd") + " " +
+								DateUtils.formatDate(new Date(),"HH:mm:ss"));
+			}
+			List<String> workTimes = DateUtils.getHeafHourTimeList(startDateForWork,workTime.getEndTime());
 
 			//去除休假时间
 			serchTech.setStartTime(serviceDateMin);
