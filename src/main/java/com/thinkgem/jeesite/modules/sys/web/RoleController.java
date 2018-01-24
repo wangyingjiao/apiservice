@@ -565,7 +565,7 @@ public class RoleController extends BaseController {
 		// add by wyr:获取apiservice/a/sys/menu/getMenuList的岗位集合
 		// 方案一
 		 List<Menu> menuList = UserUtils.getMenuListForPlatform(); // 1 11 12 13 14  2 21
-		  List<Menu> menuRoleList = role.getMenuList();            // 1 11 12 13     2 21 3 31 32
+		  List<Menu> menuRoleList = role.getMenuList();            // 1 11 12 13    2 21 3 31 32
 		  //在改变两个集合前查询出被编辑当前岗位的idList================start
 		  ArrayList<String> menuIdListEdit =new ArrayList<String>();
 		  for (Menu menu : menuRoleList) {
