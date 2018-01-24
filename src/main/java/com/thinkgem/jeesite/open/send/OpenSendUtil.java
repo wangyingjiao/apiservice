@@ -111,7 +111,7 @@ public class OpenSendUtil {
 		List<String> haveTags = new ArrayList<>();
 		//系统标签格式：系统标签1,系统标签2,系统标签3,
 		List<String> sysTags = (List<String>) JsonMapper.fromJsonString(serItemInfo.getTags(), ArrayList.class);
-		String tags_system = "";
+		String tags_system = ",";
 		if(sysTags!=null){
 			for(String sysTag : sysTags){
 				if(haveTags.contains(sysTag)){
