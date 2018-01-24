@@ -632,6 +632,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null == servie_time){
 			throw new ServiceException("服务时间不能为空");
 		}
+		String gasq_order_id = info.getGasq_order_id();
 		String latitude = info.getLatitude();//服务地址：纬度
 		String longitude = info.getLongitude();//服务地址：经度
 		String sum_price = info.getSum_price();//订单总支付价格
@@ -772,6 +773,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setCustomerRemark(remark);   // 客户备注
 		orderInfo.setCustomerRemarkPic(null);    //客户备注图片
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
+		orderInfo.setJointOrderId(gasq_order_id);//对接订单ID
 
         User user = new User();
         user.setId("gasq001");
