@@ -121,6 +121,7 @@ public class OpenSendUtil {
 					return responseRe;
 				}else{
 					tags_system = tags_system + sysTag + ",";
+					haveTags.add(sysTag);
 				}
 			}
 		}
@@ -136,6 +137,7 @@ public class OpenSendUtil {
 					return responseRe;
 				}else{
 					tags_custom = tags_custom + cusTag + ",";
+					haveTags.add(cusTag);
 				}
 			}
 		}

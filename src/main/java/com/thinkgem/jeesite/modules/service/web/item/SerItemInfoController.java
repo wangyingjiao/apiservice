@@ -76,6 +76,8 @@ public class SerItemInfoController extends BaseController {
             for(String sysTag : sysTags){
                 if(haveTags.contains(sysTag)){
                     return new FailResult("标签重复");
+                }else{
+                    haveTags.add(sysTag);
                 }
             }
             String sys = JsonMapper.toJsonString(sysTags);
@@ -88,6 +90,8 @@ public class SerItemInfoController extends BaseController {
             for(String cusTag : customTags){
                 if(haveTags.contains(cusTag)){
                     return new FailResult("标签重复");
+                }else{
+                    haveTags.add(cusTag);
                 }
             }
             String tags = JsonMapper.toJsonString(customTags);
@@ -115,6 +119,8 @@ public class SerItemInfoController extends BaseController {
             for(String sysTag : sysTags){
                 if(haveTags.contains(sysTag)){
                     return new FailResult("标签重复");
+                }else{
+                    haveTags.add(sysTag);
                 }
             }
             String sys = JsonMapper.toJsonString(sysTags);
@@ -127,6 +133,8 @@ public class SerItemInfoController extends BaseController {
             for(String cusTag : customTags){
                 if(haveTags.contains(cusTag)){
                     return new FailResult("标签重复");
+                }else{
+                    haveTags.add(cusTag);
                 }
             }
             String tags = JsonMapper.toJsonString(customTags);
