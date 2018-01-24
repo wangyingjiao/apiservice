@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderTimeList;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -108,7 +109,7 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("更换时间")
 	@RequiresPermissions("order_time")
 	public Result timeData(@RequestBody OrderInfo orderInfo) {
-		try {
+		/*try {
 			List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
 			if(techList == null || techList.size() == 0){
 				return new FailResult("当前没有可服务的技师，请更换时间!");
@@ -118,7 +119,11 @@ public class OrderInfoController extends BaseController {
 			return new FailResult("获取时间列表失败-"+ex.getMessage());
 		}catch (Exception e){
 			return new FailResult("当前没有可服务的技师，请更换时间!");
-		}
+		}*/
+
+
+		List<OrderTimeList> list = orderInfoService.timeDataList(orderInfo);
+		return new SuccResult(list);
 	}
 
 	@ResponseBody
