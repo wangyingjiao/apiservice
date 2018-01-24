@@ -125,7 +125,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			OrderGoods goods = new OrderGoods();
 			for(OpenServiceInfo openServiceInfo : serviceInfos){
 
-				String cate_goods_id = openServiceInfo.getCate_goods_id();
+				String key = openServiceInfo.getCate_goods_id();
+				String cate_goods_id = key.substring(key.indexOf("-") + 1);
 				if(null == cate_goods_id){
 					throw new ServiceException("自营服务服务商品ID不能为空");
 				}
@@ -649,7 +650,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null != serviceInfos && serviceInfos.size() > 0){
 			OrderGoods goods = new OrderGoods();
 			for(OpenServiceInfo openServiceInfo : serviceInfos){
-				String cate_goods_id = openServiceInfo.getCate_goods_id();
+
+				String key = openServiceInfo.getCate_goods_id();
+				String cate_goods_id = key.substring(key.indexOf("-") + 1);
 				if(null == cate_goods_id){
 					throw new ServiceException("自营服务服务商品ID不能为空");
 				}
@@ -1264,7 +1267,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		OrderGoods goods = new OrderGoods();
 		for(OpenServiceInfo openServiceInfo : serviceInfos){
-			String cate_goods_id = openServiceInfo.getCate_goods_id();
+
+			String key = openServiceInfo.getCate_goods_id();
+			String cate_goods_id = key.substring(key.indexOf("-") + 1);
 			int buy_num = openServiceInfo.getBuy_num();
 			String pay_price = openServiceInfo.getPay_price();
 
