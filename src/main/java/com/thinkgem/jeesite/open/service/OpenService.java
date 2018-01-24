@@ -254,21 +254,25 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 				continue;
 			}else {
-				if(DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())){
-					it.remove();
+				if(DateUtils.isToday(date)) {
+					if (DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())) {
+						it.remove();
 
-					if(techList.size() < techDispatchNum){//技师数量不够
-						return null;
+						if (techList.size() < techDispatchNum) {//技师数量不够
+							return null;
+						}
+						continue;
 					}
-					continue;
 				}
 			}
 			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
 			Date startDateForWork = workTime.getStartTime();
-			if(DateUtils.timeBeforeNow(workTime.getStartTime())){
-				startDateForWork = DateUtils.parseDate(
-						DateUtils.formatDate(startDateForWork,"yyyy-MM-dd") + " " +
-								DateUtils.formatDate(new Date(),"HH:mm:ss"));
+			if(DateUtils.isToday(date)) {
+				if (DateUtils.timeBeforeNow(workTime.getStartTime())) {
+					startDateForWork = DateUtils.parseDate(
+							DateUtils.formatDate(startDateForWork, "yyyy-MM-dd") + " " +
+									DateUtils.formatDate(new Date(), "HH:mm:ss"));
+				}
 			}
 			List<String> workTimes = DateUtils.getHeafHourTimeList(startDateForWork,workTime.getEndTime());
 

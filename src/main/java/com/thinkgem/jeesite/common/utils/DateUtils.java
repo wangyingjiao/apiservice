@@ -554,12 +554,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}*/
 
 		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
-		System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
+		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
+		System.out.println(isToday(parseDate("2018-01-24 18:00:00")));
 	}
 
     public static boolean timeBeforeNow(Date date) {
 		Date date1 = parseDate("2018-01-01 "+formatDate(new Date(),"HH:mm:ss"));
 		Date date2 = parseDate("2018-01-01 "+formatDate(date,"HH:mm:ss"));
 		return date2.before(date1);
+    }
+
+    public static boolean isToday(Date serviceDate) {
+		return formatDate(new Date(),"yyyy-MM-dd").equals(formatDate(serviceDate,"yyyy-MM-dd"));
     }
 }
