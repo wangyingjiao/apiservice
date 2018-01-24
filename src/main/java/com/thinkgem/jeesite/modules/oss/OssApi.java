@@ -33,7 +33,8 @@ public class OssApi {
         String bucket = loader.getProperty("OSS_TEST_BUCKET");
         String host =  loader.getProperty("OSS_THUMB_HOST");
 
-        String dir = "openservice";
+        //String dir = "openservice";   OSS_TEST_BUCKET
+        String dir = bucket;
         String host1 = "https://" + bucket + "." + endpoint;
         OSSClient client = new OSSClient(endpoint, accessId, accessKey);
 
