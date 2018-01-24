@@ -207,6 +207,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		//通过门店ID获取服务站
 		BasicServiceStation stationSerch = new BasicServiceStation();
 		stationSerch.setStoreId(store_id);
+		stationSerch.setOrgId(orgId);
 		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreId(stationSerch);
 		String stationId = "";
 		if(null != stations && stations.size() > 0){
@@ -733,6 +734,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		//通过门店ID获取服务站
 		BasicServiceStation stationSerch = new BasicServiceStation();
 		stationSerch.setStoreId(store_id);
+		stationSerch.setOrgId(orgId);
 		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreId(stationSerch);
 		String stationId = "";
 		if(null != stations && stations.size() > 0){

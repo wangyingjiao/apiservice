@@ -259,5 +259,6 @@
 			a.station_id AS id
 		from basic_service_store a
 		WHERE a.store_id = #{storeId}
+		AND a.org_id = #{orgId}
     </select>
 </mapper>
