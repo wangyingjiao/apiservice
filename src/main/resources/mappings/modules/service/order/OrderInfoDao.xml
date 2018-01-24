@@ -153,7 +153,7 @@
 		LEFT JOIN tech_info sta ON od.tech_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			 AND sta.phone = #{techPhone}
+			 AND sta.id = #{techId}
 			 AND od.status='yes'
 			<if test="orderStatus != null and orderStatus !=''">
 				AND a.order_status= #{orderStatus}
@@ -418,7 +418,7 @@
 		LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
-		WHERE a.id = #{id}
+		WHERE a.id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<select id="getOrderDispatchList" resultType="OrderDispatch">
@@ -683,6 +683,10 @@
 
 		WHERE id = #{id}
 	</update>
+	
+	<!--<select id="" resultType="">-->
+		<!---->
+	<!--</select>-->
 
 	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
 		select

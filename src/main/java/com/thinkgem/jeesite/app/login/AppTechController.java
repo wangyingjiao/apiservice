@@ -243,6 +243,7 @@ public class AppTechController extends BaseController {
 		String phone = token.getPhone();
 		ServiceTechnicianInfo tech2=new ServiceTechnicianInfo();
 		tech2.setPhone(phone);
+		//从数据库查询用户
 		ServiceTechnicianInfo tech1 = techService.findTech(tech2);
 		appTech.setId(tech1.getId());
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
@@ -273,6 +274,10 @@ public class AppTechController extends BaseController {
 		tech.setLifePic(appTech.getImgUrlLife());
 		tech.setIdCardPicBefor(appTech.getImgUrlCardBefor());
 		tech.setIdCardPicAfter(appTech.getImgUrlCardAfter());
+		//省市区code
+		tech.setProvinceCode(appTech.getProvinceCode());
+		tech.setCityCode(appTech.getCityCode());
+		tech.setAreaCode(appTech.getAreaCode());
 		//身份证正反面
 		Map<String,String> map=new HashMap<String,String>();
 		map.put("befor",appTech.getImgUrlCardBefor());
@@ -309,6 +314,19 @@ public class AppTechController extends BaseController {
 			if (StringUtils.isNotBlank(technicianById.getTechNativePlaceValue())){
 				List<Area> nameByCode = areaService.getNameByCode(technicianById.getTechNativePlaceValue());
 				technicianById.setTechNativePlace(nameByCode.get(0).getName());
+			}
+			//省市区
+			if (StringUtils.isNotBlank(technicianById.getProvinceCode())){
+				List<Area> nameByCode = areaService.getNameByCode(technicianById.getProvinceCode());
+				technicianById.setProvinceCodeName(nameByCode.get(0).getName());
+			}
+			if (StringUtils.isNotBlank(technicianById.getCityCode())){
+				List<Area> nameByCode = areaService.getNameByCode(technicianById.getCityCode());
+				technicianById.setCityCodeName(nameByCode.get(0).getName());
+			}
+			if (StringUtils.isNotBlank(technicianById.getAreaCode())){
+				List<Area> nameByCode = areaService.getNameByCode(technicianById.getAreaCode());
+				technicianById.setAreaCodeName(nameByCode.get(0).getName());
 			}
 			return new AppSuccResult(0,technicianById,"保存成功");
 		}
@@ -374,10 +392,12 @@ public class AppTechController extends BaseController {
 		List<Area> pro = areaService.appFindAllList(area);
 		List<Map<String,String>> proList=new ArrayList<Map<String,String>>();
 		if (pro.size()>0){
-			Map<String,String> ps=new HashMap<String,String>();
-			ps.put("provinceCode", pro.get(0).getCode());
-			ps.put("provinceCodeName",pro.get(0).getName());
-			proList.add(ps);
+			for (int i=0;i<pro.size();i++) {
+				Map<String, String> ps = new HashMap<String, String>();
+				ps.put("provinceCode", pro.get(i).getCode());
+				ps.put("provinceCodeName", pro.get(i).getName());
+				proList.add(ps);
+			}
 		}
 		map.put("province",proList);
 		return new AppSuccResult(0,map,"下拉列表");

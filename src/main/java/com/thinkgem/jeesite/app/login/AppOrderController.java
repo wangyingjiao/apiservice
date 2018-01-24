@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
@@ -56,8 +57,10 @@ public class AppOrderController extends BaseController {
     public AppResult getOrderListPage(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		//获取登录用户id 获取用户手机set进去
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		orderInfo.setTechPhone(phone);
+		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+		tech.setPhone(token.getPhone());
+		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		orderInfo.setTechId(tech1.getId());
 		if (orderInfo.getServiceStatus()==null){
 			return new AppFailResult("订单服务状态不可为空");
 		}
@@ -113,34 +116,33 @@ public class AppOrderController extends BaseController {
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
 	public AppResult saveRemark(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response){
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		orderInfo.setTechPhone(phone);
+//		String phone = token.getPhone();
+//		orderInfo.setTechPhone(phone);
 		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
 		}
-		List<String> orderRemarkPics = orderInfo.getOrderRemarkPics();
-		if (null != orderRemarkPics){
-			String sys = JsonMapper.toJsonString(orderRemarkPics);
-			orderInfo.setOrderRemarkPic(sys);
-		}
 		try{
 			int i = orderInfoService.appSaveRemark(orderInfo);
 			if (i>0){
+				//查询数据库获取订单对应的机构  获取对接code
+				OrderInfo info = orderInfoService.get(orderInfo.getId());
+				BasicOrganization basicOrg = orderInfoService.getBasicOrganizationByOrgId(info);
+
 				//获取商品对接code 和 机构对接code
 //				if (StringUtils.isNotBlank(orderInfo.get)){
 //
 //				}
-				OrderInfo sendOrder = new OrderInfo();
-				sendOrder.setId(orderInfo.getId());
-				sendOrder.setOrderRemark(orderInfo.getOrderRemark());
-				sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
-				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-				if (sendResponse == null) {
-					return new AppFailResult(-1,null,"对接失败N");
-				} else if (!"0".equals(sendResponse.getCode())) {
-					return new AppFailResult(-1,null,sendResponse.getMessage());
-				}
+//				OrderInfo sendOrder = new OrderInfo();
+//				sendOrder.setId(orderInfo.getId());
+//				sendOrder.setOrderRemark(orderInfo.getOrderRemark());
+//				sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
+//				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+//				if (sendResponse == null) {
+//					return new AppFailResult(-1,null,"对接失败N");
+//				} else if (!"0".equals(sendResponse.getCode())) {
+//					return new AppFailResult(-1,null,sendResponse.getMessage());
+//				}
 				return new AppSuccResult(0,null,"添加备注成功");
 			}
 			return new AppFailResult(-1,null,"添加备注失败");

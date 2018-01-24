@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
@@ -60,6 +62,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app查询详情
 	public OrderInfo appFormData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
+		if (null == orderInfo){
+			throw new ServiceException("没有该订单");
+		}
 		orderInfo.setNowId(info.getNowId());
 		OrderGoods goodsInfo = new OrderGoods();
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
@@ -1255,16 +1260,44 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//订单编辑
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
+
 		String orderRemarkPic = orderInfo.getOrderRemarkPic();
-//		if (null != orderRemarkPic){
-//			List<String> pics = (List<String>) JsonMapper.fromJsonString(orderRemarkPic, ArrayList.class);
-//			for (String pic:pics){
-//				if (pic.contains("https")){
-////					pic.
-//				}
-//			}
-//		}
+		if (null != orderRemarkPic){
+			List<String> pics = (List<String>) JsonMapper.fromJsonString(orderRemarkPic, ArrayList.class);
+			List<String> tem=new ArrayList<String>();
+			for (String pic:pics){
+
+				if (pic.contains("https")){
+					//获取第三个/下标
+					int index = index(pic);
+					//截取新数组
+					pic = pic.substring(index + 1);
+				}
+				tem.add(pic);
+			}
+			String s = JsonMapper.toJsonString(tem);
+			orderInfo.setOrderRemarkPic(s);
+		}
 		orderInfo.appPreUpdate();
 		return dao.appUpdate(orderInfo);
+	}
+
+	public BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo){
+		return dao.getBasicOrganizationByOrgId(orderInfo);
+	}
+	//获取第三个/的下标
+	public static int index(String s) {
+		Pattern p = Pattern.compile("/");
+		Matcher m = p.matcher(s);
+		int c=0,index=-1;
+		while(m.find()){
+			c++;
+			index=m.start();
+			if(c==3){
+				System.out.println("1:"+index);
+				return index;
+			}
+		}
+		return index;
 	}
 }
