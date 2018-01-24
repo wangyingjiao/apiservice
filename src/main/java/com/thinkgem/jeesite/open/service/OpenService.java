@@ -329,7 +329,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<String> allTimeList = new ArrayList<String>();
 		List<String> resTimeList = new ArrayList<String>();
 		for(OrderDispatch tech : techList){
-			allTimeList.addAll(tech.getWorkTimes());
+			if(tech.getWorkTimes() != null) {
+				allTimeList.addAll(tech.getWorkTimes());
+			}
 		}
 		//统计每一个元素出现的频率
 		//将List转换为Set
