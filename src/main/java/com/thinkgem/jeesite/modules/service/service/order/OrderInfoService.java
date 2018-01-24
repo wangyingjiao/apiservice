@@ -238,7 +238,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 				int num = orderGoods.getGoodsNum();//商品数量
 				BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
-				orderGoods.setPayPrice(price.toString());//总价
+				orderGoods.setPayPriceSum(price.toString());//总价
 			}
 
 			goodsInfo.setGoods(goodsInfoList);

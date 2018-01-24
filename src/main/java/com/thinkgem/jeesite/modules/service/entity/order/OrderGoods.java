@@ -30,6 +30,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private int goodsNum;		// 订购商品数
 	private String originPrice;		// 单价原价
 	private String payPrice;		// 单价(折后价，无折扣时和原价相同)
+	private String payPriceSum;		// 单价(折后价，无折扣时和原价相同)
 	private String goodsType;		// 计量方式(num：按数量 area：按面积 house：按居室)
 	private int minPurchase;		// 起购数量
 	private List<String> pics;
@@ -235,5 +236,13 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setJointGoodsCode(String jointGoodsCode) {
 		this.jointGoodsCode = jointGoodsCode;
+	}
+
+	public String getPayPriceSum() {
+		return payPriceSum;
+	}
+
+	public void setPayPriceSum(String payPriceSum) {
+		this.payPriceSum = payPriceSum;
 	}
 }
