@@ -140,5 +140,57 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-
+	<select id="getInIds" resultType="java.lang.String">
+	SELECT DISTINCT (bss.store_id) FROM basic_service_store bss 
+	LEFT JOIN basic_service_station bsst ON bsst.id= bss.station_id
+	 WHERE bsst.org_id=#{orgId}  
+	</select>
+	<select id="findListNotIn" resultType="BasicStore">
+        SELECT
+        <include refid="basicStoreColumns"/>
+        FROM basic_store a
+        <include refid="basicStoreJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="storeId != null and storeId != ''">
+                AND a.store_id = #{storeId}
+            </if>
+            <if test="storeName != null and storeName != ''">
+                AND a.store_name LIKE
+                <if test="dbName == 'oracle'">'%'||#{storeName}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{storeName}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{storeName},'%')</if>
+            </if>
+            <if test="white != null and white != ''">
+                AND a.white = #{white}
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                AND a.province_code = #{provinceCode}
+            </if>
+            <if test="cityCode != null and cityCode != ''">
+                AND a.city_code = #{cityCode}
+            </if>
+            <if test="areaCode != null and areaCode != ''">
+                AND a.area_code = #{areaCode}
+            </if> 
+            <if test="ids!= null and ids != ''">
+            AND a.id NOT IN 
+            <foreach item="item" index="index" collection="ids" open="("
+            separator="," close=")">
+            #{item}  
+         	</foreach>
+         	</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.create_date DESC
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

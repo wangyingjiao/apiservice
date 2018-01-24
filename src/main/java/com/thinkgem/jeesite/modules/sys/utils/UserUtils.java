@@ -381,5 +381,27 @@ public class UserUtils {
         }
         return list;
     }
-//
+    public static List<Menu> genTreeMenuOrder(String id, List<Menu> menus) {
+        ArrayList<Menu> list = new ArrayList<>();
+        /*for (Menu menu : menus) {
+            //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
+            if (menu.getParentId().equals(id)) {
+                List<Menu> menus1 = genTreeMenu(menu.getId(), menus);
+                menu.setSubMenus(menus1);
+                list.add(menu);
+            }
+        }*/
+        for (int i = 0; i < menus.size(); i++) {
+        	if (menus.get(i).getParentId().equals(id)) {
+                List<Menu> menus1 = genTreeMenuOrder(menus.get(i).getId(), menus);
+                menus.get(i).setSubMenus(menus1);
+                list.add(menus.get(i));
+                if (menus.get(i).getPermission().contains("view")) {
+                	list.add(menus.size(), menus.get(i));
+				}
+            }
+			
+		}
+        return list;
+    }
 }

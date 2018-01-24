@@ -117,5 +117,15 @@ public class BasicStore extends DataEntity<BasicStore> {
     public void setAreaCode(String areaCode) {
         this.areaCode = areaCode;
     }
+    private List<String> ids;
+
+	public List<String> getIds() {
+		return ids;
+	}
+
+	public void setIds(List<String> ids) {
+		this.ids = ids;
+	}
+    
 
 }

@@ -141,4 +141,19 @@ public class BasicStoreService extends CrudService<BasicStoreDao, BasicStore> {
         super.delete(basicStore);
     }
 
+	public List<String> getInIds(String orgId) {
+		List<String> orgIds = basicStoreDao.getInIds(orgId);
+		return orgIds;
+	}
+
+	public List<BasicStore> findListNotIn(BasicStore basicStore) {
+
+        List<BasicStore> list = basicStoreDao.findListNotIn(basicStore);
+        if (list.size() > 0) {
+            List<BasicStore> treeStore = getTreeStore(list);
+            return treeStore;
+        }
+        return list;
+    }
+
 }
