@@ -542,7 +542,7 @@ public class RoleController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "getRoleDetail", method = RequestMethod.GET)
 	public Result getRoleDetail(@RequestParam String id) {
-		// Role role = systemService.getRoleUnion(id);
+		//Role role = systemService.getRoleUnion(id);
 		Role role = systemService.getRole(id);
 		// add by wyr 判断岗位下是否有员工
 		int count = systemService.getUserCount(id);
@@ -561,30 +561,40 @@ public class RoleController extends BaseController {
 				role.setFlagRoleId(false);
 			}
 		}
-
-		// 方案一
-		/*
-		 * List<Menu> menuList = UserUtils.getMenuListForPlatform(); List<Menu>
-		 * menuRoleList = role.getMenuList(); menuRoleList.removeAll(menuList);
-		 * List<Menu> menusRoleDis = genTreeMenusRole("1", menuRoleList);
-		 * List<Menu> menus = genTreeMenu("1", menuList);
-		 * menus.addAll(menusRoleDis);
-		 */
-		// 方案二
 		// add by wyr:获取apiservice/a/sys/menu/getMenuList的岗位集合
-		/*
-		 * List<Menu> menuList = UserUtils.getMenuListForPlatform(); List<Menu>
-		 * menus = genTreeMenu("1", menuList);
-		 * 
-		 * List<Menu> menuRoleList = role.getMenuList(); List<Menu> menusRole =
-		 * genTreeMenu("1", menuRoleList);
-		 * 
-		 * //与结果role的岗位集合menuRoleList去重取并集 menusRole.removeAll(menus);
-		 * //List<Menu> menusRoleDis = genTreeMenusRole("1", menusRole); for
-		 * (Menu menu : menusRole) { menu.setDisable(true); }
-		 * menus.addAll(menusRole);
-		 */
-		// role.setMenuListUnion(menus);
+		// 方案一
+		  /*List<Menu> menuList = UserUtils.getMenuListForPlatform(); // 1 11 12 13 2 21
+		  List<Menu> menuRoleList = role.getMenuList();//1 11 12 13 14
+		  //在改变两个集合前查询出被编辑当前岗位的idList================start
+		  ArrayList<String> menuIdListEdit =new ArrayList<String>();
+		  for (Menu menu : menuRoleList) {
+			  if (null!=menu) {
+				  menuIdListEdit.add(menu.getId());
+			}
+		  }
+		  role.setMenuIdListEdit(menuIdListEdit);
+		//在改变两个集合前查询出被编辑当前岗位的idList=================end
+		  menuRoleList.removeAll(menuList);
+		  List<Menu> menusRoleDis = genTreeMenusRole("1", menuRoleList);
+		  
+		  menuList.addAll(menusRoleDis);
+		  List<Menu> menus = genTreeMenu("1", menuList);
+		  //menus.addAll(menusRoleDis);
+		  role.setMenuListUnion(menus);*/
+		// 方案二
+		  /*List<Menu> menuList = UserUtils.getMenuListForPlatform();
+		  List<Menu> menus = genTreeMenu("1", menuList);
+		 
+		  List<Menu> menuRoleList = role.getMenuList(); 
+		  List<Menu> menusRole = genTreeMenu("1", menuRoleList);
+		  
+		  //与结果role的岗位集合menuRoleList去重取并集
+		  menusRole.removeAll(menus);
+		  List<Menu> menusRoleDis = genTreeMenusRole("1", menusRole);
+		  for (Menu menu : menusRole) { menu.setDisable(true); }
+		  menus.addAll(menusRole);
+		 
+		 role.setMenuListUnion(menus);*/
 
 		if (role != null) {
 			return new SuccResult(role);
@@ -601,6 +611,8 @@ public class RoleController extends BaseController {
 				List<Menu> menus1 = genTreeMenusRole(menu.getId(), menusRole);
 				menu.setSubMenus(menus1);
 				menu.setDisabled(true);
+				list.add(menu);
+			}else {
 				list.add(menu);
 			}
 		}
