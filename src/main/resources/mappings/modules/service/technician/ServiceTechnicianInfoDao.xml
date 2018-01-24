@@ -319,11 +319,11 @@
 	<!--app服务列表时间-->
 	<select id="appGetWeekByTechId"  resultType="ServiceTechnicianWorkTime">
 		select
-		a.week,
-		a.start_time,
-		a.end_time,
-		a.tech_id,
-		a.id
+		a.week AS week,
+		a.start_time AS startTime,
+		a.end_time AS endTime,
+		a.tech_id AS techId,
+		a.id AS id
 		from tech_work_time a
 		LEFT JOIN tech_info b on a.tech_id=b.id
 		where a.tech_id=#{id}

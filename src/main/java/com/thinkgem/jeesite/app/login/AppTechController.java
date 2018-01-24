@@ -246,7 +246,7 @@ public class AppTechController extends BaseController {
 		ServiceTechnicianInfo tech1 = techService.findTech(tech2);
 		appTech.setId(tech1.getId());
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
-		String ossHost = loader.getProperty("OSS_HOST");
+		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		//将apptech转成技师
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setId(appTech.getId());
@@ -370,7 +370,7 @@ public class AppTechController extends BaseController {
 		Map map=new HashMap();
 		//根据省号查询省
 		Area area=new Area();
-		area.setCode(tech1.getProvinceCode());
+		area.setLevel(1);
 		List<Area> pro = areaService.appFindAllList(area);
 		List<Map<String,String>> proList=new ArrayList<Map<String,String>>();
 		if (pro.size()>0){
@@ -488,6 +488,25 @@ public class AppTechController extends BaseController {
 			return new AppSuccResult(0,null,"添加消息成功");
 		}
 		return new AppFailResult(-1,null,"添加消息失败");
+	}
+	//消息已读
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/updateMessage", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "消息已读", notes = "消息已读")
+	public AppResult updateMessage(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
+		//获取登陆技师的信息  id
+		//需要传过来消息的id
+		Token token = (Token) request.getAttribute("token");
+		messageInfo.setReceivePhone(token.getPhone());
+		try{
+			int i = messageInfoService.updateMessage(messageInfo);
+			if (i > 0){
+				return new AppSuccResult(0,null,"编辑消息已读成功");
+			}
+			return new AppFailResult(-1,null,"编辑已读失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
+		}
 	}
 
 	//版本

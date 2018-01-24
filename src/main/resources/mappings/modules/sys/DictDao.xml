@@ -28,11 +28,23 @@
 	<!--app-->
 	<select id="appFindList" resultType="Dict">
 		SELECT
-		*
+			id,
+			value,
+			label,
+			type,
+			description,
+			sort,
+			parent_id AS parentId,
+			create_by AS createBy,
+			create_date AS createDate,
+			update_by AS updateBy,
+			update_date AS updateDate,
+			remarks,
+			del_flag AS delFlag
 		FROM sys_dict
 		WHERE del_flag = #{DEL_FLAG_NORMAL}
 			AND type = #{type}
-		ORDER BY type, sort DESC
+		ORDER BY value DESC
 	</select>
 	
 	<select id="findAllList" resultType="Dict">
@@ -45,7 +57,19 @@
 
 	<select id="findName" resultType="Dict">
 		SELECT
-		*
+		    id,
+			value,
+			label,
+			type,
+			description,
+			sort,
+			parent_id AS parentId,
+			create_by AS createBy,
+			create_date AS createDate,
+			update_by AS updateBy,
+			update_date AS updateDate,
+			remarks,
+			del_flag AS delFlag
 		FROM sys_dict
 		WHERE value=#{value}
 		AND type=#{type}

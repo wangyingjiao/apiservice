@@ -180,7 +180,7 @@ public class AppOrderController extends BaseController {
 		try{
 			List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
 			PropertiesLoader loader = new PropertiesLoader("oss.properties");
-			String ossHost = loader.getProperty("OSS_HOST");
+			String ossHost = loader.getProperty("OSS_THUMB_HOST");
 			List<AppServiceTechnicianInfo> apt=new ArrayList<AppServiceTechnicianInfo>();
 			if (techList.size()>0){
 				for (OrderDispatch dis:techList){

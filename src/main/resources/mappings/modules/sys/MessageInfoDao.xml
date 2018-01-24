@@ -21,10 +21,10 @@
 		FROM sys_push_message a
 		WHERE a.id = #{id}
 		AND a.receive_phone=#{receivePhone}
-		AND a.del_flag={delFlag}
+		AND a.del_flag= #{delFlag}
 	</select>
 
-	<!--列表查看消息-->
+	<!--app列表查看消息-->
 	<select id="findList" resultType="MessageInfo">
 		SELECT
 		a.id AS id,
@@ -44,6 +44,7 @@
 		FROM sys_push_message a
 		WHERE a.receive_phone=#{receivePhone}
 		AND a.del_flag=#{delFlag}
+		ORDER BY isread desc, push_time desc
 	</select>
 
 	<!--新增-->
@@ -80,5 +81,51 @@
 			#{delFlag}
 		)
 	</insert>
+
+	<update id="update">
+		UPDATE sys_push_message SET
+			<if test="title != null and title!='' ">
+				title = #{title},
+			</if>
+			<if test="message != null and message!='' ">
+				message = #{message},
+			</if>
+			<if test="receivePhone != null and receivePhone!='' ">
+				receive_phone = #{receivePhone},
+			</if>
+			<if test="targetType != null and targetType!='' ">
+				target_type = #{targetType},
+			</if>
+			<if test="isRead != null and isRead!='' ">
+				isread = #{isRead},
+			</if>
+			<if test="targetId != null and targetId!='' ">
+				target_id = #{targetId} ,
+			</if>
+			<if test="pushTime != null and pushTime!='' ">
+				push_time = #{pushTime} ,
+			</if>
+			<if test="createBy != null and createBy!='' ">
+				create_by = #{createBy} ,
+			</if>
+			<if test="createDate != null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="updateBy != null and updateBy!='' ">
+				update_by = #{updateBy} ,
+			</if>
+			<if test="updateDate != null and updateDate!='' ">
+				update_date = #{updateDate} ,
+			</if>
+		WHERE id = #{id}
+	</update>
+	<!--app编辑消息已读-->
+	<update id="updateMessage">
+		UPDATE sys_push_message SET
+			isread = #{isRead}
+		WHERE id = #{id}
+	</update>
+
+
 
 </mapper>

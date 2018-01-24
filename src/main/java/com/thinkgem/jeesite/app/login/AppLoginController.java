@@ -64,8 +64,6 @@ public class AppLoginController extends BaseController {
     @RequestMapping(value = "${appPath}/appLogin",  method = {RequestMethod.POST})
     public Object appLogin( LoginUser user, HttpServletRequest request, HttpServletResponse response) {
         AppServiceTechnicianInfo entity = null;
-        PropertiesLoader loader = new PropertiesLoader("oss.properties");
-        String ossHost = loader.getProperty("OSS_HOST");
         try {
             if (StringUtils.isNotBlank(user.getUsername()) && StringUtils.isNotBlank(user.getPassword())) {
                 entity = serviceTechnicianInfoService.appLogin(user);

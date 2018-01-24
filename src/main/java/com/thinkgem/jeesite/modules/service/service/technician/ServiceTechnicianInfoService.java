@@ -422,7 +422,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             throw new ServiceException("用户已离职不可登录");
         }
         PropertiesLoader loader = new PropertiesLoader("oss.properties");
-        String ossHost = loader.getProperty("OSS_HOST");
+        String ossHost = loader.getProperty("OSS_THUMB_HOST");
         String imgUrlHead = technician.getImgUrlHead();
         technician.setImgUrlHead(ossHost + imgUrlHead);
         String imgUrlLife = technician.getImgUrlLife();
@@ -496,7 +496,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         if (StringUtils.isNotBlank(serviceTechnicianInfo.getStationId()) && StringUtils.isNotBlank(serviceTechnicianInfo.getId())){
             List<AppServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
             PropertiesLoader loader = new PropertiesLoader("oss.properties");
-            String ossHost = loader.getProperty("OSS_HOST");
+            String ossHost = loader.getProperty("OSS_THUMB_HOST");
             for (AppServiceTechnicianInfo appTech:serviceTechnicianInfos){
                 appTech.setImgUrlHead(ossHost+appTech.getImgUrlHead());
                 appTech.setImgUrl(appTech.getImgUrlHead());

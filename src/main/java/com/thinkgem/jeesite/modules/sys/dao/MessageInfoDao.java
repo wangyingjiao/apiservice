@@ -10,7 +10,7 @@ import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
 import java.util.List;
 
 /**
- * 服务技师基础信息DAO接口
+ * 消息基础信息DAO接口
  * @author a
  * @version 2017-11-16
  */
@@ -22,5 +22,6 @@ public interface MessageInfoDao extends CrudDao<MessageInfo> {
     List<MessageInfo> findList(MessageInfo messageInfo);
     //增加
     int insert(MessageInfo messageInfo);
-
+    //编辑
+    int updateMessage(MessageInfo messageInfo);
 }

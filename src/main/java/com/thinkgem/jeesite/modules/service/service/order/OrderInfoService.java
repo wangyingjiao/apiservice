@@ -73,7 +73,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
-		String ossHost = loader.getProperty("OSS_HOST");
+		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		//商品图片
 		String pics = dao.appGetPics(orderInfo.getId());
 		if (pics !=null){
@@ -1356,6 +1356,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//订单编辑
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
+		String orderRemarkPic = orderInfo.getOrderRemarkPic();
+//		if (null != orderRemarkPic){
+//			List<String> pics = (List<String>) JsonMapper.fromJsonString(orderRemarkPic, ArrayList.class);
+//			for (String pic:pics){
+//				if (pic.contains("https")){
+////					pic.
+//				}
+//			}
+//		}
 		orderInfo.appPreUpdate();
 		return dao.appUpdate(orderInfo);
 	}
