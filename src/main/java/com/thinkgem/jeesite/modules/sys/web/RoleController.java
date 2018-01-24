@@ -542,8 +542,7 @@ public class RoleController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "getRoleDetail", method = RequestMethod.GET)
 	public Result getRoleDetail(@RequestParam String id) {
-		//Role role = systemService.getRoleUnion(id);
-		Role role = systemService.getRole(id);
+		Role role = systemService.getRoleUnion(id);
 		// add by wyr 判断岗位下是否有员工
 		int count = systemService.getUserCount(id);
 		if (count > 0) {
@@ -561,10 +560,12 @@ public class RoleController extends BaseController {
 				role.setFlagRoleId(false);
 			}
 		}
+		
+		
 		// add by wyr:获取apiservice/a/sys/menu/getMenuList的岗位集合
 		// 方案一
-		  /*List<Menu> menuList = UserUtils.getMenuListForPlatform(); // 1 11 12 13 2 21
-		  List<Menu> menuRoleList = role.getMenuList();//1 11 12 13 14
+		 List<Menu> menuList = UserUtils.getMenuListForPlatform(); // 1 11 12 13 14  2 21
+		  List<Menu> menuRoleList = role.getMenuList();            // 1 11 12 13     2 21 3 31 32
 		  //在改变两个集合前查询出被编辑当前岗位的idList================start
 		  ArrayList<String> menuIdListEdit =new ArrayList<String>();
 		  for (Menu menu : menuRoleList) {
@@ -580,7 +581,7 @@ public class RoleController extends BaseController {
 		  menuList.addAll(menusRoleDis);
 		  List<Menu> menus = genTreeMenu("1", menuList);
 		  //menus.addAll(menusRoleDis);
-		  role.setMenuListUnion(menus);*/
+		  role.setMenuListUnion(menus);
 		// 方案二
 		  /*List<Menu> menuList = UserUtils.getMenuListForPlatform();
 		  List<Menu> menus = genTreeMenu("1", menuList);

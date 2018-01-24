@@ -43,6 +43,7 @@
 			<id property="delFlag" column="menuList.delFlag"/>	
 			<id property="parent.id" column="menuList.parent.id"/>
 			<id property="parentIds" column="menuList.parentIds"/>						
+			<id property="permission" column="menuList.permission"/>						
 		</collection>
 		<collection property="officeList" ofType="Office">
 			<id property="id" column="officeList.id" />
@@ -322,7 +323,7 @@
 		sm.icon,
 		sm.sort,
 		sm.is_show,
-		sm.permission,
+		sm.permission AS "menuList.permission",
 		p.name AS "parent.name"
 		FROM sys_role a
 		JOIN basic_organization o ON o.id = a.office_id
