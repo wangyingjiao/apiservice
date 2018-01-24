@@ -31,9 +31,10 @@ public class OssApi {
         String endpoint = loader.getProperty("OSS_ENDPOINT");
         String accessKey = loader.getProperty("OSS_ACCESS_KEY");
         String bucket = loader.getProperty("OSS_TEST_BUCKET");
+        String host =  loader.getProperty("OSS_THUMB_HOST");
 
         String dir = "openservice";
-        String host = "https://" + bucket + "." + endpoint;
+        String host1 = "https://" + bucket + "." + endpoint;
         OSSClient client = new OSSClient(endpoint, accessId, accessKey);
 
         long expireTime = 30;
@@ -57,6 +58,7 @@ public class OssApi {
             //respMap.put("expire", formatISO8601Date(expiration));
             respMap.put("dir", dir);
             respMap.put("host", host);
+            respMap.put("host1", host1);
             respMap.put("expire", String.valueOf(expireEndTime / 1000));
             JSONObject ja1 = JSONObject.fromObject(respMap);
             return ja1;
