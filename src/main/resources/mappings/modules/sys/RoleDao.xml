@@ -41,7 +41,8 @@
 			<id property="id" column="menuList.id" />
 			<id property="name" column="menuList.name" />					
 			<id property="delFlag" column="menuList.delFlag"/>	
-			<id property="parent.id" column="menuList.parent.id"/>						
+			<id property="parent.id" column="menuList.parent.id"/>
+			<id property="parentIds" column="menuList.parentIds"/>						
 		</collection>
 		<collection property="officeList" ofType="Office">
 			<id property="id" column="officeList.id" />
@@ -314,7 +315,7 @@
 			
 		sm.id AS "menuList.id",
 		sm.parent_id AS "menuList.parent.id",
-		sm.parent_ids,
+		sm.parent_ids AS "menuList.parentIds",
 		sm.name as "menuList.name",
 		sm.href,
 		sm.target,
