@@ -683,10 +683,23 @@
 
 		WHERE id = #{id}
 	</update>
-	
-	<!--<select id="" resultType="">-->
-		<!---->
-	<!--</select>-->
+
+	<!--app获取订单对应商品-->
+	<select id="getGoods" resultType="String">
+		SELECT og.goods_id AS goodsId
+		from order_info a
+		LEFT JOIN order_goods og on a.id=og.order_id AND og.del_flag = '0'
+		where a.id= #{id}
+		AND a.del_flag = '0'
+	</select>
+
+	<!--app根据商品id获取订单对应商品的对接code-->
+	<select id="getGoodsCode" resultType="String">
+		SELECT a.joint_goods_code
+		FROM ser_item_info_goods a
+		WHERE a.id= #{goodsId}
+		AND a.del_flag = '0'
+	</select>
 
 	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
 		select

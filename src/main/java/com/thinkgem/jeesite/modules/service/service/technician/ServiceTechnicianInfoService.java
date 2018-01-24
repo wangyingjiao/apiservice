@@ -329,11 +329,14 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         info.preUpdate();
         dao.updateOther(info);
     }
-
+    //手机获取用户
     public ServiceTechnicianInfo findTech(ServiceTechnicianInfo info) {
         return technicianInfoDao.findTech(info);
     }
-
+    //app id获取用户
+    public ServiceTechnicianInfo appFindTech(ServiceTechnicianInfo info) {
+        return technicianInfoDao.appFindTech(info);
+    }
     public AppServiceTechnicianInfo getTechnicianById(ServiceTechnicianInfo info){
         AppServiceTechnicianInfo technicianById = technicianInfoDao.getTechnicianById(info);
         return technicianById;

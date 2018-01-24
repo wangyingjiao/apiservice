@@ -71,13 +71,9 @@ public class AppTechController extends BaseController {
 
 		 //获取登陆技师的信息  id 服务站id
 		 Token token = (Token) Servlets.getRequest().getAttribute("token");
-		 String phone = token.getPhone();
 		 ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		 tech.setDelFlag("0");
-		 tech.setPhone(phone);
-		 ServiceTechnicianInfo tech1 = techService.findTech(tech);
-
-		 ServiceTechnicianInfo serviceTechnicianInfo = techService.appFindSkillList(tech1);
+		 tech.setId(token.getTechId());
+		 ServiceTechnicianInfo serviceTechnicianInfo = techService.appFindSkillList(tech);
 		 List<ServiceTechnicianWorkTime> times = serviceTechnicianInfo.getTimes();
 		 List<SerSkillInfo> skills = serviceTechnicianInfo.getSkills();
 
@@ -95,10 +91,8 @@ public class AppTechController extends BaseController {
 	public AppResult appGetFriendByStationId(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id 服务站id
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-//		System.out.println(token);
-		tech.setPhone(phone);
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		tech.setId(token.getTechId());
+		ServiceTechnicianInfo tech1 = techService.appFindTech(tech);
 		Page<AppServiceTechnicianInfo> page = new Page<AppServiceTechnicianInfo>(request, response);
 		Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page,tech1);
 		long count = page.getCount();
@@ -116,7 +110,7 @@ public class AppTechController extends BaseController {
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
 		if (list.getList().size() == 0){
-			return new AppSuccResult(1,map,"查询通讯录");
+			return new AppSuccResult(1,null,"查询通讯录");
 		}
 		return new AppSuccResult(0,map,"查询通讯录");
 	}
@@ -127,12 +121,9 @@ public class AppTechController extends BaseController {
 	@ApiOperation(value = "技师休假列表", notes = "技师休假")
 	public AppResult restTechList(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
 		//获取登陆技师的信息  id
-		tech.setPhone(phone);
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
-		holiday.setTechId(tech1.getId());
+		holiday.setTechId(token.getTechId());
 		Page<ServiceTechnicianHoliday> serSortInfoPage = new Page<>(request, response);
 		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(serSortInfoPage, holiday);
 		long count = page.getCount();
@@ -169,11 +160,7 @@ public class AppTechController extends BaseController {
 		}
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone(phone);
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		info.setTechId(tech1.getId());
+		info.setTechId(token.getTechId());
 		int i ;
 		try{
 			i = holidayService.appSave(info);
@@ -193,11 +180,7 @@ public class AppTechController extends BaseController {
 
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone(phone);
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		serviceTechnicianHoliday.setTechId(tech1.getId());
+		serviceTechnicianHoliday.setTechId(token.getTechId());
 		int delete = holidayService.delete1(serviceTechnicianHoliday);
 		if (delete > 0){
 			return new AppSuccResult(0,null,"删除休假成功");
@@ -217,9 +200,8 @@ public class AppTechController extends BaseController {
 		}
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		tech.setPhone(phone);
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
+		tech.setId(token.getTechId());
+		ServiceTechnicianInfo tech1 = techService.appFindTech(tech);
 		//旧密码与数据库查询出来的密码验证
 		if (!systemService.validatePassword(tech.getOldPassword(),tech1.getAppLoginPassword())){
 			return new AppFailResult(-1,null,"旧密码输入不对");
@@ -240,17 +222,11 @@ public class AppTechController extends BaseController {
 	public AppResult saveTech(AppServiceTechnicianInfo appTech,HttpServletRequest request, HttpServletResponse response) {
 
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		ServiceTechnicianInfo tech2=new ServiceTechnicianInfo();
-		tech2.setPhone(phone);
-		//从数据库查询用户
-		ServiceTechnicianInfo tech1 = techService.findTech(tech2);
-		appTech.setId(tech1.getId());
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		//将apptech转成技师
 		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setId(appTech.getId());
+		tech.setId(token.getTechId());
 		tech.setHeadPic(appTech.getImgUrlHead());
 		tech.setName(appTech.getTechName());
 		tech.setPhone(appTech.getTechPhone());
@@ -382,9 +358,6 @@ public class AppTechController extends BaseController {
 	@RequestMapping(value = "${appPath}/selectListPro", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "现住地址下拉列表省", notes = "地址下拉列表")
 	public AppResult selectListPro(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
-		Token token = (Token)request.getAttribute("token");
-		tech.setPhone(token.getPhone());
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		Map map=new HashMap();
 		//根据省号查询省
 		Area area=new Area();
@@ -407,23 +380,28 @@ public class AppTechController extends BaseController {
 	@RequestMapping(value = "${appPath}/selectListCity", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "现住地址下拉列表市", notes = "地址下拉列表")
 	public AppResult selectListCity(AppServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
-		Map map=new HashMap();
-		//根据省号查询所有市
-		Area area=new Area();
-		area.setLevel(2);
-		area.setParentCode(tech.getProvinceCode());
-		List<Area> pro = areaService.appFindAllList(area);
-		List<Map<String,String>> cityList=new ArrayList<Map<String,String>>();
-		if (pro.size()>0){
-			for (Area area1:pro){
-				Map<String,String> ps=new HashMap<String,String>();
-				ps.put("cityCode",area1.getCode());
-				ps.put("cityCodeName",area1.getName());
-				cityList.add(ps);
+		if (StringUtils.isNotBlank(tech.getProvinceCode())){
+			Map map=new HashMap();
+			//根据省号查询所有市
+			Area area=new Area();
+			area.setLevel(2);
+			area.setParentCode(tech.getProvinceCode());
+			List<Area> pro = areaService.appFindAllList(area);
+			List<Map<String,String>> cityList=new ArrayList<Map<String,String>>();
+			if (pro.size()>0){
+				for (Area area1:pro){
+					Map<String,String> ps=new HashMap<String,String>();
+					ps.put("cityCode",area1.getCode());
+					ps.put("cityCodeName",area1.getName());
+					cityList.add(ps);
+				}
+			}
+			map.put("city",cityList);
+			if (cityList.size()>0){
+				return new AppSuccResult(0,map,"下拉列表");
 			}
 		}
-		map.put("city",cityList);
-		return new AppSuccResult(0,map,"下拉列表");
+		return new AppSuccResult(1,null,"下拉列表");
 	}
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/selectListArea", method = {RequestMethod.POST, RequestMethod.GET})
@@ -433,21 +411,26 @@ public class AppTechController extends BaseController {
 		//根据市号查询所有区
 		Area area=new Area();
 		area.setLevel(3);
-		area.setParentCode(tech.getCityCode());
-		List<Area> qu = areaService.appFindAllList(area);
-		List areaList=new ArrayList();
-		if (qu.size()>0) {
-			for (Area area2 : qu) {
-				Map<String, String> cs = new HashMap<String, String>();
-				cs.put("areaCode", area2.getCode());
-				cs.put("areaCodeName", area2.getName());
-				areaList.add(cs);
+		if (StringUtils.isNotBlank(tech.getCityCode())){
+			area.setParentCode(tech.getCityCode());
+			List<Area> qu = areaService.appFindAllList(area);
+			List areaList=new ArrayList();
+			if (qu.size()>0) {
+				for (Area area2 : qu) {
+					Map<String, String> cs = new HashMap<String, String>();
+					cs.put("areaCode", area2.getCode());
+					cs.put("areaCodeName", area2.getName());
+					areaList.add(cs);
+				}
+			}
+			map.put("area",areaList);
+			if (areaList.size()>0){
+				return new AppSuccResult(0,map,"下拉列表");
 			}
 		}
-		map.put("area",areaList);
-		return new AppSuccResult(0,map,"下拉列表");
+		return new AppSuccResult(1,null,"下拉列表");
 	}
-
+	//没用到
 	//查看单个消息
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/get", method = {RequestMethod.POST, RequestMethod.GET})
@@ -455,9 +438,8 @@ public class AppTechController extends BaseController {
 	public AppResult get(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
 		//根据消息的id 收件人查看
-		messageInfo.setReceivePhone(phone);
+		messageInfo.setReceivePhone(token.getPhone());
 		MessageInfo messageInfo1 = messageInfoService.get(messageInfo);
 		if (messageInfo1 == null){
 			return new AppFailResult(-1,null,"没有该消息");
@@ -471,9 +453,8 @@ public class AppTechController extends BaseController {
 	public AppResult getMessageList(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
 		//根据消息的id 收件人查看
-		messageInfo.setReceivePhone(phone);
+		messageInfo.setReceivePhone(token.getPhone());
 		Page<MessageInfo> page=new Page<MessageInfo>(request, response);
 		Page<MessageInfo> list = messageInfoService.findList(page, messageInfo);
 		long count = page.getCount();
@@ -495,6 +476,7 @@ public class AppTechController extends BaseController {
 		}
 		return new AppSuccResult(0,map,"查看消息列表");
 	}
+	//没加上呢
 	//增加消息到数据库
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/insertMessage", method = {RequestMethod.POST, RequestMethod.GET})
@@ -535,7 +517,7 @@ public class AppTechController extends BaseController {
 	@ApiOperation(value = "版本更新", notes = "版本更新")
 	public AppResult updateVersion(VersionInfo versionInfo,HttpServletRequest request, HttpServletResponse response) {
 		//获取传过来的code
-		String build = (String)request.getAttribute("appBuild");
+		String build = request.getHeader("appBuild");
 		versionInfo.setBuild(build);
 		VersionInfo byTime = versionInfoService.getByTime(versionInfo);
 		if(byTime ==null){
