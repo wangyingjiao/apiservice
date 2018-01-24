@@ -38,4 +38,6 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
     BasicOrganization getBasicOrganizationByOrgId(SerItemInfo serItemInfo);
 
     void updateJointStatus(SerItemInfo serItemInfo);
+
+    SerItemInfo getItemInfoByCommodityId(SerItemCommodity serItemCommodity);
 }
