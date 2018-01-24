@@ -323,7 +323,7 @@
 		sm.icon,
 		sm.sort,
 		sm.is_show,
-		sm.permission AS "menuList.permission",
+		sm.permission AS "menuList.permission", 
 		p.name AS "parent.name"
 		FROM sys_role a
 		JOIN basic_organization o ON o.id = a.office_id
