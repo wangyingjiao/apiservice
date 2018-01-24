@@ -196,7 +196,8 @@
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS startPerNum,
-a.capping_per_num AS cappingPerNum
+		a.capping_per_num AS cappingPerNum,
+		a.joint_goods_code AS jointGoodsCode
 	</sql>
 	<resultMap type="SerItemCommodity" id="SerItemGoodsResultMap">
 		<id column="id" property="id"/>
