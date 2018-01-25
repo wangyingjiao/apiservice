@@ -117,11 +117,13 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 		if (StringUtils.isBlank(station.getId())) {
 			return new FailResult("id 不能为空");
 		}
-		if (!(station.getStoreList().size() > 0)) {
+		/*if (!(station.getStoreList().size() > 0)) {
 			return new FailResult("请选择门店");
-		}
+		}*/
 		serviceStoreDao.deletebyStation(station);
-		serviceStoreDao.saveStationStore(station);
+		if (station.getStoreList().size()>0) {//有被选中的门店时做再做添加操作
+			serviceStoreDao.saveStationStore(station);
+		}
 		return new SuccResult("保存成功");
 	}
 
