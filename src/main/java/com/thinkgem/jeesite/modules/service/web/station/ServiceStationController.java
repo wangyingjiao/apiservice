@@ -258,7 +258,7 @@ public class ServiceStationController extends BaseController {
     }
     
     //add by wyr 展示同一机构下，未被服务站选中的门店
-   /* @ResponseBody
+    /*@ResponseBody
     //@RequiresPermissions("user")
     @RequestMapping(value = "getStoreList")
     public Result getStoreList(@RequestBody BasicStore basicStore,String stationId) {
@@ -269,9 +269,11 @@ public class ServiceStationController extends BaseController {
     	if (ids.size()>0) {
     		basicStore.setIds(ids);
 		}
-        //List<BasicStore> list = basicStoreService.findList(basicStore);
+    	//获取到未被选中的门店集合
         List<BasicStore> list = basicStoreService.findListNotIn(basicStore);
-        
+        //根据服务站id获取已经选过的门店集合
+        List<BasicStore> listIn = basicStoreService.findListIn(basicStore);
+        list.addAll(listIn);
         if (list.size() > 0) {
             return new SuccResult(list);
         }

@@ -156,4 +156,14 @@ public class BasicStoreService extends CrudService<BasicStoreDao, BasicStore> {
         return list;
     }
 
+	public List<BasicStore> findListIn(BasicStore basicStore) {
+
+        List<BasicStore> list = basicStoreDao.findListIn(basicStore);
+        if (list.size() > 0) {
+            List<BasicStore> treeStore = getTreeStore(list);
+            return treeStore;
+        }
+        return list;
+    }
+
 }

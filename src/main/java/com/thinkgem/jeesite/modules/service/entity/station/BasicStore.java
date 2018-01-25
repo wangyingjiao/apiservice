@@ -126,6 +126,15 @@ public class BasicStore extends DataEntity<BasicStore> {
 	public void setIds(List<String> ids) {
 		this.ids = ids;
 	}
+    private String stationId;
+
+	public String getStationId() {
+		return stationId;
+	}
+
+	public void setStationId(String stationId) {
+		this.stationId = stationId;
+	}
     
 
 }
