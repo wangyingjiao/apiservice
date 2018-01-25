@@ -149,6 +149,7 @@ public class BasicStoreService extends CrudService<BasicStoreDao, BasicStore> {
 	public List<BasicStore> findListNotIn(BasicStore basicStore) {
 
         List<BasicStore> listNotIn = basicStoreDao.findListNotIn(basicStore);
+      //根据服务站id获取已经选过的门店集合
         List<BasicStore> listIn = basicStoreDao.findListIn(basicStore);
         listNotIn.addAll(listIn);
         if (listNotIn.size() > 0) {
