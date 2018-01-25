@@ -24,4 +24,6 @@ public interface MessageInfoDao extends CrudDao<MessageInfo> {
     int insert(MessageInfo messageInfo);
     //编辑
     int updateMessage(MessageInfo messageInfo);
+
+    void updPushTime(MessageInfo messageInfo);
 }

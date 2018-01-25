@@ -57,7 +57,7 @@ public class PushMessageUtil {
         pushRequest.setAndroidPopupActivity("com.ali.demo.PopupActivity");//设置该参数后启动辅助弹窗功能, 此处指定通知点击后跳转的Activity（辅助弹窗的前提条件：1. 集成第三方辅助通道；2. StoreOffline参数设为true）
         pushRequest.setAndroidPopupTitle(messageInfo.getTitle());
         pushRequest.setAndroidPopupBody(messageInfo.getMessage());
-        pushRequest.setAndroidExtParameters("{\"type\":\"order\",\"relate\":\"123456789\"}"); //设定通知的扩展属性。(注意 : 该参数要以 json map 的格式传入,否则会解析出错)
+        pushRequest.setAndroidExtParameters(messageInfo.getExtParameters()); //设定通知的扩展属性。(注意 : 该参数要以 json map 的格式传入,否则会解析出错)
         // 推送控制
         Date pushDate = new Date(System.currentTimeMillis()); // 30秒之间的时间点, 也可以设置成你指定固定时间
         String pushTime = ParameterHelper.getISO8601Time(pushDate);

@@ -74,6 +74,10 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());
             messageInfo.setExtParameters("{\"type\":\"order\",\"relate\":\""+orderInfo.getMajorSort()+"$."+orderInfo.getId()+"$."+messageInfo.getId()+"\"}");
             int flag = PushMessageUtil.pushMessage(messageInfo);
+            if (flag==1){
+                messageInfo.setPushTime(new Date());
+                messageInfoDao.updPushTime(messageInfo);
+            }
         }
         return 1;
     }

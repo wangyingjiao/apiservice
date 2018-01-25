@@ -78,6 +78,13 @@
 		)
 	</insert>
 
+	<update id="updPushTime">
+		UPDATE sys_push_message SET
+		push_time = #{pushTime}
+		WHERE id = #{id} AND
+		del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
 	<update id="update">
 		UPDATE sys_push_message SET
 			<if test="title != null and title!='' ">
