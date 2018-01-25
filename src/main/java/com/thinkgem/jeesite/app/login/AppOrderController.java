@@ -15,8 +15,10 @@ import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.service.order.OrderDispatchService;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
 import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +47,10 @@ import java.util.Map;
 @Api(tags = "APP订单类", description = "APP订单相关接口")
 public class AppOrderController extends BaseController {
 
+	//订单info的service
 	@Autowired
 	OrderInfoService orderInfoService;
+	//技师info的service
 	@Autowired
 	ServiceTechnicianInfoService techService;
 
@@ -115,23 +119,23 @@ public class AppOrderController extends BaseController {
 		try{
 			int i = orderInfoService.appSaveRemark(orderInfo);
 			if (i>0){
-//				//查询数据库获取订单对应的机构  获取对接code
-//				OrderInfo info = orderInfoService.get(orderInfo.getId());
-//				BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
-//				//获取商品的对接code
-//				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
-//				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
-//					OrderInfo sendOrder = new OrderInfo();
-//					sendOrder.setId(orderInfo.getId());
-//					sendOrder.setOrderRemark(orderInfo.getOrderRemark());
-//					sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
-//					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-//					if (sendResponse == null) {
-//						return new AppFailResult(-1,null,"对接失败N");
-//					} else if (!"0".equals(sendResponse.getCode())) {
-//						return new AppFailResult(-1,null,sendResponse.getMessage());
-//					}
-//				}
+				//查询数据库获取订单对应的机构  获取对接code
+				OrderInfo info = orderInfoService.get(orderInfo.getId());
+				BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
+				//获取商品的对接code
+				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
+				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(orderInfo.getId());
+					sendOrder.setOrderRemark(orderInfo.getOrderRemark());
+					sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						return new AppFailResult(-1,null,"对接失败N");
+					} else if (sendResponse.getCode() != 0) {
+						return new AppFailResult(-1,null,sendResponse.getMessage());
+					}
+				}
 				return new AppSuccResult(0,null,"添加备注成功");
 			}
 			return new AppFailResult(-1,null,"添加备注失败");
@@ -178,12 +182,13 @@ public class AppOrderController extends BaseController {
 					technicianById.setImgUrl(ossHost + technicianById.getImgUrlHead());
 					apt.add(technicianById);
 				}
+				map.put("list",apt);
+				return new AppSuccResult(0,map,"技师列表");
 			}
-			map.put("list",apt);
+			return new AppSuccResult(1,null,"技师列表");
 		}catch (ServiceException e){
-			return new AppFailResult(1,null,e.getMessage());
+			return new AppFailResult(-1,null,e.getMessage());
 		}
-		return new AppSuccResult(0,map,"技师列表");
 	}
 
 	@ResponseBody
@@ -191,20 +196,34 @@ public class AppOrderController extends BaseController {
 	@ApiOperation("技师改派保存")
 	public AppResult appDispatchTechSave(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone(phone);
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
 		//传的参数 改派技师的id
 		String techId = orderInfo.getTechId();
 		//获取订单信息
 		orderInfo = orderInfoService.appGet(orderInfo);
 		orderInfo.setTechId(techId);
 		//改派前技师id
-		orderInfo.setDispatchTechId(tech1.getId());
+		orderInfo.setDispatchTechId(token.getTechId());
 		try {
+			//改派并发送消息
 			int i = orderInfoService.appDispatchTechSave(orderInfo);
 			if (i > 0){
+				//查询数据库获取订单对应的机构  获取对接code
+				OrderInfo info = orderInfoService.get(orderInfo.getId());
+				BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
+				//获取商品的对接code
+				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
+				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(orderInfo.getId());
+					List<OrderDispatch> orderDispatchList = orderInfoService.getOrderDispatchList(info);
+					sendOrder.setTechList(orderDispatchList);
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						return new AppFailResult(-1,null,"对接失败N");
+					} else if (sendResponse.getCode() != 0) {
+						return new AppFailResult(-1,null,sendResponse.getMessage());
+					}
+				}
 				return new AppSuccResult(0,null,"改派成功");
 			}
 			return new AppFailResult(-1,null,"改派失败");

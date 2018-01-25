@@ -46,19 +46,25 @@ import java.util.Map;
 @Controller
 @Api(tags = "APP通讯录类", description = "APP通讯录相关接口")
 public class AppTechController extends BaseController {
-
+	//技师info的service
 	@Autowired
 	private ServiceTechnicianInfoService techService;
+	//技师假期的service
 	@Autowired
 	private ServiceTechnicianHolidayService holidayService;
+	//字典的service
 	@Autowired
 	private DictService dictService;
+	//改密码调用的系统的service
 	@Autowired
 	private SystemService systemService;
+	//区域的service
 	@Autowired
 	private AreaService areaService;
+	//消息的service
 	@Autowired
 	private MessageInfoService messageInfoService;
+	//版本的service
 	@Autowired
 	private VersionInfoService versionInfoService;
 

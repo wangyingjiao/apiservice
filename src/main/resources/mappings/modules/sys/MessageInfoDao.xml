@@ -77,7 +77,7 @@
 			#{DEL_FLAG_NORMAL}
 		)
 	</insert>
-
+	<!--修改推送时间-->
 	<update id="updPushTime">
 		UPDATE sys_push_message SET
 		push_time = #{pushTime}

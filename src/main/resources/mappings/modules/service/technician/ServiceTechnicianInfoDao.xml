@@ -52,7 +52,7 @@
         <include refid="serviceTechnicianInfoJoins"/>
         WHERE a.id = #{id}
     </select>
-	<!--app-->
+	<!--app 通过id获取技师-->
 	<select id="getById" resultType="ServiceTechnicianInfo">
 		SELECT
 		a.id AS "id",

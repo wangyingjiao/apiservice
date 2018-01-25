@@ -455,7 +455,7 @@
 		b.phone  AS techPhone
 		FROM
 		order_dispatch a
-		LEFT JOIN tech_info b ON a.tech_id = b.id
+		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.order_id = #{id}
 		AND b.id = #{dispatchTechId}
 		AND a.status = 'yes'
