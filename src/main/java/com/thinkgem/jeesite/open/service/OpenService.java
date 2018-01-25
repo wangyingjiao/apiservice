@@ -217,17 +217,29 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			OpenServiceTimesResponse responseRe = new OpenServiceTimesResponse();
 			responseRe.setFormat(DateUtils.formatDate(date, "yyyy-MM-dd"));
 			responseRe.setDayOfWeek(DateUtils.formatDate(date, "E"));
+
+			List<String> resTimeList;
 			try {
 				//该日服务时间点列表
-				List<OpenHours> hours = openServiceTimesHours(date,techList,techDispatchNum ,serviceSecond , orgWorkStartTime, orgWorkEndTime);
-				responseRe.setHours(hours);
-			}catch (ServiceException ex){
-				if(ex.getMessage() != null){
-					throw new ServiceException(ex.getMessage());
-				}
+				resTimeList = openServiceTimesHours(date,techList,techDispatchNum ,serviceSecond );
+
 			}catch (Exception e){
-				throw new ServiceException("未找到服务时间点列表");
+				resTimeList = new ArrayList<>();
 			}
+
+			List<OpenHours> hours = new ArrayList<>();
+			List<String> heafHourTimeList = DateUtils.getHeafHourTimeListBorder(orgWorkStartTime,orgWorkEndTime);//机构的上下班时间
+			for(String heafHourTime : heafHourTimeList){
+				OpenHours openHours  = new OpenHours();
+				openHours.setHour(heafHourTime);
+				if(resTimeList.contains(heafHourTime)){//是否可用
+					openHours.setDisenable("enable");
+				}else{
+					openHours.setDisenable("disable");
+				}
+				hours.add(openHours);
+			}
+			responseRe.setHours(hours);
 			list.add(responseRe);
 		}
 
@@ -243,12 +255,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param
 	 * @return
 	 */
-	private List<OpenHours> openServiceTimesHours(Date date, List<OrderDispatch> techList,int techDispatchNum,Double serviceSecond ,Date orgWorkStartTime,Date orgWorkEndTime ) {
+	private List<String> openServiceTimesHours(Date date, List<OrderDispatch> techList,int techDispatchNum,Double serviceSecond ) {
 
 		int week = DateUtils.getWeekNum(date); //周几
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
 		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 23:59:59");
-
 
 		Iterator<OrderDispatch> it = techList.iterator();
 		while(it.hasNext()) {
@@ -356,20 +367,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 
-		List<OpenHours> hours = new ArrayList<>();
-		List<String> heafHourTimeList = DateUtils.getHeafHourTimeListBorder(orgWorkStartTime,orgWorkEndTime);//机构的上下班时间
-		for(String heafHourTime : heafHourTimeList){
-			OpenHours openHours  = new OpenHours();
-			openHours.setHour(heafHourTime);
-			if(resTimeList.contains(heafHourTime)){//是否可用
-				openHours.setDisenable("enable");
-			}else{
-				openHours.setDisenable("disable");
-			}
-			hours.add(openHours);
-		}
-
-		return hours;
+		return resTimeList;
 	}
 
 	/**
