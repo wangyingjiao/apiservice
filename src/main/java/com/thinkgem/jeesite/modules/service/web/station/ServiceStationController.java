@@ -246,7 +246,7 @@ public class ServiceStationController extends BaseController {
         }
     }
 
-   /*@ResponseBody
+   @ResponseBody
     //@RequiresPermissions("user")
     @RequestMapping(value = "getStoreList")
     public Result getStoreList(@RequestBody BasicStore basicStore) {
@@ -255,10 +255,10 @@ public class ServiceStationController extends BaseController {
             return new SuccResult(list);
         }
         return new FailResult("未找到数据");
-    }*/
+    }
     
     //add by wyr 展示同一机构下，未被服务站选中的门店
-    @ResponseBody
+    /*@ResponseBody
     //@RequiresPermissions("user")
     @RequestMapping(value = "getStoreList")
     public Result getStoreList(@RequestBody BasicStore basicStore,String stationId) {
@@ -278,7 +278,7 @@ public class ServiceStationController extends BaseController {
             return new SuccResult(list);
         }
         return new FailResult("未找到数据");
-    }
+    }*/
 
     @ResponseBody
     @RequiresPermissions("user")
