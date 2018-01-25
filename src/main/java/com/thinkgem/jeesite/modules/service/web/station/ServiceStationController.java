@@ -246,7 +246,7 @@ public class ServiceStationController extends BaseController {
         }
     }
 
-   @ResponseBody
+   /*@ResponseBody
     //@RequiresPermissions("user")
     @RequestMapping(value = "getStoreList")
     public Result getStoreList(@RequestBody BasicStore basicStore) {
@@ -255,13 +255,13 @@ public class ServiceStationController extends BaseController {
             return new SuccResult(list);
         }
         return new FailResult("未找到数据");
-    }
+    }*/
     
-    //add by wyr 展示同一机构下，未被服务站选中的门店
-    /*@ResponseBody
+    //add by wyr同一机构下，展示未被服务站选中的门店以及展示当前服务站选中的门店
+    @ResponseBody
     //@RequiresPermissions("user")
     @RequestMapping(value = "getStoreList")
-    public Result getStoreList(@RequestBody BasicStore basicStore,String stationId) {
+    public Result getStoreList(@RequestBody BasicStore basicStore) {
     	User user = UserUtils.getUser();
     	String orgId = user.getOrganization().getId();
     	//获取到已被选过的门店id
@@ -272,13 +272,14 @@ public class ServiceStationController extends BaseController {
     	//获取到未被选中的门店集合
         List<BasicStore> list = basicStoreService.findListNotIn(basicStore);
         //根据服务站id获取已经选过的门店集合
-        List<BasicStore> listIn = basicStoreService.findListIn(basicStore);
-        list.addAll(listIn);
+        //List<BasicStore> listIn = basicStoreService.findListIn(basicStore);
+        //list.addAll(listIn);
+        
         if (list.size() > 0) {
             return new SuccResult(list);
         }
         return new FailResult("未找到数据");
-    }*/
+    }
 
     @ResponseBody
     @RequiresPermissions("user")
