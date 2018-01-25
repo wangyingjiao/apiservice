@@ -211,6 +211,18 @@
         </dependency>
         <!-- AOP end -->
 
+        <!-- 阿里云移动消息推送 -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>3.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-push</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+
         <!-- PERSISTENCE begin -->
 
         <!-- MyBatis -->
@@ -348,11 +360,11 @@
             <artifactId>aliyun-java-sdk-sts</artifactId>
             <version>2.1.6</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
             <version>2.1.7</version>
-        </dependency>
+        </dependency>-->
 
         <!-- SECURITY begin -->
         <dependency>

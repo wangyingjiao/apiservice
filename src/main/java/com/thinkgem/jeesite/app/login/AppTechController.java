@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.Servlets;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
@@ -481,11 +482,11 @@ public class AppTechController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/insertMessage", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "添加消息", notes = "添加消息")
-	public AppResult insertMessage(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
+	public AppResult insertMessage(OrderInfo orderInfo, String orderType, HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		String phone = token.getPhone();
-		int insert = messageInfoService.insert(messageInfo);
+		int insert = messageInfoService.insert(orderInfo,orderType);
 		if (insert > 0){
 			return new AppSuccResult(0,null,"添加消息成功");
 		}
