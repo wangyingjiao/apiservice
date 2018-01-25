@@ -70,9 +70,9 @@
 			#{targetType},
 			#{targetId},
 			#{pushTime},
-			#{createBy},
+			#{createBy.id},
 			#{createDate},
-			#{updateBy},
+			#{updateBy.id},
 			#{updateDate},
 			#{DEL_FLAG_NORMAL}
 		)

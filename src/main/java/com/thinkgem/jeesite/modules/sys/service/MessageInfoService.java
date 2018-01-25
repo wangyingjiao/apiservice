@@ -69,6 +69,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             messageInfo.setCreateBy(orderInfo.getCreateBy());
             messageInfo.setUpdateBy(orderInfo.getCreateBy());
             messageInfo.setUpdateDate(new Date());
+            messageInfo.setPushTime(new Date());
             messageInfoDao.insert(messageInfo);
 
             messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());
