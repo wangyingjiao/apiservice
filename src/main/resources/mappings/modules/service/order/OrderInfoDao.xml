@@ -524,8 +524,12 @@
 	</update>
 
 	<!-- 通过服务分类取得技能ID -->
-	<select id="getSkillIdBySortId" resultType="String">
-		select skill_id from ser_skill_sort WHERE sort_id = #{sortId} and del_flag='0'
+	<select id="getSkillIdBySortId" resultType="SerSkillSort">
+		select skill_id
+		from ser_skill_sort
+		WHERE sort_id = #{sortId}
+		and org_id = #{orgId}
+		and del_flag='0'
 	</select>
 	<!-- 取得技师List -->
 	<select id="getTechListBySkillId" resultType="OrderDispatch">
