@@ -24,8 +24,80 @@ public class MessageInfo extends DataEntity<MessageInfo> {
     private String targetType;  //订单类型 order
     private String targetId;    //订单id
     private Date pushTime;      //推送时间
+    private String extParameters;    //额外带参
+
     private String createTime;    //app展示的推送时间
     private String orderId; //订单id
+    private String orderType;
+
+    public String getExtParameters() {
+        return extParameters;
+    }
+
+    public void setExtParameters(String extParameters) {
+        this.extParameters = extParameters;
+    }
+
+    private String accessKeyId="raAz3o82A1eT3TSy";
+    private String accessKeySecret="mT4z5Umnel0i7voopzqXzhshV5Nnie";
+    private Long appKey=(long)24779049;
+    private String deviceIds;  //要发送的账号
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public String getAccessKeyId() {
+        return accessKeyId;
+    }
+
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+    }
+
+    public String getAccessKeySecret() {
+        return accessKeySecret;
+    }
+
+    public void setAccessKeySecret(String accessKeySecret) {
+        this.accessKeySecret = accessKeySecret;
+    }
+
+    public Long getAppKey() {
+        return appKey;
+    }
+
+    public void setAppKey(Long appKey) {
+        this.appKey = appKey;
+    }
+
+    public String getDeviceIds() {
+        return deviceIds;
+    }
+
+    public void setDeviceIds(String deviceIds) {
+        this.deviceIds = deviceIds;
+    }
 
     public String getTitle() {
         return title;
@@ -91,19 +163,4 @@ public class MessageInfo extends DataEntity<MessageInfo> {
         this.type = type;
     }
 
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
 }

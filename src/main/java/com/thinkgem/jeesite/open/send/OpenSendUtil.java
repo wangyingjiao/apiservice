@@ -214,7 +214,7 @@ public class OpenSendUtil {
 		request.setRequestTimestamp(new Date());
 		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
 		request.setApp_com(Global.getConfig("openSendPath_gasq_php_goods_appCom"));
-		request.setTask(Global.getConfig("openSendPath_gasq_php_goods_task"));
+		request.setTask(Global.getConfig("openSendPath_gasq_php_goodsSave_task"));
 
 		String json = JsonMapper.toJsonString(request);
 		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
@@ -236,6 +236,83 @@ public class OpenSendUtil {
 		}
 		OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
 		failRe.setMessage("对接保存信息失败-系统异常");
+		failRe.setCode(1);
+		return failRe;
+	}
+
+	/**
+	 *  国安社区开放接口 - 删除服务项目保存
+	 * @param serItemInfo
+	 * @param eshopCode eshopCode
+	 * @return
+	 */
+	public static OpenSendDeleteItemResponse openSendDeleteItem(SerItemInfo serItemInfo, String eshopCode) {
+		if (serItemInfo == null) {
+			OpenSendDeleteItemResponse responseRe = new OpenSendDeleteItemResponse();
+			responseRe.setCode(1);
+			responseRe.setMessage("对接删除失败-服务项目为空");
+			return responseRe;
+		}
+
+		//---商品List----------------------------------------------------------------------------
+		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();//商品信息
+		List<OpenSendSaveItemProduct> productList = new ArrayList<>();
+		if(commoditys != null){
+			for(SerItemCommodity commodity : commoditys){
+				String joint_goods_code = commodity.getJointGoodsCode();
+				OpenSendSaveItemProduct itemProduct = new OpenSendSaveItemProduct();
+				itemProduct.setId(joint_goods_code);
+				productList.add(itemProduct);
+			}
+		}else{
+			OpenSendDeleteItemResponse responseRe = new OpenSendDeleteItemResponse();
+			responseRe.setCode(1);
+			responseRe.setMessage("对接删除失败-未找到商品信息");
+			return responseRe;
+		}
+
+		//--SEND------------------------------------------------------------------
+		OpenSendDeleteItemRequest request = new OpenSendDeleteItemRequest();
+		request.setEshop_code(eshopCode);
+		HashMap<String,Object> id_list = new HashMap<String,Object>();
+		HashMap<String,Object> master_id_list = new HashMap<String,Object>();
+		int value = 0;
+		for (OpenSendSaveItemProduct product :productList){
+			id_list.put(String.valueOf(value), product);
+			master_id_list.put(String.valueOf(value), product);
+			value++;
+		}
+		request.setId(id_list);
+		request.setMaster_id(master_id_list);
+
+		request.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
+		request.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
+		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
+		request.setRequestTimestamp(new Date());
+		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
+		request.setApp_com(Global.getConfig("openSendPath_gasq_php_goods_appCom"));
+		request.setTask(Global.getConfig("openSendPath_gasq_php_goodsDel_task"));
+
+		String json = JsonMapper.toJsonString(request);
+		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
+		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
+
+		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
+
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("md5",md5Content);
+			params.put("appid", "selfService");
+
+			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
+			System.out.println(postClientResponse);
+			OpenSendDeleteItemResponse response = JSON.parseObject(postClientResponse, OpenSendDeleteItemResponse.class);
+			return response;
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		OpenSendDeleteItemResponse failRe = new OpenSendDeleteItemResponse();
+		failRe.setMessage("对接删除失败-系统异常");
 		failRe.setCode(1);
 		return failRe;
 	}

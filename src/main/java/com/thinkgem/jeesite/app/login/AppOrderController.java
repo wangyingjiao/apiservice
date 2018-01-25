@@ -57,10 +57,7 @@ public class AppOrderController extends BaseController {
     public AppResult getOrderListPage(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		//获取登录用户id 获取用户手机set进去
 		Token token = (Token) request.getAttribute("token");
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone(token.getPhone());
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		orderInfo.setTechId(tech1.getId());
+		orderInfo.setTechId(token.getTechId());
 		if (orderInfo.getServiceStatus()==null){
 			return new AppFailResult("订单服务状态不可为空");
 		}
@@ -96,12 +93,7 @@ public class AppOrderController extends BaseController {
 	public AppResult getOrderById(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
 		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-		tech.setPhone(phone);
-		ServiceTechnicianInfo tech1 = techService.findTech(tech);
-		info.setTechPhone(phone);
-		info.setNowId(tech1.getId());
+		info.setNowId(token.getTechId());
 		try{
 			OrderInfo orderInfo = orderInfoService.appFormData(info);
 			return new AppSuccResult(0,orderInfo,"查询订单详情");
@@ -116,8 +108,6 @@ public class AppOrderController extends BaseController {
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
 	public AppResult saveRemark(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response){
 		Token token = (Token) request.getAttribute("token");
-//		String phone = token.getPhone();
-//		orderInfo.setTechPhone(phone);
 		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
@@ -125,23 +115,22 @@ public class AppOrderController extends BaseController {
 		try{
 			int i = orderInfoService.appSaveRemark(orderInfo);
 			if (i>0){
-				//查询数据库获取订单对应的机构  获取对接code
-				OrderInfo info = orderInfoService.get(orderInfo.getId());
-				BasicOrganization basicOrg = orderInfoService.getBasicOrganizationByOrgId(info);
-
-				//获取商品对接code 和 机构对接code
-//				if (StringUtils.isNotBlank(orderInfo.get)){
-//
-//				}
-//				OrderInfo sendOrder = new OrderInfo();
-//				sendOrder.setId(orderInfo.getId());
-//				sendOrder.setOrderRemark(orderInfo.getOrderRemark());
-//				sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
-//				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-//				if (sendResponse == null) {
-//					return new AppFailResult(-1,null,"对接失败N");
-//				} else if (!"0".equals(sendResponse.getCode())) {
-//					return new AppFailResult(-1,null,sendResponse.getMessage());
+//				//查询数据库获取订单对应的机构  获取对接code
+//				OrderInfo info = orderInfoService.get(orderInfo.getId());
+//				BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
+//				//获取商品的对接code
+//				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
+//				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
+//					OrderInfo sendOrder = new OrderInfo();
+//					sendOrder.setId(orderInfo.getId());
+//					sendOrder.setOrderRemark(orderInfo.getOrderRemark());
+//					sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
+//					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+//					if (sendResponse == null) {
+//						return new AppFailResult(-1,null,"对接失败N");
+//					} else if (!"0".equals(sendResponse.getCode())) {
+//						return new AppFailResult(-1,null,sendResponse.getMessage());
+//					}
 //				}
 				return new AppSuccResult(0,null,"添加备注成功");
 			}
@@ -160,9 +149,6 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(errList);
 		}
 		//参数 订单id 服务状态
-		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		info.setTechPhone(phone);
 		int i = orderInfoService.appSaveRemark(info);
 		if (i>0){
 			return new AppSuccResult(0,null,"修改服务状态成功");

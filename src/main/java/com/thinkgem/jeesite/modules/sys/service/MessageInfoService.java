@@ -4,9 +4,13 @@
 package com.thinkgem.jeesite.modules.sys.service;
 
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.pushMessage.PushMessageUtil;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.sys.dao.MessageInfoDao;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
 
     @Autowired
     private MessageInfoDao messageInfoDao;
+
 
 
 
@@ -51,11 +56,61 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         page.setList(list);
         return page;
     }
+
+    @Transactional(readOnly = false)
+    public int insertAndPush(OrderInfo orderInfo, MessageInfo messageInfo){
+
+        List<OrderDispatch> techList=orderInfo.getTechList();
+        for (OrderDispatch odp:techList){
+            messageInfo.setId(IdGen.uuid());
+            messageInfo.setReceivePhone(odp.getTechPhone());
+            messageInfo.setTargetId(orderInfo.getId());
+            messageInfo.setCreateDate(new Date());
+            messageInfo.setCreateBy(orderInfo.getCreateBy());
+            messageInfo.setUpdateBy(orderInfo.getCreateBy());
+            messageInfo.setUpdateDate(new Date());
+            messageInfoDao.insert(messageInfo);
+
+            messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());
+            messageInfo.setExtParameters("{\"type\":\"order\",\"relate\":\""+orderInfo.getMajorSort()+"$."+orderInfo.getId()+"$."+messageInfo.getId()+"\"}");
+            int flag = PushMessageUtil.pushMessage(messageInfo);
+        }
+        return 1;
+    }
+
     //增加消息到数据库
     @Transactional(readOnly = false)
-    public int insert(MessageInfo messageInfo){
-        int insert = messageInfoDao.insert(messageInfo);
-        return insert;
+    public int insert( OrderInfo orderInfo,String orderType){
+        MessageInfo messageInfo = new MessageInfo();
+        if (orderType != null && !orderType.equals("")) {
+            if (orderType.equals("orderCreate")){
+                messageInfo.setTitle("您有一个新的订单");
+                messageInfo.setMessage("编号为"+orderInfo.getOrderNumber()+"，请点击查看");
+                messageInfo.setTargetType("order");
+                return insertAndPush(orderInfo,messageInfo);
+            }
+            if (orderType.equals("orderDispatch")){
+                messageInfo.setTitle("订单已改派");
+                messageInfo.setMessage("编号为"+orderInfo.getOrderNumber()+"的订单已改派给其他技师，请点击查看");
+                messageInfo.setTargetType("order");
+                return insertAndPush(orderInfo,messageInfo);
+            }
+            if (orderType.equals("orderCancel")){
+                messageInfo.setTitle("订单已取消");
+                messageInfo.setMessage("编号为"+orderInfo.getOrderNumber()+"的订单已取消，请点击查看");
+                messageInfo.setTargetType("order");
+                return insertAndPush(orderInfo,messageInfo);
+            }
+            if (orderType.equals("orderServiceTime")){
+                messageInfo.setTitle("服务时间变更");
+                messageInfo.setMessage("编号为"+orderInfo.getOrderNumber()+"的订单，服务时间更改为"+orderInfo.getServiceTime()+"，请点击查看");
+                messageInfo.setTargetType("order");
+                return insertAndPush(orderInfo,messageInfo);
+            }
+        }
+        //int insert = messageInfoDao.insert(messageInfo);
+        //int flag = PushMessageUtil.pushMessage(messageInfo);
+        return 0;
     }
     //编辑消息
     @Transactional(readOnly = false)
@@ -75,5 +130,4 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         }
         return i;
     }
-
 }

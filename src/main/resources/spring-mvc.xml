@@ -120,7 +120,7 @@
                 <!--排除 根据省，市code获取  市 区-->
             <mvc:exclude-mapping path="${appPath}/selectListArea"/>
             <mvc:exclude-mapping path="${appPath}/selectListCity"/>
-        <!-- <mvc:exclude-mapping path="${appPath}/getOrderListPage"/>-->
+            <mvc:exclude-mapping path="${appPath}/selectListPro"/>
         <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
         </mvc:interceptor>
 

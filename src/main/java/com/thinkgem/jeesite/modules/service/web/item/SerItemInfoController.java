@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.service.service.item.SerItemInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.entity.OpenSendDeleteItemResponse;
 import com.thinkgem.jeesite.open.entity.OpenSendSaveItemResponse;
 import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import io.swagger.annotations.Api;
@@ -265,8 +266,124 @@ public class SerItemInfoController extends BaseController {
     @RequiresPermissions("project_delete")
     @RequestMapping(value = "deleteData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("删除服务项目")
-    public Result deleteData(@RequestBody SerItemInfo serItemInfo) {
-        serItemInfoService.delete(serItemInfo);
+    public Result deleteData(@RequestBody SerItemInfo info) {
+        if(info == null){
+            return new FailResult("未找到项目ID");
+        }
+        //前台传过来项目id 字段名:id
+        String itemId = info.getId();
+        if(StringUtils.isBlank(itemId)){
+            return new FailResult("未找到项目ID");
+        }
+
+        HashMap<String,Object> map =  serItemInfoService.getDeleteGoodsSendList(info);
+        try {
+            // 机构有对接方E店CODE
+            if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+                SerItemInfo serItemInfo = (SerItemInfo)map.get("info");
+                if(serItemInfo != null && serItemInfo.getCommoditys() != null && serItemInfo.getCommoditys().size() > 0){
+                    List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
+                    //对接
+                    OpenSendDeleteItemResponse sendResponse = OpenSendUtil.openSendDeleteItem(serItemInfo,map.get("jointEshopCode").toString());
+                    if(sendResponse != null && sendResponse.getCode() == 0){
+                        //Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
+
+                        List<String> dataFail = sendResponse.getDatafail();//属于专场商品或其相关的组合商品属于专场商品
+                        List<String> datainventoryfail = sendResponse.getDatainventoryfail();//还有可售库存该商品和其相关组合商品不可删除
+
+                        List<String> failCommodityIds = new ArrayList<>();
+                        HashMap<String,String> commodityIds = new HashMap<>();// joinCode - id
+                        HashMap<String,String> commodityNames = new HashMap<>();// joinCode - name
+                        for(SerItemCommodity commodity : commoditys){
+                            commodityIds.put(commodity.getJointGoodsCode(),commodity.getId());
+                            commodityNames.put(commodity.getJointGoodsCode(),commodity.getName());
+                        }
+                        String message = "";
+                        if(dataFail != null && dataFail.size() != 0){//专场商品
+                            message = message + "商品：";
+                            for (String fail : dataFail){
+                                message = message + commodityNames.get(fail) + ",";
+                                failCommodityIds.add(commodityIds.get(fail));
+                            }
+                            message = message + "属于专场商品或其相关的组合商品属于专场商品;";
+                        }else if (datainventoryfail != null && datainventoryfail.size() != 0){//有可售库存
+                            message = message + "商品：";
+                            for (String fail : dataFail){
+                                message = message + commodityNames.get(fail) + ",";
+                                failCommodityIds.add(commodityIds.get(fail));
+                            }
+                            message = message + "还有可售库存该商品和其相关组合商品不可删除;";
+                        }
+
+                        if(failCommodityIds.size()==0 && StringUtils.isBlank(message)){//
+                            serItemInfoService.delete(info);
+                        }else{
+                            if(commoditys.size() > failCommodityIds.size()){
+                                message = message + "，删除失败！其他删除成功";
+                                for(SerItemCommodity commodity : commoditys) {
+                                    if(!failCommodityIds.contains(commodity.getId())){
+                                        serItemInfoService.deleteGoodsInfo(commodity);
+                                    }
+                                }
+                            }else{
+                                message = message + "，删除失败！";
+                            }
+
+                            return new SuccResult(message);
+                        }
+                    }else{
+                        return new FailResult("删除失败,对接时发生错误");
+                    }
+                }
+            }
+        }catch (Exception e){
+            return new FailResult("删除失败,对接时发生错误");
+        }
+
+        return new SuccResult("删除成功");
+    }
+
+    @ResponseBody
+    @RequiresPermissions("project_update")
+    @RequestMapping(value = "deleteGoodsData", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("单个删除服务项目商品")
+    public Result deleteGoodsData(@RequestBody SerItemCommodity serItemCommodity) {
+        if(serItemCommodity == null){
+            return new FailResult("未找到商品ID");
+        }
+        //前台传过来商品id 字段名:id
+        String goodsId = serItemCommodity.getId();
+        if(StringUtils.isBlank(goodsId)){
+            return new FailResult("未找到商品ID");
+        }
+        HashMap<String,Object> map =  serItemInfoService.getDeleteGoodsSendInfo(serItemCommodity);
+        try {
+            // 机构有对接方E店CODE
+            if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+                SerItemInfo serItemInfo = (SerItemInfo)map.get("info");
+                if(serItemInfo != null && serItemInfo.getCommoditys() != null && serItemInfo.getCommoditys().size() > 0){
+                    OpenSendDeleteItemResponse sendResponse = OpenSendUtil.openSendDeleteItem(serItemInfo,map.get("jointEshopCode").toString());
+                    if(sendResponse != null && sendResponse.getCode() == 0){
+                        //Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
+
+                        List<String> dataFail = sendResponse.getDatafail();//属于专场商品或其相关的组合商品属于专场商品
+                        List<String> datainventoryfail = sendResponse.getDatainventoryfail();//还有可售库存该商品和其相关组合商品不可删除
+                        if(dataFail != null && dataFail.size() != 0){
+                            return new FailResult("属于专场商品或其相关的组合商品属于专场商品，删除失败！");
+                        }else if (datainventoryfail != null && datainventoryfail.size() != 0){
+                            return new FailResult("还有可售库存该商品和其相关组合商品不可删除，删除失败！");
+                        }else {
+                            serItemInfoService.deleteGoodsInfo(serItemCommodity);
+                        }
+                    }else{
+                        return new FailResult("删除失败,对接时发生错误");
+                    }
+                }
+            }
+        }catch (Exception e){
+            return new FailResult("删除失败,对接时发生错误");
+        }
+
         return new SuccResult("删除成功");
     }
 

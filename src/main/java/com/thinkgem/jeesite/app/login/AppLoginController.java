@@ -69,6 +69,7 @@ public class AppLoginController extends BaseController {
                 entity = serviceTechnicianInfoService.appLogin(user);
             }
             Token token = tokenManager.createToken(entity);
+            token.setTechId(entity.getId());
             entity.setToken(token.getToken());
             response.setHeader("token", token.getToken());
             return new AppSuccResult(0, entity, "登陆成功");
@@ -82,7 +83,6 @@ public class AppLoginController extends BaseController {
     public Object appLoginOut() {
         Token token = (Token) Servlets.getRequest().getAttribute("token");
         tokenManager.clearToken(token);
-        String phone = token.getPhone();
         Subject subject = UserUtils.getSubject();
         System.out.println(subject);
         UserUtils.getSubject().logout();

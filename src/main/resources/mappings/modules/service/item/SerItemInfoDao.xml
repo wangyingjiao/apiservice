@@ -278,4 +278,14 @@
 		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
+
+	<select id="getItemInfoByCommodityId" resultType="SerItemInfo">
+		SELECT
+		b.id AS "id",
+		b.org_id AS "orgId"
+		FROM ser_item_info_goods a
+		LEFT JOIN ser_item_info b ON  b.id = a.item_id
+		WHERE
+		a.id = #{id}
+	</select>
 </mapper>

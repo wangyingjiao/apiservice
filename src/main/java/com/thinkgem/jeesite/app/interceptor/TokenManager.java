@@ -37,11 +37,12 @@ public class TokenManager {
 
     public Token createToken(AppServiceTechnicianInfo entity) {
         String phone = entity.getTechPhone();
-
+        String techId = entity.getId();
         String uuid = IdGen.uuid();
         Token token = new Token(uuid);
         token.setPhone(phone);
         clearToken(token);
+        token.setTechId(techId);
         cluster.setex(tokenKey + uuid, expire, token.toString());
         cluster.lpush(tokenKey + phone, uuid);
         cluster.expire(tokenKey + phone, expire);

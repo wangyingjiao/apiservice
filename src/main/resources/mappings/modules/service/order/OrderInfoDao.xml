@@ -41,6 +41,7 @@
 		a.order_remark_pic AS "orderRemarkPic",
 		a.order_content AS "orderContent",
 		a.cancel_reason AS "cancelReason",
+		a.joint_order_id AS "jointOrderId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -83,6 +84,7 @@
 			a.order_status AS orderStatus,
 			a.service_status AS "serviceStatus",
 			a.pay_status AS payStatus,
+			a.joint_order_id AS "jointOrderId",
 			a.order_time AS orderTime
 		FROM order_info a
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
@@ -240,6 +242,7 @@
 			order_remark_pic,
 			order_content,
 			cancel_reason,
+			joint_order_id,
 			create_by,
 			create_date,
 			update_by,
@@ -284,6 +287,7 @@
 			#{orderRemarkPic},
 			#{orderContent},
 			#{cancelReason},
+			#{jointOrderId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -330,6 +334,7 @@
 			<if test="orderRemark !=null and orderRemark != ''">order_remark = #{orderRemark},</if>
 			<if test="orderRemarkPic !=null and orderRemarkPic != ''">order_remark_pic = #{orderRemarkPic},</if>
 			<if test="orderContent !=null and orderContent != ''">order_content = #{orderContent},</if>
+			<if test="jointOrderId !=null and jointOrderId != ''">joint_order_id = #{jointOrderId},</if>
 			<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
@@ -385,6 +390,9 @@
 			org.name AS "orgName",
 			a.station_id AS "stationId",
 			sta.name AS "stationName",
+
+			a.joint_order_id AS "jointOrderId",
+
 			a.pay_price AS payPrice,
 			a.pay_status AS "payStatus",
 			pay.pay_number AS "payInfo.payNumber",
@@ -683,10 +691,23 @@
 
 		WHERE id = #{id}
 	</update>
-	
-	<!--<select id="" resultType="">-->
-		<!---->
-	<!--</select>-->
+
+	<!--app获取订单对应商品-->
+	<select id="getGoods" resultType="String">
+		SELECT og.goods_id AS goodsId
+		from order_info a
+		LEFT JOIN order_goods og on a.id=og.order_id AND og.del_flag = '0'
+		where a.id= #{id}
+		AND a.del_flag = '0'
+	</select>
+
+	<!--app根据商品id获取订单对应商品的对接code-->
+	<select id="getGoodsCode" resultType="String">
+		SELECT a.joint_goods_code
+		FROM ser_item_info_goods a
+		WHERE a.id= #{goodsId}
+		AND a.del_flag = '0'
+	</select>
 
 	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
 		select

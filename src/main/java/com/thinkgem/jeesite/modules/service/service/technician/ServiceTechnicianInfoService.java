@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillInfoDao;
@@ -329,11 +330,14 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         info.preUpdate();
         dao.updateOther(info);
     }
-
+    //手机获取用户
     public ServiceTechnicianInfo findTech(ServiceTechnicianInfo info) {
         return technicianInfoDao.findTech(info);
     }
-
+    //app id获取用户
+    public ServiceTechnicianInfo appFindTech(ServiceTechnicianInfo info) {
+        return technicianInfoDao.appFindTech(info);
+    }
     public AppServiceTechnicianInfo getTechnicianById(ServiceTechnicianInfo info){
         AppServiceTechnicianInfo technicianById = technicianInfoDao.getTechnicianById(info);
         return technicianById;
@@ -474,10 +478,17 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         return technician;
     }
 
-    //app获取技师技能工作时间
+    //app服务信息 -- 获取技师技能工作时间
     public ServiceTechnicianInfo appFindSkillList(ServiceTechnicianInfo serviceTechnicianInfo){
         //工作时间
         List<ServiceTechnicianWorkTime> serviceTechnicianWorkTimes = technicianInfoDao.appGetWeekByTechId(serviceTechnicianInfo);
+        for (ServiceTechnicianWorkTime work:serviceTechnicianWorkTimes){
+            Date startTime = work.getStartTime();
+            Date endTime = work.getEndTime();
+            //date转String
+            work.setStartTimes(DateUtils.formatDate(endTime, "HH:mm:ss"));
+            work.setEndTimes(DateUtils.formatDate(startTime, "HH:mm:ss"));
+        }
         //技师技能
         List<SerSkillInfo> serSkillInfos = serSkillInfoDao.appGetSkillByTech(serviceTechnicianInfo);
         serviceTechnicianInfo.setSkills(serSkillInfos);

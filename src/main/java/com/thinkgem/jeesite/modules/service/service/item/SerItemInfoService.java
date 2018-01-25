@@ -67,8 +67,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 	@Transactional(readOnly = false)
 	public HashMap<String,Object> saveItem(SerItemInfo serItemInfo) {
-
-
 		List<String> pictures = serItemInfo.getPictures();
 		if(null != pictures){
 			String picture = JsonMapper.toJsonString(pictures);
@@ -79,7 +77,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		serItemInfo.setOrgId(user.getOrganization().getId());
 
 		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
-		if (StringUtils.isNotBlank(serItemInfo.getId())) {
+		/*if (StringUtils.isNotBlank(serItemInfo.getId())) {
 			//删除商品信息
 			//serItemCommodityDao.delSerItemCommodity(serItemInfo);
 
@@ -93,8 +91,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 					}
 				}
 			}
-
-		}
+		}*/
 
 		List<SerItemCommodity> sendGoodsList = new ArrayList<>();
 
@@ -335,5 +332,86 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	@Transactional(readOnly = false)
 	public void updateJointStatus(SerItemInfo serItemInfo) {
 		dao.updateJointStatus(serItemInfo);
+	}
+
+	/**
+	 * 单个删除商品时，取得对接信息
+	 * @param serItemCommodity
+	 * @return
+	 */
+	public HashMap<String,Object>  getDeleteGoodsSendInfo(SerItemCommodity serItemCommodity) {
+		SerItemInfo serItemInfo = dao.getItemInfoByCommodityId(serItemCommodity);
+		//对接商品信息
+		String jointEshopCode = "";
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("jointEshopCode", jointEshopCode);
+
+		if(StringUtils.isNotEmpty(jointEshopCode)) {
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			SerItemCommodity sendGoods = new SerItemCommodity();
+			if (StringUtils.isNotBlank(serItemCommodity.getId())) {
+				SerItemCommodity commodityForJoin = serItemCommodityService.get(serItemCommodity.getId());
+				if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
+					sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+					sendGoodsList.add(sendGoods);
+				}
+			}
+
+			//对接项目信息
+			SerItemInfo sendItem = new SerItemInfo();
+			sendItem.setCommoditys(sendGoodsList);
+
+			map.put("info", sendItem);
+		}
+		return map;
+	}
+
+	@Transactional(readOnly = false)
+	public void deleteGoodsInfo(SerItemCommodity serItemCommodity) {
+		serItemCommodityDao.delete(serItemCommodity);
+	}
+
+	public HashMap<String,Object> getDeleteGoodsSendList(SerItemInfo serItemInfo) {
+		//对接商品信息
+		String jointEshopCode = "";
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("jointEshopCode", jointEshopCode);
+
+		if(StringUtils.isNotEmpty(jointEshopCode)) {
+			List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			if (commoditys != null) {
+				//批量插入商品信息
+				for (SerItemCommodity commodity : commoditys) {
+					//对接商品信息
+					SerItemCommodity sendGoods = new SerItemCommodity();
+					if (StringUtils.isNotBlank(commodity.getId())) {
+						SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
+						if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
+							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+							sendGoods.setId(commodity.getId());
+							sendGoods.setName(commodity.getName());
+							sendGoodsList.add(sendGoods);
+						}
+					}
+				}
+			}
+
+			//对接项目信息
+			SerItemInfo sendItem = new SerItemInfo();
+			sendItem.setCommoditys(sendGoodsList);
+
+			map.put("info", sendItem);
+			map.put("item", serItemInfo);
+		}
+		return map;
 	}
 }

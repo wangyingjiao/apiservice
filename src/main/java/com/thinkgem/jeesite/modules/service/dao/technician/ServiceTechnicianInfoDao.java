@@ -24,6 +24,8 @@ import java.util.List;
  */
 @MyBatisDao
 public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo> {
+    //app根据id获取用户
+    ServiceTechnicianInfo appFindTech(ServiceTechnicianInfo info);
 
     ServiceTechnicianInfo findTech(ServiceTechnicianInfo info);
     //app

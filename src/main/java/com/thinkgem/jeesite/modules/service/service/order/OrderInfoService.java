@@ -1517,10 +1517,24 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.appPreUpdate();
 		return dao.appUpdate(orderInfo);
 	}
-
+	//获取订单对应机构的对接code
 	public BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo){
 		return dao.getBasicOrganizationByOrgId(orderInfo);
 	}
+	//app根据商品id获取订单对应商品的对接code
+	public List<String> getGoodsCode(OrderInfo orderInfo){
+		List<String> goods = dao.getGoods(orderInfo);
+		List<String> code = new ArrayList<String>();
+		if (goods.size() > 0) {
+			for (String goodId : goods) {
+				String goodsCode = dao.getGoodsCode(goodId);
+				code.add(goodsCode);
+			}
+		}
+		return code;
+	}
+
+
 	//获取第三个/的下标
 	public static int index(String s) {
 		Pattern p = Pattern.compile("/");
@@ -1530,7 +1544,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			c++;
 			index=m.start();
 			if(c==3){
-				System.out.println("1:"+index);
 				return index;
 			}
 		}

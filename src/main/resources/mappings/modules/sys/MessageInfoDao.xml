@@ -54,7 +54,6 @@
 			title,
 			message,
 			receive_phone,
-			isread,
 			target_type,
 			target_id,
 			push_time,
@@ -62,14 +61,12 @@
 			create_date,
 			update_by,
 			update_date,
-			remarks,
 			del_flag
 		)VALUES(
 			#{id},
 			#{title},
 			#{message},
 			#{receivePhone},
-			#{isRead},
 			#{targetType},
 			#{targetId},
 			#{pushTime},
@@ -77,8 +74,7 @@
 			#{createDate},
 			#{updateBy},
 			#{updateDate},
-			#{remarks},
-			#{delFlag}
+			#{DEL_FLAG_NORMAL}
 		)
 	</insert>
 
