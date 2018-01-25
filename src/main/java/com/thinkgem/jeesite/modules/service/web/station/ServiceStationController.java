@@ -271,7 +271,7 @@ public class ServiceStationController extends BaseController {
 		}
     	//获取到未被选中的门店集合
         List<BasicStore> list = basicStoreService.findListNotIn(basicStore);
-        //根据服务站id获取已经选过的门店集合
+        //根据服务站id获取已经选过的门店 集合
         //List<BasicStore> listIn = basicStoreService.findListIn(basicStore);
         //list.addAll(listIn);
         
