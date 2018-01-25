@@ -126,6 +126,18 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			}
 		}
 
+		serItemInfo = dao.get(serItemInfo);
+		String pictureDetail = serItemInfo.getPictureDetail();
+		if(null != pictureDetail){
+			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
+			serItemInfo.setPictureDetails(pictureDetailsa);
+		}
+		String picture = serItemInfo.getPicture();
+		if(null != picture){
+			List<String> pictures1 = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+			serItemInfo.setPictures(pictures1);
+		}
+
 		//对接项目信息
 		SerItemInfo sendItem = new SerItemInfo();
 		sendItem.setPictures(serItemInfo.getPictures());
@@ -220,6 +232,18 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		if(organization != null){
 			jointEshopCode = organization.getJointEshopCode();
 		}
+
+		String pictureDetail = serItemInfo.getPictureDetail();
+		if(null != pictureDetail){
+			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
+			serItemInfo.setPictureDetails(pictureDetailsa);
+		}
+		String picture = serItemInfo.getPicture();
+		if(null != picture){
+			List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+			serItemInfo.setPictures(pictures);
+		}
+
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("jointEshopCode", jointEshopCode);
 
@@ -286,6 +310,18 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		if(organization != null){
 			jointEshopCode = organization.getJointEshopCode();
 		}
+
+		String pictureDetail = serItemInfo.getPictureDetail();
+		if(null != pictureDetail){
+			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
+			serItemInfo.setPictureDetails(pictureDetailsa);
+		}
+		String picture = serItemInfo.getPicture();
+		if(null != picture){
+			List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+			serItemInfo.setPictures(pictures);
+		}
+
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("jointEshopCode", jointEshopCode);
 

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -216,7 +217,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		for(Date date : dateList){
 			OpenServiceTimesResponse responseRe = new OpenServiceTimesResponse();
 			responseRe.setFormat(DateUtils.formatDate(date, "yyyy-MM-dd"));
-			responseRe.setDayOfWeek(DateUtils.formatDate(date, "E"));
+
+			responseRe.setDayOfWeek(DateUtils.getWeekL(date));
 
 			List<String> resTimeList;
 			try {

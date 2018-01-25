@@ -97,6 +97,11 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return formatDate(new Date(), "E");
 	}
 
+	public static String getWeekL(Date date) {
+		Locale localeCN = Locale.SIMPLIFIED_CHINESE;
+		return DateFormatUtils.formatUTC(date, "E",localeCN);
+	}
+
 	/**
 	 * 日期型字符串转化为日期 格式
 	 * { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
