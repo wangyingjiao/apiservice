@@ -41,7 +41,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
 
     }
 
-    //列表查看消息
+    //app列表查看消息
     public Page<MessageInfo> findList(Page<MessageInfo> page,MessageInfo messageInfo){
         messageInfo.setPage(page);
         List<MessageInfo> list = messageInfoDao.findList(messageInfo);
@@ -112,10 +112,9 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         //int flag = PushMessageUtil.pushMessage(messageInfo);
         return 0;
     }
-    //编辑消息
+    //app编辑消息已读
     @Transactional(readOnly = false)
     public int updateMessage(MessageInfo messageInfo){
-
         int i =0;
         MessageInfo messageInfo1 = messageInfoDao.get(messageInfo);
         if (messageInfo1 != null) {

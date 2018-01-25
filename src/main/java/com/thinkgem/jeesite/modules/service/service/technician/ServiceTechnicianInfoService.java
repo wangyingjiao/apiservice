@@ -356,9 +356,47 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
     //app 编辑
     @Transactional(readOnly = false)
-    public int appUpdate(ServiceTechnicianInfo serviceTechnicianInfo) {
-        serviceTechnicianInfo.appPreUpdate();
-        int i =dao.appUpdate(serviceTechnicianInfo);
+    public int appUpdate(AppServiceTechnicianInfo appTech) {
+        //将apptech转成技师
+        ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+        tech.setId(appTech.getId());
+        tech.setHeadPic(appTech.getImgUrlHead());
+        tech.setName(appTech.getTechName());
+        tech.setPhone(appTech.getTechPhone());
+        tech.setSex(appTech.getTechSex());
+        tech.setBirthDate(appTech.getTechBirthDate());
+        tech.setAddress(appTech.getAddrDetailInfo());
+        tech.setIdCard(appTech.getTechIdCard());
+        tech.setIdCardPicBefor(appTech.getImgUrlCard());
+        tech.setEmail(appTech.getTechEmail());
+        if (appTech.getTechHeight() != null){
+            tech.setHeight(Integer.valueOf(appTech.getTechHeight()));
+        }
+        if (appTech.getTechWeight() != null){
+            tech.setWeight(Integer.valueOf(appTech.getTechWeight()));
+        }
+        //籍贯code
+        tech.setNativeProvinceCode(appTech.getTechNativePlace());
+        //民族code
+        tech.setNation(appTech.getTechNation());
+        tech.setDescription(appTech.getExperDesc());
+        tech.setLifePic(appTech.getImgUrlLife());
+        tech.setIdCardPicBefor(appTech.getImgUrlCardBefor());
+        tech.setIdCardPicAfter(appTech.getImgUrlCardAfter());
+        //省市区code
+        tech.setProvinceCode(appTech.getProvinceCode());
+        tech.setCityCode(appTech.getCityCode());
+        tech.setAreaCode(appTech.getAreaCode());
+        //身份证正反面
+        Map<String,String> map=new HashMap<String,String>();
+        map.put("befor",appTech.getImgUrlCardBefor());
+        map.put("after",appTech.getImgUrlCardAfter());
+        String s = JsonMapper.toJsonString(map);
+        if (StringUtils.isNotBlank(appTech.getImgUrlCardBefor()) || StringUtils.isNotBlank(appTech.getImgUrlCardAfter())){
+            tech.setIdCardPic(s);
+        }
+        tech.appPreUpdate();
+        int i =dao.appUpdate(tech);
         return i;
     }
 
@@ -486,8 +524,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             Date startTime = work.getStartTime();
             Date endTime = work.getEndTime();
             //date转String
-            work.setStartTimes(DateUtils.formatDate(endTime, "HH:mm:ss"));
-            work.setEndTimes(DateUtils.formatDate(startTime, "HH:mm:ss"));
+            work.setStartTimes(DateUtils.formatDate(startTime, "HH:mm"));
+            work.setEndTimes(DateUtils.formatDate(endTime, "HH:mm"));
         }
         //技师技能
         List<SerSkillInfo> serSkillInfos = serSkillInfoDao.appGetSkillByTech(serviceTechnicianInfo);
