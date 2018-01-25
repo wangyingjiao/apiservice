@@ -120,7 +120,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 						sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
 					}
 				}
-				sendGoods.setSelfCode(serItemInfo.getSortId()+"-"+commodity.getId()); //自营平台商品code  ID
+				sendGoods.setSelfCode(serItemInfo.getSortId()+"_"+commodity.getId()); //自营平台商品code  ID
 				sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
 				sendGoodsList.add(sendGoods);
 			}
@@ -267,7 +267,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
 						}
 					}
-					sendGoods.setSelfCode(serItemInfo.getSortId() + "-" + commodity.getId()); //自营平台商品code  ID
+					sendGoods.setSelfCode(serItemInfo.getSortId() + "_" + commodity.getId()); //自营平台商品code  ID
 					sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
 					sendGoodsList.add(sendGoods);
 				}
@@ -345,7 +345,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
 						}
 					}
-					sendGoods.setSelfCode(serItemInfo.getSortId() + "-" + commodity.getId()); //自营平台商品code  ID
+					sendGoods.setSelfCode(serItemInfo.getSortId() + "_" + commodity.getId()); //自营平台商品code  ID
 					sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
 					sendGoodsList.add(sendGoods);
 				}
