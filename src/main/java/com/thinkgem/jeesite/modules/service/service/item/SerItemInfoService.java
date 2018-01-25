@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
@@ -120,7 +121,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 						sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
 					}
 				}
-				sendGoods.setSelfCode(serItemInfo.getSortId()+"_"+commodity.getId()); //自营平台商品code  ID
+				sendGoods.setSelfCode(serItemInfo.getSortId()+ Global.getConfig("openSendPath_goods_split")+commodity.getId()); //自营平台商品code  ID
 				sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
 				sendGoodsList.add(sendGoods);
 			}
@@ -267,7 +268,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
 						}
 					}
-					sendGoods.setSelfCode(serItemInfo.getSortId() + "_" + commodity.getId()); //自营平台商品code  ID
+					sendGoods.setSelfCode(serItemInfo.getSortId() + Global.getConfig("openSendPath_goods_split") + commodity.getId()); //自营平台商品code  ID
 					sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
 					sendGoodsList.add(sendGoods);
 				}
@@ -345,7 +346,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
 						}
 					}
-					sendGoods.setSelfCode(serItemInfo.getSortId() + "_" + commodity.getId()); //自营平台商品code  ID
+					sendGoods.setSelfCode(serItemInfo.getSortId() + Global.getConfig("openSendPath_goods_split") + commodity.getId()); //自营平台商品code  ID
 					sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
 					sendGoodsList.add(sendGoods);
 				}

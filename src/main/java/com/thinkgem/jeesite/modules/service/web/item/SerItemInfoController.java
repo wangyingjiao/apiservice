@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.web.item;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
@@ -175,7 +176,7 @@ public class SerItemInfoController extends BaseController {
                         Map.Entry entry = (Map.Entry) iter.next();
                         SerItemCommodity goods = new SerItemCommodity();
                         String key = entry.getKey().toString();
-                        String goodsId = key.substring(key.indexOf("-") + 1);
+                        String goodsId = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
                         goods.setId(goodsId);
                         goods.setJointGoodsCode(entry.getValue().toString());
                         User user = new User();

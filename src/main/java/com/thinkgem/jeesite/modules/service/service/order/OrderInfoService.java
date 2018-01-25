@@ -1487,8 +1487,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			map.put("jointEshopCode", jointEshopCode);
 
 			return map;
-        }
-        return null;
+        }else{
+			throw new ServiceException("未找到可用技师");
+		}
 	}
 
 	public List<OrderGoods> editGoodsInit(OrderInfo orderInfo) {

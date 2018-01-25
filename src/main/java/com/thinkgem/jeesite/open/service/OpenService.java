@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.open.service;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
@@ -98,7 +99,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			for(OpenServiceInfo openServiceInfo : serviceInfos){
 
 				String key = openServiceInfo.getCate_goods_id();
-				String cate_goods_id = key.substring(key.indexOf("-") + 1);
+				String cate_goods_id = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
 				if(null == cate_goods_id){
 					throw new ServiceException("自营服务服务商品ID不能为空");
 				}
@@ -684,7 +685,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			for(OpenServiceInfo openServiceInfo : serviceInfos){
 
 				String key = openServiceInfo.getCate_goods_id();
-				String cate_goods_id = key.substring(key.indexOf("-") + 1);
+				String cate_goods_id = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
 				if(null == cate_goods_id){
 					throw new ServiceException("自营服务服务商品ID不能为空");
 				}
@@ -1320,7 +1321,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		for(OpenServiceInfo openServiceInfo : serviceInfos){
 
 			String key = openServiceInfo.getCate_goods_id();
-			String cate_goods_id = key.substring(key.indexOf("-") + 1);
+			String cate_goods_id = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
 			int buy_num = openServiceInfo.getBuy_num();
 			String pay_price = openServiceInfo.getPay_price();
 
