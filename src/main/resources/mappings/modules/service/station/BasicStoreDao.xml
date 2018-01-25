@@ -182,7 +182,7 @@
             separator="," close=")">
             #{item}  
          	</foreach>
-         	</if>
+         	</if> GROUP BY a.id
         </where>
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">

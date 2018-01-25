@@ -213,6 +213,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		serItemInfo.preUpdate();
 		dao.updateSerItemPicNum(serItemInfo);
 
+		serItemInfo = dao.get(serItemInfo);
 		//对接商品信息
 		String jointEshopCode = "";
 		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
@@ -223,7 +224,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		map.put("jointEshopCode", jointEshopCode);
 
 		if(StringUtils.isNotEmpty(jointEshopCode)) {
-			serItemInfo = dao.get(serItemInfo);
+
 			List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
 
 			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
@@ -278,6 +279,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 
     public HashMap<String,Object> sendItemData(SerItemInfo serItemInfo) {
+		serItemInfo = dao.get(serItemInfo);
 		//对接商品信息
 		String jointEshopCode = "";
 		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
@@ -288,7 +290,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		map.put("jointEshopCode", jointEshopCode);
 
 		if(StringUtils.isNotEmpty(jointEshopCode)) {
-			serItemInfo = dao.get(serItemInfo);
+
 			List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
 
 			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
@@ -376,6 +378,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 
 	public HashMap<String,Object> getDeleteGoodsSendList(SerItemInfo serItemInfo) {
+		serItemInfo = dao.get(serItemInfo);
 		//对接商品信息
 		String jointEshopCode = "";
 		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
