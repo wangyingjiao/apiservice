@@ -888,17 +888,20 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		for(Date date : dateList){
 			OrderTimeList responseRe = new OrderTimeList();
-			responseRe.setValue(String.valueOf(value));
-			value++;
-			responseRe.setLabel(DateUtils.formatDate(date, "yyyy-MM-dd"));
 			try {
+				responseRe.setValue(String.valueOf(value));
+				value++;
+				responseRe.setLabel(DateUtils.formatDate(date, "yyyy-MM-dd"));
 				//该日服务时间点列表
 				List<OrderDispatch> hours = timeDataListHours(date, techList, techDispatchNum,serviceSecond);
-				responseRe.setServiceTime(hours);
+				if(hours!= null && hours.size()>0){
+					responseRe.setServiceTime(hours);
+					list.add(responseRe);
+				}
 			}catch (Exception e){
 				logger.error(responseRe.getLabel()+"未找到服务时间点列表");
 			}
-			list.add(responseRe);
+
 		}
 		return list;
 	}

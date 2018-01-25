@@ -105,6 +105,22 @@ public class OrderInfoController extends BaseController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = "timeDataList", method = {RequestMethod.POST})
+	@ApiOperation("更换时间")
+	@RequiresPermissions("order_time")
+	public Result timeDataList(@RequestBody OrderInfo orderInfo) {
+		try {
+			List<OrderTimeList>  timeList = orderInfoService.timeDataList(orderInfo);
+
+			return new SuccResult(timeList);
+		}catch (ServiceException ex){
+			return new FailResult("获取时间列表失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("获取时间列表失败!");
+		}
+	}
+
+	@ResponseBody
 	@RequestMapping(value = "saveTime", method = {RequestMethod.POST})
 	@ApiOperation("更换时间保存")
 	@RequiresPermissions("order_time")
@@ -237,31 +253,4 @@ public class OrderInfoController extends BaseController {
 		}
 	}
 
-
-	/*
-
-	@ResponseBody
-	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
-	@ApiOperation("更换时间")
-	@RequiresPermissions("order_time")
-	public Result timeData(@RequestBody OrderInfo orderInfo) {
-		*/
-/*try {
-			List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
-			if(techList == null || techList.size() == 0){
-				return new FailResult("当前没有可服务的技师，请更换时间!");
-			}
-			return new SuccResult(techList);
-		}catch (ServiceException ex){
-			return new FailResult("获取时间列表失败-"+ex.getMessage());
-		}catch (Exception e){
-			return new FailResult("当前没有可服务的技师，请更换时间!");
-		}*//*
-
-
-
-		List<OrderTimeList> list = orderInfoService.timeDataList(orderInfo);
-		return new SuccResult(list);
-	}
-*/
 }
