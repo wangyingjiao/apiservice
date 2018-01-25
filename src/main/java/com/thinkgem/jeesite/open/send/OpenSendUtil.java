@@ -330,7 +330,10 @@ public class OpenSendUtil {
 			responseRe.setMessage("对接保存信息失败-上门服务时间,服务人员,备注必传其一");
 			return responseRe;
 		}
-		String service_time = DateUtils.formatDateTime(info.getServiceTime());//上门服务时间；上门服务时间和服务人员备注必传其一
+		String service_time = null;
+		if(info.getServiceTime() != null){
+			service_time = DateUtils.formatDateTime(info.getServiceTime());//上门服务时间；上门服务时间和服务人员备注必传其一
+		}
 		String order_remark = info.getOrderRemark();//服务人员备注 ；上门服务时间和服务人员备注必传其一
 		List<String>  order_remark_pic = info.getOrderRemarkPics();//服务人员备注 ；上门服务时间和服务人员备注必传其一
 		String order_id = info.getId();//订单ID
