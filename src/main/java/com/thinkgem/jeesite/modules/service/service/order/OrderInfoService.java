@@ -944,12 +944,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 
 	private List<OrderDispatch> timeDataListHours(Date date, List<OrderDispatch> techList,int techDispatchNum,Double serviceSecond ) {
-
+		List<OrderDispatch> techForList = new ArrayList<>();
+		if(techList != null){//深浅拷贝问题
+			for(OrderDispatch dispatch: techList){
+				techForList.add(dispatch);
+			}
+		}
 		int week = DateUtils.getWeekNum(date); //周几
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
 		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 23:59:59");
 
-		Iterator<OrderDispatch> it = techList.iterator();
+		Iterator<OrderDispatch> it = techForList.iterator();
 		while(it.hasNext()) {
 			OrderDispatch tech = it.next();
 			OrderDispatch serchTech = new OrderDispatch();
@@ -960,7 +965,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(workTimeList == null || workTimeList.size() == 0){
 				it.remove();
 
-				if(techList.size() < techDispatchNum){//技师数量不够
+				if(techForList.size() < techDispatchNum){//技师数量不够
 					return null;
 				}
 				continue;
@@ -969,7 +974,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					if(DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())){
 						it.remove();
 
-						if(techList.size() < techDispatchNum){//技师数量不够
+						if(techForList.size() < techDispatchNum){//技师数量不够
 							return null;
 						}
 						continue;
@@ -1041,7 +1046,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		List<String> allTimeList = new ArrayList<String>();
 		List<String> resTimeList = new ArrayList<String>();
-		for(OrderDispatch tech : techList){
+		for(OrderDispatch tech : techForList){
 			allTimeList.addAll(tech.getWorkTimes());
 		}
 		//统计每一个元素出现的频率

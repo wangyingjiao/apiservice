@@ -97,10 +97,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return formatDate(new Date(), "E");
 	}
 
-	public static String getWeekL(Date date) {
-		Locale localeCN = Locale.SIMPLIFIED_CHINESE;
-		return DateFormatUtils.formatUTC(date, "E",localeCN);
-	}
 
 	/**
 	 * 日期型字符串转化为日期 格式
@@ -560,7 +556,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
 		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
-		System.out.println(isToday(parseDate("2018-01-24 18:00:00")));
+		System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
 	}
 
     public static boolean timeBeforeNow(Date date) {
@@ -572,4 +568,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static boolean isToday(Date serviceDate) {
 		return formatDate(new Date(),"yyyy-MM-dd").equals(formatDate(serviceDate,"yyyy-MM-dd"));
     }
+
+	public static String getWeekL(Date date) {
+		Locale localeCN = Locale.SIMPLIFIED_CHINESE;
+		Date date2 = parseDate(formatDate(date, "yyyy-MM-dd")+" 8:00:00");
+		return DateFormatUtils.formatUTC(date2, "E",localeCN);
+	}
 }

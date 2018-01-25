@@ -234,11 +234,15 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			for(String heafHourTime : heafHourTimeList){
 				OpenHours openHours  = new OpenHours();
 				openHours.setHour(heafHourTime);
-				if(resTimeList.contains(heafHourTime)){//是否可用
-					openHours.setDisenable("enable");
-				}else{
-					openHours.setDisenable("disable");
-				}
+				if(resTimeList != null) {
+                    if (resTimeList.contains(heafHourTime)) {//是否可用
+                        openHours.setDisenable("enable");
+                    } else {
+                        openHours.setDisenable("disable");
+                    }
+                }else{
+                    openHours.setDisenable("disable");
+                }
 				hours.add(openHours);
 			}
 			responseRe.setHours(hours);
@@ -258,12 +262,18 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	private List<String> openServiceTimesHours(Date date, List<OrderDispatch> techList,int techDispatchNum,Double serviceSecond ) {
+        List<OrderDispatch> techForList = new ArrayList<>();
+        if(techList != null){//深浅拷贝问题
+            for(OrderDispatch dispatch: techList){
+                techForList.add(dispatch);
+            }
+        }
 
-		int week = DateUtils.getWeekNum(date); //周几
+        int week = DateUtils.getWeekNum(date); //周几
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
 		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 23:59:59");
 
-		Iterator<OrderDispatch> it = techList.iterator();
+		Iterator<OrderDispatch> it = techForList.iterator();
 		while(it.hasNext()) {
 			OrderDispatch tech = it.next();
 			OrderDispatch serchTech = new OrderDispatch();
@@ -274,7 +284,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(workTimeList == null || workTimeList.size() == 0){
 				it.remove();
 
-				if(techList.size() < techDispatchNum){//技师数量不够
+				if(techForList.size() < techDispatchNum){//技师数量不够
 					return null;
 				}
 				continue;
@@ -283,7 +293,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 					if (DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())) {
 						it.remove();
 
-						if (techList.size() < techDispatchNum) {//技师数量不够
+						if (techForList.size() < techDispatchNum) {//技师数量不够
 							return null;
 						}
 						continue;
@@ -355,7 +365,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		List<String> allTimeList = new ArrayList<String>();
 		List<String> resTimeList = new ArrayList<String>();
-		for(OrderDispatch tech : techList){
+		for(OrderDispatch tech : techForList){
 			if(tech.getWorkTimes() != null) {
 				allTimeList.addAll(tech.getWorkTimes());
 			}
