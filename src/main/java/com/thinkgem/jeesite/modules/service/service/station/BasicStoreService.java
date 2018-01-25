@@ -148,12 +148,14 @@ public class BasicStoreService extends CrudService<BasicStoreDao, BasicStore> {
 
 	public List<BasicStore> findListNotIn(BasicStore basicStore) {
 
-        List<BasicStore> list = basicStoreDao.findListNotIn(basicStore);
-        if (list.size() > 0) {
-            List<BasicStore> treeStore = getTreeStore(list);
+        List<BasicStore> listNotIn = basicStoreDao.findListNotIn(basicStore);
+        List<BasicStore> listIn = basicStoreDao.findListIn(basicStore);
+        listNotIn.addAll(listIn);
+        if (listNotIn.size() > 0) {
+            List<BasicStore> treeStore = getTreeStore(listNotIn);
             return treeStore;
         }
-        return list;
+        return listNotIn;
     }
 
 	public List<BasicStore> findListIn(BasicStore basicStore) {
