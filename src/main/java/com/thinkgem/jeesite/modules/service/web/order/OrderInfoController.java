@@ -98,32 +98,10 @@ public class OrderInfoController extends BaseController {
 				return new SuccResult(entity);
 			}
 		}catch (ServiceException ex){
-			return new FailResult("查看失败失败-"+ex.getMessage());
+			return new FailResult("查看失败-"+ex.getMessage());
 		}catch (Exception e){
 			return new FailResult("未找到订单详情!");
 		}
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
-	@ApiOperation("更换时间")
-	@RequiresPermissions("order_time")
-	public Result timeData(@RequestBody OrderInfo orderInfo) {
-		/*try {
-			List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
-			if(techList == null || techList.size() == 0){
-				return new FailResult("当前没有可服务的技师，请更换时间!");
-			}
-			return new SuccResult(techList);
-		}catch (ServiceException ex){
-			return new FailResult("获取时间列表失败-"+ex.getMessage());
-		}catch (Exception e){
-			return new FailResult("当前没有可服务的技师，请更换时间!");
-		}*/
-
-
-		List<OrderTimeList> list = orderInfoService.timeDataList(orderInfo);
-		return new SuccResult(list);
 	}
 
 	@ResponseBody
@@ -133,25 +111,6 @@ public class OrderInfoController extends BaseController {
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
 		try {
 			HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
-
-			try {
-				//订单商品有对接方商品CODE  机构有对接方E店CODE
-				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
-						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
-					OrderInfo sendOrder = new OrderInfo();
-					sendOrder.setId(map.get("orderId").toString());//订单ID
-					sendOrder.setServiceTime((Date) map.get("serviceDate"));//上门服务时间
-					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-					if (sendResponse == null) {
-						return new FailResult("对接失败-返回值为空");
-					} else if (sendResponse.getCode() != 0) {
-						return new FailResult("对接失败-"+sendResponse.getMessage());
-					}
-				}
-			}catch (Exception e){
-				return new FailResult("对接失败-系统异常");
-			}
 
 			return new SuccResult(map);
 		}catch (ServiceException ex){
@@ -184,24 +143,6 @@ public class OrderInfoController extends BaseController {
 		try{
 			HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
 
-			try {
-				//订单商品有对接方商品CODE  机构有对接方E店CODE
-				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
-						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
-					OrderInfo sendOrder = new OrderInfo();
-					sendOrder.setId(map.get("orderId").toString());//订单ID
-					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-					if (sendResponse == null) {
-						return new FailResult("对接失败-返回值为空");
-					} else if (sendResponse.getCode() != 0) {
-						return new FailResult("对接失败-"+sendResponse.getMessage());
-					}
-				}
-			}catch (Exception e){
-				return new FailResult("对接失败-系统异常");
-			}
-
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult("保存失败-"+ex.getMessage());
@@ -233,24 +174,6 @@ public class OrderInfoController extends BaseController {
 		try{
 			HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
 
-			try {
-				//订单商品有对接方商品CODE  机构有对接方E店CODE
-				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
-						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
-					OrderInfo sendOrder = new OrderInfo();
-					sendOrder.setId(map.get("orderId").toString());//订单ID
-					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-					if (sendResponse == null) {
-						return new FailResult("对接失败-返回值为空");
-					} else if (sendResponse.getCode() != 0) {
-						return new FailResult("对接失败-"+sendResponse.getMessage());
-					}
-				}
-			}catch (Exception e){
-				return new FailResult("对接失败-系统异常");
-			}
-
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult("保存失败-"+ex.getMessage());
@@ -258,4 +181,32 @@ public class OrderInfoController extends BaseController {
 			return new FailResult("保存失败-系统异常");
 		}
 	}
+
+
+	/*
+
+	@ResponseBody
+	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
+	@ApiOperation("更换时间")
+	@RequiresPermissions("order_time")
+	public Result timeData(@RequestBody OrderInfo orderInfo) {
+		*/
+/*try {
+			List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
+			if(techList == null || techList.size() == 0){
+				return new FailResult("当前没有可服务的技师，请更换时间!");
+			}
+			return new SuccResult(techList);
+		}catch (ServiceException ex){
+			return new FailResult("获取时间列表失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("当前没有可服务的技师，请更换时间!");
+		}*//*
+
+
+
+		List<OrderTimeList> list = orderInfoService.timeDataList(orderInfo);
+		return new SuccResult(list);
+	}
+*/
 }

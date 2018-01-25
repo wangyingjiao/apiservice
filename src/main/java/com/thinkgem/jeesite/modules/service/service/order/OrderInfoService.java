@@ -21,12 +21,15 @@ import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -229,6 +232,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 	public OrderInfo formData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
+		if(orderInfo == null){
+			return null;
+		}
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
 		if(goodsInfoList != null && goodsInfoList.size() != 0){
 			OrderGoods goodsInfo = new OrderGoods();
@@ -335,7 +341,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//展示当前下单客户所在服务站的所有可服务的技师
 		serchInfo.setStationId(stationId);
 		//（1）会此技能的
-		String skillId = dao.getSkillIdBySortId(goodsInfoList.get(0).getSortId());//通过服务分类ID取得技能ID
+		String orgId = orderInfo.getOrgId();
+		SerSkillSort serchSkillSort = new SerSkillSort();
+		serchSkillSort.setOrgId(orgId);
+		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+		String skillId = "";
+		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		if(skillSortList!=null && skillSortList.size()>0){
+			skillId = skillSortList.get(0).getSkillId();
+		}else{
+			throw new ServiceException("未找到商品需求的技能信息");
+		}
 		serchInfo.setSkillId(skillId);
 		//（2）上线、在职
 		serchInfo.setTechStatus("yes");
@@ -441,7 +457,19 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//展示当前下单客户所在服务站的所有可服务的技师
 		serchInfo.setStationId(stationId);
 		//（1）会此技能的
-		String skillId = dao.getSkillIdBySortId(goodsInfoList.get(0).getSortId());//通过服务分类ID取得技能ID
+
+		String orgId = orderInfo.getOrgId();
+		SerSkillSort serchSkillSort = new SerSkillSort();
+		serchSkillSort.setOrgId(orgId);
+		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+		String skillId = "";
+		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		if(skillSortList!=null && skillSortList.size()>0){
+			skillId = skillSortList.get(0).getSkillId();
+		}else{
+			throw new ServiceException("未找到商品需求的技能信息");
+		}
+
 		serchInfo.setSkillId(skillId);
 		//（2）上线、在职
 		serchInfo.setTechStatus("yes");
@@ -626,6 +654,25 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			jointEshopCode = organization.getJointEshopCode();
 		}
 
+
+		try {
+			//订单商品有对接方商品CODE  机构有对接方E店CODE
+			if(StringUtils.isNotEmpty(jointGoodsCodes) &&
+					StringUtils.isNotEmpty(jointEshopCode)){
+				OrderInfo sendOrder = new OrderInfo();
+				sendOrder.setId(orderInfo.getId());//订单ID
+				sendOrder.setTechList(techListRe);//技师信息
+				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+				if (sendResponse == null) {
+					throw new ServiceException("对接失败-返回值为空");
+				} else if (sendResponse.getCode() != 0) {
+					throw new ServiceException("对接失败-"+sendResponse.getMessage());
+				}
+			}
+		}catch (Exception e){
+			throw new ServiceException("对接失败-系统异常");
+		}
+
 		HashMap<String,Object> map = new HashMap<>();
 		map.put("serviceHour",serviceHourRe);
 		map.put("list",techListRe);
@@ -708,6 +755,24 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("未找到当前订单对应的机构信息");
 		}
 
+		try {
+			//订单商品有对接方商品CODE  机构有对接方E店CODE
+			if(StringUtils.isNotEmpty(jointGoodsCodes) &&
+					StringUtils.isNotEmpty(jointEshopCode)){
+				OrderInfo sendOrder = new OrderInfo();
+				sendOrder.setId(orderInfo.getId());//订单ID
+				sendOrder.setTechList(techListRe);//技师信息
+				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+				if (sendResponse == null) {
+					throw new ServiceException("对接失败-返回值为空");
+				} else if (sendResponse.getCode() != 0) {
+					throw new ServiceException("对接失败-"+sendResponse.getMessage());
+				}
+			}
+		}catch (Exception e){
+			throw new ServiceException("对接失败-系统异常");
+		}
+
 		HashMap<String,Object> map = new HashMap<>();
 		map.put("serviceHour",serviceHourRe);
 		map.put("list",techListRe);
@@ -766,39 +831,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<Date> dateList = DateUtils.getAfterFifteenDays();
 		List<OrderTimeList> list = new ArrayList<>();
 		int value = 1;
-		for(Date date : dateList){
-			OrderTimeList responseRe = new OrderTimeList();
-			responseRe.setValue(String.valueOf(value));
-			value++;
-			responseRe.setLabel(DateUtils.formatDate(date, "yyyy-MM-dd"));
-			try {
-				//该日服务时间点列表
-				List<OrderDispatch> hours = timeDataListHours(date, orderInfo);
-				responseRe.setServiceTime(hours);
-			}catch (ServiceException ex){
-				if(ex.getMessage() != null){
-					throw new ServiceException(ex.getMessage());
-				}
-			}catch (Exception e){
-				throw new ServiceException("未找到服务时间点列表");
-			}
-			list.add(responseRe);
-		}
-		return list;
-	}
 
-	private List<OrderDispatch> timeDataListHours(Date date, OrderInfo orderInfo) {
-		if(null == orderInfo){
-			throw new ServiceException("服务时间不可为空,请选择日期");
-		}
 		//根据传入的年月日取得当天有时间且没休假的技师
 		Date serviceDate = orderInfo.getServiceTime();//服务时间年月日
 		if(null == serviceDate){
 			throw new ServiceException("服务时间不可为空,请选择日期");
-		}
-		orderInfo = get(orderInfo.getId());//当前订单
-		if(null == orderInfo){
-			throw new ServiceException("未找到当前订单信息");
 		}
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
 		int techDispatchNum = 0;//派人数量
@@ -845,9 +882,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null == stationId){
 			throw new ServiceException("未找到当前订单的服务站信息");
 		}
-		int week = DateUtils.getWeekNum(serviceDate); //周几
-		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy-MM-dd") + " 00:00:00");
-		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy-MM-dd") + " 23:59:59");
 		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
 		if(serviceHour == null || 0 == serviceHour){
 			throw new ServiceException("未找到当前订单的建议服务时长");
@@ -859,7 +893,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//展示当前下单客户所在服务站的所有可服务的技师
 		serchInfo.setStationId(stationId);
 		//（1）会此技能的
-		String skillId = dao.getSkillIdBySortId(goodsInfoList.get(0).getSortId());//通过服务分类ID取得技能ID
+		String orgId = orderInfo.getOrgId();
+		SerSkillSort serchSkillSort = new SerSkillSort();
+		serchSkillSort.setOrgId(orgId);
+		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+		String skillId = "";
+		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		if(skillSortList!=null && skillSortList.size()>0){
+			skillId = skillSortList.get(0).getSkillId();
+		}else{
+			throw new ServiceException("未找到商品需求的技能信息");
+		}
 		if(null == skillId){
 			throw new ServiceException("未找到当前订单服务商品信息的需求技能");
 		}
@@ -870,12 +914,41 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//自动派单 全职 ; 手动派单没有条件
 		//serchInfo.setJobNature("full_time");
 		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
-		serchInfo.setOrderId(orderInfo.getId());
+		//serchInfo.setOrderId(orderInfo.getId());
 		List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
 
 		if(techList.size() < techDispatchNum){//技师数量不够
 			return null;
 		}
+
+
+		for(Date date : dateList){
+			OrderTimeList responseRe = new OrderTimeList();
+			responseRe.setValue(String.valueOf(value));
+			value++;
+			responseRe.setLabel(DateUtils.formatDate(date, "yyyy-MM-dd"));
+			try {
+				//该日服务时间点列表
+				List<OrderDispatch> hours = timeDataListHours(date, techList, techDispatchNum,serviceSecond);
+				responseRe.setServiceTime(hours);
+			}catch (ServiceException ex){
+				if(ex.getMessage() != null){
+					throw new ServiceException(ex.getMessage());
+				}
+			}catch (Exception e){
+				throw new ServiceException("未找到服务时间点列表");
+			}
+			list.add(responseRe);
+		}
+		return list;
+	}
+
+	private List<OrderDispatch> timeDataListHours(Date date, List<OrderDispatch> techList,int techDispatchNum,Double serviceSecond ) {
+
+		int week = DateUtils.getWeekNum(date); //周几
+		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
+		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 23:59:59");
+
 		Iterator<OrderDispatch> it = techList.iterator();
 		while(it.hasNext()) {
 			OrderDispatch tech = it.next();
@@ -914,47 +987,51 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 			List<String> workTimes = DateUtils.getHeafHourTimeList(startDateForWork,workTime.getEndTime());
 
-			//去除休假时间
-			serchTech.setStartTime(serviceDateMin);
-			serchTech.setEndTime(serviceDateMax);
-			List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
-			if(holidayList != null && holidayList.size() !=0){
-				for(ServiceTechnicianHoliday holiday : holidayList){
-					List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(),holiday.getEndTime());
-					Iterator<String> it1 = workTimes.iterator();
-					while(it1.hasNext()) {
-						String work = (String)it1.next();
-						if(holidays.contains(work)){//去除休假时间
-							it1.remove();
-							//continue;
+			if(workTimes != null) {
+				//去除休假时间
+				serchTech.setStartTime(serviceDateMin);
+				serchTech.setEndTime(serviceDateMax);
+				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
+				if (holidayList != null && holidayList.size() != 0) {
+					for (ServiceTechnicianHoliday holiday : holidayList) {
+						List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(), holiday.getEndTime());
+						Iterator<String> it1 = workTimes.iterator();
+						while (it1.hasNext()) {
+							String work = (String) it1.next();
+							if (holidays.contains(work)) {//去除休假时间
+								it1.remove();
+								//continue;
+							}
 						}
 					}
 				}
-			}
 
-			//去除订单前后时间段
-			List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
-			if(orderList != null && orderList.size() !=0){
-				for(OrderDispatch order : orderList){
-					int intervalTime = 0;//必须间隔时间 秒
-					if(11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(),"HH")) &&
-							Integer.parseInt(DateUtils.formatDate(order.getEndTime(),"HH"))  < 14){
-						//可以接单的时间则为：40分钟+路上时间+富余时间
-						intervalTime = 40*60 + 15*60 + 10*60;
-					}else{
-						//可以接单的时间则为：路上时间+富余时间
-						intervalTime = 15*60 + 10*60;
-					}
+				//去除订单前后时间段
+				List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
+				if (orderList != null && orderList.size() != 0) {
+					for (OrderDispatch order : orderList) {
+						int intervalTime = 0;//必须间隔时间 秒
+						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
+							//可以接单的时间则为：40分钟+路上时间+富余时间
+							intervalTime = 40 * 60 + 15 * 60 + 10 * 60;
+						} else {
+							//可以接单的时间则为：路上时间+富余时间
+							intervalTime = 15 * 60 + 10 * 60;
+						}
 
-					List<String> orders = DateUtils.getHeafHourTimeList(
-							DateUtils.addSeconds(order.getStartTime(),-serviceSecond.intValue()),
-							DateUtils.addSeconds(order.getEndTime(),intervalTime));
-					Iterator<String> it2 = workTimes.iterator();
-					while(it2.hasNext()) {
-						String work = (String)it2.next();
-						if(orders.contains(work)){//去除订单时间
-							it2.remove();
-							//continue;
+						List<String> orders = DateUtils.getHeafHourTimeList(
+								DateUtils.addSeconds(order.getStartTime(), -serviceSecond.intValue()),
+								DateUtils.addSeconds(order.getEndTime(), intervalTime));
+						if (orders != null) {
+							Iterator<String> it2 = workTimes.iterator();
+							while (it2.hasNext()) {
+								String work = (String) it2.next();
+								if (orders.contains(work)) {//去除订单时间
+									it2.remove();
+									//continue;
+								}
+							}
 						}
 					}
 				}
@@ -996,6 +1073,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param orderInfo
 	 * @return
 	 */
+/*
 	public List<OrderDispatch> timeData(OrderInfo orderInfo) {
 		if(null == orderInfo){
 			throw new ServiceException("服务时间不可为空,请选择日期");
@@ -1201,6 +1279,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		return listRe;
 	}
+*/
 
 	/**
 	 * 更换时间保存
@@ -1268,7 +1347,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         String stationId = orderInfo.getStationId();//服务站ID
         Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
         Double serviceSecond = (serviceHour * 3600);
-        Date serviceTime = orderInfo.getServiceTime();//服务时间
+       // Date serviceTime = orderInfo.getServiceTime();//服务时间
         Date finishTime = DateUtils.addSeconds(serviceDate,serviceSecond.intValue());//完成时间
 
         //取得技师List
@@ -1276,7 +1355,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         //展示当前下单客户所在服务站的所有可服务的技师
         serchInfo.setStationId(stationId);
         //（1）会此技能的
-        String skillId = dao.getSkillIdBySortId(goodsInfoList.get(0).getSortId());//通过服务分类ID取得技能ID
+		String orgId = orderInfo.getOrgId();
+		SerSkillSort serchSkillSort = new SerSkillSort();
+		serchSkillSort.setOrgId(orgId);
+		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+		String skillId = "";
+		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		if(skillSortList!=null && skillSortList.size()>0){
+			skillId = skillSortList.get(0).getSkillId();
+		}else{
+			throw new ServiceException("未找到商品需求的技能信息");
+		}
         serchInfo.setSkillId(skillId);
         //（2）上线、在职
         serchInfo.setTechStatus("yes");
@@ -1284,15 +1373,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         //自动派单 全职 ; 手动派单没有条件
         //serchInfo.setJobNature("full_time");
         //派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
-        serchInfo.setOrderId(orderInfo.getId());
+        //serchInfo.setOrderId(orderInfo.getId());
         List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
         if(techList.size() < techDispatchNum){//技师数量不够
-            return null;
+			throw new ServiceException("当前时间未找到技师");
         }
         //（3）考虑技师的工作时间
         //取得当前机构下工作时间包括服务时间的技师
-        serchInfo.setWeek(DateUtils.getWeekNum(serviceTime));
-        serchInfo.setStartTime(serviceTime);
+        serchInfo.setWeek(DateUtils.getWeekNum(serviceDate));
+        serchInfo.setStartTime(serviceDate);
         serchInfo.setEndTime(finishTime);
         List<String> workTechIdList = dao.getTechByWorkTime(serchInfo);
         //（4）考虑技师的休假时间
@@ -1314,8 +1403,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(beforTimeCheckTechIdList.size() != 0){
 			serchInfo.setTechIds(beforTimeCheckTechIdList);
 			//今天的订单
-			serchInfo.setStartTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 00:00:00"));
-			serchInfo.setEndTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 23:59:59"));
+			serchInfo.setStartTime(DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy-MM-dd") + " 00:00:00"));
+			serchInfo.setEndTime(DateUtils.parseDate(DateUtils.formatDate(serviceDate, "yyyy-MM-dd") + " 23:59:59"));
 			//（5）考虑技师是否已有订单" //去除有订单并且时间冲突的技师
 			List<OrderDispatch> orderTechList = dao.getTechByOrder(serchInfo);//订单结束时间在当前订单上门时间前90分钟之后的技师列表
 
@@ -1334,7 +1423,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),(15*60 + 10*60)));
 				}
 
-				if(!DateUtils.checkDatesRepeat(serviceTime,finishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
+				if(!DateUtils.checkDatesRepeat(serviceDate,finishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
 					timeCheckDelTechIdList.add(orderTech.getTechId());//有订单的技师 删除
 				}
 			}
@@ -1345,7 +1434,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 
             if(techListRe.size() < techDispatchNum){//技师数量不够
-                return null;
+				throw new ServiceException("当前时间未找到技师");
             }
 
             //一个自然月内，根据当前服务站内各个技师的订单数量，优先分配给订单数量少的技师
@@ -1404,6 +1493,24 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				throw new ServiceException("未找到当前订单对应的机构信息");
 			}
 
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(jointGoodsCodes) && StringUtils.isNotEmpty(jointEshopCode)){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(orderInfo.getId());//订单ID
+					sendOrder.setServiceTime(serviceDate);//上门服务时间
+					sendOrder.setTechList(techLastList);//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						throw new ServiceException("对接失败-返回值为空");
+					} else if (sendResponse.getCode() != 0) {
+						throw new ServiceException("对接失败-"+sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				throw new ServiceException("对接失败-系统异常");
+			}
+
 			HashMap<String,Object> map = new HashMap<>();
 			map.put("serviceHour",serviceHourRe);
 			map.put("list",techLastList);
@@ -1411,6 +1518,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			map.put("serviceDate",serviceDate);
 			map.put("jointGoodsCodes",jointGoodsCodes);
 			map.put("jointEshopCode", jointEshopCode);
+
 			return map;
         }
         return null;

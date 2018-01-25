@@ -266,9 +266,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			return null;//开始时间和结束时间是同一天 否则返回null
 		}
 
-		if(!DateUtils.addMinutes(startTime,30).before(endTime)){
+/*		if(!DateUtils.addMinutes(startTime,30).before(endTime)){
 			return null;//开始时间和结束时间之间相隔不到30分钟
-		}
+		}*/
 
 		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
 				DateUtils.formatDate(startTime, "HH") + ":30:00");
