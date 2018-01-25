@@ -155,6 +155,9 @@
         <if test="mobile != null and mobile != ''">
             AND a.mobile LIKE concat("%",#{mobile},"%")
         </if>
+        <if test="name != null and name != ''">
+            AND a.name LIKE concat("%",#{name},"%")
+        </if>
         <if test="roleName != null and roleName != ''">
             AND sr.name LIKE concat("%",#{roleName},"%")
         </if>
