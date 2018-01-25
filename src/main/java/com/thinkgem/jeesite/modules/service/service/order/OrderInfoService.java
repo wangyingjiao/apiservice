@@ -473,7 +473,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()==1){
+		if((skillSortList!=null && skillSortList.size()!=0) && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
 			throw new ServiceException("未找到商品所需求的技能信息");
@@ -748,7 +748,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		tec.setId(techId);
 		ServiceTechnicianInfo newTech = serviceTechnicianInfoDao.getById(tec);
 		//订单的服务站id 与技师的服务站id匹配
-//		if (oldTech)
 		if (newTech!=null){
 			if (!newTech.getStationId().equals(orderInfo.getStationId())){
 				throw new ServiceException("选择技师不属于该服务站！");
@@ -773,8 +772,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			newDis.setOrderId(orderInfo.getId());//订单ID
 			newDis.setStatus("yes");//状态(yes：可用 no：不可用)
 			newDis.appreInsert();
-			newSend = orderDispatchDao.insert(newDis);
-		/*	if (insert>0){
+			int insert = orderDispatchDao.insert(newDis);
+			if (insert>0){
 				//给改派前的技师发送消息  只需要techid phone orderId
 				OrderDispatch old1 = new OrderDispatch();
 				old1.setTechId(dispatchTechId);
@@ -800,7 +799,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 			}else {
 				throw new ServiceException("新增改派技师派单失败");
-			}*/
+			}
 		}else {
 			throw new ServiceException("删除改派前技师派单失败");
 		}
