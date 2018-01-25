@@ -19,8 +19,11 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 @MyBatisDao
 public interface BasicStoreDao extends CrudDao<BasicStore> {
 	//add by wyr
+	List<BasicStore> findListNotIn(BasicStore basicStore);
+
+	List<BasicStore> findListIn(BasicStore basicStore);
+
 	List<String> getInIds(@Param("orgId")String orgId);
 
-	List<BasicStore> findListNotIn(BasicStore basicStore);
 	
 }
