@@ -574,4 +574,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		Date date2 = parseDate(formatDate(date, "yyyy-MM-dd")+" 8:00:00");
 		return DateFormatUtils.formatUTC(date2, "E",localeCN);
 	}
+
+
+	public static Date addSecondsNotDayB(final Date date, final int amount) {
+		Date date2 = addSeconds(date,amount);
+		if(!(DateUtils.formatDate(date, "yyyyMMdd").equals(DateUtils.formatDate(date2, "yyyyMMdd")))){
+			return parseDate(formatDate(date, "yyyy-MM-dd")+" 00:00:00");
+		}
+		return date2;
+	}
+	public static Date addSecondsNotDayE(final Date date, final int amount) {
+		Date date2 = addSeconds(date,amount);
+		if(!(DateUtils.formatDate(date, "yyyyMMdd").equals(DateUtils.formatDate(date2, "yyyyMMdd")))){
+			return parseDate(formatDate(date, "yyyy-MM-dd")+" 23:59:59");
+		}
+		return date2;
+	}
 }

@@ -198,7 +198,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setSortId(orderGoods.get(0).getSortId());
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()>0){
+		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
 			throw new ServiceException("未找到商品需求的技能信息");
@@ -226,6 +226,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				resTimeList = openServiceTimesHours(date,techList,techDispatchNum ,serviceSecond );
 
 			}catch (Exception e){
+				logger.error(responseRe.getFormat()+"未找到服务时间点列表");
 				resTimeList = new ArrayList<>();
 			}
 
@@ -345,8 +346,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 						}
 
 						List<String> orders = DateUtils.getHeafHourTimeList(
-								DateUtils.addSeconds(order.getStartTime(), -serviceSecond.intValue()),
-								DateUtils.addSeconds(order.getEndTime(), intervalTime));
+								DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()),
+								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));
 						if (orders != null) {
 							Iterator<String> it2 = workTimes.iterator();
 							while (it2.hasNext()) {
@@ -879,7 +880,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()>0){
+		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
 			throw new ServiceException("未找到商品需求的技能信息");

@@ -347,7 +347,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()>0){
+		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
 			throw new ServiceException("未找到商品需求的技能信息");
@@ -464,7 +464,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()>0){
+		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
 			throw new ServiceException("未找到商品需求的技能信息");
@@ -655,24 +655,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 
 
-		try {
-			//订单商品有对接方商品CODE  机构有对接方E店CODE
-			if(StringUtils.isNotEmpty(jointGoodsCodes) &&
-					StringUtils.isNotEmpty(jointEshopCode)){
-				OrderInfo sendOrder = new OrderInfo();
-				sendOrder.setId(orderInfo.getId());//订单ID
-				sendOrder.setTechList(techListRe);//技师信息
-				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-				if (sendResponse == null) {
-					throw new ServiceException("对接失败-返回值为空");
-				} else if (sendResponse.getCode() != 0) {
-					throw new ServiceException("对接失败-"+sendResponse.getMessage());
-				}
-			}
-		}catch (Exception e){
-			throw new ServiceException("对接失败-系统异常");
-		}
-
 		HashMap<String,Object> map = new HashMap<>();
 		map.put("serviceHour",serviceHourRe);
 		map.put("list",techListRe);
@@ -753,24 +735,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			jointEshopCode = organization.getJointEshopCode();
 		}else{
 			throw new ServiceException("未找到当前订单对应的机构信息");
-		}
-
-		try {
-			//订单商品有对接方商品CODE  机构有对接方E店CODE
-			if(StringUtils.isNotEmpty(jointGoodsCodes) &&
-					StringUtils.isNotEmpty(jointEshopCode)){
-				OrderInfo sendOrder = new OrderInfo();
-				sendOrder.setId(orderInfo.getId());//订单ID
-				sendOrder.setTechList(techListRe);//技师信息
-				OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-				if (sendResponse == null) {
-					throw new ServiceException("对接失败-返回值为空");
-				} else if (sendResponse.getCode() != 0) {
-					throw new ServiceException("对接失败-"+sendResponse.getMessage());
-				}
-			}
-		}catch (Exception e){
-			throw new ServiceException("对接失败-系统异常");
 		}
 
 		HashMap<String,Object> map = new HashMap<>();
@@ -899,7 +863,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()>0){
+		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
 			throw new ServiceException("未找到商品需求的技能信息");
@@ -931,12 +895,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				//该日服务时间点列表
 				List<OrderDispatch> hours = timeDataListHours(date, techList, techDispatchNum,serviceSecond);
 				responseRe.setServiceTime(hours);
-			}catch (ServiceException ex){
-				if(ex.getMessage() != null){
-					throw new ServiceException(ex.getMessage());
-				}
 			}catch (Exception e){
-				throw new ServiceException("未找到服务时间点列表");
+				logger.error(responseRe.getLabel()+"未找到服务时间点列表");
 			}
 			list.add(responseRe);
 		}
@@ -1026,8 +986,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 						}
 
 						List<String> orders = DateUtils.getHeafHourTimeList(
-								DateUtils.addSeconds(order.getStartTime(), -serviceSecond.intValue()),
-								DateUtils.addSeconds(order.getEndTime(), intervalTime));
+								DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()),
+								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));
 						if (orders != null) {
 							Iterator<String> it2 = workTimes.iterator();
 							while (it2.hasNext()) {
@@ -1366,7 +1326,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()>0){
+		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
 			throw new ServiceException("未找到商品需求的技能信息");
@@ -1496,24 +1456,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				jointEshopCode = organization.getJointEshopCode();
 			}else{
 				throw new ServiceException("未找到当前订单对应的机构信息");
-			}
-
-			try {
-				//订单商品有对接方商品CODE  机构有对接方E店CODE
-				if(StringUtils.isNotEmpty(jointGoodsCodes) && StringUtils.isNotEmpty(jointEshopCode)){
-					OrderInfo sendOrder = new OrderInfo();
-					sendOrder.setId(orderInfo.getId());//订单ID
-					sendOrder.setServiceTime(serviceDate);//上门服务时间
-					sendOrder.setTechList(techLastList);//技师信息
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-					if (sendResponse == null) {
-						throw new ServiceException("对接失败-返回值为空");
-					} else if (sendResponse.getCode() != 0) {
-						throw new ServiceException("对接失败-"+sendResponse.getMessage());
-					}
-				}
-			}catch (Exception e){
-				throw new ServiceException("对接失败-系统异常");
 			}
 
 			HashMap<String,Object> map = new HashMap<>();

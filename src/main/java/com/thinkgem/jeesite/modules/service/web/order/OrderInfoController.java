@@ -112,6 +112,25 @@ public class OrderInfoController extends BaseController {
 		try {
 			HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
 
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setServiceTime((Date) map.get("serviceDate"));//上门服务时间
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						logger.error("更换时间保存-对接失败-返回值为空");
+					} else if (sendResponse.getCode() != 0) {
+						logger.error("更换时间保存-对接失败-"+sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				logger.error("更换时间保存-对接失败-系统异常");
+			}
+
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult("保存失败-"+ex.getMessage());
@@ -143,6 +162,24 @@ public class OrderInfoController extends BaseController {
 		try{
 			HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
 
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						logger.error("增加技师保存-对接失败-返回值为空");
+					} else if (sendResponse.getCode() != 0) {
+						logger.error("增加技师保存-对接失败-"+sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				logger.error("增加技师保存-对接失败-系统异常");
+			}
+
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult("保存失败-"+ex.getMessage());
@@ -173,6 +210,24 @@ public class OrderInfoController extends BaseController {
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
 		try{
 			HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						logger.error("技师改派保存-对接失败-返回值为空");
+					} else if (sendResponse.getCode() != 0) {
+						logger.error("技师改派保存-对接失败-"+sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				logger.error("技师改派保存-对接失败-系统异常");
+			}
 
 			return new SuccResult(map);
 		}catch (ServiceException ex){
