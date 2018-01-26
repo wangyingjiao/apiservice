@@ -291,44 +291,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return heafHourTimeList;
 	}
 	/**
-	 * 取得同一天 某时间段内半小时和整点数据 包含边界
-	 * @param startTime
-	 * @param endTime
-	 * @return
-	 */
-	public static List<String> getHeafHourTimeListBorder(Date startTime, Date endTime) {
-		if(!startTime.before(endTime)){
-			return null;//开始时间在结束时间之前 否则返回null
-		}
-		if(!(DateUtils.formatDate(startTime, "yyyyMMdd").equals(DateUtils.formatDate(endTime, "yyyyMMdd")))){
-			return null;//开始时间和结束时间是同一天 否则返回null
-		}
-
-		if(!DateUtils.addMinutes(startTime,30).before(endTime)){
-			return null;//开始时间和结束时间之间相隔不到30分钟
-		}
-
-		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
-				DateUtils.formatDate(startTime, "HH") + ":30:00");
-		if(!startTime.before(heafHourTime)){
-			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
-					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
-		}
-		List<String> heafHourTimeList = new ArrayList<String>();
-		heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
-		for (int i = 0; i < 48; i++) {
-
-			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
-			if(endTime.after(heafHourTime)){
-				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
-				continue;
-			}
-			break;
-		}
-		return heafHourTimeList;
-	}
-
-	/**
 	 * 获取今天后15天的日期数组
 	 * @return
 	 */
@@ -556,7 +518,59 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
 		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
-		System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
+		//System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
+		List<String> list = new ArrayList<>();
+		list = getHeafHourTimeListBorder(parseDate("2018-01-24 21:40:00"),parseDate("2018-01-24 23:10:00"));
+		for(String info : list){
+			System.out.println(info);
+		}
+
+	}
+
+	/**
+	 * 取得同一天 某时间段内半小时和整点数据 包含边界
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public static List<String> getHeafHourTimeListBorder(Date startTime, Date endTime) {
+		if(!startTime.before(endTime)){
+			return null;//开始时间在结束时间之前 否则返回null
+		}
+		if(!(DateUtils.formatDate(startTime, "yyyyMMdd").equals(DateUtils.formatDate(endTime, "yyyyMMdd")))){
+			return null;//开始时间和结束时间是同一天 否则返回null
+		}
+		if(startTime.after(DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " 23:30:00")) ||
+				endTime.before(DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " 00:30:00"))){
+			return null;
+		}
+		List<String> heafHourTimeList = new ArrayList<String>();
+
+		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+				DateUtils.formatDate(startTime, "HH") + ":30:00");//取得开始时间的半点 2:00 2:10 2:30 2:50  --> 2:30
+		if(startTime.before(heafHourTime)){//开始时间大于半点
+			Date dateFirst = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+					DateUtils.formatDate(startTime, "HH") + ":00:00");//取得开始时间的正点 2:00 2:10 2:30 2:50  --> 2:00
+			if(startTime.getTime() == dateFirst.getTime()){
+				heafHourTimeList.add(DateUtils.formatDate(dateFirst, "HH:mm"));
+			}
+		}else{
+			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
+		}
+		if(endTime.after(heafHourTime) || endTime.getTime()==heafHourTime.getTime()) {
+			heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+		}
+		for (int i = 0; i < 48; i++) {
+
+			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
+			if(endTime.after(heafHourTime) || endTime.getTime()==heafHourTime.getTime()) {
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+				continue;
+			}
+			break;
+		}
+		return heafHourTimeList;
 	}
 
     public static boolean timeBeforeNow(Date date) {
@@ -590,4 +604,5 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return date2;
 	}
+
 }

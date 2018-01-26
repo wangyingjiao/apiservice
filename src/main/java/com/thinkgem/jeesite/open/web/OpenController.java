@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.open.entity.*;
 import com.thinkgem.jeesite.open.service.OpenService;
 import io.swagger.annotations.ApiOperation;
@@ -37,6 +38,8 @@ public class OpenController extends BaseController {
 
 	@Autowired
 	private OpenService openService;
+	@Autowired
+	private MessageInfoService messageInfoService;
 
 	/**
 	 * 选择服务时间
@@ -65,7 +68,17 @@ public class OpenController extends BaseController {
 	@RequestMapping(value = "create", method = {RequestMethod.POST})
 	public OpenResult create(OpenCreateRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			OpenCreateResponse responseRe = openService.openCreate(info);
+			//OpenCreateResponse responseRe = openService.openCreate(info);
+			HashMap<String,Object> map = openService.openCreate(info);
+			OpenCreateResponse responseRe = (OpenCreateResponse)map.get("response");
+
+			try {
+				OrderInfo orderInfo = (OrderInfo)map.get("orderInfoMsg");
+				messageInfoService.insert(orderInfo, "orderCreate");//新增
+			}catch (Exception e){
+				logger.error("订单创建-推送消息失败-系统异常");
+			}
+
 			return new OpenSuccResult(responseRe, "操作成功");
 		}catch (ServiceException ex){
 			return new OpenFailResult(ex.getMessage());

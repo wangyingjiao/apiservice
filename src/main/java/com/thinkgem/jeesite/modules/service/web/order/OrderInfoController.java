@@ -38,6 +38,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -156,9 +157,36 @@ public class OrderInfoController extends BaseController {
 			}
 
 			try{
-				messageInfoService.insert(orderInfo,"orderCreate");//新增
-				messageInfoService.insert(orderInfo,"orderDispatch");//改派
-				messageInfoService.insert(orderInfo,"orderServiceTime");//服务时间变更
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				// 改派
+				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+				// 时间变化
+				List<OrderDispatch> orderServiceTimeMsgList = (List<OrderDispatch>)map.get("orderServiceTimeMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+
+				OrderInfo orderInfo1 = new OrderInfo();
+				OrderInfo orderInfo2 = new OrderInfo();
+				OrderInfo orderInfo3 = new OrderInfo();
+
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo2.setOrderNumber(orderNumber);
+				orderInfo3.setOrderNumber(orderNumber);
+
+				orderInfo1.setId(orderId);
+				orderInfo2.setId(orderId);
+				orderInfo3.setId(orderId);
+
+				orderInfo1.setTechList(orderCreateMsgList);
+				orderInfo2.setTechList(orderDispatchMsgList);
+				orderInfo3.setTechList(orderServiceTimeMsgList);
+				//时间
+				orderInfo3.setServiceTime((Date)map.get("serviceDate"));
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+				messageInfoService.insert(orderInfo3,"orderServiceTime");//服务时间变更
 			}catch (Exception e){
 				logger.error("增加技师保存-推送消息失败-系统异常");
 			}
@@ -219,7 +247,15 @@ public class OrderInfoController extends BaseController {
 			}
 
 			try{
-				messageInfoService.insert(orderInfo,"orderCreate");
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+				OrderInfo orderInfo1 = new OrderInfo();
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo1.setId(orderId);
+				orderInfo1.setTechList(orderCreateMsgList);
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
 			}catch (Exception e){
 				logger.error("增加技师保存-推送消息失败-系统异常");
 			}
@@ -280,8 +316,27 @@ public class OrderInfoController extends BaseController {
 			}
 
 			try{
-				messageInfoService.insert(orderInfo,"orderCreate");//新增
-				messageInfoService.insert(orderInfo,"orderDispatch");//改派
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				// 改派
+				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+
+				OrderInfo orderInfo1 = new OrderInfo();
+				OrderInfo orderInfo2 = new OrderInfo();
+
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo2.setOrderNumber(orderNumber);
+
+				orderInfo1.setId(orderId);
+				orderInfo2.setId(orderId);
+
+				orderInfo1.setTechList(orderCreateMsgList);
+				orderInfo2.setTechList(orderDispatchMsgList);
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
 			}catch (Exception e){
 				logger.error("增加技师保存-推送消息失败-系统异常");
 			}

@@ -600,6 +600,7 @@
 		a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
 		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
+		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
 		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
 		AND a.tech_id  in
 		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
@@ -630,6 +631,7 @@
 	<select id="findTechOrderList" resultType="OrderDispatch">
 		SELECT
 		a.tech_id AS "techId",
+		o.id AS "orderId",
 		o.service_time AS "startTime",
 		o.finish_time AS "endTime"
 		from order_dispatch a

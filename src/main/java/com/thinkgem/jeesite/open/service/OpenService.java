@@ -390,7 +390,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	public OpenCreateResponse openCreate(OpenCreateRequest info) {
+	public HashMap<String,Object> openCreate(OpenCreateRequest info) {
 		OpenCreateResponse response = new OpenCreateResponse();
 		if(null == info){
 			throw new ServiceException("未接收到订单信息!");
@@ -471,7 +471,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		response = new OpenCreateResponse();
 		response.setSuccess(true);// 状态：true 成功；false 失败
 		response.setService_order_id(orderInfo.getId());// 自营服务订单ID
-		return response;
+
+		OrderInfo orderInfoMsg = new OrderInfo();
+		orderInfoMsg.setId(orderInfo.getId());
+		orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+		orderInfoMsg.setTechList(orderDispatches);
+
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("response",response);
+		map.put("orderInfoMsg",orderInfoMsg);
+		return map;
 	}
 
 	/**
