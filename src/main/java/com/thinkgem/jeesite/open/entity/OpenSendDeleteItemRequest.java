@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.open.entity;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 服务项目删除RequestEntity
@@ -11,8 +12,8 @@ import java.util.HashMap;
 public class OpenSendDeleteItemRequest {
 
     private String eshop_code;// ESHOP_CODE
-    private HashMap<String,Object> id;
-    private HashMap<String,Object> master_id;
+    private List<String> id;
+    private List<String> master_id;
 
     public String getEshop_code() {
         return eshop_code;
@@ -22,19 +23,19 @@ public class OpenSendDeleteItemRequest {
         this.eshop_code = eshop_code;
     }
 
-    public HashMap<String, Object> getId() {
+    public List<String> getId() {
         return id;
     }
 
-    public void setId(HashMap<String, Object> id) {
+    public void setId(List<String> id) {
         this.id = id;
     }
 
-    public HashMap<String, Object> getMaster_id() {
+    public List<String> getMaster_id() {
         return master_id;
     }
 
-    public void setMaster_id(HashMap<String, Object> master_id) {
+    public void setMaster_id(List<String> master_id) {
         this.master_id = master_id;
     }
 

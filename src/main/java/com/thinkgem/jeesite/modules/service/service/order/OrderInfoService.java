@@ -287,9 +287,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderInfo.setOrderRemarkPics(pictureDetails);
 		}
 
-		List<OrderTimeList> list = timeDataList(orderInfo);
-		orderInfo.setOrderTimeList(list);
-
 		return orderInfo;
 	}
 
@@ -780,39 +777,38 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 
 	public List<OrderTimeList> timeDataList(OrderInfo orderInfo) {
+
 		List<Date> dateList = DateUtils.getAfterFifteenDays();
 		List<OrderTimeList> list = new ArrayList<>();
 		int value = 1;
 
-		//根据传入的年月日取得当天有时间且没休假的技师
-		Date serviceDate = orderInfo.getServiceTime();//服务时间年月日
-		if(null == serviceDate){
-			throw new ServiceException("服务时间不可为空,请选择日期");
-		}
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
 		int techDispatchNum = 0;//派人数量
 		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
 			for(OrderGoods goods :goodsInfoList){//
 				int goodsNum = goods.getGoodsNum();		// 订购商品数
 				if(0 == goodsNum){
-					throw new ServiceException("未找到当前订单服务商品信息的订购商品数");
+					logger.error("未找到当前订单服务商品信息的订购商品数");
 				}
 				Double convertHours = goods.getConvertHours();		// 折算时长
 				if(convertHours == null || 0 == convertHours){
-					throw new ServiceException("未找到当前订单服务商品信息的折算时长");
+					logger.error("未找到当前订单服务商品信息的订购商品数");
 				}
 				int startPerNum = goods.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
 				if(0 == startPerNum){
-					throw new ServiceException("未找到当前订单服务商品信息的起步人数");
+					startPerNum =1;
 				}
 				int cappinPerNum = goods.getCappingPerNum();		//封项人数
 				if(0 == cappinPerNum){
-					throw new ServiceException("未找到当前订单服务商品信息的封项人数");
+					cappinPerNum = 30;
 				}
 
 				int techNum = 0;//当前商品派人数量
 				int addTechNum=0;
-				Double totalTime = convertHours * goodsNum;//商品需要时间
+				Double totalTime = 0.0;
+				if(convertHours!=null) {
+					totalTime = convertHours * goodsNum;//商品需要时间
+				}
 
 				if(totalTime > 4){//每4小时增加1人
 					BigDecimal b1 = new BigDecimal(totalTime);
@@ -828,15 +824,19 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 			}
 		} else {
-			throw new ServiceException("未找到当前订单服务商品信息");
+			logger.error("未找到当前订单服务商品信息");
+			return null;
 		}
+		orderInfo = get(orderInfo);
 		String stationId = orderInfo.getStationId();//服务站ID
 		if(null == stationId){
-			throw new ServiceException("未找到当前订单的服务站信息");
+			logger.error("未找到当前订单的服务站信息");
+			return null;
 		}
 		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
 		if(serviceHour == null || 0 == serviceHour){
-			throw new ServiceException("未找到当前订单的建议服务时长");
+			logger.error("未找到当前订单的建议服务时长");
+			return null;
 		}
 		Double serviceSecond = (serviceHour * 3600);
 
@@ -854,10 +854,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
-			throw new ServiceException("未找到商品需求的技能信息");
-		}
-		if(null == skillId){
-			throw new ServiceException("未找到当前订单服务商品信息的需求技能");
+			logger.error("未找到商品需求的技能信息");
+			return null;
 		}
 		serchInfo.setSkillId(skillId);
 		//（2）上线、在职
@@ -872,7 +870,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(techList.size() < techDispatchNum){//技师数量不够
 			return null;
 		}
-
 
 		for(Date date : dateList){
 			OrderTimeList responseRe = new OrderTimeList();

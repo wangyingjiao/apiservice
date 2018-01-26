@@ -19,6 +19,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderTimeList;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
 import com.thinkgem.jeesite.open.send.OpenSendUtil;
@@ -52,6 +53,8 @@ public class OrderInfoController extends BaseController {
 
 	@Autowired
 	private OrderInfoService orderInfoService;
+	@Autowired
+	private MessageInfoService messageInfoService;
 	
 	@ModelAttribute
 	public OrderInfo get(@RequestParam(required=false) String id) {
@@ -147,6 +150,14 @@ public class OrderInfoController extends BaseController {
 				logger.error("更换时间保存-对接失败-系统异常");
 			}
 
+			try{
+				messageInfoService.insert(orderInfo,"orderCreate");//新增
+				messageInfoService.insert(orderInfo,"orderDispatch");//改派
+				messageInfoService.insert(orderInfo,"orderServiceTime");//服务时间变更
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
+			}
+
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult("保存失败-"+ex.getMessage());
@@ -178,7 +189,7 @@ public class OrderInfoController extends BaseController {
 		try{
 			HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
 
-			try {
+			try {//对接
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
 				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
 						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
@@ -194,6 +205,12 @@ public class OrderInfoController extends BaseController {
 				}
 			}catch (Exception e){
 				logger.error("增加技师保存-对接失败-系统异常");
+			}
+
+			try{
+				messageInfoService.insert(orderInfo,"orderCreate");
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
 			}
 
 			return new SuccResult(map);
@@ -245,6 +262,12 @@ public class OrderInfoController extends BaseController {
 				logger.error("技师改派保存-对接失败-系统异常");
 			}
 
+			try{
+				messageInfoService.insert(orderInfo,"orderCreate");//新增
+				messageInfoService.insert(orderInfo,"orderDispatch");//改派
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
+			}
 			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult("保存失败-"+ex.getMessage());

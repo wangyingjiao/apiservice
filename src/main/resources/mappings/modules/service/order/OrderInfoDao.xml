@@ -439,7 +439,7 @@
 			b.phone  AS techPhone
 		FROM
 		order_dispatch a
-		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN tech_info b ON a.tech_id = b.id
 		WHERE a.order_id = #{id}
 		AND a.status = 'yes'
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
@@ -481,7 +481,7 @@
 		FROM
 		order_info a
 		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id AND good2.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id
 		WHERE
 		a.id = #{id}
 	</select>

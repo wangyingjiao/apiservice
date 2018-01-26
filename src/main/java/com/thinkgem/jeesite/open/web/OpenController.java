@@ -84,6 +84,15 @@ public class OpenController extends BaseController {
 	public OpenResult updateStatus(OpenUpdateStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			OpenUpdateStautsResponse responseRe = openService.openUpdateStauts(info);
+
+		/*	try{
+				messageInfoService.insert(orderInfo,"orderCreate");//新增
+				messageInfoService.insert(orderInfo,"orderDispatch");//改派
+				messageInfoService.insert(orderInfo,"orderServiceTime");//服务时间变更
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
+			}*/
+
 			return new OpenSuccResult(responseRe, "操作成功");
 		}catch (ServiceException ex){
 			return new OpenFailResult(ex.getMessage());

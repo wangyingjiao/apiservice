@@ -256,13 +256,11 @@ public class OpenSendUtil {
 
 		//---商品List----------------------------------------------------------------------------
 		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();//商品信息
-		List<OpenSendSaveItemProduct> productList = new ArrayList<>();
+		List<String> productList = new ArrayList<>();
 		if(commoditys != null){
 			for(SerItemCommodity commodity : commoditys){
 				String joint_goods_code = commodity.getJointGoodsCode();
-				OpenSendSaveItemProduct itemProduct = new OpenSendSaveItemProduct();
-				itemProduct.setId(joint_goods_code);
-				productList.add(itemProduct);
+				productList.add(joint_goods_code);
 			}
 		}else{
 			OpenSendDeleteItemResponse responseRe = new OpenSendDeleteItemResponse();
@@ -274,13 +272,11 @@ public class OpenSendUtil {
 		//--SEND------------------------------------------------------------------
 		OpenSendDeleteItemRequest request = new OpenSendDeleteItemRequest();
 		request.setEshop_code(eshopCode);
-		HashMap<String,Object> id_list = new HashMap<String,Object>();
-		HashMap<String,Object> master_id_list = new HashMap<String,Object>();
-		int value = 0;
-		for (OpenSendSaveItemProduct product :productList){
-			id_list.put(String.valueOf(value), product);
-			master_id_list.put(String.valueOf(value), product);
-			value++;
+		List<String> id_list = new ArrayList<>();
+		List<String> master_id_list = new ArrayList<>();
+		for (String product :productList){
+			id_list.add(product);
+			master_id_list.add(product);
 		}
 		request.setId(id_list);
 		request.setMaster_id(master_id_list);
