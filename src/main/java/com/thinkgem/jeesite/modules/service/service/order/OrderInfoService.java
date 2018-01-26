@@ -110,6 +110,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		orderInfo.setGoodsInfo(goodsInfo);
 		orderInfo.setTechList(techList);
+		List<String> idList=new ArrayList<String>();
 		//app其他技师
 		List<AppServiceTechnicianInfo> appTechList=new ArrayList<AppServiceTechnicianInfo>();
 		for (OrderDispatch apt:techList){
@@ -122,8 +123,12 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (!technicianById.getId().equals(orderInfo.getNowId())){
 					appTechList.add(technicianById);
 				}
-				orderInfo.setIsTech("no");
+				idList.add(technicianById.getId());
 			}
+		}
+		//如果包含这个id 可以操作
+		if (idList.contains(orderInfo.getNowId())){
+			orderInfo.setIsTech("yes");
 		}
 		orderInfo.setAppTechList(appTechList);
 		//客户信息
