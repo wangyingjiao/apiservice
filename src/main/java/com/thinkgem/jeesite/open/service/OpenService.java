@@ -232,7 +232,20 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 
 			List<OpenHours> hours = new ArrayList<>();
-			List<String> heafHourTimeList = DateUtils.getHeafHourTimeListBorder(orgWorkStartTime,orgWorkEndTime);//机构的上下班时间
+			Date reStartTime = orgWorkStartTime;
+			Date reEndTime = orgWorkEndTime;
+			if(resTimeList!=null && resTimeList.size()>0){
+				String resTimeListStart = resTimeList.get(0);
+				String resTimeListEnd = resTimeList.get(resTimeList.size()-1);
+				if(reStartTime.after(DateUtils.parseDate(DateUtils.formatDate(reStartTime,"yyyy-MM-dd"+" "+resTimeListStart)))){
+					reStartTime = DateUtils.parseDate(DateUtils.formatDate(reStartTime,"yyyy-MM-dd"+" "+resTimeListStart));
+				}
+				if(reEndTime.before(DateUtils.parseDate(DateUtils.formatDate(reEndTime,"yyyy-MM-dd"+" "+resTimeListEnd)))){
+					reEndTime = DateUtils.parseDate(DateUtils.formatDate(reEndTime,"yyyy-MM-dd"+" "+resTimeListEnd));
+				}
+			}
+
+			List<String> heafHourTimeList = DateUtils.getHeafHourTimeListBorder(reStartTime,reEndTime);//机构的上下班时间
 			for(String heafHourTime : heafHourTimeList){
 				OpenHours openHours  = new OpenHours();
 				openHours.setHour(heafHourTime);
@@ -306,12 +319,14 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			Date startDateForWork = workTime.getStartTime();
 			if(DateUtils.isToday(date)) {
 				if (DateUtils.timeBeforeNow(workTime.getStartTime())) {
+					Date dateAddTwoHour = DateUtils.addSecondsNotDayE(new Date(),2*60*60);//当天时间向后退2H
+
 					startDateForWork = DateUtils.parseDate(
 							DateUtils.formatDate(startDateForWork, "yyyy-MM-dd") + " " +
-									DateUtils.formatDate(new Date(), "HH:mm:ss"));
+									DateUtils.formatDate(dateAddTwoHour, "HH:mm:ss"));
 				}
 			}
-			List<String> workTimes = DateUtils.getHeafHourTimeList(startDateForWork,workTime.getEndTime());
+			List<String> workTimes = DateUtils.getHeafHourTimeListBorder(startDateForWork,workTime.getEndTime());
 
 			if(workTimes != null) {
 				//去除休假时间
@@ -320,7 +335,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
-						List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeListBorder(holiday.getStartTime(), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
 						while (it1.hasNext()) {
 							String work = (String) it1.next();
@@ -346,10 +361,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 							intervalTime = 15 * 60 + 10 * 60;
 						}
 
-						List<String> orders = DateUtils.getHeafHourTimeList(
+						List<String> orders = DateUtils.getHeafHourTimeListBorder(
 								DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()),
 								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));
-						if (orders != null) {
+						if (orders != null && workTimes!= null) {
 							Iterator<String> it2 = workTimes.iterator();
 							while (it2.hasNext()) {
 								String work = (String) it2.next();
@@ -380,8 +395,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				resTimeList.add(temp.toString());
 			}
 		}
+		//时间排序
+		String[] strings = new String[resTimeList.size()];
+		resTimeList.toArray(strings);
+		Arrays.sort(strings);//排序
+		List<String> list = java.util.Arrays.asList(strings);
 
-		return resTimeList;
+		return list;
 	}
 
 	/**
