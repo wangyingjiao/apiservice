@@ -115,7 +115,7 @@ public class OrderInfoController extends BaseController {
 		//判断订单状态
 		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
 		if(!flag){
-			return new FailResult("当前订单不可操作, 请查看订单状态或服务状态!");
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
 		}
 
 		try {
@@ -179,7 +179,7 @@ public class OrderInfoController extends BaseController {
 		//判断订单状态
 		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
 		if(!flag){
-			return new FailResult("当前订单不可操作, 请查看订单状态或服务状态!");
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
 		}
 
 		try{
@@ -240,7 +240,7 @@ public class OrderInfoController extends BaseController {
 		//判断订单状态
 		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
 		if(!flag){
-			return new FailResult("当前订单不可操作, 请查看订单状态或服务状态!");
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
 		}
 
 		try{

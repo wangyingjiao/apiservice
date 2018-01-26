@@ -287,10 +287,28 @@ public class SerItemInfoController extends BaseController {
                     //对接
                     OpenSendDeleteItemResponse sendResponse = OpenSendUtil.openSendDeleteItem(serItemInfo,map.get("jointEshopCode").toString());
                     if(sendResponse != null && sendResponse.getCode() == 0){
-                        //Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
-
-                        List<String> dataFail = sendResponse.getDatafail();//属于专场商品或其相关的组合商品属于专场商品
-                        List<String> datainventoryfail = sendResponse.getDatainventoryfail();//还有可售库存该商品和其相关组合商品不可删除
+                        List<String> dataFail = new ArrayList<>();//属于专场商品或其相关的组合商品属于专场商品
+                        List<String> datainventoryfail = new ArrayList<>();//还有可售库存该商品和其相关组合商品不可删除
+                        if(sendResponse.getDatafail() != null){
+                            Map<String, Object> responseData1 = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getDatafail().toString(), Map.class);
+                            Iterator iter1 = responseData1.entrySet().iterator();
+                            while (iter1.hasNext()) {
+                                Map.Entry entry1 = (Map.Entry) iter1.next();
+                                String key = entry1.getKey().toString();
+                                String value = entry1.getValue().toString();
+                                dataFail.add(key);
+                            }
+                        }
+                        if(sendResponse.getDatainventoryfail() != null) {
+                            Map<String, Object> responseData2 = (Map<String, Object>) JsonMapper.fromJsonString(sendResponse.getDatainventoryfail().toString(), Map.class);
+                            Iterator iter2 = responseData2.entrySet().iterator();
+                            while (iter2.hasNext()) {
+                                Map.Entry entry2 = (Map.Entry) iter2.next();
+                                String key = entry2.getKey().toString();
+                                String value = entry2.getValue().toString();
+                                datainventoryfail.add(key);
+                            }
+                        }
 
                         List<String> failCommodityIds = new ArrayList<>();
                         HashMap<String,String> commodityIds = new HashMap<>();// joinCode - id
@@ -365,10 +383,30 @@ public class SerItemInfoController extends BaseController {
                 if(serItemInfo != null && serItemInfo.getCommoditys() != null && serItemInfo.getCommoditys().size() > 0){
                     OpenSendDeleteItemResponse sendResponse = OpenSendUtil.openSendDeleteItem(serItemInfo,map.get("jointEshopCode").toString());
                     if(sendResponse != null && sendResponse.getCode() == 0){
-                        //Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
 
-                        List<String> dataFail = sendResponse.getDatafail();//属于专场商品或其相关的组合商品属于专场商品
-                        List<String> datainventoryfail = sendResponse.getDatainventoryfail();//还有可售库存该商品和其相关组合商品不可删除
+                        List<String> dataFail = new ArrayList<>();//属于专场商品或其相关的组合商品属于专场商品
+                        List<String> datainventoryfail = new ArrayList<>();//还有可售库存该商品和其相关组合商品不可删除
+                        if(sendResponse.getDatafail() != null){
+                            Map<String, Object> responseData1 = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getDatafail().toString(), Map.class);
+                            Iterator iter1 = responseData1.entrySet().iterator();
+                            while (iter1.hasNext()) {
+                                Map.Entry entry1 = (Map.Entry) iter1.next();
+                                String key = entry1.getKey().toString();
+                                String value = entry1.getValue().toString();
+                                dataFail.add(key);
+                            }
+                        }
+                        if(sendResponse.getDatainventoryfail() != null) {
+                            Map<String, Object> responseData2 = (Map<String, Object>) JsonMapper.fromJsonString(sendResponse.getDatainventoryfail().toString(), Map.class);
+                            Iterator iter2 = responseData2.entrySet().iterator();
+                            while (iter2.hasNext()) {
+                                Map.Entry entry2 = (Map.Entry) iter2.next();
+                                String key = entry2.getKey().toString();
+                                String value = entry2.getValue().toString();
+                                datainventoryfail.add(key);
+                            }
+                        }
+
                         if(dataFail != null && dataFail.size() != 0){
                             return new FailResult("属于专场商品或其相关的组合商品属于专场商品，删除失败！");
                         }else if (datainventoryfail != null && datainventoryfail.size() != 0){
