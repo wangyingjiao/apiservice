@@ -1593,4 +1593,41 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		return index;
 	}
 
+    /**
+     * 判断订单状态
+     * @param orderInfo
+     * @return
+     */
+    public boolean checkOrderStatus(OrderInfo orderInfo) {
+	    orderInfo = get(orderInfo);
+        String orderStatus =  orderInfo.getOrderStatus();
+        String serviceStatus =  orderInfo.getServiceStatus();
+
+	    //服务状态
+	    String serviceStatusWait = "wait_service";//待服务
+        String serviceStatusStarted = "started";//已上门
+        String serviceStatusFinish = "finish";//已完成
+        String serviceStatusCancel = "cancel";//已取消
+        //订单状态
+        String orderStatusWaitdispatch = "waitdispatch";//待派单
+        String orderStatusDispatched = "dispatched";//已派单
+        String orderStatusCancel = "cancel";//已取消
+        String orderStatusStarted = "started";//已上门
+        String orderStatusFinish = "finish";//已完成
+        String orderStatusSuccess = "success";//已成功
+        String orderStatusStop = "stop";//已暂停
+
+        /*
+            订单状态为已取消
+            订单状态为已完成
+            服务状态为已完成
+            （只要有一个满足就可以）
+         */
+	    if(orderStatusCancel.equals(orderStatus) || orderStatusFinish.equals(orderStatus) ||
+                serviceStatusFinish.equals(serviceStatus) || serviceStatusCancel.equals(serviceStatus) ){
+	        return  false;
+        }else{
+	        return true;
+        }
+    }
 }

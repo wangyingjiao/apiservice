@@ -112,9 +112,14 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("更换时间")
 	@RequiresPermissions("order_time")
 	public Result timeDataList(@RequestBody OrderInfo orderInfo) {
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单不可操作, 请查看订单状态或服务状态!");
+		}
+
 		try {
 			List<OrderTimeList>  timeList = orderInfoService.timeDataList(orderInfo);
-
 			return new SuccResult(timeList);
 		}catch (ServiceException ex){
 			return new FailResult("获取时间列表失败-"+ex.getMessage());
@@ -171,6 +176,12 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("增加技师")
 	@RequiresPermissions("order_addTech")
 	public Result addTech(@RequestBody OrderInfo orderInfo) {
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单不可操作, 请查看订单状态或服务状态!");
+		}
+
 		try{
 			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 			return new SuccResult(techList);
@@ -226,6 +237,12 @@ public class OrderInfoController extends BaseController {
 	@ApiOperation("技师改派")
 	@RequiresPermissions("order_dispatch")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单不可操作, 请查看订单状态或服务状态!");
+		}
+
 		try{
 			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 			return new SuccResult(techList);
