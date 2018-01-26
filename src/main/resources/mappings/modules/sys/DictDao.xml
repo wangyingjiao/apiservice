@@ -84,7 +84,10 @@
 		ORDER BY type
 	</select>
     <select id="getAllDicts" resultType="Dict">
-		SELECT type,`value`,label FROM sys_dict  ORDER BY type,`value`,label
+		SELECT type,`value`,label FROM sys_dict  ORDER BY type,sort
+	</select>
+	<select id="getGroupDicts" resultType="Dict">
+		SELECT type,COUNT(1) as dictNum FROM sys_dict  GROUP BY TYPE
 	</select>
 
     <insert id="insert">

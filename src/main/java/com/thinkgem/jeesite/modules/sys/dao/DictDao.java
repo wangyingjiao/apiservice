@@ -27,4 +27,5 @@ public interface DictDao extends CrudDao<Dict> {
 
     List<Dict> getAllDicts();
 
+    List<Dict> getGroupDicts();
 }

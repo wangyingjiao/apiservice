@@ -10,6 +10,8 @@ import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
  * 字典Entity
  * @author ThinkGem
@@ -24,6 +26,8 @@ public class Dict extends DataEntity<Dict> {
 	private String description;// 描述
 	private Integer sort;	// 排序
 	private String parentId;//父Id
+	private List<Dict> dictList;
+	private int dictNum;
 
 	public Dict() {
 		super();
@@ -47,7 +51,23 @@ public class Dict extends DataEntity<Dict> {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
+	public List<Dict> getDictList() {
+		return dictList;
+	}
+
+	public void setDictList(List<Dict> dictList) {
+		this.dictList = dictList;
+	}
+
+	public int getDictNum() {
+		return dictNum;
+	}
+
+	public void setDictNum(int dictNum) {
+		this.dictNum = dictNum;
+	}
+
 	@XmlAttribute
 	@Length(min=1, max=100)
 	public String getLabel() {
