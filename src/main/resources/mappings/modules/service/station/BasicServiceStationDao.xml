@@ -262,4 +262,14 @@
 		WHERE a.store_id = #{storeId}
 		AND b.org_id = #{orgId}
     </select>
+    <select id="getStationListByStoreIdUseable" resultType="BasicServiceStation">
+        select
+        a.station_id AS id
+        from basic_service_store a
+        LEFT JOIN basic_service_station b on a.station_id = b.id
+        WHERE a.store_id = #{storeId}
+        AND b.org_id = #{orgId}
+        AND b.is_useable = 'yes'
+        AND b.del_flag = '0'
+    </select>
 </mapper>
