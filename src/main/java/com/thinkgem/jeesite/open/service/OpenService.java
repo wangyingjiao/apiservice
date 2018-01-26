@@ -181,7 +181,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		BasicServiceStation stationSerch = new BasicServiceStation();
 		stationSerch.setStoreId(store_id);
 		stationSerch.setOrgId(orgId);
-		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreId(stationSerch);
+		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
 		String stationId = "";
 		if(null != stations && stations.size() > 0){
 			stationId = stations.get(0).getId();
@@ -198,7 +198,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setOrgId(orgId);
 		serchSkillSort.setSortId(orderGoods.get(0).getSortId());
 		String skillId = "";
-		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		List<SerSkillSort> skillSortList = orderInfoDao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
 		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{
@@ -212,7 +212,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchInfo.setJobNature("full_time");
 		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
 		//serchInfo.setOrderId(orderInfo.getId());
-		List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
+		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
 
 
 		for(Date date : dateList){
@@ -282,7 +282,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			//取得符合条件的技师的 工作时间 服务时间List
 			serchTech.setTechId(tech.getTechId());
 			serchTech.setWeek(week);
-			List<ServiceTechnicianWorkTime> workTimeList = dao.findTechWorkTimeList(serchTech);
+			List<ServiceTechnicianWorkTime> workTimeList = orderInfoDao.findTechWorkTimeList(serchTech);
 			if(workTimeList == null || workTimeList.size() == 0){
 				it.remove();
 
@@ -317,7 +317,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				//去除休假时间
 				serchTech.setStartTime(serviceDateMin);
 				serchTech.setEndTime(serviceDateMax);
-				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
+				List<ServiceTechnicianHoliday> holidayList = orderInfoDao.findTechHolidayList(serchTech);//取得今天的休假时间
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
 						List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(), holiday.getEndTime());
@@ -333,9 +333,19 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 
 				//去除订单前后时间段
-				List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
+				List<OrderDispatch> orderList = orderInfoDao.findTechOrderList(serchTech);
 				if (orderList != null && orderList.size() != 0) {
 					for (OrderDispatch order : orderList) {
+
+						Date startTime = (DateUtils.addSecondsNotDayB(order.getStartTime(),-(15*60 + 10*60)));
+						int finishTimeHH = Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH"));
+						Date endTime = order.getEndTime();
+						if(11 <= finishTimeHH && finishTimeHH < 14){
+							order.setFinishTime(DateUtils.addSecondsNotDayE(order.getEndTime(),(15*60 + 40*60 + 10*60)));
+						}else{
+							order.setFinishTime(DateUtils.addSecondsNotDayE(order.getEndTime(),(15*60 + 10*60)));
+						}
+/*
 						int intervalTime = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
@@ -348,7 +358,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 						List<String> orders = DateUtils.getHeafHourTimeList(
 								DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()),
-								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));
+								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));*/
+
+						List<String> orders = DateUtils.getHeafHourTimeList(startTime,endTime);
 						if (orders != null) {
 							Iterator<String> it2 = workTimes.iterator();
 							while (it2.hasNext()) {
@@ -767,7 +779,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		BasicServiceStation stationSerch = new BasicServiceStation();
 		stationSerch.setStoreId(store_id);
 		stationSerch.setOrgId(orgId);
-		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreId(stationSerch);
+		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
 		String stationId = "";
 		if(null != stations && stations.size() > 0){
 			stationId = stations.get(0).getId();
@@ -880,7 +892,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		serchSkillSort.setOrgId(orgId);
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
 		String skillId = "";
-		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		List<SerSkillSort> skillSortList = orderInfoDao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
 		if(skillSortList!=null && skillSortList.size()==1){
 			skillId = skillSortList.get(0).getSkillId();
 		}else{

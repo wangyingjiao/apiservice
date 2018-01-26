@@ -31,4 +31,6 @@ public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
 	int getCountTech(BasicServiceStation serviceStation);
 
     List<BasicServiceStation> getStationListByStoreId(BasicServiceStation stationSerch);
+
+    List<BasicServiceStation> getStationListByStoreIdUseable(BasicServiceStation stationSerch);
 }
