@@ -271,7 +271,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             }
         }
 
-        int week = DateUtils.getWeekNum(date); //周几
+		int week = DateUtils.getWeekNum(date); //周几
 		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
 		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 23:59:59");
 
@@ -282,7 +282,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			//取得符合条件的技师的 工作时间 服务时间List
 			serchTech.setTechId(tech.getTechId());
 			serchTech.setWeek(week);
-			List<ServiceTechnicianWorkTime> workTimeList = orderInfoDao.findTechWorkTimeList(serchTech);
+			List<ServiceTechnicianWorkTime> workTimeList = dao.findTechWorkTimeList(serchTech);
 			if(workTimeList == null || workTimeList.size() == 0){
 				it.remove();
 
@@ -291,11 +291,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 				continue;
 			}else {
-				if(DateUtils.isToday(date)) {
-					if (DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())) {
+				if(DateUtils.isToday(date)){
+					if(DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())){
 						it.remove();
 
-						if (techForList.size() < techDispatchNum) {//技师数量不够
+						if(techForList.size() < techDispatchNum){//技师数量不够
 							return null;
 						}
 						continue;
@@ -317,7 +317,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				//去除休假时间
 				serchTech.setStartTime(serviceDateMin);
 				serchTech.setEndTime(serviceDateMax);
-				List<ServiceTechnicianHoliday> holidayList = orderInfoDao.findTechHolidayList(serchTech);//取得今天的休假时间
+				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
 						List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(), holiday.getEndTime());
@@ -333,19 +333,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 
 				//去除订单前后时间段
-				List<OrderDispatch> orderList = orderInfoDao.findTechOrderList(serchTech);
+				List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
 				if (orderList != null && orderList.size() != 0) {
 					for (OrderDispatch order : orderList) {
-
-						Date startTime = (DateUtils.addSecondsNotDayB(order.getStartTime(),-(15*60 + 10*60)));
-						int finishTimeHH = Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH"));
-						Date endTime = order.getEndTime();
-						if(11 <= finishTimeHH && finishTimeHH < 14){
-							order.setFinishTime(DateUtils.addSecondsNotDayE(order.getEndTime(),(15*60 + 40*60 + 10*60)));
-						}else{
-							order.setFinishTime(DateUtils.addSecondsNotDayE(order.getEndTime(),(15*60 + 10*60)));
-						}
-/*
 						int intervalTime = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
@@ -358,9 +348,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 						List<String> orders = DateUtils.getHeafHourTimeList(
 								DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()),
-								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));*/
-
-						List<String> orders = DateUtils.getHeafHourTimeList(startTime,endTime);
+								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));
 						if (orders != null) {
 							Iterator<String> it2 = workTimes.iterator();
 							while (it2.hasNext()) {
@@ -405,11 +393,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	public OpenCreateResponse openCreate(OpenCreateRequest info) {
 		OpenCreateResponse response = new OpenCreateResponse();
 		if(null == info){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("未接收到订单信息");
-			return response;*/
 			throw new ServiceException("未接收到订单信息!");
 		}
 
@@ -418,20 +401,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		try {
 			masterInfo = openCreateForMaster(info);
 		}catch (ServiceException ex){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			if(ex.getMessage() != null){
-				response.setMessage(ex.getMessage());
-			}
-			return response;*/
 			throw new ServiceException(ex.getMessage());
 		}catch (Exception e){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("保存订单主表信息失败");
-			return response;*/
 			throw new ServiceException("保存订单主表信息失败");
 		}
 
@@ -440,20 +411,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		try{
 			orderAddress = openCreateForAddress(info);
 		}catch (ServiceException ex){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			if(ex.getMessage() != null){
-				response.setMessage(ex.getMessage());
-			}
-			return response;*/
 			throw new ServiceException(ex.getMessage());
 		}catch (Exception e){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("保存订单地址表信息失败");
-			return response;*/
 			throw new ServiceException("保存订单地址表信息失败");
 		}
 
@@ -462,28 +421,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		try{
 			orderInfo = openCreateForOrder(info, masterInfo, orderAddress);
 		}catch (ServiceException ex){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			if(ex.getMessage() != null){
-				response.setMessage(ex.getMessage());
-			}
-			return response;*/
 			throw new ServiceException(ex.getMessage());
 		}catch (Exception e){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("保存子订单信息表信息失败!");
-			return response;*/
 			throw new ServiceException("保存子订单信息表信息失败!");
 		}
 		if(null == orderInfo){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("保存子订单信息表信息失败");
-			return response;*/
 			throw new ServiceException("保存子订单信息表信息失败!");
 		}
 
@@ -493,28 +435,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			try{
 				openCreateForDispatch(orderInfo, orderDispatches);
 			}catch (ServiceException ex){
-				/*response = new OpenCreateResponse();
-				response.setSuccess(false);
-				response.setService_order_id("");
-				if(ex.getMessage() != null){
-					response.setMessage(ex.getMessage());
-				}
-				return response;*/
 				throw new ServiceException(ex.getMessage());
 			}catch (Exception e){
-				/*response = new OpenCreateResponse();
-				response.setSuccess(false);
-				response.setService_order_id("");
-				response.setMessage("保存派单信息表失败!");
-				return response;*/
 				throw new ServiceException("保存派单信息表失败!");
 			}
 		}else {
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("未找到派单信息");
-			return response;*/
 			throw new ServiceException("未找到派单信息");
 		}
 
@@ -524,28 +449,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			try{
 				openCreateForGoods(orderInfo, orderGoods);
 			}catch (ServiceException ex){
-				/*response = new OpenCreateResponse();
-				response.setSuccess(false);
-				response.setService_order_id("");
-				if(ex.getMessage() != null){
-					response.setMessage(ex.getMessage());
-				}
-				return response;*/
 				throw new ServiceException(ex.getMessage());
 			}catch (Exception e){
-				/*response = new OpenCreateResponse();
-				response.setSuccess(false);
-				response.setService_order_id("");
-				response.setMessage("保存订单商品信息表失败!");
-				return response;*/
 				throw new ServiceException("保存订单商品信息表失败!");
 			}
 		}else {
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("未找到商品信息");
-			return response;*/
 			throw new ServiceException("未找到商品信息");
 		}
 
@@ -554,20 +462,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			BigDecimal openPrice = orderInfo.getOpenPrice();//对接总价
 			openCreateForPay( masterInfo, openPrice);
 		}catch (ServiceException ex){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			if(ex.getMessage() != null){
-				response.setMessage(ex.getMessage());
-			}
-			return response;*/
 			throw new ServiceException(ex.getMessage());
 		}catch (Exception e){
-			/*response = new OpenCreateResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-			response.setMessage("保存订单支付信息表失败!");
-			return response;*/
 			throw new ServiceException("保存订单支付信息表失败!");
 		}
 
@@ -830,7 +726,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setGoodsInfoList(orderGoods);//商品信息
 
 		try {
-			List<OrderDispatch> techList = openCreateForOrderFindDispatchList(orderInfo);//获取派单技师
+			List<OrderDispatch> techList = openCreateForOrderFindDispatchList(orderInfo,techDispatchNum,serviceSecond);//获取派单技师
 			orderInfo.setTechList(techList);//派单技师List
 		}catch (ServiceException ex){
 			throw new ServiceException(ex.getMessage());
@@ -846,42 +742,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param orderInfo
 	 * @return
 	 */
-	private List<OrderDispatch> openCreateForOrderFindDispatchList(OrderInfo orderInfo){
+	private List<OrderDispatch> openCreateForOrderFindDispatchList(OrderInfo orderInfo,int techDispatchNum,Double serviceSecond){
 
 		List<OrderGoods> goodsInfoList = orderInfo.getGoodsInfoList(); //取得订单服务信息
 		String orgId = orderInfo.getOrgId();
 		String stationId = orderInfo.getStationId();//服务站ID
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
 		Date finishTime = orderInfo.getFinishTime();//完成时间
-
-		int techDispatchNum = 0;//派人数量
-		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
-			for(OrderGoods goods :goodsInfoList){//
-				int goodsNum = goods.getGoodsNum();		// 订购商品数
-				Double convertHours = goods.getConvertHours();		// 折算时长
-				int startPerNum = goods.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
-				int cappinPerNum = goods.getCappingPerNum();		//封项人数
-
-				int techNum = 0;//当前商品派人数量
-				int addTechNum=0;
-				Double totalTime = convertHours * goodsNum;//商品需要时间
-
-				if(totalTime > 4){//每4小时增加1人
-					BigDecimal b1 = new BigDecimal(totalTime);
-					BigDecimal b2 = new BigDecimal(new Double(4));
-					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
-				}
-				techNum = startPerNum + addTechNum;
-				if(techNum > cappinPerNum){//每个商品需求的人数
-					techNum = cappinPerNum;
-				}
-				if(techNum > techDispatchNum){//订单需求的最少人数
-					techDispatchNum = techNum;
-				}
-			}
-		}else{
-			throw new ServiceException("订单没有服务信息！");
-		}
 
 		//取得技师List
 		OrderDispatch serchInfo = new OrderDispatch();
@@ -953,13 +820,27 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
 				//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
 				//（4）富余时间定为10分钟"
-				orderTech.setServiceTime(DateUtils.addSeconds(orderTech.getServiceTime(),-(15*60 + 10*60)));
+
+				int intervalTime = 0;//必须间隔时间 秒
+				if (11 <= Integer.parseInt(DateUtils.formatDate(orderTech.getEndTime(), "HH")) &&
+						Integer.parseInt(DateUtils.formatDate(orderTech.getEndTime(), "HH")) < 14) {
+					//可以接单的时间则为：40分钟+路上时间+富余时间
+					intervalTime = 40 * 60 + 15 * 60 + 10 * 60;
+				} else {
+					//可以接单的时间则为：路上时间+富余时间
+					intervalTime = 15 * 60 + 10 * 60;
+				}
+
+				orderTech.setServiceTime(DateUtils.addSecondsNotDayB(orderTech.getStartTime(), -serviceSecond.intValue()));
+				orderTech.setFinishTime(DateUtils.addSecondsNotDayE(orderTech.getEndTime(), intervalTime));
+
+				/*orderTech.setServiceTime(DateUtils.addSeconds(orderTech.getServiceTime(),-(15*60 + 10*60)));
 				int finishTimeHH = Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH"));
 				if(11 <= finishTimeHH && finishTimeHH < 14){
 					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),(15*60 + 40*60 + 10*60)));
 				}else{
 					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),(15*60 + 10*60)));
-				}
+				}*/
 
 				if(!DateUtils.checkDatesRepeat(serviceTime,finishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
 					timeCheckDelTechIdList.add(orderTech.getTechId());
