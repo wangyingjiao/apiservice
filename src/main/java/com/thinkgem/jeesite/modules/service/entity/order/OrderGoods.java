@@ -28,8 +28,9 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String goodsId;		// 商品ID
 	private String goodsName;		// 商品名称
 	private int goodsNum;		// 订购商品数
-	private String originPrice;		// 单价原价
-	private String payPrice;		// 单价(折后价，无折扣时和原价相同)
+	private String goodsUnit;		// 商品名称
+	private String originPrice;		// 单价原价   自营价格
+	private String payPrice;		// 单价(折后价，无折扣时和原价相同) 国安社区价格
 	private String payPriceSum;		// 单价(折后价，无折扣时和原价相同)
 	private String goodsType;		// 计量方式(num：按数量 area：按面积 house：按居室)
 	private int minPurchase;		// 起购数量
@@ -244,5 +245,13 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setPayPriceSum(String payPriceSum) {
 		this.payPriceSum = payPriceSum;
+	}
+
+	public String getGoodsUnit() {
+		return goodsUnit;
+	}
+
+	public void setGoodsUnit(String goodsUnit) {
+		this.goodsUnit = goodsUnit;
 	}
 }

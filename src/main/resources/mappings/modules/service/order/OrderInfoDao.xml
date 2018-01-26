@@ -217,7 +217,7 @@
 			suggest_finish_time,
 			service_hour,
 			service_status,
-
+origin_price,
 			pay_price,
 			order_address_id,
 			order_time,
@@ -262,7 +262,7 @@
 			#{suggestFinishTime},
 			#{serviceHour},
 			#{serviceStatus},
-
+#{originPrice},
 			#{payPrice},
 			#{orderAddressId},
 			#{orderTime},
@@ -475,6 +475,7 @@
 			good.goods_id AS "goodsId",
 			good.goods_name AS "goodsName",
 			good.goods_num AS "goodsNum",
+			good.goods_unit AS "goodsUnit",
 			good.pay_price AS "payPrice",
 
 			good2.convert_hours AS "convertHours",

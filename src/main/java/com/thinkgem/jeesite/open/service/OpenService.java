@@ -646,6 +646,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				goods.setGoodsId(commodity.getId());//商品ID
 				goods.setGoodsName(commodity.getName());//商品名称
 				goods.setGoodsNum(buy_num);//订购商品数
+				goods.setGoodsType(commodity.getType());
+				goods.setGoodsUnit(commodity.getUnit());
 				goods.setPayPrice(pay_price);//对接后单价
 				goods.setOriginPrice(commodity.getPrice().toString());//原价
 				goods.setMajorSort(commodity.getMajorSort());
@@ -655,8 +657,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
                 goods.setCappingPerNum(commodity.getCappingPerNum());		//封项人数
 
 				orderGoods.add(goods);
-
-				originPrice = originPrice.add(commodity.getPrice());//商品总价
+				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
+				originPrice = originPrice.add(price);//商品总价
 				openPrice = openPrice.add(new BigDecimal(pay_price));
 				sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
 				goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
