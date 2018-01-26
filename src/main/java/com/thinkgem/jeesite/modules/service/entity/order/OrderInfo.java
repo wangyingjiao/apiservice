@@ -93,7 +93,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String nowId;//app
 	private List<AppServiceTechnicianInfo> appTechList;//app技师列表
 	private String techId; //app改派接收的技师id
+	private String isTech="no"; //app技师修改服务状态时做展示功能标识符
 
+	public String getIsTech() {
+		return isTech;
+	}
+
+	public void setIsTech(String isTech) {
+		this.isTech = isTech;
+	}
 
 	private List<OrderTimeList> orderTimeList;
 

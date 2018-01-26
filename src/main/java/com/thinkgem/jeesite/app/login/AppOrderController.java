@@ -88,7 +88,7 @@ public class AppOrderController extends BaseController {
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
 		if(page.getList().size()==0){
-			return new AppSuccResult(1,map,"列表查询");
+			return new AppSuccResult(1,null,"列表查询");
 		}
 
 		return new AppSuccResult(0,map,"列表查询");
@@ -156,11 +156,19 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(errList);
 		}
 		//参数 订单id 服务状态
-		int i = orderInfoService.appSaveRemark(info);
-		if (i>0){
+		try{
+			int i = orderInfoService.appSaveRemark(info);
+			//如果完成状态 不管是否成功 全返回成功
+			if (!info.getServiceStatus().equals("finish")){
+				if (i>0){
+					return new AppSuccResult(0,null,"修改服务状态成功");
+				}
+				return new AppFailResult(-1,null,"修改服务状态失败");
+			}
 			return new AppSuccResult(0,null,"修改服务状态成功");
+		}catch (ServiceException e){
+			return new AppFailResult(0,null,e.getMessage());
 		}
-		return new AppFailResult(-1,null,"修改服务状态失败");
 	}
 
 
@@ -212,15 +220,15 @@ public class AppOrderController extends BaseController {
 			if (i > 0){
 
 				//给改派前的技师发送消息  只需要techid phone orderId  type
-				OrderDispatch old1 = new OrderDispatch();
-				old1.setTechId(token.getTechId());
-				old1.setOrderId(orderInfo.getId());
-				old1.setTechPhone(token.getPhone());
-				List<OrderDispatch> list=new ArrayList<OrderDispatch>();
-				list.add(old1);
-				orderInfo.setTechList(list);
-				messageInfoService.insert(orderInfo,"orderDispatch");
-				//给改派前技师发送消息 再给改派后技师发送消息
+//				OrderDispatch old1 = new OrderDispatch();
+//				old1.setTechId(token.getTechId());
+//				old1.setOrderId(orderInfo.getId());
+//				old1.setTechPhone(token.getPhone());
+//				List<OrderDispatch> list=new ArrayList<OrderDispatch>();
+//				list.add(old1);
+//				orderInfo.setTechList(list);
+//				messageInfoService.insert(orderInfo,"orderDispatch");
+				// 给改派后技师发送消息
 				ServiceTechnicianInfo technicianInfo=new ServiceTechnicianInfo();
 				technicianInfo.setId(techId);
 				ServiceTechnicianInfo byId = techService.getById(technicianInfo);

@@ -48,7 +48,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		serviceTechnicianHoliday.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "b"));
 		return super.findPage(page, serviceTechnicianHoliday);
 	}
-	//app获取技师列表
+	//app获取技师休假列表
 	public Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		serviceTechnicianHoliday.setPage(page);
 		if (StringUtils.isNotBlank(serviceTechnicianHoliday.getTechId())){
@@ -107,6 +107,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		return i;
 	}
+	//app新增休假
 	@Transactional(readOnly = false)
 	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;

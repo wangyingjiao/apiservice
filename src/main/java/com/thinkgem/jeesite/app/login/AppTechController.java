@@ -209,6 +209,9 @@ public class AppTechController extends BaseController {
 		Token token = (Token) request.getAttribute("token");
 		tech.setId(token.getTechId());
 		ServiceTechnicianInfo tech1 = techService.appFindTech(tech);
+		if (tech1==null){
+			return new AppFailResult(-1,null,"没有该用户");
+		}
 		//旧密码与数据库查询出来的密码验证
 		if (!systemService.validatePassword(tech.getOldPassword(),tech1.getAppLoginPassword())){
 			return new AppFailResult(-1,null,"旧密码输入不对");
@@ -375,6 +378,7 @@ public class AppTechController extends BaseController {
 		}
 		return new AppSuccResult(1,null,"下拉列表");
 	}
+
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/selectListArea", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "现住地址下拉列表区", notes = "地址下拉列表")
@@ -402,23 +406,8 @@ public class AppTechController extends BaseController {
 		}
 		return new AppSuccResult(1,null,"下拉列表");
 	}
-	//没用到
-	//查看单个消息
-	@ResponseBody
-	@RequestMapping(value = "${appPath}/get", method = {RequestMethod.POST, RequestMethod.GET})
-	@ApiOperation(value = "查看消息详情", notes = "查看消息详情")
-	public AppResult get(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
-		//获取登陆技师的信息  id
-		Token token = (Token) request.getAttribute("token");
-		//根据消息的id 收件人查看
-		messageInfo.setReceivePhone(token.getPhone());
-		MessageInfo messageInfo1 = messageInfoService.get(messageInfo);
-		if (messageInfo1 == null){
-			return new AppFailResult(-1,null,"没有该消息");
-		}
-		return new AppSuccResult(0,messageInfo1,"查看消息");
-	}
-		//查看消息列表
+
+	//查看消息列表
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/getMessageList", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "消息列表", notes = "消息列表")
@@ -448,21 +437,7 @@ public class AppTechController extends BaseController {
 		}
 		return new AppSuccResult(0,map,"查看消息列表");
 	}
-	//没加上呢
-	//增加消息到数据库
-	@ResponseBody
-	@RequestMapping(value = "${appPath}/insertMessage", method = {RequestMethod.POST, RequestMethod.GET})
-	@ApiOperation(value = "添加消息", notes = "添加消息")
-	public AppResult insertMessage(OrderInfo orderInfo, String orderType, HttpServletRequest request, HttpServletResponse response) {
-		//获取登陆技师的信息  id
-		Token token = (Token) request.getAttribute("token");
-		String phone = token.getPhone();
-		int insert = messageInfoService.insert(orderInfo,orderType);
-		if (insert > 0){
-			return new AppSuccResult(0,null,"添加消息成功");
-		}
-		return new AppFailResult(-1,null,"添加消息失败");
-	}
+
 	//消息已读
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/updateMessage", method = {RequestMethod.POST, RequestMethod.GET})

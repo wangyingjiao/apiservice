@@ -122,6 +122,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (!technicianById.getId().equals(orderInfo.getNowId())){
 					appTechList.add(technicianById);
 				}
+				orderInfo.setIsTech("yes");
 			}
 		}
 		orderInfo.setAppTechList(appTechList);
@@ -1537,7 +1538,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         station.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
         return basicServiceStationDao.getServiceStationList(station);
     }
-	//订单编辑
+	//订单的编辑（订单备注以及订单的服务状态修改）
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
 		//订单备注图片  JSON串存的数组
@@ -1557,8 +1558,28 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			String s = JsonMapper.toJsonString(tem);
 			orderInfo.setOrderRemarkPic(s);
 		}
+		//是不是完成状态
+		if (StringUtils.isNotBlank(orderInfo.getServiceStatus())){
+			if (orderInfo.getServiceStatus().equals("finish")){
+				//查询数据库 获取 完成时间和服务状态
+				OrderInfo info = dao.appGet(orderInfo);
+				Date finishTime = info.getFinishTime();
+				Date date=new Date();
+				//如果提前完成  更新完成时间
+				if (date.before(finishTime)){
+					orderInfo.setFinishTime(date);
+				}
+			}
+		}
 		orderInfo.appPreUpdate();
-		return dao.appUpdate(orderInfo);
+		int i =0;
+		try{
+			i = dao.appUpdate(orderInfo);
+		}catch (Exception e){
+			//更改订单备注时 长度过长捕获异常信息
+			throw new ServiceException("修改数据库失败可能是长度过长");
+		}
+		return i;
 	}
 	//获取订单对应机构的对接code
 	public BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo){

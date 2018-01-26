@@ -340,7 +340,7 @@
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
-	<!--app编辑-->
+	<!--app编辑 限制非完成状态才可以修改数据库-->
 	<update id="appUpdate">
 		UPDATE order_info SET
 		<if test="orderRemark !=null and orderRemark != ''">
@@ -352,9 +352,13 @@
 		<if test="serviceStatus !=null and serviceStatus != ''">
 			service_status= #{serviceStatus},
 		</if>
+		<if test="finishTime !=null and finishTime != ''">
+			finish_time= #{finishTime},
+		</if>
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
+		AND service_status != 'finish'
 	</update>
 	<update id="delete">
 		UPDATE order_info SET 
