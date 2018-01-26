@@ -53,6 +53,9 @@ public class AppOrderController extends BaseController {
 	//技师info的service
 	@Autowired
 	ServiceTechnicianInfoService techService;
+	//消息的service
+	@Autowired
+	private MessageInfoService messageInfoService;
 
 	//查询订单列表
 	@ResponseBody
@@ -207,6 +210,31 @@ public class AppOrderController extends BaseController {
 			//改派并发送消息
 			int i = orderInfoService.appDispatchTechSave(orderInfo);
 			if (i > 0){
+
+				//给改派前的技师发送消息  只需要techid phone orderId  type
+				OrderDispatch old1 = new OrderDispatch();
+				old1.setTechId(token.getTechId());
+				old1.setOrderId(orderInfo.getId());
+				old1.setTechPhone(token.getPhone());
+				List<OrderDispatch> list=new ArrayList<OrderDispatch>();
+				list.add(old1);
+				orderInfo.setTechList(list);
+				messageInfoService.insert(orderInfo,"orderDispatch");
+				//给改派前技师发送消息 再给改派后技师发送消息
+				ServiceTechnicianInfo technicianInfo=new ServiceTechnicianInfo();
+				technicianInfo.setId(techId);
+				ServiceTechnicianInfo byId = techService.getById(technicianInfo);
+				//给改派的技师发送消息
+				OrderDispatch new1 = new OrderDispatch();
+				new1.setTechId(techId);
+				new1.setOrderId(orderInfo.getId());
+				new1.setTechPhone(byId.getPhone());
+				List<OrderDispatch> list1=new ArrayList<OrderDispatch>();
+				list1.add(new1);
+				orderInfo.setTechList(list1);
+				messageInfoService.insert(orderInfo,"orderCreate");
+
+
 				//查询数据库获取订单对应的机构  获取对接code
 				OrderInfo info = orderInfoService.get(orderInfo.getId());
 				BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);

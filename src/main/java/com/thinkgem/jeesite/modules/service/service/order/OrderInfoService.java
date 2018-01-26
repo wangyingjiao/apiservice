@@ -755,56 +755,28 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else{
 			throw new ServiceException("选择技师不可为空！");
 		}
-		//根据订单技师  获取老派单
+		//根据订单技师  获取老派单 订单id和改派前技师id去查
 		OrderDispatch orderDispatch = dao.appGetOrderDispatch(orderInfo);
 
 		OrderDispatch orderDispatchUpdate = new OrderDispatch();
 		orderDispatchUpdate.setId(dispatchTechId);//ID
 		orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
 		orderDispatch.appPreUpdate();
-		//数据库将改派前技师派单 设为不可用 订单id和改派前技师id去查
+		//数据库将改派前技师派单 设为不可用
 		int update1 = orderDispatchDao.update(orderDispatch);
 		//将老派单改成无效  再新增
-		int newSend =0;
+		int insert =0;
 		if (update1 > 0){
 			OrderDispatch newDis = new OrderDispatch();
 			newDis.setTechId(techId);//技师ID
 			newDis.setOrderId(orderInfo.getId());//订单ID
 			newDis.setStatus("yes");//状态(yes：可用 no：不可用)
 			newDis.appreInsert();
-			int insert = orderDispatchDao.insert(newDis);
-			if (insert>0){
-				//给改派前的技师发送消息  只需要techid phone orderId
-				OrderDispatch old1 = new OrderDispatch();
-				old1.setTechId(dispatchTechId);
-				old1.setOrderId(orderId);
-				old1.setTechPhone(oldTech.getPhone());
-				List<OrderDispatch> list=new ArrayList<OrderDispatch>();
-				list.add(old1);
-				orderInfo.setTechList(list);
-				int oldSend = messageInfoService.insert(orderInfo,"orderDispatch");
-				//给改派前技师发送消息 再给改派后技师发送消息
-				if (oldSend > 0){
-					//给改派的技师发送消息
-					OrderDispatch new1 = new OrderDispatch();
-					new1.setTechId(techId);
-					new1.setOrderId(orderId);
-					new1.setTechPhone(newTech.getPhone());
-					List<OrderDispatch> list1=new ArrayList<OrderDispatch>();
-					list1.add(new1);
-					orderInfo.setTechList(list1);
-					newSend = messageInfoService.insert(orderInfo,"orderCreate");
-				}else {
-					throw new ServiceException("给改派前技师发送消息失败");
-				}
-			}else {
-				throw new ServiceException("新增改派技师派单失败");
-			}
+			insert = orderDispatchDao.insert(newDis);
 		}else {
 			throw new ServiceException("删除改派前技师派单失败");
 		}
-
-		return newSend;
+		return insert;
 	}
 
 	public List<OrderTimeList> timeDataList(OrderInfo orderInfo) {
