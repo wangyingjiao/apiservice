@@ -122,7 +122,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (!technicianById.getId().equals(orderInfo.getNowId())){
 					appTechList.add(technicianById);
 				}
-				orderInfo.setIsTech("yes");
+				orderInfo.setIsTech("no");
 			}
 		}
 		orderInfo.setAppTechList(appTechList);
