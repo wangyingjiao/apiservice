@@ -317,46 +317,37 @@ public class SerItemInfoController extends BaseController {
                             commodityIds.put(commodity.getJointGoodsCode(),commodity.getId());
                             commodityNames.put(commodity.getJointGoodsCode(),commodity.getName());
                         }
-                        String message = "";
                         if(dataFail != null && dataFail.size() != 0){//专场商品
-                            message = message + "商品：";
                             for (String fail : dataFail){
-                                message = message + commodityNames.get(fail) + ",";
                                 failCommodityIds.add(commodityIds.get(fail));
                             }
-                            message = message + "属于专场商品或其相关的组合商品属于专场商品;";
                         }else if (datainventoryfail != null && datainventoryfail.size() != 0){//有可售库存
-                            message = message + "商品：";
                             for (String fail : dataFail){
-                                message = message + commodityNames.get(fail) + ",";
                                 failCommodityIds.add(commodityIds.get(fail));
                             }
-                            message = message + "还有可售库存该商品和其相关组合商品不可删除;";
                         }
 
-                        if(failCommodityIds.size()==0 && StringUtils.isBlank(message)){//
+                        if(failCommodityIds.size()==0){
                             serItemInfoService.delete(info);
+                            return new SuccResult("删除成功");
                         }else{
-                            if(commoditys.size() > failCommodityIds.size()){
-                                message = message + "，删除失败！其他删除成功";
-                                for(SerItemCommodity commodity : commoditys) {
-                                    if(!failCommodityIds.contains(commodity.getId())){
-                                        serItemInfoService.deleteGoodsInfo(commodity);
-                                    }
+                            for(SerItemCommodity commodity : commoditys) {
+                                if(!failCommodityIds.contains(commodity.getId())){
+                                    serItemInfoService.deleteGoodsInfo(commodity);
                                 }
-                            }else{
-                                message = message + "，删除失败！";
                             }
 
-                            return new SuccResult(message);
+                            return new FailResult("部分商品删除成功");
                         }
                     }else{
-                        return new FailResult("删除失败,对接时发生错误");
+                        return new FailResult("删除失败");
                     }
+                }else{
+                    return new FailResult("删除失败");
                 }
             }
         }catch (Exception e){
-            return new FailResult("删除失败,对接时发生错误");
+            return new FailResult("系统异常");
         }
 
         return new SuccResult("删除成功");
