@@ -542,7 +542,7 @@ origin_price,
 	<!-- 取得技师List -->
 	<select id="getTechListBySkillId" resultType="OrderDispatch">
 		SELECT
-		t.id as techId, t.name AS techName,t.sex AS techSex,t.phone AS techPhone
+		t.id as techId, t.name AS techName,t.sex AS techSex,t.phone AS techPhone,
 		t.head_pic AS headPic,t.job_nature AS jobNature
 		FROM ser_skill_tech a
 		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
