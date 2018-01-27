@@ -1429,9 +1429,13 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		//是不是完成状态
 		if (StringUtils.isNotBlank(orderInfo.getServiceStatus())){
+			//查询数据库 获取 完成时间和服务状态
+			OrderInfo info = dao.appGet(orderInfo);
+			//如果查询出来的订单的服务状态是取消的 返回订单已取消
+			if (info.getServiceStatus().equals("cancel")){
+				throw new ServiceException("订单已取消");
+			}
 			if (orderInfo.getServiceStatus().equals("finish")){
-				//查询数据库 获取 完成时间和服务状态
-				OrderInfo info = dao.appGet(orderInfo);
 				Date finishTime = info.getFinishTime();
 				Date date=new Date();
 				//如果提前完成  更新完成时间
