@@ -1446,7 +1446,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 			//如果是上门服务 把点击时间加入数据库
 			if (orderInfo.getServiceStatus().equals("started")){
-				orderInfo.setRealServiceTime(new Date());
+				//数据库查询出来的状态不是上门 将第一次上门时间添加到数据库
+				if (!info.getServiceStatus().equals("started")){
+					orderInfo.setRealServiceTime(new Date());
+				}
 			}
 		}
 		orderInfo.appPreUpdate();
