@@ -166,12 +166,11 @@
 			<if test="serviceStatus != null and serviceStatus != ''">
 				AND a.service_status = #{serviceStatus}
 			</if>
-
-			<if test="serviceTime != null and serviceTime != ''">
-				AND a.service_time &gt;= #{serviceTime}
+			<if test="orderTimeStart != null and orderTimeStart != ''">
+				AND a.service_time &gt;= #{orderTimeStart}
 			</if>
-			<if test="finishTime != null and finishTime != ''">
-				AND a.finish_time &lt;= #{finishTime}
+			<if test="orderTimeEnd != null and orderTimeEnd != ''">
+				AND a.service_time &lt;= #{orderTimeEnd}
 			</if>
 		</where>
 		<choose>

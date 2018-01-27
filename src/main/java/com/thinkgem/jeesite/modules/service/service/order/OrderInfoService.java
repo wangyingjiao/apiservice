@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1389,6 +1390,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app订单列表
 	public Page<OrderInfo> appFindPage(Page<OrderInfo> page, OrderInfo orderInfo) {
 		orderInfo.setPage(page);
+		//查询已完成订单列表
+		if (orderInfo.getServiceTime()!=null && orderInfo.getFinishTime()!=null){
+			Date serviceTime = orderInfo.getServiceTime();
+			Date finishTime = orderInfo.getFinishTime();
+			Date end = DateUtils.parseDate(DateUtils.formatDate(finishTime, "yyyy-MM-dd") + " 23:59:59");
+			orderInfo.setOrderTimeStart(new Timestamp(serviceTime.getTime()));
+			orderInfo.setOrderTimeEnd(new Timestamp(end.getTime()));
+		}
 		List<OrderInfo> orderInfos = dao.appFindList(orderInfo);
 		for (OrderInfo info:orderInfos){
 			String majorSort = info.getMajorSort();
