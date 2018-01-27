@@ -101,25 +101,29 @@ public class AppTechController extends BaseController {
 		tech.setId(token.getTechId());
 		ServiceTechnicianInfo tech1 = techService.appFindTech(tech);
 		Page<AppServiceTechnicianInfo> page = new Page<AppServiceTechnicianInfo>(request, response);
-		Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page,tech1);
-		long count = page.getCount();
-		int pageSize = page.getPageSize();
-		long totalPage=0;
-		long l = count % pageSize;//取余
-		if (l > 0){
-			long l1 = count / pageSize;
-			totalPage = l1 + 1;
-		}else {
-			totalPage = count / pageSize;
+		try {
+			Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page, tech1);
+			long count = page.getCount();
+			int pageSize = page.getPageSize();
+			long totalPage = 0;
+			long l = count % pageSize;//取余
+			if (l > 0) {
+				long l1 = count / pageSize;
+				totalPage = l1 + 1;
+			} else {
+				totalPage = count / pageSize;
+			}
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("list", page.getList());
+			map.put("totalPage", totalPage);
+			map.put("pageNo", page.getPageNo());
+			if (list.getList().size() == 0) {
+				return new AppSuccResult(1, null, "查询通讯录");
+			}
+			return new AppSuccResult(0, map, "查询通讯录");
+		}catch (ServiceException e){
+			return new AppSuccResult(1, null, e.getMessage());
 		}
-		Map<String,Object> map=new HashMap<String,Object>();
-		map.put("list",page.getList());
-		map.put("totalPage",totalPage);
-		map.put("pageNo",page.getPageNo());
-		if (list.getList().size() == 0){
-			return new AppSuccResult(1,null,"查询通讯录");
-		}
-		return new AppSuccResult(0,map,"查询通讯录");
 	}
 
 	//技师休假列表

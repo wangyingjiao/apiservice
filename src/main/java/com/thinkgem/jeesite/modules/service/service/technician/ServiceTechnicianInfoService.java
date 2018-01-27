@@ -546,14 +546,18 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             List<AppServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
             PropertiesLoader loader = new PropertiesLoader("oss.properties");
             String ossHost = loader.getProperty("OSS_THUMB_HOST");
-            for (AppServiceTechnicianInfo appTech:serviceTechnicianInfos){
-                appTech.setImgUrlHead(ossHost+appTech.getImgUrlHead());
-                appTech.setImgUrl(appTech.getImgUrlHead());
+            if (serviceTechnicianInfos!=null && serviceTechnicianInfos.size()!=0) {
+                for (AppServiceTechnicianInfo appTech : serviceTechnicianInfos) {
+                    appTech.setImgUrlHead(ossHost + appTech.getImgUrlHead());
+                    appTech.setImgUrl(appTech.getImgUrlHead());
+                }
+                page.setCount(page1.getCount());
+                page.setPageNo(page1.getPageNo());
+                page.setPageSize(page1.getPageSize());
+                page.setList(serviceTechnicianInfos);
+            }else {
+                throw new ServiceException("暂无数据");
             }
-            page.setCount(page1.getCount());
-            page.setPageNo(page1.getPageNo());
-            page.setPageSize(page1.getPageSize());
-            page.setList(serviceTechnicianInfos);
         }
         return page;
     }

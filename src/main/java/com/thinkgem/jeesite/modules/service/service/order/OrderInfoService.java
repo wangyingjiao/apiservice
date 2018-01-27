@@ -195,6 +195,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderInfo.setServiceStatusName("已上门");
 		}else if (serviceStatus.equals("finish")){
 			orderInfo.setServiceStatusName("已完成");
+		}else if (serviceStatus.equals("cancel")){
+			orderInfo.setServiceStatusName("已取消");
 		}
 		String orderStatus = orderInfo.getOrderStatus();
 		if (orderStatus.equals("waitdispatch")){
@@ -1460,7 +1462,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 			//如果是上门服务 把点击时间加入数据库
 			if (orderInfo.getServiceStatus().equals("started")){
-				//数据库查询出来的状态不是上门 将第一次上门时间添加到数据库
+				//数据库查询出来的状态不是上门 将第一次上门时间添加到数据库 不是第一次不添加数据库
 				if (!info.getServiceStatus().equals("started")){
 					orderInfo.setRealServiceTime(new Date());
 				}
