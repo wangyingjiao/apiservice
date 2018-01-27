@@ -141,7 +141,7 @@
 	</select>
 
 
-	<!--app获取通讯录-->
+	<!--app获取通讯录  按照中文名称排序-->
 	<select id="appGetFriendByStationId" resultType="AppServiceTechnicianInfo">
 		SELECT
 		a.head_pic AS imgUrlHead,
@@ -165,6 +165,7 @@
 		a.del_flag = '0'
 		AND a.station_id = #{stationId}
 		AND a.id != #{id}
+		ORDER BY convert(a.name using gbk) asc;
 	</select>
 
 	<select id="getSkillInfosByOrgId" resultType="SerSkillInfo">
