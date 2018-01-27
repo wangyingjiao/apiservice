@@ -144,28 +144,33 @@
 	<!--app获取通讯录  按照中文名称排序-->
 	<select id="appGetFriendByStationId" resultType="AppServiceTechnicianInfo">
 		SELECT
-		a.head_pic AS imgUrlHead,
-		a.phone AS techPhone,
-		a.name AS techName,
-		a.sex AS techSex,
-		a.birth_date AS techBirthDate,
-		a.address AS addrDetailInfo,
-		a.id_card AS techIdCard,
-		a.id_card_pic AS imgUrlCard,
-		a.email AS techEmail,
-		a.height AS techHeight,
-		a.weight AS techWeight,
-		a.native_province_code AS techNativePlace,
-		a.nation AS techNation,
-		a.description AS experDesc,
-		a.life_pic AS imgUrlLife,
-		a.app_login_password AS password
+			a.id AS id,
+			a.head_pic AS imgUrlHead,
+			a.phone AS techPhone,
+			a.name AS techName,
+			a.sex AS techSex,
+			a.birth_date AS techBirthDate,
+			a.address AS addrDetailInfo,
+			a.id_card AS techIdCard,
+			a.id_card_pic AS imgUrlCard,
+			a.email AS techEmail,
+			a.height AS techHeight,
+			a.weight AS techWeight,
+			a.native_province_code AS techNativePlaceValue,
+			a.province_code AS provinceCode,
+			a.city_code AS cityCode,
+			a.area_code AS areaCode,
+			a.nation AS techNationValue,
+			a.description AS experDesc,
+			a.life_pic AS imgUrlLife,
+			a.job_status AS jobStatus,
+			a.app_login_password AS password
 		FROM tech_info a
 		WHERE
 		a.del_flag = '0'
 		AND a.station_id = #{stationId}
 		AND a.id != #{id}
-		ORDER BY convert(a.name using gbk) asc;
+		ORDER BY convert(a.name using gbk) asc
 	</select>
 
 	<select id="getSkillInfosByOrgId" resultType="SerSkillInfo">
