@@ -598,8 +598,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		OrderInfo info = new OrderInfo();
 		info.setId(orderInfo.getId());
 		info.setServiceHour(serviceHourRe);//建议服务时长（小时）
-		info.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
-		info.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
+		info.setFinishTime(DateUtils.addSeconds(serviceTime, serviceSecond.intValue()));//实际完成时间（用来计算库存）
+		info.setSuggestFinishTime(DateUtils.addSeconds(serviceTime, serviceSecond.intValue()));//实际完成时间（用来计算库存）
 		info.preUpdate();
 		dao.update(info);
 
@@ -961,7 +961,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 									DateUtils.formatDate(new Date(), "HH:mm:ss"));
 				}
 			}
-			List<String> workTimes = DateUtils.getHeafHourTimeListBorder(startDateForWork,workTime.getEndTime());
+			List<String> workTimes = DateUtils.getHeafHourTimeListBorder(startDateForWork, workTime.getEndTime());
 
 			if(workTimes != null) {
 				//去除休假时间
@@ -1411,6 +1411,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (date.before(finishTime)){
 					orderInfo.setFinishTime(date);
 				}
+			}
+			//如果是上门服务 把点击时间加入数据库
+			if (orderInfo.getServiceStatus().equals("started")){
+				orderInfo.setRealServiceTime(new Date());
 			}
 		}
 		orderInfo.appPreUpdate();

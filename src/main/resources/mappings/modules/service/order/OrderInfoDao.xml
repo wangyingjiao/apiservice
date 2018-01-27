@@ -355,6 +355,9 @@ origin_price,
 		<if test="finishTime !=null and finishTime != ''">
 			finish_time= #{finishTime},
 		</if>
+		<if test="realServiceTime !=null and realServiceTime != ''">
+			real_service_time= #{realServiceTime},
+		</if>
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}

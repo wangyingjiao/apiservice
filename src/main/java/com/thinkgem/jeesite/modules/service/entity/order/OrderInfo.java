@@ -39,6 +39,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private Date serviceTime;		// 服务时间 上门时间
 	private Date finishTime;		// 完成时间 实际完成时间（用来计算库存）
 	private Date suggestFinishTime;		// 建议完成时间
+	private Date realServiceTime;		//操作‘上门服务’动作的时间
 	private Double serviceHour; //建议服务时长（小时）
 	private String serviceStatus;//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 	private String orderStatus;		// 订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)
@@ -94,6 +95,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<AppServiceTechnicianInfo> appTechList;//app技师列表
 	private String techId; //app改派接收的技师id
 	private String isTech="no"; //app技师修改服务状态时做展示功能标识符
+
+
+	public Date getRealServiceTime() {
+		return realServiceTime;
+	}
+
+	public void setRealServiceTime(Date realServiceTime) {
+		this.realServiceTime = realServiceTime;
+	}
 
 	public String getIsTech() {
 		return isTech;
