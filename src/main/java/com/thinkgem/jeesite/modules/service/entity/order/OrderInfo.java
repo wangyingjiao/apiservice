@@ -60,6 +60,10 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String shopRemark;		// 门店备注
 	private String shopRemarkPic;		// 门店备注图片
 	private List<String> shopRemarkPics;		// 门店备注图片
+
+	private String shopId;
+	private String eshopCode;
+
 	private String orderRemark;		// 订单备注（技师添加的）
 	private String orderRemarkPic;   //订单备注图片
 	private List<String> orderRemarkPics;   //订单备注图片
@@ -695,5 +699,21 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setJointOrderId(String jointOrderId) {
 		this.jointOrderId = jointOrderId;
+	}
+
+	public String getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(String shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getEshopCode() {
+		return eshopCode;
+	}
+
+	public void setEshopCode(String eshopCode) {
+		this.eshopCode = eshopCode;
 	}
 }

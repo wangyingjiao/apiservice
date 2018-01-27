@@ -12,11 +12,13 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
+import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
@@ -58,6 +60,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	BasicOrganizationDao basicOrganizationDao;
 	@Autowired
 	BasicServiceStationDao basicServiceStationDao;
+	@Autowired
+	BasicStoreDao basicStoreDao;
 
 
 	/**
@@ -600,6 +604,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("E店编码不能为空");
 		}
 		String remark = info.getRemark();//订单备注(用户备注)
+		String remark_pic = info.getRemark_pic();//订单备注(用户备注)
 		List<OpenServiceInfo> serviceInfos = info.getService_info();
 		String servie_time = info.getService_time();//服务时间
 		if(null == servie_time){
@@ -723,6 +728,18 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else{
 			throw new ServiceException("未找到门店ID对应的服务站信息");
 		}
+		String shop_name = "";//门店名称
+		String shop_phone = "";//门店电话
+		String shop_addr = "";//门店地址
+
+		BasicStore basicStore = basicStoreDao.get(store_id);
+		if(basicStore != null){
+			//TODO
+			shop_name = basicStore.getStoreName();
+			//shop_phone = ;
+		}else{
+			throw new ServiceException("未找到门店ID对应的门店信息");
+		}
 
 		//--------------------------------------------------
 		OrderInfo orderInfo = new OrderInfo();
@@ -749,9 +766,14 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setPayStatus("waitpay");   //支付状态（waitpay:待支付  payed：已支付） 冗余字段
 		orderInfo.setCustomerId(null);    // 客户ID
 		orderInfo.setCustomerRemark(remark);   // 客户备注
-		orderInfo.setCustomerRemarkPic(null);    //客户备注图片
+		orderInfo.setCustomerRemarkPic(remark_pic);    //客户备注图片
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
 		orderInfo.setJointOrderId(gasq_order_id);//对接订单ID
+		orderInfo.setShopId(store_id);
+		orderInfo.setShopName(shop_name);
+		orderInfo.setShopPhone(shop_phone);
+		orderInfo.setShopAddr(shop_addr);
+		orderInfo.setEshopCode(eshop_code);
 
         User user = new User();
         user.setId("gasq001");
