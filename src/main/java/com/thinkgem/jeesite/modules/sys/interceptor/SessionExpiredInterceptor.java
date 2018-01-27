@@ -1,3 +1,4 @@
+
 package com.thinkgem.jeesite.modules.sys.interceptor;
 
 import java.util.Enumeration;
@@ -29,7 +30,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
  * @Description: TODO统一处理用户session过期后的Interceptor
  * @author WYR
  * @date 2018年1月26日 下午3:34:09
- * 
+ *
  */
 public class SessionExpiredInterceptor   implements HandlerInterceptor {
 	@Autowired
@@ -50,10 +51,10 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 				response.getWriter().print(JSON.toJSONString(new FailResult(0, "未登录或失败")));
 				return false;
 			}
-		}		
+		}
 
 		User user = UserUtils.getUser();
-		if (null != user) { 
+		if (null != user) {
 			User cache = UserUtils.getUserCache(user.getId());
 			if (null == cache) {
 				loger.info("=============session过期请重新登录");
@@ -87,6 +88,6 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 			throws Exception {
 		loger.info("SessionExpiredInterceptor=======>afterCompletion处理！");
 	}
-	
-	
+
+
 }
