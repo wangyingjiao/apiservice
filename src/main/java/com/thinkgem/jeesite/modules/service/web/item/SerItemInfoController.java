@@ -399,19 +399,19 @@ public class SerItemInfoController extends BaseController {
                         }
 
                         if(dataFail != null && dataFail.size() != 0){
-                            return new FailResult("属于专场商品或其相关的组合商品属于专场商品，删除失败！");
+                            return new FailResult("删除失败，第三方不允许删除此商品");
                         }else if (datainventoryfail != null && datainventoryfail.size() != 0){
-                            return new FailResult("还有可售库存该商品和其相关组合商品不可删除，删除失败！");
+                            return new FailResult("删除失败，第三方不允许删除此商品");
                         }else {
                             serItemInfoService.deleteGoodsInfo(serItemCommodity);
                         }
                     }else{
-                        return new FailResult("删除失败,对接时发生错误");
+                        return new FailResult("删除失败，第三方不允许删除此商品");
                     }
                 }
             }
         }catch (Exception e){
-            return new FailResult("删除失败,对接时发生错误");
+            return new FailResult("删除失败，第三方不允许删除此商品");
         }
 
         return new SuccResult("删除成功");
