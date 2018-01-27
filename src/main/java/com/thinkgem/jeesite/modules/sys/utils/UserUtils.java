@@ -404,4 +404,14 @@ public class UserUtils {
 		}
         return list;
     }
+    /**
+     * 获取当前用户缓存
+     *
+     * @param id
+     * @return 取不到返回null
+     */
+    public static User getUserCache(String id) {
+        User user = (User) CacheUtils.get(USER_CACHE, USER_CACHE_ID_ + id);
+        return user;
+    }
 }

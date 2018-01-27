@@ -123,10 +123,19 @@
             <mvc:exclude-mapping path="${appPath}/selectListPro"/>
         <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
         </mvc:interceptor>
-
+		
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <bean class="com.thinkgem.jeesite.modules.sys.interceptor.SameUrlDataInterceptor"/>
+        </mvc:interceptor>
+        <!-- add by wyr 统一处理用户session过期后的Interceptor -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="${appPath}/**"/>
+            <mvc:exclude-mapping path="${openPath_gasq}/**"/>
+            <mvc:exclude-mapping path="${adminPath}/logout"/>
+            <!-- <mvc:exclude-mapping path="${adminPath}/login"/> -->
+            <bean class="com.thinkgem.jeesite.modules.sys.interceptor.SessionExpiredInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 
