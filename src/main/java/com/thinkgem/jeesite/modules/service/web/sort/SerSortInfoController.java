@@ -155,8 +155,10 @@ public class SerSortInfoController extends BaseController {
 	public Result deleteSortInfo(@RequestBody SerSortInfo serSortInfo) {
 		if (0 != serSortInfoService.checkedSortItem(serSortInfo)) {
 			//return new FailResult("分类" + serSortInfo.getName() + "下有服务项目，不可删除");
-			return new FailResult("无操作权限");
+			return new FailResult("分类下有服务项目，不可删除");
+			//return new FailResult("无操作权限");
 		}
+		
 		serSortInfoService.delete(serSortInfo);
 		return new SuccResult("删除服务分类成功");
 	}
