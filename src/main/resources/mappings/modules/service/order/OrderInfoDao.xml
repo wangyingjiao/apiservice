@@ -577,7 +577,7 @@ origin_price,
 			AND t.station_id= #{stationId}
 			AND a.week =#{week}
 			AND a.start_time &lt;= #{startTime}
-			
+            AND a.start_time &gt;= #{startTime}
 		</where>
 	</select>
 	<select id="getTechByHoliday" resultType="String">
@@ -588,8 +588,11 @@ origin_price,
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND t.station_id= #{stationId}
-			AND ( (a.start_time BETWEEN #{startTime} AND #{endTime}) OR
+			AND (
+            (a.start_time BETWEEN #{startTime} AND #{endTime}) OR
+
 			(a.end_time BETWEEN #{startTime} AND #{endTime}) OR
+
 			(a.start_time &lt;= #{startTime} AND a.end_time &gt;= #{endTime}))
 		</where>
 	</select>

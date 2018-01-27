@@ -335,7 +335,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
-						List<String> holidays = DateUtils.getHeafHourTimeListBorder(holiday.getStartTime(), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeList(holiday.getStartTime(), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
 						while (it1.hasNext()) {
 							String work = (String) it1.next();
@@ -816,7 +816,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		//自动派单 全职 ; 手动派单没有条件
 		serchInfo.setJobNature("full_time");
 		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
-		serchInfo.setOrderId(orderInfo.getId());
+		//serchInfo.setOrderId(orderInfo.getId());
 		//serchInfo.setTechName(techName);
 		//serchInfo.setOrderId(orderInfo.getId());
 		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
