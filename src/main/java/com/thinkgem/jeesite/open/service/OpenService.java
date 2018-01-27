@@ -351,19 +351,29 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
 				if (orderList != null && orderList.size() != 0) {
 					for (OrderDispatch order : orderList) {
-						int intervalTime = 0;//必须间隔时间 秒
+						int intervalTimeS = 0;//必须间隔时间 秒
+						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) < 14) {
+							//可以接单的时间则为：40分钟+路上时间+富余时间
+							intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
+						} else {
+							//可以接单的时间则为：路上时间+富余时间
+							intervalTimeS = 15 * 60 + 10 * 60 + serviceSecond.intValue();
+						}
+
+						int intervalTimeE = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTime = 40 * 60 + 15 * 60 + 10 * 60;
+							intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
 						} else {
 							//可以接单的时间则为：路上时间+富余时间
-							intervalTime = 15 * 60 + 10 * 60;
+							intervalTimeE = 15 * 60 + 10 * 60;
 						}
 
 						List<String> orders = DateUtils.getHeafHourTimeListBorder(
-								DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()),
-								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));
+								DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
+								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
 						if (orders != null && workTimes!= null) {
 							Iterator<String> it2 = workTimes.iterator();
 							while (it2.hasNext()) {

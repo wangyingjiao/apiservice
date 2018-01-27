@@ -807,6 +807,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
 		int techDispatchNum = 0;//派人数量
+		double orderTotalTime = 0.0;//订单所需时间
+		double serviceHour = 0.0;//建议服务时长（小时）
 		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
 			for(OrderGoods goods :goodsInfoList){//
 				int goodsNum = goods.getGoodsNum();		// 订购商品数
@@ -832,6 +834,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if(convertHours!=null) {
 					totalTime = convertHours * goodsNum;//商品需要时间
 				}
+				Double goodsTime = convertHours * goodsNum;//gon
+				orderTotalTime = orderTotalTime + goodsTime;
 
 				if(totalTime > 4){//每4小时增加1人
 					BigDecimal b1 = new BigDecimal(totalTime);
@@ -846,6 +850,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					techDispatchNum = techNum;
 				}
 			}
+			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
+			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		} else {
 			logger.error("未找到当前订单服务商品信息");
 			return null;
@@ -856,11 +862,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			logger.error("未找到当前订单的服务站信息");
 			return null;
 		}
-		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
+		/*Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
 		if(serviceHour == null || 0 == serviceHour){
 			logger.error("未找到当前订单的建议服务时长");
 			return null;
-		}
+		}*/
 		Double serviceSecond = (serviceHour * 3600);
 
 		//取得技师List
@@ -926,8 +932,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 23:59:59");
 
 		Iterator<OrderDispatch> it = techForList.iterator();
-		while(it.hasNext()) {
+		while(it.hasNext()) {//循环技师List 取得可用时间
 			OrderDispatch tech = it.next();
+
+			//-----------------取得技师 当天(15天中的某天)可用工作时间 并且转成时间点列表 开始----------------------------------------------------------
 			OrderDispatch serchTech = new OrderDispatch();
 			//取得符合条件的技师的 工作时间 服务时间List
 			serchTech.setTechId(tech.getTechId());
@@ -961,10 +969,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 									DateUtils.formatDate(new Date(), "HH:mm:ss"));
 				}
 			}
-			List<String> workTimes = DateUtils.getHeafHourTimeListBorder(startDateForWork, workTime.getEndTime());
+			List<String> workTimes = DateUtils.getHeafHourTimeListBorder(startDateForWork,workTime.getEndTime());
+			//-------------------取得技师 当天(15天中的某天)可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			if(workTimes != null) {
-				//去除休假时间
+				//-------------------取得技师 当天(15天中的某天)休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
 				serchTech.setStartTime(serviceDateMin);
 				serchTech.setEndTime(serviceDateMax);
 				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
@@ -981,25 +990,38 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 						}
 					}
 				}
+				//-------------------取得技师 当天(15天中的某天)休假时间 转成时间点列表 如果和工作时间重复 删除该时间点  结束-------------
 
-				//去除订单前后时间段
+				//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
+				//--- 订单时间段--订单开始时间 减去商品需求时间 减去准备时间；---订单结束时间 加上准备时间 ----------------------
+				//--- 服务状态(wait_service:待服务 started:已上门, finish:已完成)',
 				List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
 				if (orderList != null && orderList.size() != 0) {
 					for (OrderDispatch order : orderList) {
 						if(!orderInfo.getId().equals(order.getOrderId())) {//当前订单不考虑
-							int intervalTime = 0;//必须间隔时间 秒
+							int intervalTimeS = 0;//必须间隔时间 秒
+							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) < 14) {
+								//可以接单的时间则为：40分钟+路上时间+富余时间
+								intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
+							} else {
+								//可以接单的时间则为：路上时间+富余时间
+								intervalTimeS = 15 * 60 + 10 * 60 + serviceSecond.intValue();
+							}
+
+							int intervalTimeE = 0;//必须间隔时间 秒
 							if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 									Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 								//可以接单的时间则为：40分钟+路上时间+富余时间
-								intervalTime = 40 * 60 + 15 * 60 + 10 * 60;
+								intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
 							} else {
 								//可以接单的时间则为：路上时间+富余时间
-								intervalTime = 15 * 60 + 10 * 60;
+								intervalTimeE = 15 * 60 + 10 * 60;
 							}
 
 							List<String> orders = DateUtils.getHeafHourTimeListBorder(
-									DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()),
-									DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTime));
+									DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
+									DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
 							if (orders != null && workTimes!= null) {
 								Iterator<String> it2 = workTimes.iterator();
 								while (it2.hasNext()) {
@@ -1013,8 +1035,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 						}
 					}
 				}
+				//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 结束------------------
+
 			}
-			tech.setWorkTimes(workTimes);
+			tech.setWorkTimes(workTimes);//可用的时间列表
 		}
 
 		List<String> allTimeList = new ArrayList<String>();
@@ -1110,6 +1134,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
         String stationId = orderInfo.getStationId();//服务站ID
         Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
+
+		Double newServiceHour = 0.0;
+
         Double serviceSecond = (serviceHour * 3600);
         Date newFinishTime = DateUtils.addSeconds(newServiceDate,serviceSecond.intValue());//完成时间
 
