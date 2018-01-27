@@ -1113,7 +1113,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<OpenServiceInfo> serviceInfos = info.getService_info();//更新服务项目信息及数量
 		if(null != serviceInfos && serviceInfos.size() > 0){
 			try{
-			    num = num + openUpdateInfoServiceInfos(orderId, serviceInfos);
+			    String sum_price = info.getSum_price();
+			    num = num + openUpdateInfoServiceInfos(orderId, serviceInfos,sum_price);
             }catch (ServiceException ex){
 				throw new ServiceException(ex.getMessage());
 			}
@@ -1210,10 +1211,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param orderId
 	 * @param serviceInfos
 	 */
-	private int openUpdateInfoServiceInfos(String orderId, List<OpenServiceInfo> serviceInfos) {
+	private int openUpdateInfoServiceInfos(String orderId, List<OpenServiceInfo> serviceInfos,String sum_price) {
 		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
 		BigDecimal originPrice = new BigDecimal(0);//商品总价
-		BigDecimal openPrice = new BigDecimal(0);//对接总价
+
 		String sortItemNames = "";//服务分类+服务项目
 		String goodsNames = "";//商品名称
 
@@ -1250,9 +1251,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             goods.setUpdateDate(goods.getCreateDate());
 
             orderGoods.add(goods);
+            BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
+            originPrice = originPrice.add(price);//商品总价
 
-			originPrice = originPrice.add(commodity.getPrice());//商品总价
-			openPrice = openPrice.add(new BigDecimal(pay_price));
 			sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
 			goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
 
@@ -1288,7 +1289,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		OrderInfo orderInfo = new OrderInfo();
         orderInfo.setId(orderId);
 		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
-		orderInfo.setPayPrice(openPrice.toString());            //实际付款价格
+		orderInfo.setPayPrice(sum_price);            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
 		Double serviceSecond = serviceHour * 3600;
 		orderInfo.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',

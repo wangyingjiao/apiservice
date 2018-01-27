@@ -22,6 +22,7 @@ public class OpenUpdateInfoRequest extends DataEntity<OpenUpdateInfoRequest> {
 	private OpenCostomerInfo costomer_info;//用户信息
 	private OpenStoreInfo store_info;//门店信息
 	private String platform;//对接平台代号
+	private String sum_price;//订单总支付价格
 
 	public String getService_order_id() {
 		return service_order_id;
@@ -69,5 +70,13 @@ public class OpenUpdateInfoRequest extends DataEntity<OpenUpdateInfoRequest> {
 
 	public void setPlatform(String platform) {
 		this.platform = platform;
+	}
+
+	public String getSum_price() {
+		return sum_price;
+	}
+
+	public void setSum_price(String sum_price) {
+		this.sum_price = sum_price;
 	}
 }
