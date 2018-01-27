@@ -184,6 +184,11 @@ public class OrderInfoController extends BaseController {
 				//时间
 				orderInfo3.setServiceTime((Date)map.get("serviceDate"));
 
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+				orderInfo2.setCreateBy(user);
+				orderInfo3.setCreateBy(user);
+
 				messageInfoService.insert(orderInfo1,"orderCreate");//新增
 				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
 				messageInfoService.insert(orderInfo3,"orderServiceTime");//服务时间变更
@@ -255,6 +260,10 @@ public class OrderInfoController extends BaseController {
 				orderInfo1.setOrderNumber(orderNumber);
 				orderInfo1.setId(orderId);
 				orderInfo1.setTechList(orderCreateMsgList);
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+
 				messageInfoService.insert(orderInfo1,"orderCreate");//新增
 			}catch (Exception e){
 				logger.error("增加技师保存-推送消息失败-系统异常");
@@ -334,6 +343,10 @@ public class OrderInfoController extends BaseController {
 
 				orderInfo1.setTechList(orderCreateMsgList);
 				orderInfo2.setTechList(orderDispatchMsgList);
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+				orderInfo2.setCreateBy(user);
 
 				messageInfoService.insert(orderInfo1,"orderCreate");//新增
 				messageInfoService.insert(orderInfo2,"orderDispatch");//改派

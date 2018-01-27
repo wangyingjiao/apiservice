@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.open.entity.*;
 import com.thinkgem.jeesite.open.service.OpenService;
@@ -74,6 +75,9 @@ public class OpenController extends BaseController {
 
 			try {
 				OrderInfo orderInfo = (OrderInfo)map.get("orderInfoMsg");
+				User user = new User();
+				user.setId("gasq001");
+				orderInfo.setCreateBy(user);
 				messageInfoService.insert(orderInfo, "orderCreate");//新增
 			}catch (Exception e){
 				logger.error("订单创建-推送消息失败-系统异常");
@@ -102,6 +106,9 @@ public class OpenController extends BaseController {
 				String status = info.getStatus();
 				if("cancel".equals(status)) {
 					OrderInfo orderInfo = (OrderInfo) map.get("orderInfoMsg");
+					User user = new User();
+					user.setId("gasq001");
+					orderInfo.setCreateBy(user);
 					messageInfoService.insert(orderInfo, "orderCancel");//取消
 				}
 			}catch (Exception e){

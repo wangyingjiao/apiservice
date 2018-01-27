@@ -604,6 +604,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
 			orderDispatch.preInsert();
 			orderDispatchDao.insert(orderDispatch);
+			ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoDao.get(techId);
+			if(technicianInfo != null) {
+				orderDispatch.setTechPhone(technicianInfo.getPhone());
+			}
 			orderCreateMsgList.add(orderDispatch);
 		}
 
@@ -685,6 +689,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<OrderDispatch> orderDispatchMsgList = new ArrayList<>();
 		OrderDispatch orderDispatchMsg = new OrderDispatch();
 		orderDispatchMsg.setTechId(dispatchTechId);//技师ID
+		ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoDao.get(dispatchTechId);
+		if(technicianInfo != null) {
+			orderDispatchMsg.setTechPhone(technicianInfo.getPhone());
+		}
 		orderDispatchMsgList.add(orderDispatchMsg);
 		// 派单 原来没有，现在有
 		List<OrderDispatch> orderCreateMsgList = new ArrayList<>();
@@ -695,6 +703,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
 			orderDispatch.preInsert();
 			orderDispatchDao.insert(orderDispatch);
+			ServiceTechnicianInfo technicianInfoC = serviceTechnicianInfoDao.get(techId);
+			if(technicianInfoC != null) {
+				orderDispatch.setTechPhone(technicianInfoC.getPhone());
+			}
 			orderCreateMsgList.add(orderDispatch);
 		}
 		//return techList;
@@ -1086,6 +1098,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
 		List<OrderDispatch> techBeforList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 		int techDispatchNum = 0;//派人数量
+		double orderTotalTime = 0.0;//订单所需时间
+		double newServiceHour = 0.0;//建议服务时长（小时）
 		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
 			for(OrderGoods goods :goodsInfoList){//
 				jointGoodsCodes = jointGoodsCodes + goods.getJointGoodsCode();//对接方商品CODE
@@ -1106,6 +1120,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				Double totalTime = 0.0;
 				if(convertHours != null) {
 					totalTime = convertHours * goodsNum;//商品需要时间
+					orderTotalTime = orderTotalTime + totalTime;
 				}
 
 				if(totalTime > 4){//每4小时增加1人
@@ -1121,15 +1136,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					techDispatchNum = techNum;
 				}
 			}
+			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
+			newServiceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
 			throw new ServiceException("未找到当前订单服务商品信息");
 		}
         String stationId = orderInfo.getStationId();//服务站ID
-        Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
 
-		Double newServiceHour = 0.0;
-
-        Double serviceSecond = (serviceHour * 3600);
+        Double serviceSecond = (newServiceHour * 3600);
         Date newFinishTime = DateUtils.addSeconds(newServiceDate,serviceSecond.intValue());//完成时间
 
         //取得技师List
