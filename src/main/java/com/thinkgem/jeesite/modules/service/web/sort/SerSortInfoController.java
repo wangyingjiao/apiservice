@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 import com.thinkgem.jeesite.modules.service.service.sort.SerSortInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
@@ -153,6 +154,11 @@ public class SerSortInfoController extends BaseController {
 	@RequestMapping(value = "deleteSortInfo", method = { RequestMethod.POST, RequestMethod.GET })
 	@ApiOperation("删除服务分类")
 	public Result deleteSortInfo(@RequestBody SerSortInfo serSortInfo) {
+		//addbywyr 查询当前用户的岗位权限
+		/*User user = UserUtils.getUser();
+		String roleId = user.getRole().getId();*/
+		
+		
 		if (0 != serSortInfoService.checkedSortItem(serSortInfo)) {
 			//return new FailResult("分类" + serSortInfo.getName() + "下有服务项目，不可删除");
 			return new FailResult("分类下有服务项目，不可删除");

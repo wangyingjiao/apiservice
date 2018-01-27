@@ -32,7 +32,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
  * @date 2018年1月26日 下午3:34:09
  *
  */
-public class SessionExpiredInterceptor   implements HandlerInterceptor {
+public class SessionExpiredInterceptor implements HandlerInterceptor {
 	@Autowired
 	private SerSkillItemService systemService;
 	private Log loger = LogFactory.getLog(getClass());
@@ -42,9 +42,10 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 			throws Exception {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charset=utf-8");
-		loger.info("=================进入SessionExpiredInterceptor");
+		loger.info("=================进入SessionExpiredInterceptor拦截器");
 		HttpSession session = request.getSession(false);
-		if (null==session) {
+		if (null == session) {
+			loger.info("=================session为空第一次登录");
 			Principal principal = UserUtils.getPrincipal();
 			if (null == principal) {
 				loger.info("=============未登录或失败test");
@@ -55,14 +56,12 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 		}
 
 		User user = UserUtils.getUser();
-		if (null != user) {
-			User cache = UserUtils.getUserCache(user.getId());
-			if (null == cache) {
-				loger.info("=============session过期请重新登录");
-				// UserUtils.clearCache();
-				response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录test")));
-				return false;
-			}
+		loger.info("=================session是否失效先查询user:" + JSON.toJSONString(user.toString()));
+		User cache = UserUtils.getUserCache(user.getId());
+		if (null == cache) {
+			loger.info("=============说明session过期请重新登录");
+			response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录test")));
+			return false;
 		}
 		return true;
 
@@ -89,6 +88,5 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 			throws Exception {
 		loger.info("SessionExpiredInterceptor=======>afterCompletion处理！");
 	}
-
 
 }
