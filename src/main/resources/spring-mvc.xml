@@ -123,7 +123,12 @@
             <mvc:exclude-mapping path="${appPath}/selectListPro"/>
         <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
         </mvc:interceptor>
-		
+
+        <mvc:interceptor>
+            <mvc:mapping path="${openPath_gasq}/**"/>
+            <bean class="com.thinkgem.jeesite.modules.sys.interceptor.OpenLogInterceptor" />
+        </mvc:interceptor>
+
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <bean class="com.thinkgem.jeesite.modules.sys.interceptor.SameUrlDataInterceptor"/>
