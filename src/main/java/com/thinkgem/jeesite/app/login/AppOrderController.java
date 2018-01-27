@@ -114,7 +114,9 @@ public class AppOrderController extends BaseController {
 	@RequestMapping(value = "${appPath}/saveRemark",method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
 	public AppResult saveRemark(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response){
+		//获取技师id
 		Token token = (Token) request.getAttribute("token");
+		orderInfo.setNowId(token.getTechId());
 		List<String> errList = errors(orderInfo, SavePersonalGroup.class);
 		if (errList != null && errList.size() > 0) {
 			return new AppFailResult(errList);
@@ -156,6 +158,8 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(errList);
 		}
 		//参数 订单id 服务状态
+		Token token = (Token) request.getAttribute("token");
+		info.setNowId(token.getTechId());
 		try{
 			int i = orderInfoService.appSaveRemark(info);
 			//如果完成状态 不管是否成功 全返回成功

@@ -91,7 +91,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String serviceStatusName;//app
 	private String orderStatusName;//app
 	private String payStatusName;//app
-	private String nowId;//app
+	private String nowId;  //app 当前技师id
 	private List<AppServiceTechnicianInfo> appTechList;//app技师列表
 	private String techId; //app改派接收的技师id
 	private String isTech="no"; //app技师修改服务状态时做展示功能标识符

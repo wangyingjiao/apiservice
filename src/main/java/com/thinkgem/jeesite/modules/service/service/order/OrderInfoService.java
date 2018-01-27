@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
-import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -27,7 +26,6 @@ import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnici
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
-import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
 import com.thinkgem.jeesite.open.send.OpenSendUtil;
@@ -54,12 +52,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
     BasicServiceStationDao basicServiceStationDao;
 	@Autowired
 	ServiceTechnicianInfoDao serviceTechnicianInfoDao;
-	//派单的service
-	@Autowired
-	private OrderDispatchService orderDispatchService;
-	//消息的service
-	@Autowired
-	private MessageInfoService messageInfoService;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -1410,6 +1402,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//订单的编辑（订单备注以及订单的服务状态修改）
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
+		//判断订单是否属于该技师
+		OrderDispatch dis=new OrderDispatch();
+		dis.setTechId(orderInfo.getNowId());
+		dis.setOrderId(orderInfo.getId());
+		OrderDispatch byOrderTechId = orderDispatchDao.getByOrderTechId(dis);
+		//派单表为空 不属于
+		if (null == byOrderTechId){
+			throw new ServiceException("订单不属于该技师");
+		}
 		//订单备注图片  JSON串存的数组
 		String orderRemarkPic = orderInfo.getOrderRemarkPic();
 		if (null != orderRemarkPic){
@@ -1427,7 +1428,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			String s = JsonMapper.toJsonString(tem);
 			orderInfo.setOrderRemarkPic(s);
 		}
-		//是不是完成状态
+		//根据服务状态 更改订单的服务状态
 		if (StringUtils.isNotBlank(orderInfo.getServiceStatus())){
 			//查询数据库 获取 完成时间和服务状态
 			OrderInfo info = dao.appGet(orderInfo);
