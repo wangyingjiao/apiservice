@@ -172,6 +172,17 @@
 		WHERE id = #{id}
 	</update>
 
+	<!--app根据用户id和订单id查询派单表-->
+	<select id="getByOrderTechId" resultType="OrderDispatch">
+		SELECT
+		<include refid="orderDispatchColumns"/>
+		FROM order_dispatch a
+		WHERE a.order_id = #{orderId}
+		AND a.tech_id = #{techId}
+		AND a.del_flag=#{delFlag}
+		AND a.status='yes'
+	</select>
+
 	<select id="formData" resultType="OrderDispatch">
 		SELECT
 			a.create_date AS "createDate",

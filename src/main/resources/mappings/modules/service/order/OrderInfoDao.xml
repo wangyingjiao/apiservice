@@ -577,7 +577,7 @@ origin_price,
 			AND t.station_id= #{stationId}
 			AND a.week =#{week}
 			AND a.start_time &lt;= #{startTime}
-			AND a.end_time &gt;= #{endTime}
+			
 		</where>
 	</select>
 	<select id="getTechByHoliday" resultType="String">

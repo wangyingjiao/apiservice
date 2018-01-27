@@ -25,4 +25,6 @@ public interface OrderDispatchDao extends CrudDao<OrderDispatch> {
 	List<OrderInfo> findOrderList(OrderInfo orderDispatch);
 
 	Long findOrderCount(OrderInfo orderDispatch);
+	//app根据用户id和订单id查询派单表
+	OrderDispatch getByOrderTechId(OrderDispatch info);
 }
