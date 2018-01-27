@@ -44,7 +44,7 @@
 		FROM sys_dict
 		WHERE del_flag = #{DEL_FLAG_NORMAL}
 			AND type = #{type}
-		ORDER BY value DESC
+		ORDER BY value
 	</select>
 	
 	<select id="findAllList" resultType="Dict">
