@@ -462,9 +462,9 @@ public class RoleController extends BaseController {
 			return new FailResult(errors);
 		}
 		if (Role.isAdmin(role.getId())) {
-			return new FailResult("删除角色失败, 不允许内置角色或编号空");
+			return new FailResult("删除岗位失败, 不允许内置角色或编号空");
 		} else if (UserUtils.getUser().getRoleIdList().contains(role.getId())) {
-			return new FailResult("删除角色失败, 不能删除当前用户所在角色");
+			return new FailResult("删除岗位失败, 不能删除自己所在的岗位");
 		} else {
 			List<User> users = systemService.findUserByRole(role);
 			if (users.size() > 0) {
@@ -552,7 +552,7 @@ public class RoleController extends BaseController {
 		}
 		User user = UserUtils.getUser();
 		String roleId = user.getRole().getId();
-		//String orgId = user.getOrganization().getId();//获取当前登录用户的所属机构id
+		// String orgId = user.getOrganization().getId();//获取当前登录用户的所属机构id
 		if (org.apache.commons.lang3.StringUtils.isNoneEmpty(roleId)) {
 			if (roleId.equals(id)) {
 				role.setFlagRoleId(true);
@@ -560,48 +560,49 @@ public class RoleController extends BaseController {
 				role.setFlagRoleId(false);
 			}
 		}
-		
-		
+
 		// add by wyr:获取apiservice/a/sys/menu/getMenuList的岗位集合
 		// 方案一
-		 List<Menu> menuList = UserUtils.getMenuListForPlatform(); // 1 11 12 13 14  2 21
-		  List<Menu> menuRoleList = role.getMenuList();            // 1 11 12 13     2 21 3 31 32
-		  //在改变两个集合前查询出被编辑当前岗位的idList================start
-		  ArrayList<String> menuIdListEdit =new ArrayList<String>();
-		  for (Menu menu : menuRoleList) {
-			  if (null!=menu) {
-				  menuIdListEdit.add(menu.getId());
+		List<Menu> menuList = UserUtils.getMenuListForPlatform(); // 1 11 12 13
+																	// 14 2 21
+		List<Menu> menuRoleList = role.getMenuList(); // 1 11 12 13 2 21 3 31 32
+		// 在改变两个集合前查询出被编辑当前岗位的idList================start
+		ArrayList<String> menuIdListEdit = new ArrayList<String>();
+		for (Menu menu : menuRoleList) {
+			if (null != menu) {
+				menuIdListEdit.add(menu.getId());
 			}
-		  }
-		  role.setMenuIdListEdit(menuIdListEdit);
-		//在改变两个集合前查询出被编辑当前岗位的idList=================end
-		  menuRoleList.removeAll(menuList);
-		  List<Menu> menusRoleDis = genTreeMenusRole("1", menuRoleList);
-		  menuList.addAll(menusRoleDis);
-		  //menuList.addAll(0, menusRoleDis);
-		 /* List<Menu> list = new ArrayList<Menu>();
-		  for (Menu menu : menusRoleDis) {
-			
-		  }*/
-		  List<Menu> menus = genTreeMenu("1", menuList);
-		  //List<Menu> menus = genTreeMenuOrder("1", menuList);
-		  role.setMenuListUnion(menus);
-		  
-		  
+		}
+		role.setMenuIdListEdit(menuIdListEdit);
+		// 在改变两个集合前查询出被编辑当前岗位的idList=================end
+		menuRoleList.removeAll(menuList);
+		List<Menu> menusRoleDis = genTreeMenusRole("1", menuRoleList);
+		menuList.addAll(menusRoleDis);
+		// menuList.addAll(0, menusRoleDis);
+		/*
+		 * List<Menu> list = new ArrayList<Menu>(); for (Menu menu :
+		 * menusRoleDis) {
+		 * 
+		 * }
+		 */
+		List<Menu> menus = genTreeMenu("1", menuList);
+		// List<Menu> menus = genTreeMenuOrder("1", menuList);
+		role.setMenuListUnion(menus);
+
 		// 方案二
-		  /*List<Menu> menuList = UserUtils.getMenuListForPlatform();
-		  List<Menu> menus = genTreeMenu("1", menuList);
-		 
-		  List<Menu> menuRoleList = role.getMenuList(); 
-		  List<Menu> menusRole = genTreeMenu("1", menuRoleList);
-		  
-		  //与结果role的岗位集合menuRoleList去重取并集
-		  menusRole.removeAll(menus);
-		  List<Menu> menusRoleDis = genTreeMenusRole("1", menusRole);
-		  for (Menu menu : menusRole) { menu.setDisable(true); }
-		  menus.addAll(menusRole);
-		 
-		 role.setMenuListUnion(menus);*/
+		/*
+		 * List<Menu> menuList = UserUtils.getMenuListForPlatform(); List<Menu>
+		 * menus = genTreeMenu("1", menuList);
+		 * 
+		 * List<Menu> menuRoleList = role.getMenuList(); List<Menu> menusRole =
+		 * genTreeMenu("1", menuRoleList);
+		 * 
+		 * //与结果role的岗位集合menuRoleList去重取并集 menusRole.removeAll(menus);
+		 * List<Menu> menusRoleDis = genTreeMenusRole("1", menusRole); for (Menu
+		 * menu : menusRole) { menu.setDisable(true); } menus.addAll(menusRole);
+		 * 
+		 * role.setMenuListUnion(menus);
+		 */
 
 		if (role != null) {
 			return new SuccResult(role);
@@ -619,7 +620,7 @@ public class RoleController extends BaseController {
 				menu.setSubMenus(menus1);
 				menu.setDisabled(true);
 				list.add(menu);
-			}else {
+			} else {
 				list.add(menu);
 			}
 		}

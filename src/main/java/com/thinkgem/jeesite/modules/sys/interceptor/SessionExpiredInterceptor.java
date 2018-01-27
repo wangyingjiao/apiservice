@@ -47,8 +47,9 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 		if (null==session) {
 			Principal principal = UserUtils.getPrincipal();
 			if (null == principal) {
+				loger.info("=============未登录或失败test");
 				UserUtils.getSubject().logout();
-				response.getWriter().print(JSON.toJSONString(new FailResult(0, "未登录或失败")));
+				response.getWriter().print(JSON.toJSONString(new FailResult(0, "未登录或失败test")));
 				return false;
 			}
 		}
@@ -59,7 +60,7 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 			if (null == cache) {
 				loger.info("=============session过期请重新登录");
 				// UserUtils.clearCache();
-				response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录")));
+				response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录test")));
 				return false;
 			}
 		}
