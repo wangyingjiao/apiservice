@@ -1147,7 +1147,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				throw new ServiceException("更新国安侠信息失败E!");
             }
 		}
-
+/*
 		OpenCostomerInfo costomer_info = info.getCostomer_info();//用户信息
 		if(null != costomer_info){
             try{
@@ -1169,7 +1169,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             }catch (Exception e){
 				throw new ServiceException("更新用户信息失败E!");
             }
-		}
+		}*/
 
 		OpenStoreInfo store_info = info.getStore_info();//门店信息
 		if(null != store_info){

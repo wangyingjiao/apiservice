@@ -19,7 +19,7 @@ public class OpenUpdateInfoRequest extends DataEntity<OpenUpdateInfoRequest> {
 	private String service_order_id;//自营服务订单ID
 	private List<OpenServiceInfo> service_info;//更新服务项目信息及数量
 	private OpenGuoanxiaInfo guoanxia_info;//国安侠信息
-	private OpenCostomerInfo costomer_info;//用户信息
+	//private OpenCostomerInfo costomer_info;//用户信息
 	private OpenStoreInfo store_info;//门店信息
 	private String platform;//对接平台代号
 	private String sum_price;//订单总支付价格
@@ -46,14 +46,6 @@ public class OpenUpdateInfoRequest extends DataEntity<OpenUpdateInfoRequest> {
 
 	public void setGuoanxia_info(OpenGuoanxiaInfo guoanxia_info) {
 		this.guoanxia_info = guoanxia_info;
-	}
-
-	public OpenCostomerInfo getCostomer_info() {
-		return costomer_info;
-	}
-
-	public void setCostomer_info(OpenCostomerInfo costomer_info) {
-		this.costomer_info = costomer_info;
 	}
 
 	public OpenStoreInfo getStore_info() {
