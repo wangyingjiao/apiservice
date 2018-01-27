@@ -96,15 +96,17 @@ public class OpenController extends BaseController {
 	@RequestMapping(value = "updateStatus", method = {RequestMethod.POST})
 	public OpenResult updateStatus(OpenUpdateStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			OpenUpdateStautsResponse responseRe = openService.openUpdateStauts(info);
-
-		/*	try{
-				messageInfoService.insert(orderInfo,"orderCreate");//新增
-				messageInfoService.insert(orderInfo,"orderDispatch");//改派
-				messageInfoService.insert(orderInfo,"orderServiceTime");//服务时间变更
+			HashMap<String,Object> map = openService.openUpdateStauts(info);
+			OpenUpdateStautsResponse responseRe = (OpenUpdateStautsResponse)map.get("response");
+			try {
+				String status = info.getStatus();
+				if("cancel".equals(status)) {
+					OrderInfo orderInfo = (OrderInfo) map.get("orderInfoMsg");
+					messageInfoService.insert(orderInfo, "orderCancel");//取消
+				}
 			}catch (Exception e){
-				logger.error("增加技师保存-推送消息失败-系统异常");
-			}*/
+				logger.error("订单状态更新-推送消息失败-系统异常");
+			}
 
 			return new OpenSuccResult(responseRe, "操作成功");
 		}catch (ServiceException ex){

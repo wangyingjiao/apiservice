@@ -865,14 +865,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderTech.setServiceTime(DateUtils.addSecondsNotDayB(orderTech.getStartTime(), -serviceSecond.intValue()));
 				orderTech.setFinishTime(DateUtils.addSecondsNotDayE(orderTech.getEndTime(), intervalTime));
 
-				/*orderTech.setServiceTime(DateUtils.addSeconds(orderTech.getServiceTime(),-(15*60 + 10*60)));
-				int finishTimeHH = Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH"));
-				if(11 <= finishTimeHH && finishTimeHH < 14){
-					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),(15*60 + 40*60 + 10*60)));
-				}else{
-					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),(15*60 + 10*60)));
-				}*/
-
 				if(!DateUtils.checkDatesRepeat(serviceTime,finishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
 					timeCheckDelTechIdList.add(orderTech.getTechId());
 				}
@@ -1009,14 +1001,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	public OpenUpdateStautsResponse openUpdateStauts(OpenUpdateStautsRequest info) {
+	public HashMap<String,Object> openUpdateStauts(OpenUpdateStautsRequest info) {
 		OpenUpdateStautsResponse response = new OpenUpdateStautsResponse();
 		if(null == info){
-			/*response = new OpenUpdateStautsResponse();
-			response.setSuccess(false);
-			response.setService_order_id("");
-            response.setMessage("未接收到订单信息");
-			return response;*/
 			throw new ServiceException("未接收到订单信息");
 		}
 		String platform = info.getPlatform();//对接平台代号
@@ -1024,11 +1011,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String cancelReason = info.getComment();//取消原因
 		String status = info.getStatus();//cancel 取消；finish 已签收；success 完成
 		if(null == orderId){
-			/*response = new OpenUpdateStautsResponse();
-			response.setSuccess(false);// 状态：true 成功；false 失败
-			response.setService_order_id("");// 自营服务订单ID
-			response.setMessage("接收到自营服务订单ID信息为空");
-			return response;*/
 			throw new ServiceException("接收到自营服务订单ID信息为空");
 		}
 
@@ -1050,31 +1032,31 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             orderInfo.setUpdateDate(new Date());
             int num = orderInfoDao.openUpdateOrder(orderInfo);
             if(num == 0){
-                /*response = new OpenUpdateStautsResponse();
-                response.setSuccess(false);// 状态：true 成功；false 失败
-                response.setService_order_id(orderId);// 自营服务订单ID
-                return response;*/
 				throw new ServiceException("订单状态更新失败");
             }else{
+				response = new OpenUpdateStautsResponse();
+				response.setSuccess(true);// 状态：true 成功；false 失败
+				response.setService_order_id(orderId);// 自营服务订单ID
+
+				HashMap<String,Object> map = new HashMap<>();
+				map.put("response",response);
 
 				if("cancel".equals(status)){
 					//推送消息  取消订单时
 					//标题：订单已取消
 					//内容：编号为XXXXXXXXX的订单已取消，请点击查看
-
+					OrderInfo orderInfoMsg = new OrderInfo();
+					orderInfo = orderInfoDao.get(orderInfo);
+					orderInfoMsg.setId(orderInfo.getId());
+					orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+					List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+					orderInfoMsg.setTechList(techList);
+					map.put("orderInfoMsg",orderInfoMsg);
 				}
 
-                response = new OpenUpdateStautsResponse();
-                response.setSuccess(true);// 状态：true 成功；false 失败
-                response.setService_order_id(orderId);// 自营服务订单ID
-                return response;
+				return map;
             }
 		}catch (Exception e){
-           /* response = new OpenUpdateStautsResponse();
-            response.setSuccess(false);// 状态：true 成功；false 失败
-            response.setService_order_id(orderId);// 自营服务订单ID
-            response.setMessage("订单状态更新失败");
-            return response;*/
 			throw new ServiceException("订单状态更新失败E!");
         }
 	}
@@ -1088,20 +1070,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	public OpenUpdateInfoResponse openUpdateInfo(OpenUpdateInfoRequest info) {
 		OpenUpdateInfoResponse response = new OpenUpdateInfoResponse();
 		if(null == info){
-			/*response = new OpenUpdateInfoResponse();
-			response.setSuccess(false);// 状态：true 成功；false 失败
-			response.setService_order_id("");// 自营服务订单ID
-            response.setMessage("未接收到订单信息");
-			return response;*/
 			throw new ServiceException("未接收到订单信息!");
 		}
 		String orderId = info.getService_order_id();// 自营服务订单ID
         if(null == orderId){
-           /* response = new OpenUpdateInfoResponse();
-            response.setSuccess(false);// 状态：true 成功；false 失败
-            response.setService_order_id("");// 自营服务订单ID
-            response.setMessage("接收到自营服务订单ID信息为空");
-            return response;*/
 			throw new ServiceException("接收到自营服务订单ID信息为空");
         }
 
@@ -1114,11 +1086,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				throw new ServiceException(ex.getMessage());
 			}
             catch (Exception e){
-                /*response = new OpenUpdateInfoResponse();
-                response.setSuccess(false);// 状态：true 成功；false 失败
-                response.setService_order_id(orderId);// 自营服务订单ID
-                response.setMessage("更新服务项目信息及数量失败");
-                return response;*/
 				throw new ServiceException("更新服务项目信息及数量失败E!");
             }
 		}
@@ -1144,11 +1111,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
                 num = num + orderInfoDao.openUpdateOrder(orderInfo);
             }catch (Exception e){
-                /*response = new OpenUpdateInfoResponse();
-                response.setSuccess(false);// 状态：true 成功；false 失败
-                response.setService_order_id(orderId);// 自营服务订单ID
-                response.setMessage("更新国安侠信息失败E!");
-                return response;*/
 				throw new ServiceException("更新国安侠信息失败E!");
             }
 		}
@@ -1172,11 +1134,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
                 num = num + orderInfoDao.openUpdateOrder(orderInfo);
             }catch (Exception e){
-                /*response = new OpenUpdateInfoResponse();
-                response.setSuccess(false);// 状态：true 成功；false 失败
-                response.setService_order_id(orderId);// 自营服务订单ID
-                response.setMessage("更新用户信息失败");
-                return response;*/
 				throw new ServiceException("更新用户信息失败E!");
             }
 		}
@@ -1202,21 +1159,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
                 num = num + orderInfoDao.openUpdateOrder(orderInfo);
             }catch (Exception e){
-                /*response = new OpenUpdateInfoResponse();
-                response.setSuccess(false);// 状态：true 成功；false 失败
-                response.setService_order_id(orderId);// 自营服务订单ID
-                response.setMessage("更新门店信息失败");
-                return response;*/
 				throw new ServiceException("更新门店信息失败E!");
             }
 		}
 
 		if(num == 0){//更新件数
-			/*response = new OpenUpdateInfoResponse();
-			response.setSuccess(false);// 状态：true 成功；false 失败
-			response.setService_order_id(orderId);// 自营服务订单ID
-            response.setMessage("操作失败！");
-			return response;*/
 			throw new ServiceException("操作失败");
 		}else{
 			response = new OpenUpdateInfoResponse();
