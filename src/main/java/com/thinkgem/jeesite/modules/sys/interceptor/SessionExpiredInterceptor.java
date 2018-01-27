@@ -58,7 +58,7 @@ public class SessionExpiredInterceptor   implements HandlerInterceptor {
 			if (null == cache) {
 				loger.info("=============session过期请重新登录");
 				// UserUtils.clearCache();
-				response.getWriter().print(JSON.toJSONString(new FailResult(3, "session过期请重新登录")));
+				response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录")));
 				return false;
 			}
 		}
