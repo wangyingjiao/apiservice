@@ -109,7 +109,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             }
             if (orderType.equals("orderServiceTime")){
                 messageInfo.setTitle("服务时间变更");
-                messageInfo.setMessage("编号为"+orderInfo.getOrderNumber()+"的订单，服务时间更改为"+orderInfo.getServiceTime()+"，请点击查看");
+                messageInfo.setMessage("编号为"+orderInfo.getOrderNumber()+"的订单，服务时间更改为"+DateUtils.formatDate(orderInfo.getServiceTime(),"yyyy-MM-dd HH:mm:ss")+"，请点击查看");
                 messageInfo.setTargetType("order");
                 return insertAndPush(orderInfo,messageInfo);
             }
