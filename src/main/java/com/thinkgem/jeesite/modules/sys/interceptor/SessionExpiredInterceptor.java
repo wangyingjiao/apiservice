@@ -33,8 +33,6 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
  *
  */
 public class SessionExpiredInterceptor implements HandlerInterceptor {
-	@Autowired
-	private SerSkillItemService systemService;
 	private Log loger = LogFactory.getLog(getClass());
 
 	@Override
@@ -48,19 +46,18 @@ public class SessionExpiredInterceptor implements HandlerInterceptor {
 			loger.info("=================session为空第一次登录");
 			Principal principal = UserUtils.getPrincipal();
 			if (null == principal) {
-				loger.info("=============未登录或失败test");
+				loger.info("=============未登录或失败SessionExpiredInterceptor拦截器");
 				UserUtils.getSubject().logout();
-				response.getWriter().print(JSON.toJSONString(new FailResult(0, "未登录或失败test")));
+				response.getWriter().print(JSON.toJSONString(new FailResult(0, "未登录或失败SessionExpiredInterceptor拦截器")));
 				return false;
 			}
 		}
-
 		User user = UserUtils.getUser();
 		loger.info("=================session是否失效先查询user:" + JSON.toJSONString(user.toString()));
 		User cache = UserUtils.getUserCache(user.getId());
 		if (null == cache) {
 			loger.info("=============说明session过期请重新登录");
-			response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录test")));
+			response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录SessionExpiredInterceptor拦截器")));
 			return false;
 		}
 		return true;
