@@ -520,7 +520,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
 		//System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
 		List<String> list = new ArrayList<>();
-		list = getHeafHourTimeListBorderHoliday(parseDate("2018-01-24 21:00:00"),parseDate("2018-01-24 23:00:00"));
+		list = getHeafHourTimeListLeftBorder(parseDate("2018-01-24 21:00:00"),parseDate("2018-01-24 23:00:00"));
 		for(String info : list){
 			System.out.println(info);
 		}
@@ -533,7 +533,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 * @param endTime
 	 * @return
 	 */
-	public static List<String> getHeafHourTimeListBorderHoliday(Date startTime, Date endTime) {
+	public static List<String> getHeafHourTimeListLeftBorder(Date startTime, Date endTime) {
 		if(!startTime.before(endTime)){
 			return null;//开始时间在结束时间之前 否则返回null
 		}

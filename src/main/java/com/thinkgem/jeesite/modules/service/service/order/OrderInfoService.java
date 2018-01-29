@@ -978,7 +978,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 									DateUtils.formatDate(new Date(), "HH:mm:ss"));
 				}
 			}
-			List<String> workTimes = DateUtils.getHeafHourTimeListBorder(startDateForWork,workTime.getEndTime());
+			List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(startDateForWork,workTime.getEndTime());
 			//-------------------取得技师 当天(15天中的某天)可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			if(workTimes != null) {
@@ -988,7 +988,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
-						List<String> holidays = DateUtils.getHeafHourTimeListBorderHoliday(holiday.getStartTime(), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
 						while (it1.hasNext()) {
 							String work = (String) it1.next();

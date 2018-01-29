@@ -330,7 +330,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 									DateUtils.formatDate(dateAddTwoHour, "HH:mm:ss"));
 				}
 			}
-			List<String> workTimes = DateUtils.getHeafHourTimeListBorder(startDateForWork,workTime.getEndTime());
+			List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(startDateForWork,workTime.getEndTime());
 
 			if(workTimes != null) {
 				//去除休假时间
@@ -339,7 +339,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
-						List<String> holidays = DateUtils.getHeafHourTimeListBorderHoliday(holiday.getStartTime(), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
 						while (it1.hasNext()) {
 							String work = (String) it1.next();
