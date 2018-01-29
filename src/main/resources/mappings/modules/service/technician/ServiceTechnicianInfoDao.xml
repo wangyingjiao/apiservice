@@ -797,6 +797,7 @@
 		WHERE
 			del_flag = #{DEL_FLAG_NORMAL}
 			AND phone = #{phone} AND id !=#{id}
+			AND org_id = #{orgId}
 	</select> 
 	<select id="findTechList" resultType="ServiceTechnicianInfo">
 	SELECT
@@ -804,7 +805,7 @@
 		FROM tech_info a
 		WHERE
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			AND a.phone = #{phone}
+			AND a.phone = #{phone} AND a.org_id = #{orgId}
 	</select>
 
 </mapper>

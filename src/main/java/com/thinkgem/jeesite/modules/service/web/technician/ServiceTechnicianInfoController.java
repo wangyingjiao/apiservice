@@ -206,10 +206,12 @@ public class ServiceTechnicianInfoController extends BaseController {
             return new FailResult(errList);
         }*/
     	//add by WYR 校验手机号重复
-    		int i= serviceTechnicianInfoService.checkPhone(info);
-    		if (0!=i) {
-    			return new FailResult("技师手机号不能重复！");
-			}
+        User user = UserUtils.getUser();
+        info.setOrgId(user.getOrganization().getId());
+        int i= serviceTechnicianInfoService.checkPhone(info);
+        if (0!=i) {
+            return new FailResult("技师手机号不能重复！");
+        }
         serviceTechnicianInfoService.saveInfo(info);
         return new SuccResult("保存成功");
     }
