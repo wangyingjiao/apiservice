@@ -65,7 +65,7 @@ public class AppOrderController extends BaseController {
 		//获取登录用户id 获取用户手机set进去
 		Token token = (Token) request.getAttribute("token");
 		orderInfo.setTechId(token.getTechId());
-		if (orderInfo.getServiceStatus()==null){
+		if (StringUtils.isBlank(orderInfo.getServiceStatus())){
 			return new AppFailResult(1,null,"订单服务状态不可为空");
 		}
 		if (orderInfo.getMajorSort().equals("all")){

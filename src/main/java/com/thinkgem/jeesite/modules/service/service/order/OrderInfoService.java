@@ -84,7 +84,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		//商品图片
 		String pics = dao.appGetPics(orderInfo.getId());
-		if (pics !=null){
+		if (StringUtils.isNotBlank(pics)){
 			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
 			if (picl !=null && picl.size()>0){
 				goodsInfo.setPicture(ossHost+picl.get(0));
@@ -132,7 +132,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		customerInfo.setCustomerRemark(orderInfo.getCustomerRemark());
 		List<String> ll=new ArrayList<String>();
 		String customerRemarkPic = orderInfo.getCustomerRemarkPic();
-		if(null != customerRemarkPic){
+		if(StringUtils.isNotBlank(customerRemarkPic)){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(customerRemarkPic,ArrayList.class);
 			if (pictureDetails.size()>0){
 				for (String s:pictureDetails){
@@ -151,7 +151,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		bus.setBusinessRemark(orderInfo.getBusinessRemark());
 		List<String> bp=new ArrayList<String>();
 		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
-		if(null != businessRemarkPic){
+		if(StringUtils.isNotBlank(businessRemarkPic)){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
 			orderInfo.setBusinessRemarkPics(pictureDetails);
 			if (pictureDetails.size()>0){
@@ -173,7 +173,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		shop.setShopRemark(orderInfo.getShopRemark());
 		List<String> ls=new ArrayList<String>();
 		String shopRemarkPic = orderInfo.getShopRemarkPic();
-		if(null != shopRemarkPic){
+		if(StringUtils.isNotBlank(shopRemarkPic)){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
 			if (pictureDetails.size()>0){
 				for (String pic:pictureDetails){
@@ -186,7 +186,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		shop.setShopRemarkPic(ls);
 		orderInfo.setShopInfo(shop);
 		String orderSource = orderInfo.getOrderSource();
-		if (orderSource !=null) {
+		if (StringUtils.isNotBlank(orderSource)) {
 			if (orderSource.equals("own")) {
 				orderInfo.setOrderSource("本机构");
 			} else if (orderSource.equals("gasq")) {
@@ -194,7 +194,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		String serviceStatus = orderInfo.getServiceStatus();
-		if (serviceStatus != null) {
+		if (StringUtils.isNotBlank(serviceStatus)) {
 			if (serviceStatus.equals("wait_service")) {
 				orderInfo.setServiceStatusName("待服务");
 			} else if (serviceStatus.equals("started")) {
@@ -206,7 +206,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		String orderStatus = orderInfo.getOrderStatus();
-		if (orderStatus != null) {
+		if (StringUtils.isNotBlank(orderStatus)) {
 			if (orderStatus.equals("waitdispatch")) {
 				orderInfo.setOrderStatusName("待派单");
 			} else if (orderStatus.equals("dispatched")) {
@@ -224,7 +224,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		String payStatus = orderInfo.getPayStatus();
-		if (payStatus != null) {
+		if (StringUtils.isNotBlank(payStatus)) {
 			if (payStatus.equals("waitpay")) {
 				orderInfo.setPayStatusName("待支付");
 			} else if (payStatus.equals("payed")) {
@@ -234,7 +234,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//订单备注 数据库中的json 存的是list
 		String orderRemarkPic = orderInfo.getOrderRemarkPic();
 		List<String> orp=new ArrayList<String>();
-		if (null != orderRemarkPic){
+		if (StringUtils.isNotBlank(orderRemarkPic)){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
 			if(pictureDetails.size()>0){
 				for (String pic:pictureDetails){
