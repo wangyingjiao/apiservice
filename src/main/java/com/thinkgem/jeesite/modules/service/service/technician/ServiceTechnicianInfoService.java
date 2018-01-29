@@ -359,6 +359,9 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public int appUpdate(AppServiceTechnicianInfo appTech) {
         //将apptech转成技师
         ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
+        if (null == tech){
+            throw new ServiceException("没有该用户");
+        }
         tech.setId(appTech.getId());
         tech.setHeadPic(appTech.getImgUrlHead());
         tech.setName(appTech.getTechName());
@@ -520,12 +523,14 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public ServiceTechnicianInfo appFindSkillList(ServiceTechnicianInfo serviceTechnicianInfo){
         //工作时间
         List<ServiceTechnicianWorkTime> serviceTechnicianWorkTimes = technicianInfoDao.appGetWeekByTechId(serviceTechnicianInfo);
-        for (ServiceTechnicianWorkTime work:serviceTechnicianWorkTimes){
-            Date startTime = work.getStartTime();
-            Date endTime = work.getEndTime();
-            //date转String
-            work.setStartTimes(DateUtils.formatDate(startTime, "HH:mm"));
-            work.setEndTimes(DateUtils.formatDate(endTime, "HH:mm"));
+        if (serviceTechnicianWorkTimes !=null && serviceTechnicianWorkTimes.size() >0) {
+            for (ServiceTechnicianWorkTime work : serviceTechnicianWorkTimes) {
+                Date startTime = work.getStartTime();
+                Date endTime = work.getEndTime();
+                //date转String
+                work.setStartTimes(DateUtils.formatDate(startTime, "HH:mm"));
+                work.setEndTimes(DateUtils.formatDate(endTime, "HH:mm"));
+            }
         }
         //技师技能
         List<SerSkillInfo> serSkillInfos = serSkillInfoDao.appGetSkillByTech(serviceTechnicianInfo);
@@ -546,7 +551,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
             List<AppServiceTechnicianInfo> serviceTechnicianInfos = technicianInfoDao.appGetFriendByStationId(serviceTechnicianInfo);
             PropertiesLoader loader = new PropertiesLoader("oss.properties");
             String ossHost = loader.getProperty("OSS_THUMB_HOST");
-            if (serviceTechnicianInfos!=null && serviceTechnicianInfos.size()!=0) {
+            if (serviceTechnicianInfos!=null && serviceTechnicianInfos.size()>0) {
                 for (AppServiceTechnicianInfo appTech : serviceTechnicianInfos) {
                     appTech.setImgUrlHead(ossHost + appTech.getImgUrlHead());
                     appTech.setImgUrl(appTech.getImgUrlHead());
@@ -565,6 +570,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     //编辑技师
     @Transactional(readOnly = false)
     public int updateTech(ServiceTechnicianInfo serviceTechnicianInfo){
+        serviceTechnicianInfo.appPreUpdate();
         return dao.appUpdatePassword(serviceTechnicianInfo);
     }
     //校验手机号重复

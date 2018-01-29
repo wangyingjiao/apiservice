@@ -47,6 +47,7 @@ public class AppAop {
         logger.info("==>app aop环绕处理");
         String token = request.getHeader("token");
         String md5 = request.getHeader("md5");
+        String header = request.getHeader("appBuid");
         BufferedReader reader = request.getReader();
         String str;
         StringBuilder sb = new StringBuilder();

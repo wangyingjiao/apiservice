@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 通讯录Controller
+ * 订单相关Controller
  *
  * @author ThinkGem
  * @version 2013-5-31
@@ -66,7 +66,7 @@ public class AppOrderController extends BaseController {
 		Token token = (Token) request.getAttribute("token");
 		orderInfo.setTechId(token.getTechId());
 		if (orderInfo.getServiceStatus()==null){
-			return new AppFailResult("订单服务状态不可为空");
+			return new AppFailResult(1,null,"订单服务状态不可为空");
 		}
 		if (orderInfo.getMajorSort().equals("all")){
 			orderInfo.setMajorSort(null);
@@ -105,7 +105,7 @@ public class AppOrderController extends BaseController {
 			OrderInfo orderInfo = orderInfoService.appFormData(info);
 			return new AppSuccResult(0,orderInfo,"查询订单详情");
 		}catch (ServiceException e ){
-			return new AppFailResult(-1,null,e.getMessage());
+			return new AppFailResult(1,null,e.getMessage());
 		}
 	}
 
@@ -171,7 +171,7 @@ public class AppOrderController extends BaseController {
 			}
 			return new AppSuccResult(0,null,"修改服务状态成功");
 		}catch (ServiceException e){
-			return new AppFailResult(0,null,e.getMessage());
+			return new AppFailResult(-1,null,e.getMessage());
 		}
 	}
 
@@ -202,7 +202,7 @@ public class AppOrderController extends BaseController {
 			}
 			return new AppSuccResult(1,null,"技师列表");
 		}catch (ServiceException e){
-			return new AppFailResult(-1,null,e.getMessage());
+			return new AppFailResult(1,null,e.getMessage());
 		}
 	}
 

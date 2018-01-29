@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 通讯录Controller
+ * 技师相关Controller
  *
  * @author ThinkGem
  * @version 2013-5-31
@@ -100,6 +100,9 @@ public class AppTechController extends BaseController {
 		Token token = (Token) request.getAttribute("token");
 		tech.setId(token.getTechId());
 		ServiceTechnicianInfo tech1 = techService.appFindTech(tech);
+		if (null == tech1){
+			return new AppSuccResult(1, null, "未找到该用户");
+		}
 		Page<AppServiceTechnicianInfo> page = new Page<AppServiceTechnicianInfo>(request, response);
 		try {
 			Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page, tech1);
@@ -152,7 +155,7 @@ public class AppTechController extends BaseController {
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
 		if (page.getList().size() == 0){
-			return new AppSuccResult(1,map,"技师休假列表");
+			return new AppSuccResult(1,null,"技师休假列表");
 		}
 		return new AppSuccResult(0,map,"技师休假列表");
 
@@ -239,53 +242,58 @@ public class AppTechController extends BaseController {
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		appTech.setId(token.getTechId());
-		int i = techService.appUpdate(appTech);
-		if (i > 0){
-			ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
-			tech.setId(appTech.getId());
-			//查询出来的appTech
-			AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tech);
-			technicianById.setImgUrl(ossHost+technicianById.getImgUrl());
-			technicianById.setImgUrlHead(ossHost+technicianById.getImgUrlHead());
-			technicianById.setImgUrlLife(ossHost+technicianById.getImgUrlLife());
-			//身份证正反面
-			String imgUrlCard = technicianById.getImgUrlCard();
-			technicianById.setImgUrlCard(imgUrlCard);
-			if (StringUtils.isNotBlank(imgUrlCard)){
-				Map<String, String> getIdCardMap = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
-				technicianById.setImgUrlCardBefor(ossHost+getIdCardMap.get("befor"));
-				technicianById.setImgUrlCardAfter(ossHost+getIdCardMap.get("after"));
-			}
+		try {
+			int i = techService.appUpdate(appTech);
+			if (i > 0) {
+				ServiceTechnicianInfo tech = new ServiceTechnicianInfo();
+				tech.setId(appTech.getId());
+				//查询出来的appTech
+				AppServiceTechnicianInfo technicianById = techService.getTechnicianById(tech);
+				technicianById.setImgUrl(ossHost + technicianById.getImgUrl());
+				technicianById.setImgUrlHead(ossHost + technicianById.getImgUrlHead());
+				technicianById.setImgUrlLife(ossHost + technicianById.getImgUrlLife());
+				//身份证正反面
+				String imgUrlCard = technicianById.getImgUrlCard();
+				technicianById.setImgUrlCard(imgUrlCard);
+				if (StringUtils.isNotBlank(imgUrlCard)) {
+					Map<String, String> getIdCardMap = (Map<String, String>) JsonMapper.fromJsonString(imgUrlCard, Map.class);
+					technicianById.setImgUrlCardBefor(ossHost + getIdCardMap.get("befor"));
+					technicianById.setImgUrlCardAfter(ossHost + getIdCardMap.get("after"));
+				}
 
-			//民族
-			if (StringUtils.isNotBlank(technicianById.getTechNationValue())){
-				Dict dict=new Dict();
-				dict.setType("ethnic");
-				dict.setValue(technicianById.getTechNationValue());
-				Dict name = dictService.findName(dict);
-				technicianById.setTechNation(name.getLabel());
+				//民族
+				if (StringUtils.isNotBlank(technicianById.getTechNationValue())) {
+					Dict dict = new Dict();
+					dict.setType("ethnic");
+					dict.setValue(technicianById.getTechNationValue());
+					Dict name = dictService.findName(dict);
+					technicianById.setTechNation(name.getLabel());
+				}
+				//籍贯
+				if (StringUtils.isNotBlank(technicianById.getTechNativePlaceValue())) {
+					List<Area> nameByCode = areaService.getNameByCode(technicianById.getTechNativePlaceValue());
+					technicianById.setTechNativePlace(nameByCode.get(0).getName());
+				}
+				//省市区
+				if (StringUtils.isNotBlank(technicianById.getProvinceCode())) {
+					List<Area> nameByCode = areaService.getNameByCode(technicianById.getProvinceCode());
+					technicianById.setProvinceCodeName(nameByCode.get(0).getName());
+				}
+				if (StringUtils.isNotBlank(technicianById.getCityCode())) {
+					List<Area> nameByCode = areaService.getNameByCode(technicianById.getCityCode());
+					technicianById.setCityCodeName(nameByCode.get(0).getName());
+				}
+				if (StringUtils.isNotBlank(technicianById.getAreaCode())) {
+					List<Area> nameByCode = areaService.getNameByCode(technicianById.getAreaCode());
+					technicianById.setAreaCodeName(nameByCode.get(0).getName());
+				}
+				return new AppSuccResult(0, technicianById, "保存成功");
 			}
-			//籍贯
-			if (StringUtils.isNotBlank(technicianById.getTechNativePlaceValue())){
-				List<Area> nameByCode = areaService.getNameByCode(technicianById.getTechNativePlaceValue());
-				technicianById.setTechNativePlace(nameByCode.get(0).getName());
-			}
-			//省市区
-			if (StringUtils.isNotBlank(technicianById.getProvinceCode())){
-				List<Area> nameByCode = areaService.getNameByCode(technicianById.getProvinceCode());
-				technicianById.setProvinceCodeName(nameByCode.get(0).getName());
-			}
-			if (StringUtils.isNotBlank(technicianById.getCityCode())){
-				List<Area> nameByCode = areaService.getNameByCode(technicianById.getCityCode());
-				technicianById.setCityCodeName(nameByCode.get(0).getName());
-			}
-			if (StringUtils.isNotBlank(technicianById.getAreaCode())){
-				List<Area> nameByCode = areaService.getNameByCode(technicianById.getAreaCode());
-				technicianById.setAreaCodeName(nameByCode.get(0).getName());
-			}
-			return new AppSuccResult(0,technicianById,"保存成功");
+			return new AppFailResult(-1,null,"保存失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
 		}
-		return new AppFailResult(-1,null,"保存失败");
+
 	}
 
 	//修改资料列表
@@ -472,7 +480,7 @@ public class AppTechController extends BaseController {
 		versionInfo.setBuild(build);
 		VersionInfo byTime = versionInfoService.getByTime(versionInfo);
 		if(byTime ==null){
-			return new AppSuccResult(-1,null,"版本已是最新版本");
+			return new AppSuccResult(1,null,"版本已是最新版本");
 		}
 		return new AppSuccResult(0,byTime,"版本更新");
 	}

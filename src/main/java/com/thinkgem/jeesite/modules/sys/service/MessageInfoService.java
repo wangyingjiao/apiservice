@@ -45,7 +45,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
     public Page<MessageInfo> findList(Page<MessageInfo> page,MessageInfo messageInfo){
         messageInfo.setPage(page);
         List<MessageInfo> list = messageInfoDao.findList(messageInfo);
-        if (list.size() > 0) {
+        if (list !=null && list.size() > 0) {
             for (MessageInfo info : list) {
                 info.setOrderId(info.getTargetId());
                 Date createTime = info.getPushTime();
@@ -126,6 +126,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         if (messageInfo1 != null) {
             if (messageInfo1.getIsRead().equals("no")) {
                 messageInfo1.setIsRead("yes");
+                messageInfo1.appPreUpdate();
                 i = messageInfoDao.updateMessage(messageInfo1);
             } else {
                 throw new ServiceException("已经读过该消息");

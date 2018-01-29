@@ -91,6 +91,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		}
 		return i;
 	}
+	//app方法执行 新增编辑
 	@Transactional(readOnly = false)
 	public int saveAPP(T entity) {
 		int i =0;

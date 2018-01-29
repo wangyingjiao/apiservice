@@ -53,11 +53,13 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		serviceTechnicianHoliday.setPage(page);
 		if (StringUtils.isNotBlank(serviceTechnicianHoliday.getTechId())){
 			List<ServiceTechnicianHoliday> serviceTechnicianHolidays = dao.appFindPage(serviceTechnicianHoliday);
-			for (ServiceTechnicianHoliday holi:serviceTechnicianHolidays){
-				Date startTime = holi.getStartTime();
-				Date date=new Date();
-				if (startTime.after(date)){
-					holi.setIsExpire("no");
+			if (serviceTechnicianHolidays != null && serviceTechnicianHolidays.size()>0) {
+				for (ServiceTechnicianHoliday holi : serviceTechnicianHolidays) {
+					Date startTime = holi.getStartTime();
+					Date date = new Date();
+					if (startTime.after(date)) {
+						holi.setIsExpire("no");
+					}
 				}
 			}
 			page.setList(serviceTechnicianHolidays);
@@ -128,7 +130,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		if (num>0){
 			throw new ServiceException("请假时间冲突");
-		}
+	}
 
 		//最后休假日期List
 		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();

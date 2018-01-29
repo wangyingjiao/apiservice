@@ -108,14 +108,14 @@
 			<if test="pushTime != null and pushTime!='' ">
 				push_time = #{pushTime} ,
 			</if>
-			<if test="createBy != null and createBy!='' ">
-				create_by = #{createBy} ,
+			<if test="createBy.id != null and createBy.id !='' ">
+				create_by = #{createBy.id} ,
 			</if>
 			<if test="createDate != null and createDate!='' ">
 				create_date = #{createDate},
 			</if>
-			<if test="updateBy != null and updateBy!='' ">
-				update_by = #{updateBy} ,
+			<if test="updateBy.id != null and updateBy.id !='' ">
+				update_by = #{updateBy.id} ,
 			</if>
 			<if test="updateDate != null and updateDate!='' ">
 				update_date = #{updateDate} ,
@@ -126,6 +126,12 @@
 	<update id="updateMessage">
 		UPDATE sys_push_message SET
 			isread = #{isRead}
+		<if test="updateBy != null and updateBy!='' ">
+			, update_by = #{updateBy.id}
+		</if>
+		<if test="updateDate != null and updateDate!='' ">
+			, update_date = #{updateDate}
+		</if>
 		WHERE id = #{id}
 	</update>
 

@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.common.persistence;
 
 import java.util.Date;
 
+import com.thinkgem.jeesite.app.interceptor.Token;
+import com.thinkgem.jeesite.common.web.Servlets;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
@@ -67,14 +69,15 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 		this.createDate = this.updateDate;
 	}
 
+	//app 新增添加createBy
 	public void appreInsert(){
 		// 不限制ID为UUID，调用setIsNewRecord()使用自定义ID
 		if (!this.isNewRecord){
 			setId(IdGen.uuid());
 		}
-		//User user = UserUtils.getUser();
 		User user=new User();
-		user.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		Token token = (Token) Servlets.getRequest().getAttribute("token");
+		user.setId(token.getTechId());
 		if (StringUtils.isNotBlank(user.getId())){
 			this.updateBy = user;
 			this.createBy = user;
@@ -95,11 +98,12 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 		}
 		this.updateDate = new Date();
 	}
-	//app
+	//app 编辑添加updateBy
 	@Override
 	public void appPreUpdate(){
 		User user=new User();
-		user.setId("d30d2e68ae1a48b3b8a80625b0abc39f");
+		Token token = (Token) Servlets.getRequest().getAttribute("token");
+		user.setId(token.getTechId());
 		if (StringUtils.isNotBlank(user.getId())){
 			this.updateBy = user;
 		}
