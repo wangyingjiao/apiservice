@@ -24,6 +24,8 @@ public class BasicStore extends DataEntity<BasicStore> {
     private String storeId;
     // 门店名称
     private String storeName;
+    // 门店电话
+    private String storePhone;
     // 门店类型
     private String white;
     // 省_区号
@@ -32,6 +34,8 @@ public class BasicStore extends DataEntity<BasicStore> {
     private String cityCode;
     // 区_区号
     private String areaCode;
+    //地址
+    private String address;
 
     public List<BasicStore> getChildren() {
         return children;
@@ -135,6 +139,20 @@ public class BasicStore extends DataEntity<BasicStore> {
 	public void setStationId(String stationId) {
 		this.stationId = stationId;
 	}
-    
 
+    public String getStorePhone() {
+        return storePhone;
+    }
+
+    public void setStorePhone(String storePhone) {
+        this.storePhone = storePhone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

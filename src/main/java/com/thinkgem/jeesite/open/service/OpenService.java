@@ -734,9 +734,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		BasicStore basicStore = basicStoreDao.get(store_id);
 		if(basicStore != null){
-			//TODO
 			shop_name = basicStore.getStoreName();
-			//shop_phone = ;
+			shop_phone = basicStore.getStorePhone();
+			shop_addr = basicStore.getAddress();
 		}else{
 			throw new ServiceException("未找到门店ID对应的门店信息");
 		}
