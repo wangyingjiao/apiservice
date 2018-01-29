@@ -27,7 +27,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * @ClassName: SessionExpiredInterceptor
- * @Description: TODO统一处理用户session过期后的Interceptor
+ * @Description: TODO统一处理用户session过期后的Interceptor停用，使用shiro自定义的过滤器
  * @author WYR
  * @date 2018年1月26日 下午3:34:09
  *
@@ -37,7 +37,7 @@ public class SessionExpiredInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
+			throws Exception {/*
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charset=utf-8");
 		loger.info("=================进入SessionExpiredInterceptor拦截器");
@@ -59,7 +59,7 @@ public class SessionExpiredInterceptor implements HandlerInterceptor {
 			loger.info("=============说明session过期请重新登录");
 			response.getWriter().print(JSON.toJSONString(new FailResult(2, "session过期请重新登录SessionExpiredInterceptor拦截器")));
 			return false;
-		}
+		}*/
 		return true;
 
 	}
@@ -76,14 +76,14 @@ public class SessionExpiredInterceptor implements HandlerInterceptor {
 		 * request.getParameterMap();
 		 */
 
-		loger.info("SessionExpiredInterceptor======>postHandle处理！");
+		//loger.info("SessionExpiredInterceptor======>postHandle处理！");
 
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-		loger.info("SessionExpiredInterceptor=======>afterCompletion处理！");
+		//loger.info("SessionExpiredInterceptor=======>afterCompletion处理！");
 	}
 
 }

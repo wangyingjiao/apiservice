@@ -227,7 +227,7 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
 		if (isLoginRequest(request, response)) {
 			if (isLoginSubmission(request, response)) {
 				if (logger.isTraceEnabled()) {
-					logger.trace("Login submission detected.  Attempting to execute login.");
+					logger.trace("Login submission detected.  Attempting to execute login.检测到登录提交。尝试执行登录。 ");
 				}
 				return executeLogin(request, response);
 			} else {
@@ -251,7 +251,7 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
 			if (null == cache) {
 				logger.info("=============FormAuthenticationFilter说明session过期请重新登录");
 				response.getWriter()
-						.print(JSON.toJSONString(new FailResult(2, "session过期请重新登录FormAuthenticationFilter拦截器")));
+						.print(JSON.toJSONString(new FailResult(2, "session过期请重新登录FormAuthenticationFilter过滤器")));
 				return false;
 			}
 			//saveRequestAndRedirectToLogin(request, response);
