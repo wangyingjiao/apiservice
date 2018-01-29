@@ -487,7 +487,6 @@ origin_price,
 			good.goods_num AS "goodsNum",
 			good.goods_unit AS "goodsUnit",
 			good.pay_price AS "payPrice",
-
 			good2.convert_hours AS "convertHours",
 			good2.start_per_num AS "startPerNum",
 			good2.capping_per_num AS "cappingPerNum",

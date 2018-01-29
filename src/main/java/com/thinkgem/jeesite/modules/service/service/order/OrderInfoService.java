@@ -90,44 +90,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				goodsInfo.setPicture(ossHost+picl.get(0));
 			}
 		}
-		//app的技师列表 appTechList
-		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
-		if (techList==null || techList.size()==0){
-			throw new ServiceException("没有技师");
-		}
-//		for(OrderGoods orderGoods : goodsInfoList){
-//			String dj = orderGoods.getPayPrice();//商品单价
-//			int num = orderGoods.getGoodsNum();//商品数量
-//			BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
-//			orderGoods.setPayPrice(price.toString());//总价
-//		}
-		orderInfo.setGoodsInfo(goodsInfo);
-		orderInfo.setTechList(techList);
-		List<String> idList=new ArrayList<String>();
-		//app其他技师
-		List<AppServiceTechnicianInfo> appTechList=new ArrayList<AppServiceTechnicianInfo>();
-		for (OrderDispatch apt:techList){
-			ServiceTechnicianInfo temInfo=new ServiceTechnicianInfo();
-			temInfo.setId(apt.getTechId());
-			//当前登陆用户信息
-			AppServiceTechnicianInfo technicianById = serviceTechnicianInfoDao.getTechnicianById(temInfo);
-			//当前登陆用户的id是否与当前订单的拥有人id不相同 取出不相同的技师放入其他技师list
-			if (technicianById !=null){
-				if (!technicianById.getId().equals(orderInfo.getNowId())){
-					appTechList.add(technicianById);
-				}
-				//将订单下的技师id取出来
-				idList.add(technicianById.getId());
-			}
-		}
-		//如果包含这个id 可以操作 不包含 不能对订单进行操作
-		if (idList != null && idList.size()>0) {
-			if (idList.contains(orderInfo.getNowId())) {
-				orderInfo.setIsTech("yes");
-			}
-		}
-		orderInfo.setAppTechList(appTechList);
-		//客户信息
 		OrderCustomInfo customerInfo=new OrderCustomInfo();
 		customerInfo.setCustomerRemark(orderInfo.getCustomerRemark());
 		List<String> ll=new ArrayList<String>();
@@ -237,6 +199,45 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		orderInfo.setOrderRemarkPics(orp);
+		//app的技师列表 appTechList
+		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
+		if (techList==null || techList.size()==0){
+			throw new ServiceException("没有技师");
+		}
+//		for(OrderGoods orderGoods : goodsInfoList){
+//			String dj = orderGoods.getPayPrice();//商品单价
+//			int num = orderGoods.getGoodsNum();//商品数量
+//			BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
+//			orderGoods.setPayPrice(price.toString());//总价
+//		}
+		orderInfo.setGoodsInfo(goodsInfo);
+		orderInfo.setTechList(techList);
+		List<String> idList=new ArrayList<String>();
+		//app其他技师
+		List<AppServiceTechnicianInfo> appTechList=new ArrayList<AppServiceTechnicianInfo>();
+		for (OrderDispatch apt:techList){
+			ServiceTechnicianInfo temInfo=new ServiceTechnicianInfo();
+			temInfo.setId(apt.getTechId());
+			//当前登陆用户信息
+			AppServiceTechnicianInfo technicianById = serviceTechnicianInfoDao.getTechnicianById(temInfo);
+			//当前登陆用户的id是否与当前订单的拥有人id不相同 取出不相同的技师放入其他技师list
+			if (technicianById !=null){
+				if (!technicianById.getId().equals(orderInfo.getNowId())){
+					appTechList.add(technicianById);
+				}
+				//将订单下的技师id取出来
+				idList.add(technicianById.getId());
+			}
+		}
+		//如果包含这个id 可以操作 不包含 不能对订单进行操作
+		if (idList != null && idList.size()>0) {
+			if (idList.contains(orderInfo.getNowId())) {
+				orderInfo.setIsTech("yes");
+			}
+		}
+		orderInfo.setAppTechList(appTechList);
+		//客户信息
+
 
 		return orderInfo;
 	}
