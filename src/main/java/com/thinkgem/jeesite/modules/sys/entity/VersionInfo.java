@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.modules.sys.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.math.BigDecimal;
+
 /**
  * 消息entity
  *
@@ -15,7 +17,7 @@ public class VersionInfo extends DataEntity<VersionInfo> {
 
     private static final long serialVersionUID = 1L;
     private String versionNumber;   //versionName
-    private Integer build;            //versionCode
+    private BigDecimal build;            //versionCode
     private String upgradeContent;  //更新内容
     private String refreshAddress;  //更新地址
     private String forcedUpdate;    //是否强制更新
@@ -53,11 +55,11 @@ public class VersionInfo extends DataEntity<VersionInfo> {
         this.forcedUpdate = forcedUpdate;
     }
 
-    public Integer getBuild() {
+    public BigDecimal getBuild() {
         return build;
     }
 
-    public void setBuild(Integer build) {
+    public void setBuild(BigDecimal build) {
         this.build = build;
     }
 

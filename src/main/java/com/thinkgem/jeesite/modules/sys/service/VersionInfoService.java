@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -35,21 +36,31 @@ public class VersionInfoService extends CrudService<VersionInfoDao, VersionInfo>
     public VersionInfo getByTime(VersionInfo versionInfo){
         //获取传过来的code
         String build = versionInfo.getReceiveBuild();
-        Integer integer = Integer.valueOf(build);
+        Long aLong = Long.valueOf(build);
+//        Integer integer = Integer.valueOf(build);
         VersionInfo info=new VersionInfo();
         VersionInfo versionInfo1 = versionInfoDao.getByTime(info);
+        BigDecimal build2 = versionInfo1.getBuild();
+        //将科学计数法转成String 再转成Integer
+        String s = build2.toPlainString();
+        Long aLong2 = Long.valueOf(s);
+//        Integer integer1 = Integer.valueOf(s);
         //比较build值 > 需要更新 <=不更新
-        if (versionInfo1.getBuild()>integer){
+        if (aLong2>aLong){
             //如果最新的版本是不强制更新的
             if (versionInfo1.getForcedUpdate().equals("no")){
                 info.setForcedUpdate("yes");
                 //取数据库查询最新的一条强更的版本
                 VersionInfo byTime = versionInfoDao.getByTime(info);
-                Integer build1 = byTime.getBuild();
-                //如果最新的一版是强更的 且比传来的版本高 把最新的版本传过去 变成强更（中间隔着一个强更的版本没更新 让他强制更新最新版本）
-                if (byTime.getBuild()>integer){
-                    versionInfo1.setForcedUpdate("yes");
-                    return versionInfo1;
+                if (byTime != null) {
+                    BigDecimal build1 = byTime.getBuild();
+                    String s1 = build1.toPlainString();
+                    Long aLong1 = Long.valueOf(s1);
+                    //如果最新的一版是强更的 且比传来的版本高 把最新的版本传过去 变成强更（中间隔着一个强更的版本没更新 让他强制更新最新版本）
+                    if (aLong1 > aLong) {
+                        versionInfo1.setForcedUpdate("yes");
+                        return versionInfo1;
+                    }
                 }
             }
             return versionInfo1;
