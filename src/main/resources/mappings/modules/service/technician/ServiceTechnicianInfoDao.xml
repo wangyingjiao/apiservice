@@ -374,6 +374,7 @@
 		where a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
 		and b.tech_id = #{id}
 		and finish_time>=NOW()
+		AND order_status != 'cancel'
 	</select>
 
 
