@@ -34,29 +34,29 @@ public class VersionInfoService extends CrudService<VersionInfoDao, VersionInfo>
     //获取最新的版本
     public VersionInfo getByTime(VersionInfo versionInfo){
         //获取传过来的code
-        String build = versionInfo.getBuild();
+        String build = versionInfo.getReceiveBuild();
+        Integer integer = Integer.valueOf(build);
         VersionInfo info=new VersionInfo();
         VersionInfo versionInfo1 = versionInfoDao.getByTime(info);
-        //比较build值
-        int i = versionInfo1.getBuild().compareTo(build);
-        //>1 前大 需要更新
-        if (i>0){
-            return versionInfo1;
-        }else{
+        //比较build值 > 需要更新 <=不更新
+        if (versionInfo1.getBuild()>integer){
             //如果最新的版本是不强制更新的
             if (versionInfo1.getForcedUpdate().equals("no")){
                 info.setForcedUpdate("yes");
+                //取数据库查询最新的一条强更的版本
                 VersionInfo byTime = versionInfoDao.getByTime(info);
-                int i1 = byTime.getBuild().compareTo(build);
-                if (i1>0){
-                    return byTime;
+                Integer build1 = byTime.getBuild();
+                //如果最新的一版是强更的 且比传来的版本高 把最新的版本传过去 变成强更（中间隔着一个强更的版本没更新 让他强制更新最新版本）
+                if (byTime.getBuild()>integer){
+                    versionInfo1.setForcedUpdate("yes");
+                    return versionInfo1;
                 }
             }
+            return versionInfo1;
+        }else{
             return null;
         }
 
     }
-
-
 
 }
