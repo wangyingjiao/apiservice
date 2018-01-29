@@ -719,6 +719,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.eshopCode = eshopCode;
 	}
 
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Timestamp getServiceTimeStart() {
 		return serviceTimeStart;
 	}
@@ -727,6 +729,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.serviceTimeStart = serviceTimeStart;
 	}
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Timestamp getServiceTimeEnd() {
 		return serviceTimeEnd;
 	}

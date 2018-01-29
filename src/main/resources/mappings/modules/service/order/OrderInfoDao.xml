@@ -739,5 +739,19 @@ origin_price,
 		from basic_organization a
 		WHERE a.id= #{orgId}
 	</select>
+
+	<select id="getOrderDispatchMsgTechList" resultType="OrderDispatch">
+		SELECT
+		a.id AS techId,
+		a.name  AS techName,
+		a.phone  AS techPhone
+		FROM
+		tech_info a
+		WHERE
+		a.id in
+		<foreach item="techId" index="index" collection="techIdList" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+	</select>
 	<!-- 对接SQL end-->
 </mapper>

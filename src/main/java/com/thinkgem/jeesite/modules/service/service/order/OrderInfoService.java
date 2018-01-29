@@ -1262,51 +1262,63 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			info.preUpdate();
 			dao.update(info);
 
+			List<String> newTechIds = new ArrayList<>();
+			List<String> oldTechIds = new ArrayList<>();
+			List<String> delTechIds = new ArrayList<>();
+
 			List<String> techBeforIds = new ArrayList<>();
 			for(OrderDispatch tech :techBeforList){
-				techBeforIds.add(tech.getTechId());
-				OrderDispatch orderDispatch = new OrderDispatch();
-				orderDispatch.setId(tech.getId());//技师ID
-				orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
-				orderDispatch.preUpdate();
-				orderDispatchDao.update(orderDispatch);//数据库改派前技师设为不可用
+				if(dispatchTechIds.contains(tech.getTechId())){//又分配给当前技师
+					oldTechIds.add(tech.getTechId());
+				}else{
+					OrderDispatch orderDispatch = new OrderDispatch();
+					orderDispatch.setId(tech.getId());//技师ID
+					orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
+					orderDispatch.preUpdate();
+					orderDispatchDao.update(orderDispatch);//数据库改派前技师设为不可用
+
+					delTechIds.add(tech.getTechId());
+				}
 			}
-			for(String techId : dispatchTechIds){
-				OrderDispatch orderDispatch = new OrderDispatch();
-				orderDispatch.setTechId(techId);//技师ID
-				orderDispatch.setOrderId(orderInfo.getId());//订单ID
-				orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
-				orderDispatch.preInsert();
-				orderDispatchDao.insert(orderDispatch);
-				techList.add(orderDispatch);
+			for(String techId : dispatchTechIds){//新增技师
+				if(oldTechIds!=null && !oldTechIds.contains(techId)){
+					OrderDispatch orderDispatch = new OrderDispatch();
+					orderDispatch.setTechId(techId);//技师ID
+					orderDispatch.setOrderId(orderInfo.getId());//订单ID
+					orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
+					orderDispatch.preInsert();
+					orderDispatchDao.insert(orderDispatch);
+
+					newTechIds.add(techId);
+				}
 			}
 
 			List<OrderDispatch> techLastList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 
-			/*
-			* techBeforList  订单原有的技师  techBeforIds
-			* techLastList  订单现在分配的技师 dispatchTechIds
-			*
-			* 派单 原来没有，现在有
-			* 改派 原来有，现在没有
-			* 时间变化 原来有，现在有
-			*/
+			List<String> msgTechIds = new ArrayList<>();
+			msgTechIds.addAll(newTechIds);
+			msgTechIds.addAll(oldTechIds);
+			msgTechIds.addAll(delTechIds);
+			OrderInfo orderMsg = new OrderInfo();
+			orderMsg.setTechIdList(msgTechIds);
+			List<OrderDispatch> msgTechList = dao.getOrderDispatchMsgTechList(orderMsg); //订单当前已有技师List
 			// 派单 原来没有，现在有
 			List<OrderDispatch> orderCreateMsgList = new ArrayList<>();
 			// 改派 原来有，现在没有
 			List<OrderDispatch> orderDispatchMsgList = new ArrayList<>();
 			// 时间变化 原来有，现在有
 			List<OrderDispatch> orderServiceTimeMsgList = new ArrayList<>();
-			for(OrderDispatch msgInfo : techListRe){
-				if(techBeforIds.contains(msgInfo.getTechId()) && dispatchTechIds.contains(msgInfo.getTechId())){
-					orderServiceTimeMsgList.add(msgInfo);// 时间变化 原来有，现在有
-				}else if(techBeforIds.contains(msgInfo.getTechId()) && !dispatchTechIds.contains(msgInfo.getTechId())){
-					orderDispatchMsgList.add(msgInfo);// 改派 原来有，现在没有
-				}else if(!techBeforIds.contains(msgInfo.getTechId()) && dispatchTechIds.contains(msgInfo.getTechId())){
+			for(OrderDispatch msgInfo : msgTechList){
+				if(newTechIds.contains(msgInfo.getTechId())){
 					orderCreateMsgList.add(msgInfo);// 派单 原来没有，现在有
 				}
+				if(delTechIds.contains(msgInfo.getTechId())){
+					orderDispatchMsgList.add(msgInfo);// 改派 原来有，现在没有
+				}
+				if(oldTechIds.contains(msgInfo.getTechId())) {
+					orderServiceTimeMsgList.add(msgInfo);// 时间变化 原来有，现在有
+				}
 			}
-
 
 			BasicOrganization organization = dao.getBasicOrganizationByOrgId(orderInfo);
 			String jointEshopCode = "";
