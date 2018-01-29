@@ -426,21 +426,38 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<OrderDispatch> orderTechList = dao.getTechByOrder(serchInfo);//订单结束时间在当前订单上门时间前90分钟之后的技师列表
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
+
+			int intervalTimeS = 0;//必须间隔时间 秒
+			if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
+					Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) < 14) {
+				//可以接单的时间则为：40分钟+路上时间+富余时间
+				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
+			} else {
+				//可以接单的时间则为：路上时间+富余时间
+				intervalTimeS = 15 * 60 + 10 * 60;
+			}
+
+			int intervalTimeE = 0;//必须间隔时间 秒
+			if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
+					Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
+				//可以接单的时间则为：40分钟+路上时间+富余时间
+				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+			} else {
+				//可以接单的时间则为：路上时间+富余时间
+				intervalTimeE = 15 * 60 + 10 * 60;
+			}
+
+			Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
+			Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
+
 			for(OrderDispatch orderTech : orderTechList){
 				//（1）路上时间：计算得出，--按照骑行的时间计算 --> 15MIN
 				//		上一单的用户地址与下一单用户地址之间的距离，则可以接单的时间为：路上时间+富余时间
 				//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
 				//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
 				//（4）富余时间定为10分钟"
-				orderTech.setServiceTime(DateUtils.addSeconds(orderTech.getServiceTime(),-(15*60 + 10*60)));
-				int finishTimeHH = Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH"));
-				if(11 <= finishTimeHH && finishTimeHH < 14){
-					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),(15*60 + 40*60 + 10*60)));
-				}else{
-					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),(15*60 + 10*60)));
-				}
 
-				if(!DateUtils.checkDatesRepeat(serviceTime,finishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
+				if(!DateUtils.checkDatesRepeat(checkServiceTime,checkFinishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
 					timeCheckDelTechIdList.add(orderTech.getTechId());//有订单的技师 删除
 				}
 			}
@@ -1210,6 +1227,30 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<OrderDispatch> orderTechList = dao.getTechByOrder(serchInfo);//技师列表
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
+
+			int intervalTimeS = 0;//必须间隔时间 秒
+			if (11 <= Integer.parseInt(DateUtils.formatDate(newServiceDate, "HH")) &&
+					Integer.parseInt(DateUtils.formatDate(newServiceDate, "HH")) < 14) {
+				//可以接单的时间则为：40分钟+路上时间+富余时间
+				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
+			} else {
+				//可以接单的时间则为：路上时间+富余时间
+				intervalTimeS = 15 * 60 + 10 * 60;
+			}
+
+			int intervalTimeE = 0;//必须间隔时间 秒
+			if (11 <= Integer.parseInt(DateUtils.formatDate(newFinishTime, "HH")) &&
+					Integer.parseInt(DateUtils.formatDate(newFinishTime, "HH")) < 14) {
+				//可以接单的时间则为：40分钟+路上时间+富余时间
+				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+			} else {
+				//可以接单的时间则为：路上时间+富余时间
+				intervalTimeE = 15 * 60 + 10 * 60;
+			}
+
+			Date checkServiceTime = DateUtils.addSecondsNotDayB(newServiceDate, -intervalTimeS);
+			Date checkFinishTime = DateUtils.addSecondsNotDayE(newFinishTime, intervalTimeE);
+
 			for(OrderDispatch orderTech : orderTechList){
 				if(!orderInfo.getId().equals(orderTech.getOrderId())) {
 					//（1）路上时间：计算得出，--按照骑行的时间计算 --> 15MIN
@@ -1217,15 +1258,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
 					//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
 					//（4）富余时间定为10分钟"
-					orderTech.setServiceTime(DateUtils.addSeconds(orderTech.getServiceTime(), -(15 * 60 + 10 * 60)));
-					int finishTimeHH = Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH"));
-					if (11 <= finishTimeHH && finishTimeHH < 14) {
-						orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(), (15 * 60 + 40 * 60 + 10 * 60)));
-					} else {
-						orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(), (15 * 60 + 10 * 60)));
-					}
-
-					if (!DateUtils.checkDatesRepeat(newServiceDate, newFinishTime, orderTech.getServiceTime(), orderTech.getFinishTime())) {
+					if (!DateUtils.checkDatesRepeat(checkServiceTime, checkFinishTime, orderTech.getServiceTime(), orderTech.getFinishTime())) {
 						timeCheckDelTechIdList.add(orderTech.getTechId());//有订单的技师 删除
 					}
 				}
