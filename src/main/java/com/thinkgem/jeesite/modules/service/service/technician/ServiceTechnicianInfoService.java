@@ -372,10 +372,10 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         tech.setIdCard(appTech.getTechIdCard());
         tech.setIdCardPicBefor(appTech.getImgUrlCard());
         tech.setEmail(appTech.getTechEmail());
-        if (appTech.getTechHeight() != null){
+        if (StringUtils.isNotBlank(appTech.getTechHeight())){
             tech.setHeight(Integer.valueOf(appTech.getTechHeight()));
         }
-        if (appTech.getTechWeight() != null){
+        if (StringUtils.isNotBlank(appTech.getTechWeight())){
             tech.setWeight(Integer.valueOf(appTech.getTechWeight()));
         }
         //籍贯code
@@ -463,8 +463,10 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         if (!SystemService.validatePassword(user.getPassword(), technician.getPassword())) {
            throw new ServiceException("用户密码输入错误");
         }
-        if (technician.getJobStatus().equals("leave")){
-            throw new ServiceException("用户已离职不可登录");
+        if(StringUtils.isNotBlank(technician.getJobStatus())) {
+            if (technician.getJobStatus().equals("leave")) {
+                throw new ServiceException("用户已离职不可登录");
+            }
         }
         PropertiesLoader loader = new PropertiesLoader("oss.properties");
         String ossHost = loader.getProperty("OSS_THUMB_HOST");

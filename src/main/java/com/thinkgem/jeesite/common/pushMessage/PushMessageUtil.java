@@ -20,6 +20,7 @@ public class PushMessageUtil {
 
 
     public  static int pushMessage(MessageInfo messageInfo) {
+        PushResponse pushResponse = new PushResponse();
         try {
         IClientProfile profile = DefaultProfile.getProfile("cn-beijing", messageInfo.getAccessKeyId(), messageInfo.getAccessKeySecret());
         DefaultAcsClient client = new DefaultAcsClient(profile);
@@ -66,7 +67,7 @@ public class PushMessageUtil {
         pushRequest.setExpireTime(expireTime);
         pushRequest.setStoreOffline(true); // 离线消息是否保存,若保存, 在推送时候，用户即使不在线，下一次上线则会收到
 
-            PushResponse pushResponse = client.getAcsResponse(pushRequest);
+            pushResponse = client.getAcsResponse(pushRequest);
             System.out.printf("RequestId: %s, MessageID: %s\n",
                     pushResponse.getRequestId(), pushResponse.getMessageId());
             return 1;

@@ -543,7 +543,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("没有会此技能且在岗在线的全职技师");
 		}
 		//时间满足条件的人员列表
-		if(beforTimeCheckTechIdList.size() != 0){
+		if(beforTimeCheckTechIdList !=null && beforTimeCheckTechIdList.size() != 0){
 			serchInfo.setTechIds(beforTimeCheckTechIdList);
 			//serchInfo.setServiceTime(DateUtils.addMinutes(serviceTime,90));//订单结束时间在当前订单上门时间前90分钟之后
 			//今天的订单
@@ -573,18 +573,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					}
 				}
 			}
-			for(OrderDispatch tech : beforTimeCheckTechList){
-				if(!timeCheckDelTechIdList.contains(tech.getTechId())){
-					techListRe.add(tech);
+			if (beforTimeCheckTechList != null && beforTimeCheckTechList.size()>0) {
+				for (OrderDispatch tech : beforTimeCheckTechList) {
+					if (!timeCheckDelTechIdList.contains(tech.getTechId())) {
+						techListRe.add(tech);
+					}
 				}
 			}
-
 		}
-//		if (null != techListPart){
-//			for(OrderDispatch part : techListPart){
-//				techListRe.add(part);
-//			}
-//		}
 		return techListRe;
 	}
 
@@ -1487,7 +1483,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		//订单备注图片  JSON串存的数组
 		String orderRemarkPic = orderInfo.getOrderRemarkPic();
-		if (null != orderRemarkPic){
+		if (StringUtils.isNotBlank(orderRemarkPic)){
 			List<String> pics = (List<String>) JsonMapper.fromJsonString(orderRemarkPic, ArrayList.class);
 			List<String> tem=new ArrayList<String>();
 			for (String pic:pics){

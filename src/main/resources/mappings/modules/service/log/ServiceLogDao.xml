@@ -31,6 +31,12 @@
 			<if test="endTime != null and endTime != ''">
 				AND a.create_date &lt;= #{endTime}
 			</if>
+			<if test="requestUri != null and requestUri != ''">
+				AND a.request_uri LIKE concat('%',#{requestUri},'%')
+			</if>
+			<if test="params != null and params != ''">
+				AND a.params LIKE concat('%',#{params},'%')
+			</if>
 		</where>
 		ORDER BY a.create_date DESC
 	</select>
