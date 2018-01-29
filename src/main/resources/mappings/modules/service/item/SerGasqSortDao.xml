@@ -37,6 +37,7 @@
 			<if test="level != null and level != ''">
 				AND a.level = #{level}
 			</if>
+			AND a.hidden!='yes'
 		</where>
 	</select>
 </mapper>
