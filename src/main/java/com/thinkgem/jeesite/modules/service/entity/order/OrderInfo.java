@@ -78,6 +78,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String stationName;         //服务站
 	private Timestamp orderTimeStart;		// 下单起始时
 	private Timestamp orderTimeEnd;		// 下单结束时
+	private Timestamp serviceTimeStart;		// 服务时间 上门时间 起始时
+	private Timestamp serviceTimeEnd;		// 服务时间 上门时间 结束时
 
 	private OrderPayInfo payInfo;       // 支付信息
 	//private OrderRefund refundInfo;    //退款信息
@@ -715,5 +717,21 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setEshopCode(String eshopCode) {
 		this.eshopCode = eshopCode;
+	}
+
+	public Timestamp getServiceTimeStart() {
+		return serviceTimeStart;
+	}
+
+	public void setServiceTimeStart(Timestamp serviceTimeStart) {
+		this.serviceTimeStart = serviceTimeStart;
+	}
+
+	public Timestamp getServiceTimeEnd() {
+		return serviceTimeEnd;
+	}
+
+	public void setServiceTimeEnd(Timestamp serviceTimeEnd) {
+		this.serviceTimeEnd = serviceTimeEnd;
 	}
 }
