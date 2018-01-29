@@ -204,7 +204,8 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
 		// return super.onAccessDenied(request, response);
 		//HttpServletRequest httpRequest = (HttpServletRequest) request;
 		//HttpServletResponse httpResponse = (HttpServletResponse) response;
-
+		request.setCharacterEncoding("UTF-8");
+		response.setContentType("text/html;charset=utf-8");
 		/*
 		 * Subject subject = getSubject(request, response);
 		 * 
