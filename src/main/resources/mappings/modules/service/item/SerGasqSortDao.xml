@@ -30,7 +30,7 @@
 			<include refid="SerGasqSortColumns"/>
 		FROM ser_gasq_sort a
 		<include refid="SerGasqSortJoins"/>
-		<where>
+		<where> 1=1
 			<if test="pid != null and pid != ''">
 				AND a.pid = #{pid}
 			</if>
