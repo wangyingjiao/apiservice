@@ -884,18 +884,28 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
 				//（4）富余时间定为10分钟"
 
-				int intervalTime = 0;//必须间隔时间 秒
-				if (11 <= Integer.parseInt(DateUtils.formatDate(orderTech.getEndTime(), "HH")) &&
-						Integer.parseInt(DateUtils.formatDate(orderTech.getEndTime(), "HH")) < 14) {
+				int intervalTimeS = 0;//必须间隔时间 秒
+				if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(orderTech.getServiceTime(), -serviceSecond.intValue()), "HH")) &&
+						Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(orderTech.getServiceTime(), -serviceSecond.intValue()), "HH")) < 14) {
 					//可以接单的时间则为：40分钟+路上时间+富余时间
-					intervalTime = 40 * 60 + 15 * 60 + 10 * 60;
+					intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
 				} else {
 					//可以接单的时间则为：路上时间+富余时间
-					intervalTime = 15 * 60 + 10 * 60;
+					intervalTimeS = 15 * 60 + 10 * 60 + serviceSecond.intValue();
 				}
 
-				orderTech.setServiceTime(DateUtils.addSecondsNotDayB(orderTech.getStartTime(), -serviceSecond.intValue()));
-				orderTech.setFinishTime(DateUtils.addSecondsNotDayE(orderTech.getEndTime(), intervalTime));
+				int intervalTimeE = 0;//必须间隔时间 秒
+				if (11 <= Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH")) &&
+						Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH")) < 14) {
+					//可以接单的时间则为：40分钟+路上时间+富余时间
+					intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+				} else {
+					//可以接单的时间则为：路上时间+富余时间
+					intervalTimeE = 15 * 60 + 10 * 60;
+				}
+
+				orderTech.setServiceTime(DateUtils.addSecondsNotDayB(orderTech.getServiceTime(), -intervalTimeS));
+				orderTech.setFinishTime(DateUtils.addSecondsNotDayE(orderTech.getFinishTime(), intervalTimeE));
 
 				if(!DateUtils.checkDatesRepeat(serviceTime,finishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
 					timeCheckDelTechIdList.add(orderTech.getTechId());

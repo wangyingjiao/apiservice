@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.open.web;
 
 import com.alibaba.fastjson.JSON;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
@@ -54,19 +55,19 @@ public class OpenController extends BaseController {
 		try {
 			Map<String,Object> value = openService.openServiceTimes(info);
 			OpenSuccResult result =  new OpenSuccResult(value, "操作成功");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","1");
 			return result;
 		}catch (ServiceException ex){
 			OpenFailResult result =  new OpenFailResult(ex.getMessage());
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
 		}catch (Exception e){
 			OpenFailResult result =  new OpenFailResult("操作失败");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
@@ -96,19 +97,19 @@ public class OpenController extends BaseController {
 			}
 
 			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","1");
 			return result;
 		}catch (ServiceException ex){
 			OpenFailResult result =  new OpenFailResult(ex.getMessage());
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
 		}catch (Exception e){
 			OpenFailResult result =  new OpenFailResult("操作失败");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
@@ -140,19 +141,19 @@ public class OpenController extends BaseController {
 			}
 
 			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","1");
 			return result;
 		}catch (ServiceException ex){
 			OpenFailResult result =  new OpenFailResult(ex.getMessage());
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
 		}catch (Exception e){
 			OpenFailResult result =  new OpenFailResult("操作失败");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
@@ -171,19 +172,19 @@ public class OpenController extends BaseController {
 			OpenUpdateInfoResponse responseRe = openService.openUpdateInfo(info);
 
 			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","1");
 			return result;
 		}catch (ServiceException ex){
 			OpenFailResult result =  new OpenFailResult(ex.getMessage());
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
 		}catch (Exception e){
 			OpenFailResult result =  new OpenFailResult("操作失败");
-			String openResponseJson = JSON.toJSONString(result);
+			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","0");
 			return result;
