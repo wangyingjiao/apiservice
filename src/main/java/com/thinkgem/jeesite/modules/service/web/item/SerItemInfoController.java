@@ -345,12 +345,13 @@ public class SerItemInfoController extends BaseController {
                 }else{
                     return new FailResult("删除失败");
                 }
+            }else{
+                serItemInfoService.delete(info);
+                return new SuccResult("删除成功");
             }
         }catch (Exception e){
             return new FailResult("系统异常");
         }
-
-        return new SuccResult("删除成功");
     }
 
     @ResponseBody
@@ -404,17 +405,21 @@ public class SerItemInfoController extends BaseController {
                             return new FailResult("删除失败，第三方不允许删除此商品");
                         }else {
                             serItemInfoService.deleteGoodsInfo(serItemCommodity);
+                            return new SuccResult("删除成功");
                         }
                     }else{
                         return new FailResult("删除失败，第三方不允许删除此商品");
                     }
+                }else{
+                    return new FailResult("删除失败");
                 }
+            }else{
+                serItemInfoService.deleteGoodsInfo(serItemCommodity);
+                return new SuccResult("删除成功");
             }
         }catch (Exception e){
             return new FailResult("删除失败，第三方不允许删除此商品");
         }
-
-        return new SuccResult("删除成功");
     }
 
    /* @ResponseBody
