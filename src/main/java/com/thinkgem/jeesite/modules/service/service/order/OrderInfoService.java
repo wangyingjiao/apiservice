@@ -400,6 +400,12 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 
+		if (null != techListPart){
+			for(OrderDispatch part : techListPart){
+				beforTimeCheckTechList.add(part);
+				beforTimeCheckTechIdList.add(part.getTechId());
+			}
+		}
 		if(beforTimeCheckTechIdList.size() != 0){
 			serchInfo.setTechIds(beforTimeCheckTechIdList);
 			//serchInfo.setServiceTime(DateUtils.addMinutes(serviceTime,90));//订单结束时间在当前订单上门时间前90分钟之后
@@ -435,11 +441,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 
 
-		}
-		if (null != techListPart){
-			for(OrderDispatch part : techListPart){
-				techListRe.add(part);
-			}
 		}
 		return techListRe;
 	}
