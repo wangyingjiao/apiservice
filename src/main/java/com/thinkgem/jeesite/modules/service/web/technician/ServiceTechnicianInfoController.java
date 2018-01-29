@@ -172,13 +172,12 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-
+        User user = UserUtils.getUser();
+        info.setOrgId(user.getOrganization().getId());
         //ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
         List<ServiceTechnicianInfo> techInfoList=serviceTechnicianInfoService.findTechList(info);
         
         if (null == techInfoList||techInfoList.size()==0) {
-            User user = UserUtils.getUser();
-            info.setOrgId(user.getOrganization().getId());
             String phoneSub = info.getPhone().substring(7,11);
             String appPwd = systemService.entryptPassword(phoneSub);//APP端登录密码默认为手机号的后4位
             info.setAppLoginPassword(appPwd);
