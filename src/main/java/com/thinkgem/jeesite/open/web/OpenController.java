@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.open.web;
 
+import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
@@ -52,11 +53,23 @@ public class OpenController extends BaseController {
 	public OpenResult serviceTimes(OpenServiceTimesRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			Map<String,Object> value = openService.openServiceTimes(info);
-			return new OpenSuccResult(value, "操作成功");
+			OpenSuccResult result =  new OpenSuccResult(value, "操作成功");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","1");
+			return result;
 		}catch (ServiceException ex){
-			return new OpenFailResult(ex.getMessage());
+			OpenFailResult result =  new OpenFailResult(ex.getMessage());
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}catch (Exception e){
-			return new OpenFailResult("操作失败");
+			OpenFailResult result =  new OpenFailResult("操作失败");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}
 	}
 
@@ -69,7 +82,6 @@ public class OpenController extends BaseController {
 	@RequestMapping(value = "create", method = {RequestMethod.POST})
 	public OpenResult create(OpenCreateRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			//OpenCreateResponse responseRe = openService.openCreate(info);
 			HashMap<String,Object> map = openService.openCreate(info);
 			OpenCreateResponse responseRe = (OpenCreateResponse)map.get("response");
 
@@ -83,11 +95,23 @@ public class OpenController extends BaseController {
 				logger.error("订单创建-推送消息失败-系统异常");
 			}
 
-			return new OpenSuccResult(responseRe, "操作成功");
+			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","1");
+			return result;
 		}catch (ServiceException ex){
-			return new OpenFailResult(ex.getMessage());
+			OpenFailResult result =  new OpenFailResult(ex.getMessage());
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}catch (Exception e){
-			return new OpenFailResult("操作失败");
+			OpenFailResult result =  new OpenFailResult("操作失败");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}
 	}
 
@@ -115,11 +139,23 @@ public class OpenController extends BaseController {
 				logger.error("订单状态更新-推送消息失败-系统异常");
 			}
 
-			return new OpenSuccResult(responseRe, "操作成功");
+			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","1");
+			return result;
 		}catch (ServiceException ex){
-			return new OpenFailResult(ex.getMessage());
+			OpenFailResult result =  new OpenFailResult(ex.getMessage());
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}catch (Exception e){
-			return new OpenFailResult("操作失败");
+			OpenFailResult result =  new OpenFailResult("操作失败");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}
 	}
 
@@ -133,11 +169,24 @@ public class OpenController extends BaseController {
 	public OpenResult updateInfo(OpenUpdateInfoRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try{
 			OpenUpdateInfoResponse responseRe = openService.openUpdateInfo(info);
-			return new OpenSuccResult(responseRe,"操作成功");
+
+			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","1");
+			return result;
 		}catch (ServiceException ex){
-			return new OpenFailResult(ex.getMessage());
+			OpenFailResult result =  new OpenFailResult(ex.getMessage());
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}catch (Exception e){
-			return new OpenFailResult("操作失败");
+			OpenFailResult result =  new OpenFailResult("操作失败");
+			String openResponseJson = JSON.toJSONString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
 		}
 	}
 }

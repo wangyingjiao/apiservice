@@ -31,14 +31,25 @@ public class OpenLogUtils {
 	/**
 	 * 保存日志
 	 */
-	public static void saveLog(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex, String title){
+	public static void saveLog(HttpServletRequest request,Object handler, Exception ex, String title){
 		SysJointLog log = new SysJointLog();
-		log.setIsSuccess(ex == null ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 		log.setUrl(request.getRequestURI());
-		String openJson =request.getAttribute("openJson").toString();
-		//String decode = Base64Decoder.decode(openJson);//解密值
-		log.setRequestContent(openJson);
-		//log.setResponseContent(request.getAttribute("open"));
+		String requestContent = "";
+		String responseContent = "";
+		String responseCode = "";
+		if(null!= request.getAttribute("openJson")){
+			requestContent = request.getAttribute("openJson").toString();
+		}
+		if(null!= request.getAttribute("openResponseJson")){
+			responseContent = request.getAttribute("openResponseJson").toString();
+		}
+		if(null!= request.getAttribute("openResponseCode")){
+			responseCode = request.getAttribute("openResponseCode").toString();
+		}
+
+		log.setIsSuccess("1".equals(responseCode) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+		log.setRequestContent(requestContent);
+		log.setResponseContent(responseContent);
 		// 异步保存日志
 		new SaveLogThread(log, handler, ex).start();
 	}

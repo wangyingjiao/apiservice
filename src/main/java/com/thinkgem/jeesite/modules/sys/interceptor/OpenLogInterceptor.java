@@ -87,10 +87,8 @@ public class OpenLogInterceptor extends BaseService implements HandlerIntercepto
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
                                 Object handler, Exception ex) throws Exception {
-
         // 保存日志
-        OpenLogUtils.saveLog(request,response, handler, ex, null);
-
+        OpenLogUtils.saveLog(request, handler, ex, null);
     }
 
 }
