@@ -15,10 +15,11 @@ public class VersionInfo extends DataEntity<VersionInfo> {
 
     private static final long serialVersionUID = 1L;
     private String versionNumber;   //versionName
-    private String build;            //versionCode
+    private Integer build;            //versionCode
     private String upgradeContent;  //更新内容
     private String refreshAddress;  //更新地址
     private String forcedUpdate;    //是否强制更新
+    private String receiveBuild;    //收到的参数 版本build
 
     public String getVersionNumber() {
         return versionNumber;
@@ -26,14 +27,6 @@ public class VersionInfo extends DataEntity<VersionInfo> {
 
     public void setVersionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
-    }
-
-    public String getBuild() {
-        return build;
-    }
-
-    public void setBuild(String build) {
-        this.build = build;
     }
 
     public String getUpgradeContent() {
@@ -58,5 +51,21 @@ public class VersionInfo extends DataEntity<VersionInfo> {
 
     public void setForcedUpdate(String forcedUpdate) {
         this.forcedUpdate = forcedUpdate;
+    }
+
+    public Integer getBuild() {
+        return build;
+    }
+
+    public void setBuild(Integer build) {
+        this.build = build;
+    }
+
+    public String getReceiveBuild() {
+        return receiveBuild;
+    }
+
+    public void setReceiveBuild(String receiveBuild) {
+        this.receiveBuild = receiveBuild;
     }
 }

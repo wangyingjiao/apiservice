@@ -307,32 +307,36 @@ public class AppTechController extends BaseController {
 		Dict dict=new Dict();
 		dict.setType("sex");
 		List<Dict> sexs = dictService.appFindList(dict);
-		for (Dict sex:sexs){
-			Map<String,Object> sexMap=new HashMap<String,Object>();
-			sexMap.put("label",sex.getLabel());
-			sexMap.put("value",sex.getValue());
-			sexList.add(sexMap);
+		if (sexs != null && sexs.size()>0) {
+			for (Dict sex : sexs) {
+				Map<String, Object> sexMap = new HashMap<String, Object>();
+				sexMap.put("label", sex.getLabel());
+				sexMap.put("value", sex.getValue());
+				sexList.add(sexMap);
+			}
 		}
-
 		dict.setType("ethnic");
 		List<Dict> nations = dictService.appFindList(dict);
 		List naList=new ArrayList();
-		for (Dict nation:nations){
-			Map<String,Object> nationMap=new HashMap<String,Object>();
-			nationMap.put("label",nation.getLabel());
-			nationMap.put("value",nation.getValue());
-			naList.add(nationMap);
+		if (nations!=null && nations.size()>0) {
+			for (Dict nation : nations) {
+				Map<String, Object> nationMap = new HashMap<String, Object>();
+				nationMap.put("label", nation.getLabel());
+				nationMap.put("value", nation.getValue());
+				naList.add(nationMap);
+			}
 		}
-
 		Area area=new Area();
 		area.setLevel(1);
 		List<Area> areas = areaService.appFindAllList(area);
 		List proList=new ArrayList();
-		for (Area area1:areas){
-			Map<String,Object> ps=new HashMap<String,Object>();
-			ps.put("nativeProvinceCode",area1.getCode());
-			ps.put("name",area1.getName());
-			proList.add(ps);
+		if (areas !=null && areas.size()>0) {
+			for (Area area1 : areas) {
+				Map<String, Object> ps = new HashMap<String, Object>();
+				ps.put("nativeProvinceCode", area1.getCode());
+				ps.put("name", area1.getName());
+				proList.add(ps);
+			}
 		}
 		map.put("sex",sexList);
 		map.put("nation",naList);
@@ -351,7 +355,7 @@ public class AppTechController extends BaseController {
 		area.setLevel(1);
 		List<Area> pro = areaService.appFindAllList(area);
 		List<Map<String,String>> proList=new ArrayList<Map<String,String>>();
-		if (pro.size()>0){
+		if (pro!=null && pro.size()>0){
 			for (int i=0;i<pro.size();i++) {
 				Map<String, String> ps = new HashMap<String, String>();
 				ps.put("provinceCode", pro.get(i).getCode());
@@ -375,7 +379,7 @@ public class AppTechController extends BaseController {
 			area.setParentCode(tech.getProvinceCode());
 			List<Area> pro = areaService.appFindAllList(area);
 			List<Map<String,String>> cityList=new ArrayList<Map<String,String>>();
-			if (pro.size()>0){
+			if (pro !=null && pro.size()>0){
 				for (Area area1:pro){
 					Map<String,String> ps=new HashMap<String,String>();
 					ps.put("cityCode",area1.getCode());
@@ -403,7 +407,7 @@ public class AppTechController extends BaseController {
 			area.setParentCode(tech.getCityCode());
 			List<Area> qu = areaService.appFindAllList(area);
 			List areaList=new ArrayList();
-			if (qu.size()>0) {
+			if (qu !=null && qu.size()>0) {
 				for (Area area2 : qu) {
 					Map<String, String> cs = new HashMap<String, String>();
 					cs.put("areaCode", area2.getCode());
@@ -477,7 +481,7 @@ public class AppTechController extends BaseController {
 	public AppResult updateVersion(VersionInfo versionInfo,HttpServletRequest request, HttpServletResponse response) {
 		//获取传过来的code
 		String build = request.getHeader("appBuild");
-		versionInfo.setBuild(build);
+		versionInfo.setReceiveBuild(build);
 		VersionInfo byTime = versionInfoService.getByTime(versionInfo);
 		if(byTime ==null){
 			return new AppSuccResult(1,null,"版本已是最新版本");
