@@ -36,7 +36,7 @@ public class ServiceLogController extends BaseController{
     //@RequiresPermissions("log_view")
     @RequestMapping(value = "/listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取日志列表")
-    public Result listData(@RequestBody ServiceLog serviceLog, HttpServletRequest request, HttpServletResponse response) {
+    public Result listData(@RequestBody(required = false) ServiceLog serviceLog, HttpServletRequest request, HttpServletResponse response) {
         if(serviceLog == null){
             serviceLog = new ServiceLog();
         }
