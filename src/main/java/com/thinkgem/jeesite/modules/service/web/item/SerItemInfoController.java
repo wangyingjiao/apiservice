@@ -198,7 +198,7 @@ public class SerItemInfoController extends BaseController {
                     serItemInfo.setUpdateBy(user);
                     serItemInfo.setUpdateDate(new Date());
                     serItemInfoService.updateJointStatus(serItemInfo);
-                    return new SuccResult("保存成功；对接商品失败，请点击列表中对接按钮，手动完成商品对接");
+                    return new SuccResult(3,"保存成功；对接商品失败，请点击列表中对接按钮，手动完成商品对接");
                 }
             }
         }catch (Exception e){
@@ -208,7 +208,7 @@ public class SerItemInfoController extends BaseController {
             serItemInfo.setUpdateBy(user);
             serItemInfo.setUpdateDate(new Date());
             serItemInfoService.updateJointStatus(serItemInfo);
-            return new SuccResult("保存成功；对接商品失败，请点击列表中对接按钮，手动完成商品对接");
+            return new SuccResult(3,"保存成功；对接商品失败，请点击列表中对接按钮，手动完成商品对接");
         }
 
         return new SuccResult("保存成功");
@@ -337,7 +337,7 @@ public class SerItemInfoController extends BaseController {
                                 }
                             }
 
-                            return new FailResult("部分商品删除成功");
+                            return new SuccResult(3,"部分商品删除成功");
                         }
                     }else{
                         return new FailResult("删除失败");
