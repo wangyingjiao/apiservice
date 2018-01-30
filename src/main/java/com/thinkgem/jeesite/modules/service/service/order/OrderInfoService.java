@@ -427,15 +427,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-			int intervalTimeS = 0;//必须间隔时间 秒
-			if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
+			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
+			/*if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
 					Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) < 14) {
 				//可以接单的时间则为：40分钟+路上时间+富余时间
 				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
 			} else {
 				//可以接单的时间则为：路上时间+富余时间
 				intervalTimeS = 15 * 60 + 10 * 60;
-			}
+			}*/
 
 			int intervalTimeE = 0;//必须间隔时间 秒
 			if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
@@ -1022,8 +1022,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					for (OrderDispatch order : orderList) {
 						if(!orderInfo.getId().equals(order.getOrderId())) {//当前订单不考虑
 							int intervalTimeS = 0;//必须间隔时间 秒
-							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) &&
-									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) < 14) {
+							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) < 14) {
 								//可以接单的时间则为：40分钟+路上时间+富余时间
 								intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
 							} else {
@@ -1224,25 +1224,25 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-			int intervalTimeS = 0;//必须间隔时间 秒
-			if (11 <= Integer.parseInt(DateUtils.formatDate(newServiceDate, "HH")) &&
+			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
+			/*if (11 <= Integer.parseInt(DateUtils.formatDate(newServiceDate, "HH")) &&
 					Integer.parseInt(DateUtils.formatDate(newServiceDate, "HH")) < 14) {
 				//可以接单的时间则为：40分钟+路上时间+富余时间
 				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
 			} else {
 				//可以接单的时间则为：路上时间+富余时间
 				intervalTimeS = 15 * 60 + 10 * 60;
-			}
+			}*/
 
-			int intervalTimeE = 0;//必须间隔时间 秒
-			if (11 <= Integer.parseInt(DateUtils.formatDate(newFinishTime, "HH")) &&
+			int intervalTimeE = 15 * 60 + 10 * 60;//必须间隔时间 秒
+			/*if (11 <= Integer.parseInt(DateUtils.formatDate(newFinishTime, "HH")) &&
 					Integer.parseInt(DateUtils.formatDate(newFinishTime, "HH")) < 14) {
 				//可以接单的时间则为：40分钟+路上时间+富余时间
 				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
 			} else {
 				//可以接单的时间则为：路上时间+富余时间
 				intervalTimeE = 15 * 60 + 10 * 60;
-			}
+			}*/
 
 			Date checkServiceTime = DateUtils.addSecondsNotDayB(newServiceDate, -intervalTimeS);
 			Date checkFinishTime = DateUtils.addSecondsNotDayE(newFinishTime, intervalTimeE);

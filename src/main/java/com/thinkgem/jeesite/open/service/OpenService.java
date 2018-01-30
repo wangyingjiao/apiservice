@@ -357,8 +357,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (orderList != null && orderList.size() != 0) {
 					for (OrderDispatch order : orderList) {
 						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -serviceSecond.intValue()), "HH")) < 14) {
+						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) < 14) {
 							//可以接单的时间则为：40分钟+路上时间+富余时间
 							intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
 						} else {
@@ -884,25 +884,25 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-			int intervalTimeS = 0;//必须间隔时间 秒
-			if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
+			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
+			/*if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
 					Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) < 14) {
 				//可以接单的时间则为：40分钟+路上时间+富余时间
 				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
 			} else {
 				//可以接单的时间则为：路上时间+富余时间
 				intervalTimeS = 15 * 60 + 10 * 60;
-			}
+			}*/
 
-			int intervalTimeE = 0;//必须间隔时间 秒
-			if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
+			int intervalTimeE =  15 * 60 + 10 * 60;//必须间隔时间 秒
+			/*if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
 					Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
 				//可以接单的时间则为：40分钟+路上时间+富余时间
 				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
 			} else {
 				//可以接单的时间则为：路上时间+富余时间
 				intervalTimeE = 15 * 60 + 10 * 60;
-			}
+			}*/
 
 			Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
 			Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
@@ -1081,7 +1081,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
                 orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
                 orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
                 orderInfo.setCancelReason(cancelReason);//取消原因
-            }else if("finish".equals(status)){
+            }else if("signed".equals(status)){
                 orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
                 orderInfo.setOrderStatus("finish");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
             }else if("success".equals(status)){

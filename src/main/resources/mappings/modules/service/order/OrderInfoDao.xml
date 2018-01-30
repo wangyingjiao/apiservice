@@ -660,7 +660,8 @@ origin_price,
 	<select id="getTechListOrderByNum" resultType="OrderDispatch">
 
 		SELECT
-		t1.id AS techId
+		t1.id AS techId,
+		t1.phone AS techPhone
 		from
 		tech_info t1
 		LEFT JOIN (
