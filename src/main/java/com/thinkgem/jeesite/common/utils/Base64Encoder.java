@@ -153,43 +153,43 @@ public class Base64Encoder extends FilterOutputStream {
     public static void main(String[] args) throws Exception {
         //选择服务时间
         String time =
-                "{\"store_id\":\"1111sad\"," +
-                "\"eshop_code\":\"eshop6666001\"," +
+                "{\"store_id\":\"00000000000000000000000000000034\"," +
+                "\"eshop_code\":\"E172493508099668134\"," +
                 "\"latitude\":\"114.0909\"," +
                 "\"longitude\":\"42.0808\"," +
                 "\"service_info\": [{" +
-                    "\"cate_goods_id\":\"5a9bd93981f146e3b0755f068e60b630\"," +
-                    "\"gasq_product_id\":\"gasq001\"," +
-                    "\"pay_price\":\"100\"," +
-                    "\"buy_num\":\"10\"" +
+                    "\"cate_goods_id\":\"5bb6d03fd80b4df0b558083b9a927fef_8a2e91df3dbc4336a914075eec494b1a\"," +
+                    "\"gasq_product_id\":\"bda23cc2b60a1fe9ae19a67af537cc6e\"," +
+                    "\"pay_price\":\"1\"," +
+                    "\"buy_num\":\"1\"" +
                 "}]," +
                 "\"platform\":\"gasq\"" +
                 "}";
         // 订单创建
         String order=
-                "{\"store_id\":\"a823748275234d7aa0b25fc0536e6f54\"," +
-                        "\"eshop_code\":\"eshop6666001\"," +
+                "{\"store_id\":\"00000000000000000000000000000034\"," +
+                        "\"eshop_code\":\"E172493508099668134\"," +
 
-                        "\"phone\":\"13577770808\"," +
-                        "\"remark\":\"订单备注(用户备注)\"," +
-                        "\"gasq_order_id\":\"gasq_order_id001\"," +
+                        "\"phone\":\"18613864806\"," +
+                        "\"remark\":\"\"," +
+                        "\"gasq_order_id\":\"20170129151748122825\"," +
 
                         "\"province_code\":\"110000\"," +
                         "\"city_code\":\"010\"," +
                         "\"area_code\":\"110101\"," +
-                        "\"address\":\"呼家楼宾馆6层\"," +
+                        "\"address\":\"北京市北京市朝阳区关东店北街11号楼热的天\"," +
 
-                        "\"servie_time\":\"2018-01-20 09:00:00\"," +
-                        "\"latitude\":\"142.0808\"," +
-                        "\"longitude\":\"42.0808\"," +
+                        "\"service_time\":\"2018-01-31 10:30:00\"," +
+                        "\"latitude\":\"116.461\"," +
+                        "\"longitude\":\"39.9221\"," +
 
-                        "\"sum_price\":\"1000\"," +
+                        "\"sum_price\":\"1\"," +
                         "\"order_type\":\"common\"," +
 
                         "\"service_info\": [{" +
-                        "\"cate_goods_id\":\"5a9bd93981f146e3b0755f068e60b630\"," +
-                        "\"pay_price\":\"100\"," +
-                        "\"buy_num\":\"10\"" +
+                        "\"cate_goods_id\":\"5bb6d03fd80b4df0b558083b9a927fef_8a2e91df3dbc4336a914075eec494b1a\"," +
+                        "\"pay_price\":\"1\"," +
+                        "\"buy_num\":\"1\"" +
                         "}]," +
                         "\"platform\":\"gasq\"" +
                         "}";

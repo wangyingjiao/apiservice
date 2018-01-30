@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
@@ -504,7 +505,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		//------------------------------------------------------------------------------------------------
 		response = new OpenCreateResponse();
 		response.setSuccess(true);// 状态：true 成功；false 失败
-		response.setService_order_id(orderInfo.getId());// 自营服务订单ID
+		response.setService_order_id(orderInfo.getOrderNumber());// 自营服务订单ID
 
 		OrderInfo orderInfoMsg = new OrderInfo();
 		orderInfoMsg.setId(orderInfo.getId());
@@ -773,7 +774,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setCustomerRemark(remark);   // 客户备注
 		orderInfo.setCustomerRemarkPic(remark_pic_String);    //客户备注图片
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
-		orderInfo.setJointOrderId(gasq_order_id);//对接订单ID
+		orderInfo.setJointOrderId(gasq_order_id);//国安社区订单编号
 		orderInfo.setShopId(store_id);
 		orderInfo.setShopName(shop_name);
 		orderInfo.setShopPhone(shop_phone);
@@ -1055,16 +1056,27 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("未接收到订单信息");
 		}
 		String platform = info.getPlatform();//对接平台代号
-		String orderId = info.getService_order_id();// 自营服务订单ID
+		String orderSn = info.getService_order_id();// 自营服务订单ID->编号
+		if(StringUtils.isBlank(orderSn)){
+			throw new ServiceException("自营服务订单sn不能为空");
+		}
+		String gasq_order_sn = info.getGasq_order_id();//国安社区订单编号
+		if(StringUtils.isBlank(gasq_order_sn)){
+			throw new ServiceException("国安社区订单sn不能为空");
+		}
+		OrderInfo checkInfo = new OrderInfo();
+		checkInfo.setOrderNumber(orderSn);
+		checkInfo.setJointOrderId(gasq_order_sn);
+		OrderInfo checkInfoRe = orderInfoDao.checkGasqSnOrderSn(checkInfo);
+		if(null == checkInfoRe){
+			throw new ServiceException("未找到订单,请确认订单sn是否正确");
+		}
 		String cancelReason = info.getComment();//取消原因
 		String status = info.getStatus();//cancel 取消；finish 已签收；success 完成
-		if(null == orderId){
-			throw new ServiceException("接收到自营服务订单ID信息为空");
-		}
 
 		try{
             OrderInfo orderInfo = new OrderInfo();
-            orderInfo.setId(orderId);// 自营服务订单ID
+            orderInfo.setOrderNumber(orderSn);// 自营服务订单ID->编号
             if("cancel".equals(status)){
                 orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
                 orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
@@ -1078,13 +1090,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             }
 
             orderInfo.setUpdateDate(new Date());
-            int num = orderInfoDao.openUpdateOrder(orderInfo);
+            int num = orderInfoDao.openUpdateOrderBySn(orderInfo);
             if(num == 0){
 				throw new ServiceException("订单状态更新失败");
             }else{
 				response = new OpenUpdateStautsResponse();
 				response.setSuccess(true);// 状态：true 成功；false 失败
-				response.setService_order_id(orderId);// 自营服务订单ID
+				response.setService_order_id(orderSn);// 自营服务订单ID
 
 				HashMap<String,Object> map = new HashMap<>();
 				map.put("response",response);
@@ -1094,7 +1106,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 					//标题：订单已取消
 					//内容：编号为XXXXXXXXX的订单已取消，请点击查看
 					OrderInfo orderInfoMsg = new OrderInfo();
-					orderInfo = orderInfoDao.get(orderInfo);
+					orderInfo = orderInfoDao.getBySn(orderInfo);
 					orderInfoMsg.setId(orderInfo.getId());
 					orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
 					List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
@@ -1120,10 +1132,14 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null == info){
 			throw new ServiceException("未接收到订单信息!");
 		}
-		String orderId = info.getService_order_id();// 自营服务订单ID
-        if(null == orderId){
-			throw new ServiceException("接收到自营服务订单ID信息为空");
+		String orderSn = info.getService_order_id();// 自营服务订单ID-->编号
+        if(null == orderSn){
+			throw new ServiceException("接收到自营服务订单编号为空");
         }
+		OrderInfo orderInfo1 = new OrderInfo();
+		orderInfo1.setOrderNumber(orderSn);
+		OrderInfo newOrderInfo = orderInfoDao.getBySn(orderInfo1);//当前订单
+		String orderId = newOrderInfo.getId();
 
 		int num = 0;//更新件数
 		List<OpenServiceInfo> serviceInfos = info.getService_info();//更新服务项目信息及数量
@@ -1143,7 +1159,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null != guoanxia_info){
             try{
                 OrderInfo orderInfo = new OrderInfo();
-                orderInfo.setId(info.getService_order_id());// 自营服务订单ID
+                orderInfo.setId(orderId);// 自营服务订单ID
                 orderInfo.setBusinessName(guoanxia_info.getName());//业务人员姓名
                 orderInfo.setBusinessPhone(guoanxia_info.getPhone());//业务人员电话
                 orderInfo.setBusinessRemark(guoanxia_info.getRemark());//业务人员备注
@@ -1191,7 +1207,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null != store_info){
             try{
                 OrderInfo orderInfo = new OrderInfo();
-                orderInfo.setId(info.getService_order_id());// 自营服务订单ID
+                orderInfo.setId(orderId);// 自营服务订单ID
                 orderInfo.setShopName(store_info.getName());//门店名
                 orderInfo.setShopPhone(store_info.getTelephone());//门店电话
                 orderInfo.setShopRemark(store_info.getRemark());//门店备注

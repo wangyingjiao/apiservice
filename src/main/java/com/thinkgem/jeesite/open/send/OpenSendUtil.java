@@ -83,7 +83,7 @@ public class OpenSendUtil {
 			SysJointLog log = new SysJointLog();
 			log.setUrl(url);
 			if(response != null) {
-				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setIsSuccess(0 == response.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 				log.setResponseContent(JsonMapper.toJsonString(response));
 			}else{
 				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
@@ -103,7 +103,7 @@ public class OpenSendUtil {
 		SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
-			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 			log.setResponseContent(JsonMapper.toJsonString(failRe));
 		}else{
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
@@ -261,7 +261,7 @@ public class OpenSendUtil {
 			SysJointLog log = new SysJointLog();
 			log.setUrl(url);
 			if(response != null) {
-				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setIsSuccess(0 == response.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 				log.setResponseContent(JsonMapper.toJsonString(response));
 			}else{
 				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
@@ -281,7 +281,7 @@ public class OpenSendUtil {
 		SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
-			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 			log.setResponseContent(JsonMapper.toJsonString(failRe));
 		}else{
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
@@ -360,7 +360,7 @@ public class OpenSendUtil {
 			SysJointLog log = new SysJointLog();
 			log.setUrl(url);
 			if(response != null) {
-				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setIsSuccess(0 == response.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 				log.setResponseContent(JsonMapper.toJsonString(response));
 			}else{
 				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
@@ -380,7 +380,7 @@ public class OpenSendUtil {
 		SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
-			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 			log.setResponseContent(JsonMapper.toJsonString(failRe));
 		}else{
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
@@ -410,7 +410,7 @@ public class OpenSendUtil {
 		}
 		String order_remark = info.getOrderRemark();//服务人员备注 ；上门服务时间和服务人员备注必传其一
 		List<String>  order_remark_pic = info.getOrderRemarkPics();//服务人员备注 ；上门服务时间和服务人员备注必传其一
-		String order_id = info.getId();//订单ID
+		String order_sn = info.getOrderNumber();//订单编号
 		List<OrderDispatch> techList = info.getTechList();//技师信息
 
 		if(StringUtils.isBlank(service_time) && (StringUtils.isBlank(order_remark) && order_remark_pic==null) && techList==null){
@@ -430,7 +430,7 @@ public class OpenSendUtil {
 		}
 
 		OpenSendSaveOrderRequest send = new OpenSendSaveOrderRequest();
-		send.setOrder_id(order_id);// 订单ID
+		send.setOrder_id(order_sn);// 订单编号
 		send.setService_time(service_time);//上门服务时间
 		send.setOrder_remark(order_remark);//服务人员备注
 		send.setOrder_remark_pic(order_remark_pic);//服务人员备注
@@ -453,7 +453,7 @@ public class OpenSendUtil {
 			SysJointLog log = new SysJointLog();
 			log.setUrl(url);
 			if(response != null) {
-				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setIsSuccess(0 == response.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 				log.setResponseContent(JsonMapper.toJsonString(response));
 			}else{
 				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
@@ -473,7 +473,7 @@ public class OpenSendUtil {
 		SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
-			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 			log.setResponseContent(JsonMapper.toJsonString(failRe));
 		}else{
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);

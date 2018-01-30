@@ -714,6 +714,45 @@ origin_price,
 
 		WHERE id = #{id}
 	</update>
+	<update id="openUpdateOrderBySn">
+		UPDATE order_info SET
+		<if test="businessName !=null and businessName != ''">business_name = #{businessName},</if>
+		<if test="businessPhone !=null and businessPhone != ''">business_phone = #{businessPhone},</if>
+		<if test="businessRemark !=null and businessRemark != ''">business_remark = #{businessRemark},</if>
+		<if test="businessRemarkPic !=null and businessRemarkPic != ''">business_remark_pic = #{businessRemarkPic},</if>
+
+		<if test="customerRemark !=null and customerRemark != ''">customer_remark = #{customerRemark},</if>
+		<if test="customerRemarkPic !=null and customerRemarkPic != ''">customer_remark_pic = #{customerRemarkPic},</if>
+
+		<if test="shopName !=null and shopName != ''">shop_name = #{shopName},</if>
+		<if test="shopPhone !=null and shopPhone != ''">shop_phone = #{shopPhone},</if>
+		<if test="shopRemark !=null and shopRemark != ''">shop_remark = #{shopRemark},</if>
+		<if test="shopRemarkPic !=null and shopRemarkPic != ''">shop_remark_pic = #{shopRemarkPic},</if>
+
+		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
+		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
+		<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
+
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+
+		WHERE order_number = #{orderNumber}
+	</update>
+
+	<select id="getBySn" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<include refid="orderInfoJoins"/>
+		WHERE a.order_number = #{orderNumber}
+	</select>
+	<select id="checkGasqSnOrderSn" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		WHERE a.order_number = #{orderNumber}
+		AND a.joint_order_id = #{jointOrderId}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 
 	<!--app获取订单对应商品-->
 	<select id="getGoods" resultType="String">

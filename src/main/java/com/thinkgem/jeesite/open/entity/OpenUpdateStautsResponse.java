@@ -22,7 +22,7 @@ public class OpenUpdateStautsResponse extends DataEntity<OpenUpdateStautsRespons
 
 	private static final long serialVersionUID = 1L;
     private boolean success;		// 状态：true 成功；false 失败
-    private String service_order_id;		//成功失败均返回自营服务订单ID
+    private String service_order_id;		//成功失败均返回自营服务订单ID-->编号
 
     public boolean isSuccess() {
         return success;

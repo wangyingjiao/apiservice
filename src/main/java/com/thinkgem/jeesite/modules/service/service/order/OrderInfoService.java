@@ -1602,4 +1602,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	        return true;
         }
     }
+
+	/**
+	 * 通过ID返回订单编号
+	 * @param orderId
+	 * @return
+	 */
+	public String getOrderSnById(String orderId) {
+    	OrderInfo orderInfo = get(orderId);
+		return orderInfo.getOrderNumber();
+	}
 }
