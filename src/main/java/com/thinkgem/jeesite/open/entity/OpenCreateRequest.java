@@ -20,7 +20,7 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private String eshop_code;//E店编码
 	private String platform;// 对接平台代号 默认值 gasq
 	private String phone;//用户电话
-	private String remark_pic;//订单备注(用户备注)
+	private List<String>  remark_pic;//订单备注(用户备注)
 	private String remark;//订单备注(用户备注)
 	private String gasq_order_id;//国安社区订单ID
 	private String area_code;//区CODE
@@ -171,11 +171,11 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 		this.order_type = order_type;
 	}
 
-	public String getRemark_pic() {
+	public List<String> getRemark_pic() {
 		return remark_pic;
 	}
 
-	public void setRemark_pic(String remark_pic) {
+	public void setRemark_pic(List<String> remark_pic) {
 		this.remark_pic = remark_pic;
 	}
 }

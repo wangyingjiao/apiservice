@@ -604,7 +604,12 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("E店编码不能为空");
 		}
 		String remark = info.getRemark();//订单备注(用户备注)
-		String remark_pic = info.getRemark_pic();//订单备注(用户备注)
+		List<String> remark_pic = info.getRemark_pic();//订单备注(用户备注)
+		String remark_pic_String = "";
+		if(null != remark_pic){
+			remark_pic_String = JsonMapper.toJsonString(remark_pic);
+		}
+
 		List<OpenServiceInfo> serviceInfos = info.getService_info();
 		String servie_time = info.getService_time();//服务时间
 		if(null == servie_time){
@@ -766,7 +771,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setPayStatus("waitpay");   //支付状态（waitpay:待支付  payed：已支付） 冗余字段
 		orderInfo.setCustomerId(null);    // 客户ID
 		orderInfo.setCustomerRemark(remark);   // 客户备注
-		orderInfo.setCustomerRemarkPic(remark_pic);    //客户备注图片
+		orderInfo.setCustomerRemarkPic(remark_pic_String);    //客户备注图片
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
 		orderInfo.setJointOrderId(gasq_order_id);//对接订单ID
 		orderInfo.setShopId(store_id);
