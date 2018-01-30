@@ -82,4 +82,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     List<ServiceTechnicianFamilyMembers> findFamilyMembersListByTechId(ServiceTechnicianInfo info);
     //app 根据手机获取用户id和stationId
     ServiceTechnicianInfo getByPhone(String phone);
+
+    void savePass(ServiceTechnicianInfo serviceTechnicianInfo);
 }

@@ -190,6 +190,12 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     @Transactional(readOnly = false)
+    public void savePass(ServiceTechnicianInfo serviceTechnicianInfo){
+        serviceTechnicianInfo.preUpdate();
+        technicianInfoDao.savePass(serviceTechnicianInfo);
+    }
+
+    @Transactional(readOnly = false)
     public void save(ServiceTechnicianInfo serviceTechnicianInfo) {
         Map map = new HashMap();//身份证照片(正反)
         map.put("befor",serviceTechnicianInfo.getIdCardPicBefor());

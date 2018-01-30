@@ -385,6 +385,13 @@
 		WHERE tech_id = #{id}
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</update>
+	<!--后台修改密码-->
+	<update id="savePass">
+		UPDATE tech_info SET
+		app_login_password = #{appLoginPassword}
+		WHERE id = #{id}
+		AND  del_flag = #{DEL_FLAG_NORMAL}
+	</update>
 
 	<update id="deleteTechnicianHoliday">
 		UPDATE tech_holiday SET
@@ -799,7 +806,6 @@
 		WHERE
 			del_flag = #{DEL_FLAG_NORMAL}
 			AND phone = #{phone} AND id !=#{id}
-			AND org_id = #{orgId}
 	</select> 
 	<select id="findTechList" resultType="ServiceTechnicianInfo">
 	SELECT
@@ -807,7 +813,7 @@
 		FROM tech_info a
 		WHERE
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			AND a.phone = #{phone} AND a.org_id = #{orgId}
+			AND a.phone = #{phone}
 	</select>
 
 </mapper>

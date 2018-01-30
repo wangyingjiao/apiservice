@@ -276,7 +276,7 @@ public class ServiceTechnicianInfoController extends BaseController {
         }
         String appPwd = systemService.entryptPassword(info.getAppLoginPassword());//APP端登录密码加密
         info.setAppLoginPassword(appPwd);
-        serviceTechnicianInfoService.saveApp(info);
+        serviceTechnicianInfoService.savePass(info);
 
         return new SuccResult("保存成功");
     }
