@@ -101,7 +101,24 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<AppServiceTechnicianInfo> appTechList;//app技师列表
 	private String techId; //app改派接收的技师id
 	private String isTech="no"; //app技师修改服务状态时做展示功能标识符
+	private String pageSize;	//app 订单列表
+	private String pageNo;	//app 订单列表
 
+	public String getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(String pageNo) {
+		this.pageNo = pageNo;
+	}
+
+	public String getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(String pageSize) {
+		this.pageSize = pageSize;
+	}
 
 	public Date getRealServiceTime() {
 		return realServiceTime;

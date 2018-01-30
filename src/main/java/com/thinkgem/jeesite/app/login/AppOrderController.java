@@ -71,7 +71,11 @@ public class AppOrderController extends BaseController {
 		if (orderInfo.getMajorSort().equals("all")){
 			orderInfo.setMajorSort(null);
 		}
+		String pageSize1 = orderInfo.getPageSize();
+		String pageNo = orderInfo.getPageNo();
 		Page<OrderInfo> serSortInfoPage = new Page<>(request, response);
+		serSortInfoPage.setPageSize(Integer.parseInt(pageSize1));
+		serSortInfoPage.setPageNo(Integer.parseInt(pageNo));
 		Page<OrderInfo> page = orderInfoService.appFindPage(serSortInfoPage,orderInfo);
 		long count = page.getCount();
 		int pageSize = page.getPageSize();
