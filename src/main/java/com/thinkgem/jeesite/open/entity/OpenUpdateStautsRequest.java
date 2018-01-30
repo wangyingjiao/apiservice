@@ -17,10 +17,10 @@ public class OpenUpdateStautsRequest extends DataEntity<OpenUpdateStautsRequest>
 	private static final long serialVersionUID = 1L;
 
 	private String platform;//对接平台代号  默认值: gasq
-	private String service_order_id;//自营服务订单ID
+	private String service_order_id;//自营服务订单ID->编号
 	private String comment;//取消原因
 	private String status;//cancel取消；signed已签收；finish完成
-	private String gasq_order_id;//国安社区订单ID
+	private String gasq_order_id;//国安社区订单ID->编号
 
 	public String getPlatform() {
 		return platform;

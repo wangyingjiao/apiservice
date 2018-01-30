@@ -131,7 +131,11 @@ public class AppOrderController extends BaseController {
 				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
 				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
 					OrderInfo sendOrder = new OrderInfo();
-					sendOrder.setId(orderInfo.getId());
+
+					String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
+					sendOrder.setOrderNumber(orderSn);//订单编号
+
+					//sendOrder.setId(orderInfo.getId());
 					sendOrder.setOrderRemark(orderInfo.getOrderRemark());
 					sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
@@ -254,7 +258,11 @@ public class AppOrderController extends BaseController {
 				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
 				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
 					OrderInfo sendOrder = new OrderInfo();
-					sendOrder.setId(orderInfo.getId());
+
+					String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
+					sendOrder.setOrderNumber(orderSn);//订单编号
+
+					//sendOrder.setId(orderInfo.getId());
 					List<OrderDispatch> orderDispatchList = orderInfoService.getOrderDispatchList(info);
 					sendOrder.setTechList(orderDispatchList);
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);

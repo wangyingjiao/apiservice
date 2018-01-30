@@ -74,4 +74,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo);
 
     List<OrderDispatch> getOrderDispatchMsgTechList(OrderInfo orderMsg);
+
+    int openUpdateOrderBySn(OrderInfo orderInfo);
+
+    OrderInfo getBySn(OrderInfo orderInfo);
 }
