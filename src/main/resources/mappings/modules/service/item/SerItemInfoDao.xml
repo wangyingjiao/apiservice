@@ -31,8 +31,9 @@
 	<select id="findList" resultMap="SerItemCommodityResultMap">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
-		FROM ser_item_info a
-		LEFT JOIN ser_sort_info s ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
+		FROM ser_sort_info s
+		RIGHT JOIN ser_item_info a ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_organization b ON a.org_id=b.id
 		<!--<if test="cityCode != null and cityCode !=''">-->
 			<!--LEFT JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = #{DEL_FLAG_NORMAL}-->
 		<!--</if>-->
@@ -77,7 +78,8 @@
 		a.description AS "description",
 		a.sale AS "sale",
 		a.sort_num AS "sortNum",
-		a.joint_status AS "jointStatus"
+		a.joint_status AS "jointStatus",
+		b.joint_eshop_code AS jointEshopCode
 	</sql>
 	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
 		<id column="id" property="id"/>

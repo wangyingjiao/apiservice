@@ -39,6 +39,25 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String tags;
 	private String cusTags;
 
+	private String jointEshopCode;   //机构E店
+	private String flag;   //是否需要对接
+
+	public String getJointEshopCode() {
+		return jointEshopCode;
+	}
+
+	public void setJointEshopCode(String jointEshopCode) {
+		this.jointEshopCode = jointEshopCode;
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+
 	public String getTags() {
 		return tags;
 	}
