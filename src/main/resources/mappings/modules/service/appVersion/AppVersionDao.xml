@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.appVersion.AppVersionDao">
+
+	<!--获取APP发版列表-->
+	<select id="findList" resultType="AppVersion">
+		SELECT
+			a.id AS "id",
+			a.version_number AS "versionNumber",
+			a.build AS "build",
+			a.forced_update AS "forcedUpdate",
+			a.upgrade_content AS "upgradeContent",
+			a.refresh_address AS "refreshAddress",
+			a.create_date AS "createDate",
+			a.update_date AS "updateDate"
+		FROM sys_app_version a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="versionNumber != null and versionNumber != ''">
+				AND a.version_number LIKE concat('%',#{versionNumber},'%')
+			</if>
+			<if test="build != null and build != ''">
+				AND a.build LIKE concat('%',#{build},'%')
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.create_date &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.create_date &lt;= #{endTime}
+			</if>
+		</where>
+		ORDER BY a.create_date DESC
+	</select>
+	<!--新增APP发版信息-->
+	<insert id="insert">
+		INSERT INTO sys_app_version(
+		id,
+		version_number,
+		build,
+		forced_update,
+		upgrade_content,
+		refresh_address,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		del_flag
+		) VALUES (
+		#{id},
+		#{versionNumber},
+		#{build},
+		#{forcedUpdate},
+		#{upgradeContent},
+		#{refreshAddress},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{DEL_FLAG_NORMAL}
+		)
+	</insert>
+	<!--根据ID查找APP发版信息-->
+	<select id="get" resultType="AppVersion">
+		SELECT
+		a.id AS "id",
+		a.version_number AS "versionNumber",
+		a.build AS "build",
+		a.forced_update AS "forcedUpdate",
+		a.upgrade_content AS "upgradeContent",
+		a.refresh_address AS "refreshAddress",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate"
+		FROM sys_app_version a
+		WHERE a.id = #{id}
+		AND a.del_flag = 0
+	</select>
+	<!--修改APP发版信息-->
+	<update id="update">
+		UPDATE sys_app_version SET
+		<if test="versionNumber != null and versionNumber != ''">
+			version_number = #{versionNumber},
+		</if>
+		<if test="build != null and build != ''">
+			build = #{build},
+		</if>
+		<if test="forcedUpdate != null and forcedUpdate != ''">
+			forced_update = #{forcedUpdate},
+		</if>
+		<if test="upgradeContent != null and upgradeContent != ''">
+			upgrade_content = #{upgradeContent},
+		</if>
+		<if test="refreshAddress != null and refreshAddress != ''">
+			refresh_address = #{refreshAddress},
+		</if>
+
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	<!--删除APP发版信息-->
+	<update id="delete">
+		UPDATE sys_app_version SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+</mapper>

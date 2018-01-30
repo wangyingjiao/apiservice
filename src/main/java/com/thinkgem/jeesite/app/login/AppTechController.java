@@ -16,11 +16,11 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
 import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
-import com.thinkgem.jeesite.modules.sys.service.*;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianHolidayService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
+import com.thinkgem.jeesite.modules.sys.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +57,7 @@ public class AppTechController extends BaseController {
 	private DictService dictService;
 	//改密码调用的系统的service
 	@Autowired
-	private SystemService systemService;
+	private SystemServicePassword systemService;
 	//区域的service
 	@Autowired
 	private AreaService areaService;
