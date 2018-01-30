@@ -520,7 +520,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
 		//System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
 		List<String> list = new ArrayList<>();
-		list = getHeafHourTimeListLeftBorder(parseDate("2018-01-24 21:00:00"),parseDate("2018-01-24 23:00:00"));
+		list = getHeafHourTimeListLeftBorder(parseDate("2018-01-24 10:30:00"),parseDate("2018-01-24 11:01:00"));
 		for(String info : list){
 			System.out.println(info);
 		}
@@ -548,18 +548,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
 				DateUtils.formatDate(startTime, "HH") + ":30:00");//取得开始时间的半点 2:00 2:10 2:30 2:50  --> 2:30
-		if(startTime.before(heafHourTime)){//开始时间大于半点
-			Date dateFirst = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
-					DateUtils.formatDate(startTime, "HH") + ":00:00");//取得开始时间的正点 2:00 2:10 2:30 2:50  --> 2:00
-			if(startTime.getTime() == dateFirst.getTime()){
-				heafHourTimeList.add(DateUtils.formatDate(dateFirst, "HH:mm"));
-			}
-		}else{
-			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
-					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
-		}
-		if(endTime.after(heafHourTime)) {
+		if(startTime.getTime() == heafHourTime.getTime()){
 			heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+		}else{
+			if(startTime.before(heafHourTime)){//开始时间大于半点
+				Date dateFirst = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						DateUtils.formatDate(startTime, "HH") + ":00:00");//取得开始时间的正点 2:00 2:10 2:30 2:50  --> 2:00
+				if(startTime.getTime() == dateFirst.getTime()){
+					heafHourTimeList.add(DateUtils.formatDate(dateFirst, "HH:mm"));
+				}
+			}else{
+				heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
+			}
+			if(endTime.after(heafHourTime)) {
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+			}
 		}
 		for (int i = 0; i < 48; i++) {
 
@@ -594,18 +598,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
 				DateUtils.formatDate(startTime, "HH") + ":30:00");//取得开始时间的半点 2:00 2:10 2:30 2:50  --> 2:30
-		if(startTime.before(heafHourTime)){//开始时间大于半点
-			Date dateFirst = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
-					DateUtils.formatDate(startTime, "HH") + ":00:00");//取得开始时间的正点 2:00 2:10 2:30 2:50  --> 2:00
-			if(startTime.getTime() == dateFirst.getTime()){
-				heafHourTimeList.add(DateUtils.formatDate(dateFirst, "HH:mm"));
-			}
-		}else{
-			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
-					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
-		}
-		if(endTime.after(heafHourTime) || endTime.getTime()==heafHourTime.getTime()) {
+		if(startTime.getTime() == heafHourTime.getTime()){
 			heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+		}else {
+			if (startTime.before(heafHourTime)) {//开始时间大于半点
+				Date dateFirst = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						DateUtils.formatDate(startTime, "HH") + ":00:00");//取得开始时间的正点 2:00 2:10 2:30 2:50  --> 2:00
+				if (startTime.getTime() == dateFirst.getTime()) {
+					heafHourTimeList.add(DateUtils.formatDate(dateFirst, "HH:mm"));
+				}
+			} else {
+				heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
+			}
+			if (endTime.after(heafHourTime) || endTime.getTime() == heafHourTime.getTime()) {
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+			}
 		}
 		for (int i = 0; i < 48; i++) {
 
