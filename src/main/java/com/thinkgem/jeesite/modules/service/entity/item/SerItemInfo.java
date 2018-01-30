@@ -40,7 +40,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String cusTags;
 
 	private String jointEshopCode;   //机构E店
-	private String flag;   //是否需要对接
+	private String flag="yes";   //是否需要对接
 
 	public String getJointEshopCode() {
 		return jointEshopCode;

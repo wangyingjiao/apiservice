@@ -170,7 +170,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		serItemInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 		Page<SerItemInfo> pageResult = super.findPage(page, serItemInfo);
 		List<SerItemInfo> list = pageResult.getList();
-		String flags="yes";
 		if(null != list){
 			for(SerItemInfo entity : list){
 				String picture = entity.getPicture();
@@ -182,18 +181,15 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 					List<SerItemCommodity> scy = entity.getCommoditys();
 					for (SerItemCommodity com : scy){
 						if (com.getJointGoodsCode() == null && com.getJointGoodsCode().equals("")){
-							flags="no";
+							entity.setFlag("no");
 							break;
 						}
 					}
-					entity.setFlag(flags);
-					if (flags.equals("yes")){
+					if (entity.getFlag().equals("yes")){
 						if (entity.getJointStatus().equals("no")){
 							entity.setFlag("no");
 						}
 					}
-				}else {
-					entity.setFlag("yes");
 				}
 			}
 
