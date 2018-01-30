@@ -375,6 +375,7 @@
 		and b.tech_id = #{id}
 		and a.finish_time>=NOW()
 		AND a.order_status != 'cancel'
+		AND b.status != 'no'
 	</select>
 
 
