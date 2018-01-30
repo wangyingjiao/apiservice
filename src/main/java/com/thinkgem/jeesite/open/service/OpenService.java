@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
@@ -1056,11 +1057,22 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		String platform = info.getPlatform();//对接平台代号
 		String orderSn = info.getService_order_id();// 自营服务订单ID->编号
+		if(StringUtils.isBlank(orderSn)){
+			throw new ServiceException("自营服务订单sn不能为空");
+		}
+		String gasq_order_sn = info.getGasq_order_id();//国安社区订单编号
+		if(StringUtils.isBlank(gasq_order_sn)){
+			throw new ServiceException("国安社区订单sn不能为空");
+		}
+		OrderInfo checkInfo = new OrderInfo();
+		checkInfo.setOrderNumber(orderSn);
+		checkInfo.setJointOrderId(gasq_order_sn);
+		OrderInfo checkInfoRe = orderInfoDao.checkGasqSnOrderSn(checkInfo);
+		if(null == checkInfoRe){
+			throw new ServiceException("未找到订单,请确认订单sn是否正确");
+		}
 		String cancelReason = info.getComment();//取消原因
 		String status = info.getStatus();//cancel 取消；finish 已签收；success 完成
-		if(null == orderSn){
-			throw new ServiceException("接收到自营服务订单编号为空");
-		}
 
 		try{
             OrderInfo orderInfo = new OrderInfo();

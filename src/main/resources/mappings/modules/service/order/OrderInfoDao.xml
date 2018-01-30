@@ -745,6 +745,14 @@ origin_price,
 		<include refid="orderInfoJoins"/>
 		WHERE a.order_number = #{orderNumber}
 	</select>
+	<select id="checkGasqSnOrderSn" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		WHERE a.order_number = #{orderNumber}
+		AND a.joint_order_id = #{jointOrderId}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 
 	<!--app获取订单对应商品-->
 	<select id="getGoods" resultType="String">
