@@ -18,6 +18,8 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.sys.entity.SysJointLog;
+import com.thinkgem.jeesite.modules.sys.utils.OpenLogUtils;
 import com.thinkgem.jeesite.open.entity.*;
 import com.thinkgem.jeesite.open.service.OpenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +77,21 @@ public class OpenSendUtil {
 			params.put("appid", "selfService");
 
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-			System.out.println(postClientResponse);
 			OpenSendSaveItemResponse response = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
+
+
+			SysJointLog log = new SysJointLog();
+			log.setUrl(url);
+			if(response != null) {
+				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setResponseContent(JsonMapper.toJsonString(response));
+			}else{
+				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+			}
+			log.setRequestContent(json);
+			OpenLogUtils.saveSendLog(log);
+
+
 			return response;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -84,6 +99,18 @@ public class OpenSendUtil {
 		OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
 		failRe.setMessage("对接验证信息失败-系统异常");
 		failRe.setCode(1);
+
+		SysJointLog log = new SysJointLog();
+		log.setUrl(url);
+		if(failRe != null) {
+			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setResponseContent(JsonMapper.toJsonString(failRe));
+		}else{
+			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+		}
+		log.setRequestContent(json);
+		OpenLogUtils.saveSendLog(log);
+
 		return failRe;
 	}
 
@@ -228,8 +255,21 @@ public class OpenSendUtil {
 			params.put("appid", "selfService");
 
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-			System.out.println(postClientResponse);
 			OpenSendSaveItemResponse response = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
+
+
+			SysJointLog log = new SysJointLog();
+			log.setUrl(url);
+			if(response != null) {
+				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setResponseContent(JsonMapper.toJsonString(response));
+			}else{
+				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+			}
+			log.setRequestContent(json);
+			OpenLogUtils.saveSendLog(log);
+
+
 			return response;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -237,6 +277,18 @@ public class OpenSendUtil {
 		OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
 		failRe.setMessage("对接保存信息失败-系统异常");
 		failRe.setCode(1);
+
+		SysJointLog log = new SysJointLog();
+		log.setUrl(url);
+		if(failRe != null) {
+			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setResponseContent(JsonMapper.toJsonString(failRe));
+		}else{
+			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+		}
+		log.setRequestContent(json);
+		OpenLogUtils.saveSendLog(log);
+
 		return failRe;
 	}
 
@@ -303,6 +355,20 @@ public class OpenSendUtil {
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
 			System.out.println(postClientResponse);
 			OpenSendDeleteItemResponse response = JSON.parseObject(postClientResponse, OpenSendDeleteItemResponse.class);
+
+
+			SysJointLog log = new SysJointLog();
+			log.setUrl(url);
+			if(response != null) {
+				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setResponseContent(JsonMapper.toJsonString(response));
+			}else{
+				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+			}
+			log.setRequestContent(json);
+			OpenLogUtils.saveSendLog(log);
+
+
 			return response;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -310,6 +376,18 @@ public class OpenSendUtil {
 		OpenSendDeleteItemResponse failRe = new OpenSendDeleteItemResponse();
 		failRe.setMessage("对接删除失败-系统异常");
 		failRe.setCode(1);
+
+		SysJointLog log = new SysJointLog();
+		log.setUrl(url);
+		if(failRe != null) {
+			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setResponseContent(JsonMapper.toJsonString(failRe));
+		}else{
+			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+		}
+		log.setRequestContent(json);
+		OpenLogUtils.saveSendLog(log);
+
 		return failRe;
 	}
 
@@ -371,6 +449,19 @@ public class OpenSendUtil {
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
 
 			OpenSendSaveOrderResponse response = JSON.parseObject(postClientResponse, OpenSendSaveOrderResponse.class);
+
+			SysJointLog log = new SysJointLog();
+			log.setUrl(url);
+			if(response != null) {
+				log.setIsSuccess("0".equals(response.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+				log.setResponseContent(JsonMapper.toJsonString(response));
+			}else{
+				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+			}
+			log.setRequestContent(json);
+			OpenLogUtils.saveSendLog(log);
+
+
 			return response;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -378,6 +469,19 @@ public class OpenSendUtil {
 		OpenSendSaveOrderResponse failRe = new OpenSendSaveOrderResponse();
 		failRe.setMessage("对接保存信息失败-系统异常");
 		failRe.setCode(1);
+
+		SysJointLog log = new SysJointLog();
+		log.setUrl(url);
+		if(failRe != null) {
+			log.setIsSuccess("0".equals(failRe.getCode()) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
+			log.setResponseContent(JsonMapper.toJsonString(failRe));
+		}else{
+			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+		}
+		log.setRequestContent(json);
+		OpenLogUtils.saveSendLog(log);
+
 		return failRe;
 	}
+
 }

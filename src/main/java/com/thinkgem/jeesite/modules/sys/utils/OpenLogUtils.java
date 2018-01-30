@@ -54,6 +54,13 @@ public class OpenLogUtils {
 		new SaveLogThread(log, handler, ex).start();
 	}
 
+
+	public static void saveSendLog(SysJointLog log){
+
+		// 异步保存日志
+		new SaveLogThread(log, null, null).start();
+	}
+
 	/**
 	 * 保存日志线程
 	 */
