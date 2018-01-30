@@ -1076,7 +1076,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		try{
             OrderInfo orderInfo = new OrderInfo();
-            orderInfo.setOrderNumber(orderSn);// 自营服务订单ID->编号
+			orderInfo.setId(checkInfoRe.getId());
             if("cancel".equals(status)){
                 orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
                 orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
@@ -1090,7 +1090,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             }
 
             orderInfo.setUpdateDate(new Date());
-            int num = orderInfoDao.openUpdateOrderBySn(orderInfo);
+            int num = orderInfoDao.openUpdateOrder(orderInfo);
             if(num == 0){
 				throw new ServiceException("订单状态更新失败");
             }else{
@@ -1106,9 +1106,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 					//标题：订单已取消
 					//内容：编号为XXXXXXXXX的订单已取消，请点击查看
 					OrderInfo orderInfoMsg = new OrderInfo();
-					orderInfo = orderInfoDao.getBySn(orderInfo);
-					orderInfoMsg.setId(orderInfo.getId());
-					orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+					orderInfoMsg.setId(checkInfoRe.getId());
+					orderInfoMsg.setOrderNumber(orderSn);
 					List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 					orderInfoMsg.setTechList(techList);
 					map.put("orderInfoMsg",orderInfoMsg);
@@ -1139,6 +1138,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		OrderInfo orderInfo1 = new OrderInfo();
 		orderInfo1.setOrderNumber(orderSn);
 		OrderInfo newOrderInfo = orderInfoDao.getBySn(orderInfo1);//当前订单
+		if(null == newOrderInfo){
+			throw new ServiceException("未找到到订单信息");
+		}
 		String orderId = newOrderInfo.getId();
 
 		int num = 0;//更新件数
@@ -1233,7 +1235,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else{
 			response = new OpenUpdateInfoResponse();
 			response.setSuccess(true);// 状态：true 成功；false 失败
-			response.setService_order_id(orderId);// 自营服务订单ID
+			response.setService_order_id(orderSn);// 自营服务订单ID
 			return response;
 		}
 	}
@@ -1272,6 +1274,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			goods.setGoodsNum(buy_num);//订购商品数
 			goods.setPayPrice(pay_price);//对接后单价
 			goods.setOriginPrice(commodity.getPrice().toString());//原价
+
+			goods.setGoodsType(commodity.getType());
+			goods.setGoodsUnit(commodity.getUnit());
+
 			goods.setMajorSort(commodity.getMajorSort());
 
             User user = new User();

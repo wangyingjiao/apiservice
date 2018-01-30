@@ -75,8 +75,6 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     List<OrderDispatch> getOrderDispatchMsgTechList(OrderInfo orderMsg);
 
-    int openUpdateOrderBySn(OrderInfo orderInfo);
-
     OrderInfo getBySn(OrderInfo orderInfo);
 
     OrderInfo checkGasqSnOrderSn(OrderInfo checkInfo);
