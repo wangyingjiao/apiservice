@@ -1078,7 +1078,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             OrderInfo orderInfo = new OrderInfo();
 			orderInfo.setId(checkInfoRe.getId());
             if("cancel".equals(status)){
-                //orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+                orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
                 orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
                 orderInfo.setCancelReason(cancelReason);//取消原因
             }else if("signed".equals(status)){
