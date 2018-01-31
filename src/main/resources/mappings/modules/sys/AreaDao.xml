@@ -172,7 +172,6 @@
 		a.parent_code AS "parentCode"
 		FROM sys_area a
 		WHERE a.level = #{level}
-		AND a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY a.code
 	</select>
 
