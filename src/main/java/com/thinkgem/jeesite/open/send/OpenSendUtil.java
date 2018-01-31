@@ -100,7 +100,7 @@ public class OpenSendUtil {
 		failRe.setMessage("对接验证信息失败-系统异常");
 		failRe.setCode(1);
 
-		SysJointLog log = new SysJointLog();
+	/*	SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
 			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
@@ -109,7 +109,7 @@ public class OpenSendUtil {
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
 		}
 		log.setRequestContent(json);
-		OpenLogUtils.saveSendLog(log);
+		OpenLogUtils.saveSendLog(log);*/
 
 		return failRe;
 	}
@@ -278,7 +278,7 @@ public class OpenSendUtil {
 		failRe.setMessage("对接保存信息失败-系统异常");
 		failRe.setCode(1);
 
-		SysJointLog log = new SysJointLog();
+		/*SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
 			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
@@ -287,7 +287,7 @@ public class OpenSendUtil {
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
 		}
 		log.setRequestContent(json);
-		OpenLogUtils.saveSendLog(log);
+		OpenLogUtils.saveSendLog(log);*/
 
 		return failRe;
 	}
@@ -377,7 +377,7 @@ public class OpenSendUtil {
 		failRe.setMessage("对接删除失败-系统异常");
 		failRe.setCode(1);
 
-		SysJointLog log = new SysJointLog();
+		/*SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
 			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
@@ -386,7 +386,7 @@ public class OpenSendUtil {
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
 		}
 		log.setRequestContent(json);
-		OpenLogUtils.saveSendLog(log);
+		OpenLogUtils.saveSendLog(log);*/
 
 		return failRe;
 	}
@@ -470,7 +470,7 @@ public class OpenSendUtil {
 		failRe.setMessage("对接保存信息失败-系统异常");
 		failRe.setCode(1);
 
-		SysJointLog log = new SysJointLog();
+		/*SysJointLog log = new SysJointLog();
 		log.setUrl(url);
 		if(failRe != null) {
 			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
@@ -479,7 +479,7 @@ public class OpenSendUtil {
 			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
 		}
 		log.setRequestContent(json);
-		OpenLogUtils.saveSendLog(log);
+		OpenLogUtils.saveSendLog(log);*/
 
 		return failRe;
 	}
