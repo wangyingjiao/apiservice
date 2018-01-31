@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.log.SysJointLoggerDao">
+
+
+	<select id="findList" resultType="SysJointLogger">
+		SELECT
+		a.id AS id,
+		a.url AS url,
+		a.request_content AS requestContent,
+		a.response_content AS responseContent,
+		a.create_date AS createDate,
+		a.is_success AS isSuccess
+		FROM
+		sys_joint_log a
+		<where>
+			1=1
+			<if test="url != null and url != ''">
+				AND a.url LIKE concat('%',#{url},'%')
+			</if>
+			<if test="requestContent != null and requestContent != ''">
+				AND a.request_content LIKE concat('%',#{requestContent},'%')
+			</if>
+			<if test="responseContent != null and responseContent != ''">
+				AND a.response_content LIKE concat('%',#{responseContent},'%')
+			</if>
+			<if test="isSuccess != null and isSuccess != ''">
+				AND a.is_success LIKE concat('%',#{isSuccess},'%')
+			</if>
+		</where>
+		ORDER BY a.create_date DESC
+	</select>
+</mapper>
