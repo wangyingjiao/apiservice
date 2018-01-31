@@ -1595,11 +1595,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
         /*
             订单状态为已取消
-            订单状态为已完成
+            订单状态为已完成/已完成
             服务状态为已完成
             （只要有一个满足就可以）
          */
-	    if(orderStatusCancel.equals(orderStatus) || orderStatusFinish.equals(orderStatus) ||
+	    if(orderStatusCancel.equals(orderStatus) || orderStatusFinish.equals(orderStatus) || orderStatusSuccess.equals(orderStatus) ||
                 serviceStatusFinish.equals(serviceStatus) || serviceStatusCancel.equals(serviceStatus) ){
 	        return  false;
         }else{

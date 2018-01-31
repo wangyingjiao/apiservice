@@ -1292,13 +1292,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
 			goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
 
-			int goodsNum = buy_num;		// 订购商品数
-			Double convertHours = commodity.getConvertHours();		// 折算时长
+			//int goodsNum = buy_num;		// 订购商品数
+			//Double convertHours = commodity.getConvertHours();		// 折算时长
 
-			Double goodsTime = convertHours * goodsNum;//gon
-			orderTotalTime = orderTotalTime + goodsTime;
+			//Double goodsTime = convertHours * goodsNum;//gon
+			//orderTotalTime = orderTotalTime + goodsTime;
 		}
-
+/*
 		OrderInfo orderInfoBefor = orderInfoDao.get(orderId);//当前订单
 		if(orderInfoBefor == null){
 			throw new ServiceException("未找到当前订单信息");
@@ -1313,7 +1313,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
 			throw new ServiceException("未找到当前订单的技师信息");
-		}
+		}*/
 
 		//删除 订单 原商品信息
 		OrderGoods serchOrderGoods = new OrderGoods();
