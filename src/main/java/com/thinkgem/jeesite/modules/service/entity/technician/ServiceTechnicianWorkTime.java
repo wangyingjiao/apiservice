@@ -26,8 +26,28 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	private String week;		// 工作日期（周一，周二。。。）
 	private Date startTime;		// 起始时段
 	private Date endTime;		// 结束时段
+	private String startTimeStr;  //起始时间 技师信息回显
+	private String endTimeStr;  //结束时间 技师信息回显
 	private List<ServiceTechnicianWorkTimeWeek> weeks;		// 工作日期（周一，周二。。。）
 	private List<String> weekList;
+	private String startTimes;
+	private String endTimes;
+
+	public String getStartTimes() {
+		return startTimes;
+	}
+
+	public void setStartTimes(String startTimes) {
+		this.startTimes = startTimes;
+	}
+
+	public String getEndTimes() {
+		return endTimes;
+	}
+
+	public void setEndTimes(String endTimes) {
+		this.endTimes = endTimes;
+	}
 
 	public List<String> getWeekList() {
 		return weekList;
@@ -87,6 +107,22 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
+	}
+
+	public String getStartTimeStr() {
+		return startTimeStr;
+	}
+
+	public void setStartTimeStr(String startTimeStr) {
+		this.startTimeStr = startTimeStr;
+	}
+
+	public String getEndTimeStr() {
+		return endTimeStr;
+	}
+
+	public void setEndTimeStr(String endTimeStr) {
+		this.endTimeStr = endTimeStr;
 	}
 
 	public List<ServiceTechnicianWorkTimeWeek> getWeeks() {

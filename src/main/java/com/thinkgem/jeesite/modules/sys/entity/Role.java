@@ -18,8 +18,9 @@ import org.hibernate.validator.constraints.NotBlank;
  * 角色Entity
  * @author ThinkGem
  * @version 2013-12-05
+ * @param <T>
  */
-public class Role extends DataEntity<Role> {
+public class Role<T> extends DataEntity<Role> {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -282,4 +283,57 @@ public class Role extends DataEntity<Role> {
 		}
 		return StringUtils.join(menuNameList, ",");
 	}
+	//add by wyr判断岗位下是否有员工
+	private Boolean flag;
+
+	public Boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
+	}
+	//add by wyr 取两个岗位级别不一样的岗位权限集合
+	private List<Menu> menuListUnion = Lists.newArrayList();
+
+	public List<Menu> getMenuListUnion() {
+		return menuListUnion;
+	}
+
+	public void setMenuListUnion(List<Menu> menuListUnion) {
+		this.menuListUnion = menuListUnion;
+	}
+	private T roleUnion;
+
+	public T getRoleUnion() {
+		return roleUnion;
+	}
+
+	public void setRoleUnion(T roleUnion) {
+		this.roleUnion = roleUnion;
+	}
+	private boolean  flagRoleId;
+
+	public boolean isFlagRoleId() {
+		return flagRoleId;
+	}
+
+	public void setFlagRoleId(boolean flagRoleId) {
+		this.flagRoleId = flagRoleId;
+	}
+
+	private List<String> menuIdListEdit;
+
+	public List<String> getMenuIdListEdit() {
+		return menuIdListEdit;
+	}
+
+	public void setMenuIdListEdit(List<String> menuIdListEdit) {
+		this.menuIdListEdit = menuIdListEdit;
+	}
+	
+	
+	
+	
+	
 }

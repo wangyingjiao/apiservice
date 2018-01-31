@@ -12,8 +12,8 @@
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS "startPerNum",
-		a.capping_per_num AS "cappinPerNum",
-		a.joint_goods_code AS "jointGoodsCode",
+		a.capping_per_num AS "cappingPerNum",
+		a.joint_goods_code AS "jointGoodsCode"
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -69,6 +69,7 @@
 	<insert id="insert">
 		INSERT INTO ser_item_info_goods(
 			id,
+			sort_id,
 			item_id,
 			name,
 			unit,
@@ -86,6 +87,7 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{sortId},
 			#{itemId},
 			#{name},
 			#{unit},
@@ -94,7 +96,7 @@
 			#{convertHours},
 			#{minPurchase},
 			#{startPerNum},
-			#{cappinPerNum},
+			#{cappingPerNum},
 			#{jointGoodsCode},
 			#{createBy.id},
 			#{createDate},
@@ -127,14 +129,22 @@
 			<if test="startPerNum != null and startPerNum != ''">
 				start_per_num = #{startPerNum},
 			</if>
-			<if test="cappinPerNum != null and cappinPerNum != ''">
-				capping_per_num = #{cappinPerNum},
+			<if test="cappingPerNum != null and cappingPerNum != ''">
+				capping_per_num = #{cappingPerNum},
 			</if>
 			<if test="jointGoodsCode != null and jointGoodsCode != ''">
 				joint_goods_code = #{jointGoodsCode},
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateJointGoodsCode">
+		UPDATE ser_item_info_goods SET
+		joint_goods_code = #{jointGoodsCode},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
@@ -184,7 +194,10 @@
 		a.type AS "type",
 		a.price AS "price",
 		a.convert_hours AS "convertHours",
-		a.min_purchase AS "minPurchase"
+		a.min_purchase AS "minPurchase",
+		a.start_per_num AS startPerNum,
+		a.capping_per_num AS cappingPerNum,
+		a.joint_goods_code AS jointGoodsCode
 	</sql>
 	<resultMap type="SerItemCommodity" id="SerItemGoodsResultMap">
 		<id column="id" property="id"/>

@@ -46,14 +46,14 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		//删除商品信息派人数量
 		//serItemCommodityDao.delSerItemCommodityPersons(serItemCommodity);
 		super.save(serItemCommodity);
-		List<SerItemCommodityPersons> persons = serItemCommodity.getPersons();
+/*		List<SerItemCommodityPersons> persons = serItemCommodity.getPersons();
 		if(persons != null){
 			//批量插入派人数量
 			for(SerItemCommodityPersons person : persons){
 				person.setGoodsId(serItemCommodity.getId());
 				serItemCommodityPersonsService.save(person);
 			}
-		}
+		}*/
 	}
 	
 	@Transactional(readOnly = false)

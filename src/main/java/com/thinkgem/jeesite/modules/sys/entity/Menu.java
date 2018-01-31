@@ -180,4 +180,15 @@ public class Menu extends DataEntity<Menu> {
 	public String toString() {
 		return name;
 	}
+	private Boolean disabled;
+
+	public Boolean getDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(Boolean disabled) {
+		this.disabled = disabled;
+	}
+	
+	
 }

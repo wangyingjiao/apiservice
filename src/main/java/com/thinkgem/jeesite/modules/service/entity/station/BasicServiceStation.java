@@ -37,6 +37,7 @@ public class BasicServiceStation extends DataEntity<BasicServiceStation> {
     private String isUseable;        // 是否可用(yes:可用，no:不可用)
     private BasicOrganization organ;
     private List<String> storeList;
+    private String storeId;
 
     public List<String> getStoreList() {
         return storeList;
@@ -44,6 +45,14 @@ public class BasicServiceStation extends DataEntity<BasicServiceStation> {
 
     public void setStoreList(List<String> storeList) {
         this.storeList = storeList;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public BasicOrganization getOrgan() {

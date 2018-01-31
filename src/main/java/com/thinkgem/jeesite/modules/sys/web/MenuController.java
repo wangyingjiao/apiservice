@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -14,14 +15,13 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.Menu;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +38,7 @@ import static com.thinkgem.jeesite.modules.sys.utils.UserUtils.genTreeMenu;
  * @version 2013-3-23
  */
 @Controller
+@Api(tags = "菜单管理", description = "菜单管理相关接口")
 @RequestMapping(value = "${adminPath}/sys/menu")
 public class MenuController extends BaseController {
 
@@ -51,6 +52,28 @@ public class MenuController extends BaseController {
         } else {
             return new Menu();
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "formData" , method = { RequestMethod.POST })
+    public Result formData(@RequestBody Menu menu){
+        if (StringUtils.isBlank(menu.getId())){
+            return new FailResult("没有相关信息");
+        }
+        return new SuccResult(systemService.getMenu(menu.getId()));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "upData", method = { RequestMethod.POST })
+    //@RequiresPermissions("skill_update")
+    @ApiOperation("修改保存菜单信息")
+    public Result upData(@RequestBody Menu menu) {
+        List<String> errList = errors(menu);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }
+        systemService.saveMenu(menu);
+        return new SuccResult("保存成功");
     }
 
     //@RequiresPermissions("sys:menu:view")
@@ -83,39 +106,46 @@ public class MenuController extends BaseController {
         return "modules/sys/menuForm";
     }
 
+    @ResponseBody
     //@RequiresPermissions("sys:menu:edit")
     @RequestMapping(value = "save")
-    public String save(Menu menu, Model model, RedirectAttributes redirectAttributes) {
+    public Result save(@RequestBody Menu menu, Model model, RedirectAttributes redirectAttributes) {
         if (!UserUtils.getUser().isAdmin()) {
-            addMessage(redirectAttributes, "越权操作，只有超级管理员才能添加或修改数据！");
-            return "redirect:" + adminPath + "/sys/role/?repage";
+            //addMessage(redirectAttributes, "越权操作，只有超级管理员才能添加或修改数据！");
+            //return "redirect:" + adminPath + "/sys/role/?repage";
+            return new FailResult("越权操作，只有超级管理员才能添加或修改数据");
         }
         if (Global.isDemoMode()) {
-            addMessage(redirectAttributes, "演示模式，不允许操作！");
-            return "redirect:" + adminPath + "/sys/menu/";
+            //addMessage(redirectAttributes, "演示模式，不允许操作！");
+            //return "redirect:" + adminPath + "/sys/menu/";
+            return new FailResult("演示模式，不允许操作");
         }
-        if (!beanValidator(model, menu)) {
+        /*if (!beanValidator(model, menu)) {
             return form(menu, model);
-        }
+        }*/
         systemService.saveMenu(menu);
-        addMessage(redirectAttributes, "保存菜单'" + menu.getName() + "'成功");
-        return "redirect:" + adminPath + "/sys/menu/";
+        //addMessage(redirectAttributes, "保存菜单'" + menu.getName() + "'成功");
+        //return "redirect:" + adminPath + "/sys/menu/";
+        return new SuccResult("保存成功");
     }
 
+    @ResponseBody
     //@RequiresPermissions("sys:menu:edit")
     @RequestMapping(value = "delete")
-    public String delete(Menu menu, RedirectAttributes redirectAttributes) {
+    public Result delete(@RequestBody Menu menu, RedirectAttributes redirectAttributes) {
         if (Global.isDemoMode()) {
-            addMessage(redirectAttributes, "演示模式，不允许操作！");
-            return "redirect:" + adminPath + "/sys/menu/";
+            //addMessage(redirectAttributes, "演示模式，不允许操作！");
+            //return "redirect:" + adminPath + "/sys/menu/";
+            return new FailResult("演示模式，不允许操作");
         }
 //		if (Menu.isRoot(id)){
 //			addMessage(redirectAttributes, "删除菜单失败, 不允许删除顶级菜单或编号为空");
 //		}else{
         systemService.deleteMenu(menu);
-        addMessage(redirectAttributes, "删除菜单成功");
+        //addMessage(redirectAttributes, "删除菜单成功");
 //		}
-        return "redirect:" + adminPath + "/sys/menu/";
+        //return "redirect:" + adminPath + "/sys/menu/";
+        return new SuccResult("删除菜单成功");
     }
 
     @RequiresPermissions("user")
@@ -154,7 +184,7 @@ public class MenuController extends BaseController {
      * isShowHide是否显示隐藏菜单
      *
      * @param extId
-     * @param isShowHidden
+     *
      * @param response
      * @return
      */

@@ -25,14 +25,15 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Service
 @Transactional(readOnly = true)
 public class AreaService extends CrudService<AreaDao, Area> {
+	@Autowired
+	AreaDao areaDao;
+
 /*
 	public List<Area> findAll(){
 		return UserUtils.getAreaList();
 	}
 
 
-	@Autowired
-	AreaDao areaDao;
 
 	@Override
 	@Transactional(readOnly = false)
@@ -60,6 +61,14 @@ public class AreaService extends CrudService<AreaDao, Area> {
 		return areaDao.findListByIds(ids);
 	}
 */
+
+	public List<Area> appFindAllList(Area info){
+		return areaDao.appFindAllList(info);
+	}
+	//app登陆 修改用户使用
+	public List<Area> getNameByCode(String province_code){
+		return areaDao.getNameByCode(province_code);
+	}
 
     public List<AreaTree> getAreaTree() {
 		Area info = new Area();

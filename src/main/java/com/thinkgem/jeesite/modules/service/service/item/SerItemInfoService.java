@@ -4,13 +4,16 @@
 package com.thinkgem.jeesite.modules.service.service.item;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
@@ -55,54 +58,108 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		return super.get(id);
 	}
 
-	@Transactional(readOnly = false)
-	public void saveSort(SerItemInfo serItemInfo) {
-		super.save(serItemInfo);
-	}
 	/**
 	 * 保存
 	 * @param serItemInfo
 	 */
 	@Transactional(readOnly = false)
-	public SerItemInfo getByName(SerItemInfo serItemInfo){
+	public List<SerItemInfo> getByName(SerItemInfo serItemInfo){
 		return serItemInfoDao.getByName(serItemInfo);
 	}
 	@Transactional(readOnly = false)
-	public void save(SerItemInfo serItemInfo) {
-		if (StringUtils.isNotBlank(serItemInfo.getId())) {
-			//更新时，删除定向城市
-	//		serCityScopeDao.delSerCityScopeByMaster(serItemInfo.getId());
-
-			//删除商品信息
-			serItemCommodityDao.delSerItemCommodity(serItemInfo);
+	public HashMap<String,Object> saveItem(SerItemInfo serItemInfo) {
+		List<String> pictures = serItemInfo.getPictures();
+		if(null != pictures){
+			String picture = JsonMapper.toJsonString(pictures);
+			serItemInfo.setPicture(picture);
 		}
-//		List<String> cityCodes = serItemInfo.getCityCodes();
-//		if(cityCodes==null || 0==cityCodes.size()){
-//			serItemInfo.setAllCity("yes");
-//		}else{
-//			serItemInfo.setAllCity("no");
-//		}
+		//add by wyr编辑项目服务需要获取当前的机构id
+		User user = UserUtils.getUser();
+		serItemInfo.setOrgId(user.getOrganization().getId());
 
 		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
+		/*if (StringUtils.isNotBlank(serItemInfo.getId())) {
+			//删除商品信息
+			//serItemCommodityDao.delSerItemCommodity(serItemInfo);
+
+			//只删除前台删除的数据，其余商品新增或者编辑
+			List<SerItemCommodity> commodityListOld = serItemCommodityDao.findListByItemId(serItemInfo);
+			if(commodityListOld != null){
+				commodityListOld.removeAll(commoditys);
+				if(commodityListOld.size() != 0){
+					for (SerItemCommodity commodityDel : commodityListOld) {
+						serItemCommodityDao.delete(commodityDel);
+					}
+				}
+			}
+		}*/
+
+		List<SerItemCommodity> sendGoodsList = new ArrayList<>();
 
 		super.save(serItemInfo);
-		//批量插入定向城市
-//		if(cityCodes != null){
-//			for(String cityCode : cityCodes){
-//				SerCityScope serCityScope = new SerCityScope();
-//				serCityScope.setMasterId(serItemInfo.getId());
-//				serCityScope.setType("1");//0:服务分类 1:服务项目
-//				serCityScope.setCityCode(cityCode);//市_区号
-//				serCityScopeService.save(serCityScope);
-//			}
-//		}
 		if(commoditys != null) {
 			//批量插入商品信息
 			for (SerItemCommodity commodity : commoditys) {
 				commodity.setItemId(serItemInfo.getId());
+				commodity.setSortId(serItemInfo.getSortId());
+
+				commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT '1'  '起购数量',
+				commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT '1'  '起步人数（第一个4小时时长派人数量）',
+				commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT '30'  '封项人数',
+
 				serItemCommodityService.save(commodity);
+
+				//对接商品信息
+				SerItemCommodity sendGoods = new SerItemCommodity();
+				sendGoods.setName(commodity.getName());// 商品名称格式：项目名称（商品名）
+				sendGoods.setPrice(commodity.getPrice());// 商品价格
+				sendGoods.setUnit(commodity.getUnit());// 商品单位格式：次/个/间
+				sendGoods.setJointGoodsCode("");
+				if(StringUtils.isNotBlank(commodity.getId())){
+					SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
+					if(commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())){
+						sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+					}
+				}
+				sendGoods.setSelfCode(serItemInfo.getSortId()+ Global.getConfig("openSendPath_goods_split")+commodity.getId()); //自营平台商品code  ID
+				sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
+				sendGoodsList.add(sendGoods);
 			}
 		}
+
+		serItemInfo = dao.get(serItemInfo);
+		String pictureDetail = serItemInfo.getPictureDetail();
+		if(null != pictureDetail){
+			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
+			serItemInfo.setPictureDetails(pictureDetailsa);
+		}
+		String picture = serItemInfo.getPicture();
+		if(null != picture){
+			List<String> pictures1 = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+			serItemInfo.setPictures(pictures1);
+		}
+
+		//对接项目信息
+		SerItemInfo sendItem = new SerItemInfo();
+		sendItem.setPictures(serItemInfo.getPictures());
+		sendItem.setPictureDetails(serItemInfo.getPictureDetails());
+		sendItem.setName(serItemInfo.getName());
+		sendItem.setTags(serItemInfo.getTags());//系统标签格式：系统标签1,系统标签2,系统标签3,
+		sendItem.setCusTags(serItemInfo.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
+		//sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
+		sendItem.setCommoditys(sendGoodsList);
+
+		String jointEshopCode = "";
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("info",sendItem);
+		map.put("jointEshopCode", jointEshopCode);
+		map.put("item", serItemInfo);
+		return map;
 	}
 
 	public List<SerItemInfo> findList(SerItemInfo serItemInfo) {
@@ -120,7 +177,24 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 					List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
 					entity.setPictures(pictures);
 				}
+				if (entity.getJointEshopCode() != null && !entity.getJointEshopCode().equals("")){
+					List<SerItemCommodity> scy = entity.getCommoditys();
+					if (scy != null && scy.size() >0) {
+						for (SerItemCommodity com : scy) {
+							if (com.getJointGoodsCode() == null) {
+								entity.setFlag("no");
+								break;
+							}
+						}
+					}
+					if (entity.getFlag().equals("yes")){
+						if (entity.getJointStatus().equals("no")){
+							entity.setFlag("no");
+						}
+					}
+				}
 			}
+
 		}
 		return pageResult;
 	}
@@ -132,35 +206,16 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 */
 	public SerItemInfo getData(String id) {
 		SerItemInfo serItemInfo = super.get(id);
-		//获取定向城市
-//		List<SerCityScope> citys = serCityScopeDao.getSerCityScopeByMaster(id);
-//		List<String> cityCodes = null;
-//		if(null != citys){
-//			cityCodes = new ArrayList<String>();
-//			for(SerCityScope city : citys){
-//				cityCodes.add(city.getCityCode());
-//			}
-//		}
-//		serItemInfo.setCityCodes(cityCodes);
 
 		List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
 		serItemInfo.setCommoditys(commoditys);
 
-//		SerItemInfo serItemInfoForAllCity = new SerItemInfo();
-//		User user = UserUtils.getUser();
-//		serItemInfoForAllCity.setOrgId(user.getOrganization().getId());//机构ID
-//		serItemInfoForAllCity.setSortId(serItemInfo.getSortId());
-//		List<SerCityScope>  allCitys = getAllCityCodes(serItemInfoForAllCity);
-//		serItemInfo.setAllCitys(allCitys);
 		return serItemInfo;
 	}
 
 	
 	@Transactional(readOnly = false)
 	public void delete(SerItemInfo serItemInfo) {
-		//删除定向城市
-//		serCityScopeDao.delSerCityScopeByMaster(serItemInfo.getId());
-
 		//删除商品信息
 		List<SerItemCommodity> commoditys = dao.getSerItemCommoditys(serItemInfo);
 		for(SerItemCommodity commodity : commoditys){
@@ -179,10 +234,78 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 
 	@Transactional(readOnly = false)
-    public void updateSerItemPicNum(SerItemInfo serItemInfo) {
+    public HashMap<String,Object> updateSerItemPicNum(SerItemInfo serItemInfo) {
+		List<String> pictureDetails = serItemInfo.getPictureDetails();
+		if(null != pictureDetails){
+			String pictureDetail = JsonMapper.toJsonString(pictureDetails);
+			serItemInfo.setPictureDetail(pictureDetail);
+		}
 		serItemInfo.preUpdate();
 		dao.updateSerItemPicNum(serItemInfo);
-    }
+
+		serItemInfo = dao.get(serItemInfo);
+		//对接商品信息
+		String jointEshopCode = "";
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+
+		String pictureDetail = serItemInfo.getPictureDetail();
+		if(null != pictureDetail){
+			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
+			serItemInfo.setPictureDetails(pictureDetailsa);
+		}
+		String picture = serItemInfo.getPicture();
+		if(null != picture){
+			List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+			serItemInfo.setPictures(pictures);
+		}
+
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("jointEshopCode", jointEshopCode);
+
+		if(StringUtils.isNotEmpty(jointEshopCode)) {
+
+			List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			if (commoditys != null) {
+				//批量插入商品信息
+				for (SerItemCommodity commodity : commoditys) {
+					//对接商品信息
+					SerItemCommodity sendGoods = new SerItemCommodity();
+					sendGoods.setName(commodity.getName());// 商品名称格式：项目名称（商品名）
+					sendGoods.setPrice(commodity.getPrice());// 商品价格
+					sendGoods.setUnit(commodity.getUnit());// 商品单位格式：次/个/间
+					sendGoods.setJointGoodsCode("");
+					if (StringUtils.isNotBlank(commodity.getId())) {
+						SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
+						if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
+							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+						}
+					}
+					sendGoods.setSelfCode(serItemInfo.getSortId() + Global.getConfig("openSendPath_goods_split") + commodity.getId()); //自营平台商品code  ID
+					sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
+					sendGoodsList.add(sendGoods);
+				}
+			}
+
+			//对接项目信息
+			SerItemInfo sendItem = new SerItemInfo();
+			sendItem.setPictures(serItemInfo.getPictures());
+			sendItem.setPictureDetails(serItemInfo.getPictureDetails());
+			sendItem.setName(serItemInfo.getName());
+			sendItem.setTags(serItemInfo.getTags());//系统标签格式：系统标签1,系统标签2,系统标签3,
+			sendItem.setCusTags(serItemInfo.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
+			sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
+			sendItem.setCommoditys(sendGoodsList);
+
+			map.put("info", sendItem);
+			map.put("item", serItemInfo);
+		}
+		return map;
+	}
 
 	public SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo) {
 		return dao.getSerItemInfoPic(serItemInfo);
@@ -192,35 +315,167 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		return dao.getSerSortInfoList(serItemInfo);
     }
 
-	/*public List<SerCityScope> getAllCityCodes(SerItemInfo serItemInfo) {
-		List<SerCityScope> citys = new ArrayList<SerCityScope>();
-		if(StringUtils.isNotBlank(serItemInfo.getSortId())){
-			SerSortInfo serSortInfo = dao.getSerSortInfo(serItemInfo.getSortId());
-			if(serSortInfo == null){
-				List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
-				if(null != list){
-					for(BasicServiceCity city : list){
-						SerCityScope cityScope = new SerCityScope();
-						cityScope.setCityCode(city.getCityCode());
-						cityScope.setCityName(city.getCityName());
-						citys.add(cityScope);
+	@Transactional(readOnly = false)
+	public void updateCommodityJointCode(SerItemCommodity goods) {
+		serItemCommodityDao.updateJointGoodsCode(goods);
+	}
+
+    public HashMap<String,Object> sendItemData(SerItemInfo serItemInfo) {
+		serItemInfo = dao.get(serItemInfo);
+		//对接商品信息
+		String jointEshopCode = "";
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+
+		String pictureDetail = serItemInfo.getPictureDetail();
+		if(null != pictureDetail){
+			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail,ArrayList.class);
+			serItemInfo.setPictureDetails(pictureDetailsa);
+		}
+		String picture = serItemInfo.getPicture();
+		if(null != picture){
+			List<String> pictures = (List<String>) JsonMapper.fromJsonString(picture,ArrayList.class);
+			serItemInfo.setPictures(pictures);
+		}
+
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("jointEshopCode", jointEshopCode);
+
+		if(StringUtils.isNotEmpty(jointEshopCode)) {
+
+			List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			if (commoditys != null) {
+				//批量插入商品信息
+				for (SerItemCommodity commodity : commoditys) {
+					//对接商品信息
+					SerItemCommodity sendGoods = new SerItemCommodity();
+					sendGoods.setName(commodity.getName());// 商品名称格式：项目名称（商品名）
+					sendGoods.setPrice(commodity.getPrice());// 商品价格
+					sendGoods.setUnit(commodity.getUnit());// 商品单位格式：次/个/间
+					sendGoods.setJointGoodsCode("");
+					if (StringUtils.isNotBlank(commodity.getId())) {
+						SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
+						if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
+							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+						}
+					}
+					sendGoods.setSelfCode(serItemInfo.getSortId() + Global.getConfig("openSendPath_goods_split") + commodity.getId()); //自营平台商品code  ID
+					sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
+					sendGoodsList.add(sendGoods);
+				}
+			}
+
+			//对接项目信息
+			SerItemInfo sendItem = new SerItemInfo();
+			sendItem.setPictures(serItemInfo.getPictures());
+			sendItem.setPictureDetails(serItemInfo.getPictureDetails());
+			sendItem.setName(serItemInfo.getName());
+			sendItem.setTags(serItemInfo.getTags());//系统标签格式：系统标签1,系统标签2,系统标签3,
+			sendItem.setCusTags(serItemInfo.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
+			sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
+			sendItem.setCommoditys(sendGoodsList);
+
+			map.put("info", sendItem);
+			map.put("item", serItemInfo);
+		}
+		return map;
+    }
+
+	@Transactional(readOnly = false)
+	public void updateJointStatus(SerItemInfo serItemInfo) {
+		dao.updateJointStatus(serItemInfo);
+	}
+
+	/**
+	 * 单个删除商品时，取得对接信息
+	 * @param serItemCommodity
+	 * @return
+	 */
+	public HashMap<String,Object>  getDeleteGoodsSendInfo(SerItemCommodity serItemCommodity) {
+		SerItemInfo serItemInfo = dao.getItemInfoByCommodityId(serItemCommodity);
+		//对接商品信息
+		String jointEshopCode = "";
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("jointEshopCode", jointEshopCode);
+
+		if(StringUtils.isNotEmpty(jointEshopCode)) {
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			SerItemCommodity sendGoods = new SerItemCommodity();
+			if (StringUtils.isNotBlank(serItemCommodity.getId())) {
+				SerItemCommodity commodityForJoin = serItemCommodityService.get(serItemCommodity.getId());
+				if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
+					sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+					sendGoodsList.add(sendGoods);
+				}
+			}
+
+			//对接项目信息
+			SerItemInfo sendItem = new SerItemInfo();
+			sendItem.setCommoditys(sendGoodsList);
+
+			map.put("info", sendItem);
+		}
+		return map;
+	}
+
+	@Transactional(readOnly = false)
+	public void deleteGoodsInfo(SerItemCommodity serItemCommodity) {
+		serItemCommodityDao.delete(serItemCommodity);
+	}
+
+	public HashMap<String,Object> getDeleteGoodsSendList(SerItemInfo serItemInfo) {
+		serItemInfo = dao.get(serItemInfo);
+		//对接商品信息
+		String jointEshopCode = "";
+		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
+		if(organization != null){
+			jointEshopCode = organization.getJointEshopCode();
+		}
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("jointEshopCode", jointEshopCode);
+
+		if(StringUtils.isNotEmpty(jointEshopCode)) {
+			List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			List<SerItemCommodity> noSendGoodsList = new ArrayList<>();
+			if (commoditys != null) {
+				//批量插入商品信息
+				for (SerItemCommodity commodity : commoditys) {
+					//对接商品信息
+					SerItemCommodity sendGoods = new SerItemCommodity();
+					SerItemCommodity noSendGoods = new SerItemCommodity();
+					if (StringUtils.isNotBlank(commodity.getId())) {
+						SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
+						if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
+							sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+							sendGoods.setId(commodity.getId());
+							sendGoods.setName(commodity.getName());
+							sendGoodsList.add(sendGoods);
+						}else{
+							noSendGoods.setId(commodity.getId());
+							noSendGoods.setName(commodity.getName());
+							noSendGoodsList.add(noSendGoods);
+						}
 					}
 				}
-			}else{
-				citys = serCityScopeDao.getSerCityScopeByMaster(serItemInfo.getSortId());
 			}
-		}else{
-			List<BasicServiceCity> list = basicServiceCityDao.getCityCodesByOrgId(serItemInfo.getOrgId());
-			if(null != list){
-				for(BasicServiceCity city : list){
-					SerCityScope cityScope = new SerCityScope();
-					cityScope.setCityCode(city.getCityCode());
-					cityScope.setCityName(city.getCityName());
-					citys.add(cityScope);
-				}
-			}
-		}
-		return  citys;
-	}*/
 
+			//对接项目信息
+			SerItemInfo sendItem = new SerItemInfo();
+			sendItem.setCommoditys(sendGoodsList);
+
+			map.put("info", sendItem);
+			map.put("item", serItemInfo);
+			map.put("noSendGoodsList",noSendGoodsList);
+		}
+		return map;
+	}
 }

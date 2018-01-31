@@ -65,7 +65,7 @@ public class AESCrypt {
 
 
     }
-
+    //解密
     public String decrypt(String cryptedText) throws Exception {
         cipher.init(Cipher.DECRYPT_MODE, key, spec);
         byte[] bytes = Base64Decoder.decodeToBytes(cryptedText);
@@ -74,26 +74,45 @@ public class AESCrypt {
         return Base64Decoder.decode(decryptedText);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception{
 
         AESCrypt crypt = new AESCrypt("seed");
+        String s3="{\"pageSize\":15,\"pageNo\":1}";
+        String s1="{\"username\":\"13508070808\",\"password\":\"1234qwer\"}";
+//        String s3="{\"id\":\"9\"}";
+//        String s2="{\"username\":\"15711445637\",\"password\":\"1234qwer\",\"serviceStatus\":wait_service,\"majorSort\":all}";
+        String baseEncode = Base64Encoder.encode(s1);//base64加密
+        String aesEncode = crypt.encrypt(baseEncode);//aes加密
+        System.out.println("2次加密"+aesEncode);
+        //MD5获取MD5操作之后值
+        String stringMD5 = MD5Util.getStringMD5(aesEncode);
+        System.out.println("md5=="+stringMD5);
+
+    }
+
+    public static void main1(String[] args) throws Exception {
+
+        AESCrypt crypt = new AESCrypt("seed");
+        String encrypt2 = crypt.encrypt("{\"pageSize\":15,\"pageNo\":1,\"serviceStatus\":\"wait_service\",\"majorSort\":\"all\"}");
+
+        System.out.println(encrypt2+"+++++++++加密后");
+
+        String m1 = MD5Util.getStringMD5(encrypt2);
+
+        System.out.println("md5盐***************8"+m1);
         String encrypt = crypt.encrypt("111111");
-        System.out.println(crypt.decrypt(encrypt));
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("username","13489890909");
-//        jsonObject.put("password","0909");
-//        String encrypt = crypt.encrypt("111111");
-//        System.out.println(encrypt);
-//
-        String s ="+8GdDMXX3UU392sllC7+1qYvGtHwoQBR9obfLRF2yj4Q67LbfObCMrJ9m4fBFrZD/5+BO4gI9kMZ4i7fi7UK2kV3oZ+1IT+gQmZ6AzKoCbmNGpwNos1l0augz2IgSeFbOU2LhuDFZcNqjUBOhRDFxGwx5JKlQXNlpp3MjSIwa+DYdP5vxXakYffzpVOVdjTei7xZ+U4PleHDQ6qpEhyqMpIjw2t/jh7m50xRxp9QCcq42T1GFEGuKjXM12UnDSAeKWZu4ZkQE8Q94UHFLEg5ccqJnszQjsdBptoEv+srsP/o5KaVF6d725jC82nsKArvqoLYFOWIwDSVxE7zQSYUlF+Pin88tM99rGpwylpRnqtvejQ7N0aZnhCraSx4hq8k9QJkuFucwT00CxtOgZuh7A==";
-        String decrypt = crypt.decrypt(s);
-        System.out.println(decrypt);
-//        String plainText = jsonObject.toJSONString();
-//        System.out.println(plainText);
-//        String encrypt = crypt.encrypt(plainText);
-//        System.out.println(encrypt);
-//        String decrypt = crypt.decrypt(encrypt);
-//        System.out.println(decrypt);
+        String ceshi="8JcpNJqcCvEQm+n8qF9Gvyo7g6G2yIlpMb7JzZo/B3NR7CVfn2zgvnj9mQ5r/2Fwjq2xA3q5/wvxQOfnSzALGi7IbU3zp6EYHGaRbfkwHgI=";
+       // String ceshi="mZm5PLLx3w169jtA6dFrQ1G9LnQAHYc54uO6aIW9v/uUL+lhF1/mluLggO/RE+49KGLszOaxJigSZ4bWwVJ1P9+T6i1E5YagL9lAa2vnA/wbaEKXwmL8cuOdZDI3i9tDkQKchldZde8ubHXoQK7gRw==";
+        String decrypt1 = crypt.decrypt(ceshi);
+        System.out.println("解密+++"+decrypt1);
+
+
+        String ss="mZm5PLLx3w169jtA6dFrQ1G9LnQAHYc54uO6aIW9v/uUL+lhF1/mluLggO/RE+49KGLszOaxJigSZ4bWwVJ1P9+T6i1E5YagL9lAa2vnA/wbaEKXwmL8cuOdZDI3i9tDkQKchldZde8ubHXoQK7gRw==";
+        String decrypt = crypt.decrypt(ss);
+        System.out.println("解密"+decrypt);
+        //
+        String md11 = MD5Util.getRequestBodyMD5(decrypt);
+        String md5 = MD5Util.getRequestBodyMD5(ss);
 
     }
 

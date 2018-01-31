@@ -1,53 +1,49 @@
+/**
+ * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ */
 package com.thinkgem.jeesite.modules.sys.entity;
 
-import java.io.Serializable;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
 
-import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.thinkgem.jeesite.modules.BaseEntity;
+import org.hibernate.validator.constraints.Length;
+
+import com.thinkgem.jeesite.common.persistence.DataEntity;
+
+import java.util.List;
 
 /**
- * <p>
- * 字典表
- * </p>
- *
- * @author X
- * @since 2017-12-10
+ * 字典Entity
+ * @author ThinkGem
+ * @version 2013-05-15
  */
-@TableName("sys_dict")
-public class Dict extends BaseEntity<Dict> {
+public class Dict extends DataEntity<Dict> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
+	private String value;	// 数据值
+	private String label;	// 标签名
+	private String type;	// 类型
+	private String description;// 描述
+	private Integer sort;	// 排序
+	private String parentId;//父Id
+	private List<Dict> dictList;
+	private int dictNum;
 
-    /**
-     * 数据值
-     */
-	private String value;
-    /**
-     * 标签名
-     */
-	private String label;
-    /**
-     * 类型
-     */
-	private String type;
-    /**
-     * 描述
-     */
-	private String description;
-    /**
-     * 排序（升序）
-     */
-	private BigDecimal sort;
-    /**
-     * 父级编号
-     */
-	@TableField("parent_id")
-	private String parentId;
-
-
+	public Dict() {
+		super();
+	}
+	
+	public Dict(String id){
+		super(id);
+	}
+	
+	public Dict(String value, String label){
+		this.value = value;
+		this.label = label;
+	}
+	
+	@XmlAttribute
+	@Length(min=1, max=100)
 	public String getValue() {
 		return value;
 	}
@@ -56,6 +52,24 @@ public class Dict extends BaseEntity<Dict> {
 		this.value = value;
 	}
 
+	public List<Dict> getDictList() {
+		return dictList;
+	}
+
+	public void setDictList(List<Dict> dictList) {
+		this.dictList = dictList;
+	}
+
+	public int getDictNum() {
+		return dictNum;
+	}
+
+	public void setDictNum(int dictNum) {
+		this.dictNum = dictNum;
+	}
+
+	@XmlAttribute
+	@Length(min=1, max=100)
 	public String getLabel() {
 		return label;
 	}
@@ -64,6 +78,7 @@ public class Dict extends BaseEntity<Dict> {
 		this.label = label;
 	}
 
+	@Length(min=1, max=100)
 	public String getType() {
 		return type;
 	}
@@ -72,6 +87,8 @@ public class Dict extends BaseEntity<Dict> {
 		this.type = type;
 	}
 
+	@XmlAttribute
+	@Length(min=0, max=100)
 	public String getDescription() {
 		return description;
 	}
@@ -80,14 +97,16 @@ public class Dict extends BaseEntity<Dict> {
 		this.description = description;
 	}
 
-	public BigDecimal getSort() {
+	@NotNull
+	public Integer getSort() {
 		return sort;
 	}
 
-	public void setSort(BigDecimal sort) {
+	public void setSort(Integer sort) {
 		this.sort = sort;
 	}
 
+	@Length(min=1, max=100)
 	public String getParentId() {
 		return parentId;
 	}
@@ -95,21 +114,9 @@ public class Dict extends BaseEntity<Dict> {
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
 	}
-
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
-
+	
 	@Override
 	public String toString() {
-		return "Dict{" +
-			", value=" + value +
-			", label=" + label +
-			", type=" + type +
-			", description=" + description +
-			", sort=" + sort +
-			", parentId=" + parentId +
-			"}";
+		return label;
 	}
 }

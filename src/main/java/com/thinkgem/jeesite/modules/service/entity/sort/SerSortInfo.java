@@ -24,7 +24,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
     private String majorSort;        // 分类：保洁、家修
     private String name;        // 服务分类名称
 //    private String allCity;   //是否是全部城市
-//    private String orgId;//机构ID
+    private String orgId;//机构ID
     private Boolean flag=false;  //是否已经选过
 
 
@@ -72,7 +72,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     public void setAllCity(String allCity) {
         this.allCity = allCity;
-    }
+    }*/
 
     public String getOrgId() {
         return orgId;
@@ -80,7 +80,7 @@ public class SerSortInfo extends DataEntity<SerSortInfo> {
 
     public void setOrgId(String orgId) {
         this.orgId = orgId;
-    }*/
+    }
 /*
     private String cityCode;        // 城市编号 查询用
     private List<String> cityCodes; // 城市 编辑选中用

@@ -34,9 +34,29 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String orgId;//机构ID
 	private List<String> sysTags;			//系统标签
 	private List<String> customTags;		//自定义标签
-
+	//private String eshopCode; //e点code 对接用
+	private String jointStatus;//'对接状态(yes:对接成功  no：对接失败）',
 	private String tags;
 	private String cusTags;
+
+	private String jointEshopCode;   //机构E店
+	private String flag="yes";   //是否需要对接
+
+	public String getJointEshopCode() {
+		return jointEshopCode;
+	}
+
+	public void setJointEshopCode(String jointEshopCode) {
+		this.jointEshopCode = jointEshopCode;
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
 
 	public String getTags() {
 		return tags;
@@ -120,9 +140,9 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setPictureDetails(List<String> pictureDetails) {
 		this.pictureDetails = pictureDetails;
 	}
-
-	@NotBlank(message = "服务描述不可为空")
-	@Length(min=0, max=255, message="服务描述长度必须介于 0 和 255 之间")
+	//add by wyr 前台去掉此字段 无需传值校验
+	//@NotBlank(message = "服务描述不可为空")
+	//@Length(min=0, max=255, message="服务描述长度必须介于 0 和 255 之间")
 	public String getDescription() {
 		return description;
 	}
@@ -205,5 +225,21 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	public void setCustomTags(List<String> customTags) {
 		this.customTags = customTags;
+	}
+/*
+	public String getEshopCode() {
+		return eshopCode;
+	}
+
+	public void setEshopCode(String eshopCode) {
+		this.eshopCode = eshopCode;
+	}*/
+
+	public String getJointStatus() {
+		return jointStatus;
+	}
+
+	public void setJointStatus(String jointStatus) {
+		this.jointStatus = jointStatus;
 	}
 }

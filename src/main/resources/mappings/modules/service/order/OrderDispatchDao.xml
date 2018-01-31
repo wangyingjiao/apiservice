@@ -24,25 +24,94 @@
 		<include refid="orderDispatchJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
-	<select id="findList" resultType="OrderDispatch">
-		SELECT 
-			<include refid="orderDispatchColumns"/>
-		FROM order_dispatch a
-		<include refid="orderDispatchJoins"/>
+	<resultMap id="orderDispatchMap" type="OrderInfo">
+		<result column="orderNumber" property="orderNumber"></result>
+		<result column="serviceTime" property="serviceTime"></result>
+		<result column="id" property="id"></result>
+		<!-- 订单关联派单 -->
+		<association property="techList" column="{reqId=id,techName=techName,techPhone=techPhone}" select="selectTechListById"></association>
+
+	</resultMap>
+	<select id="findOrderList" resultMap="orderDispatchMap">
+		SELECT
+			a.id AS id,
+			a.order_number AS orderNumber,
+			a.service_time AS serviceTime
+		<if test="techName != null and techName != ''">
+			,#{techName} AS techName
+		</if>
+		<if test="techPhone != null and techPhone != ''">
+			,#{techPhone} AS techPhone
+		</if>
+		<if test="techName == null or techName == ''">
+			,'' AS techName
+		</if>
+		<if test="techPhone == null or techPhone == ''">
+			,'' AS techPhone
+		</if>
+		FROM order_info a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderNumber != null and orderNumber != ''">
+				AND a.order_number LIKE concat('%',#{orderNumber},'%')
+			</if>
+
+			<if test="techName != null and techName != ''">
+				AND a.id in (
+				SELECT a.id
+				FROM order_info a
+				LEFT JOIN order_dispatch o ON o.order_id = a.id AND o.del_flag = '0'
+				LEFT JOIN tech_info t ON o.tech_id = t.id
+				where
+				a.del_flag = '0'
+				AND o.status = 'yes'
+				AND t.name LIKE concat('%',#{techName},'%')
+				)
+			</if>
+
+			<if test="techPhone != null and techPhone != ''">
+				AND a.id in (
+				SELECT a.id
+				FROM order_info a
+				LEFT JOIN order_dispatch o ON o.order_id = a.id AND o.del_flag = '0'
+				LEFT JOIN tech_info t ON o.tech_id = t.id
+				where
+				a.del_flag = '0'
+				AND o.status = 'yes'
+				AND t.phone LIKE concat('%',#{techPhone},'%')
+				)
+			</if>
+
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
-		</where>
+		</where> 
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date DESC
+				ORDER BY a.service_time DESC
 			</otherwise>
 		</choose>
+	</select>
+	<select id="selectTechListById" parameterType="java.util.Map" resultType="OrderDispatch">
+		select t.id AS techId,
+			t.head_pic AS headPic,
+			t.name AS techName,
+			t.phone AS techPhone,
+			t.sex AS techSex,
+			t.job_nature AS jobNature
+		from order_dispatch o
+		LEFT JOIN tech_info t ON o.tech_id = t.id
+		where o.order_id=#{reqId}
+		and o.del_flag = '0'
+		AND o.status = 'yes'
+		<if test="techName != null and techName != ''">
+			AND t.name LIKE concat('%',#{techName},'%')
+		</if>
+		<if test="techPhone != null and techPhone != ''">
+			AND t.phone LIKE concat('%',#{techPhone},'%')
+		</if>
 	</select>
 	
 	<select id="findAllList" resultType="OrderDispatch">
@@ -103,6 +172,17 @@
 		WHERE id = #{id}
 	</update>
 
+	<!--app根据用户id和订单id查询派单表-->
+	<select id="getByOrderTechId" resultType="OrderDispatch">
+		SELECT
+		<include refid="orderDispatchColumns"/>
+		FROM order_dispatch a
+		WHERE a.order_id = #{orderId}
+		AND a.tech_id = #{techId}
+		AND a.del_flag=#{delFlag}
+		AND a.status='yes'
+	</select>
+
 	<select id="formData" resultType="OrderDispatch">
 		SELECT
 			a.create_date AS "createDate",
@@ -116,6 +196,28 @@
 		WHERE a.order_id = #{orderId}
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	  	AND a.status = 'no'
+	  	ORDER BY a.create_date DESC
 	</select>
-
+	<select id="findOrderCount" resultType="java.lang.Long">
+		select count(t.counts) from
+			(select a.id,count(*) counts FROM
+				order_info a
+				LEFT JOIN order_dispatch o ON o.order_id = a.id
+				AND o.del_flag = 0
+				LEFT JOIN tech_info t ON o.tech_id = t.id
+				WHERE
+			a.del_flag = 0
+			AND o.status = 'yes'
+			<if test="orderNumber != null and orderNumber != ''">
+				AND a.order_number LIKE concat('%',#{orderNumber},'%')
+			</if>
+			<if test="techName != null and techName != ''">
+				AND t.name LIKE concat('%',#{techName},'%')
+			</if>
+			<if test="techPhone != null and techPhone != ''">
+				AND t.phone LIKE concat('%',#{techPhone},'%')
+			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}  group by a.order_number) t  
+	</select>
 </mapper>

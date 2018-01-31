@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
@@ -19,6 +20,10 @@ import com.thinkgem.jeesite.modules.sys.service.AreaService;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.entity.OpenSendSaveItemResponse;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
+import com.thoughtworks.xstream.mapper.Mapper.Null;
+
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +40,8 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +59,8 @@ public class BasicOrganizationController extends BaseController {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ResponseBody
-	//@RequiresPermissions("sys:office:view")
-	@RequestMapping(value = "/listData", method = {RequestMethod.POST})
+	@RequiresPermissions("office_view")
+	@RequestMapping(value = "listData", method = {RequestMethod.POST})
 	@ApiOperation(value = "获得机构列表")
 	public Result listData(@RequestBody BasicOrganization basicOrganization, HttpServletRequest request, HttpServletResponse response) {
 		if(basicOrganization == null){
@@ -66,10 +73,30 @@ public class BasicOrganizationController extends BaseController {
 		return new SuccResult(page);
 	}
 
+
+	/**
+	 * 服务机构的下拉列表
+	 * @param basicOrganization
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@ResponseBody
-	//@RequiresPermissions("sys:office:edit")
+	@RequestMapping(value = "listDataAll", method = {RequestMethod.POST})
+	public Result listDataAll(@RequestBody BasicOrganization basicOrganization, HttpServletRequest request, HttpServletResponse response) {
+		if(basicOrganization == null){
+			basicOrganization = new BasicOrganization();
+		}
+		List<BasicOrganization> page = basicOrganizationService.findListAll(basicOrganization);
+        HashMap<Object,Object> map = new HashMap<>();
+        map.put("list",page);
+		return new SuccResult(map);
+	}
+
+	@ResponseBody
+	@RequiresPermissions("office_insert")
 	@RequestMapping(value = "saveData", method = RequestMethod.POST)
-	@ApiOperation(value = "新建，更新机构")
+	@ApiOperation(value = "更新机构保存")
 	public Result saveData(@RequestBody BasicOrganization basicOrganization) {
 		List<String> errors = errors(basicOrganization);
 		if (errors.size() > 0) {
@@ -80,16 +107,85 @@ public class BasicOrganizationController extends BaseController {
 		if (basicOrganizationService.getByName(basicOrganization)) {
 			return new FailResult("机构名称不能重复");
 		}
+		//E店编码不能重复
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+			if (basicOrganizationService.getByECode(basicOrganization)) {
+				return new FailResult("E店编码不能重复");
+			}
+		}
+
+		try {
+			// 验证服务机构E店Code是否有效
+			if(StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+				OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendCheckEshopCode(basicOrganization.getJointEshopCode());
+				if (sendResponse == null) {
+					return new FailResult("对接失败-返回值为空");
+				} else if (sendResponse.getCode() != 0) {
+					return new FailResult("E店编码验证失败");
+				}
+			}
+		}catch (Exception e){
+			return new FailResult("对接失败-系统异常");
+		}
+
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
 	}
 
 	@ResponseBody
-	//@RequiresPermissions("sys:office:view")
+	@RequiresPermissions("office_update")
+	@RequestMapping(value = "upData", method = RequestMethod.POST)
+	@ApiOperation(value = "更新机构保存")
+	public Result upData(@RequestBody BasicOrganization basicOrganization) {
+		List<String> errors = errors(basicOrganization);
+		if (errors.size() > 0) {
+			return new FailResult(errors);
+		}
+
+		//检查重名
+		if (basicOrganizationService.getByName(basicOrganization)) {
+			return new FailResult("机构名称不能重复");
+		}
+		//E店编码不能重复
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+			if (basicOrganizationService.getByECode(basicOrganization)) {
+				return new FailResult("E店编码不能重复");
+			}
+		}
+
+		try {
+			// 验证服务机构E店Code是否有效
+			if(StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+				OpenSendSaveItemResponse sendResponse = OpenSendUtil.openSendCheckEshopCode(basicOrganization.getJointEshopCode());
+				if (sendResponse == null) {
+					return new FailResult("对接失败-返回值为空");
+				} else if (sendResponse.getCode() != 0) {
+					return new FailResult("E店编码验证失败");
+				}
+			}
+		}catch (Exception e){
+			return new FailResult("对接失败-系统异常");
+		}
+
+		basicOrganizationService.save(basicOrganization);
+		return new SuccResult<String>("保存成功");
+	}
+
+	@ResponseBody
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
 	@ApiOperation(value = "机构详情")
 	public Result formData(@RequestBody BasicOrganization basicOrganization) {
 		BasicOrganization basicOrganizationRs = basicOrganizationService.formData(basicOrganization);
+		
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		if (null!=basicOrganizationRs.getWorkStartTime()) {
+			String WorkStartTimeNew = format.format(basicOrganizationRs.getWorkStartTime());
+			basicOrganizationRs.setWorkStartTimeNew(WorkStartTimeNew);
+		}
+		if(null!=basicOrganizationRs.getWorkEndTime()){
+			String WorkEndTimeNew = format.format(basicOrganizationRs.getWorkEndTime());
+			basicOrganizationRs.setWorkEndTimeNew(WorkEndTimeNew);
+		}
 		return new SuccResult<>(basicOrganizationRs);
 	}
 
@@ -103,7 +199,7 @@ public class BasicOrganizationController extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/getOrgCityCodes", method = {RequestMethod.GET})
+	@RequestMapping(value = "getOrgCityCodes", method = {RequestMethod.GET})
 	@ApiOperation("获取当前机构下所有城市")
 	public Result getOrgCityCodes(HttpServletRequest request, HttpServletResponse response) {
 		User user = UserUtils.getUser();

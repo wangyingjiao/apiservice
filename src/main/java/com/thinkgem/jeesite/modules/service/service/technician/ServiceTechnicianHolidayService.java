@@ -8,8 +8,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.DateUtilsEntity;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,32 +48,55 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		serviceTechnicianHoliday.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "b"));
 		return super.findPage(page, serviceTechnicianHoliday);
 	}
-	//app获取技师列表
+	//app获取技师休假列表
 	public Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		return dao.appFindPage(page, serviceTechnicianHoliday);
+		serviceTechnicianHoliday.setPage(page);
+		if (StringUtils.isNotBlank(serviceTechnicianHoliday.getTechId())){
+			List<ServiceTechnicianHoliday> serviceTechnicianHolidays = dao.appFindPage(serviceTechnicianHoliday);
+			if (serviceTechnicianHolidays != null && serviceTechnicianHolidays.size()>0) {
+				for (ServiceTechnicianHoliday holi : serviceTechnicianHolidays) {
+					Date startTime = holi.getStartTime();
+					Date date = new Date();
+					if (startTime.after(date)) {
+						holi.setIsExpire("no");
+					}
+				}
+			}
+			page.setList(serviceTechnicianHolidays);
+		}
+		return page;
+	}
+	//获取用户工作时间
+	public List<ServiceTechnicianHoliday> getServiceTechnicianWorkTime(ServiceTechnicianHoliday serviceTechnicianHoliday){
+		List<ServiceTechnicianHoliday> serviceTechnicianWorkTime = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
+		return serviceTechnicianWorkTime;
 	}
 
 	@Transactional(readOnly = false)
-	public void save(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+	public int savePc(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		int i=0;
 		//最后休假日期List
 		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
 		//获取服务人员工作时间
 		List<ServiceTechnicianHoliday> workTimes = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
 		//请假List   00:00-23:59 周几
-		holidays = new ArrayList<ServiceTechnicianHoliday>();
-		getHolidays(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
 
 		//循环请假时间
-		for (ServiceTechnicianHoliday holiday : holidays) {
-			int weekDay = Integer.parseInt(holiday.getHoliday());//当前是周几
+		for (ServiceTechnicianHoliday holiday : holidaysList) {
+			int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
 			//获取周几的工作时间
 			List<ServiceTechnicianHoliday> weekDayWorkTimes = getWeekDayWorkTimes(weekDay, workTimes);
 			//循环工作时间
 			for (ServiceTechnicianHoliday weekDayWorkTime : weekDayWorkTimes) {
-				ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
+
 				//判断请假时间是否在工作时间内，并返回在工作时间内的数据
-				info = getLastHolidays(weekDayWorkTime, holiday);
-				if (null != info) {//请假时间在工作时间内
+				DateUtilsEntity entity = DateUtils.findDatesRepeatTime(weekDayWorkTime.getStartTime(),weekDayWorkTime.getEndTime(),
+						holiday.getStartTime(),holiday.getEndTime());
+				if (null != entity) {//请假时间在工作时间内
+					ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
+					info.setStartTime(entity.getStartTime());
+					info.setEndTime(entity.getEndTime());
 					info.setTechId(serviceTechnicianHoliday.getTechId());//技师ID
 					info.setRemark(serviceTechnicianHoliday.getRemark());//备注
 					list.add(info);
@@ -78,10 +105,70 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		//循环插入
 		for (ServiceTechnicianHoliday saveInfo : list) {
-			super.save(saveInfo);
+			i = super.savePc(saveInfo);
 		}
+		return i;
 	}
+	//app新增休假
+	@Transactional(readOnly = false)
+	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		int i = 0;
+		//服务人员在请假时间内是否有未完成的订单
+		int orderTechRelationHoliday = serviceTechnicianHolidayDao.getOrderTechRelationHoliday(serviceTechnicianHoliday);
+		if (orderTechRelationHoliday > 0) {
+			throw new ServiceException("服务人员有未完成订单,不可请假");
+		}
+		//服务人员在请假时间内是否有请假
+		List<ServiceTechnicianHoliday> hoList = serviceTechnicianHolidayDao.getHolidayHistory(serviceTechnicianHoliday);
+		int num = 0;
+		if (null != hoList && hoList.size() > 0) {
+			for (ServiceTechnicianHoliday holiday : hoList) {
+				if (!DateUtils.checkDatesRepeat(holiday.getStartTime(), holiday.getEndTime(), serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime())) {
+					num++;
+				}
+			}
+		}
+		if (num > 0) {
+			throw new ServiceException("请假时间冲突");
+		}
 
+		//最后休假日期List
+		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
+		//获取服务人员工作时间
+		List<ServiceTechnicianHoliday> workTimes = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
+		//请假List   00:00-23:59 周几
+		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		//循环请假时间
+		if (holidaysList != null && holidaysList.size() > 0){
+			for (ServiceTechnicianHoliday holiday : holidaysList) {
+				int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
+				//获取周几的工作时间
+				List<ServiceTechnicianHoliday> weekDayWorkTimes = getWeekDayWorkTimes(weekDay, workTimes);
+				//循环工作时间
+				for (ServiceTechnicianHoliday weekDayWorkTime : weekDayWorkTimes) {
+
+					//判断请假时间是否在工作时间内，并返回在工作时间内的数据
+					DateUtilsEntity entity = DateUtils.findDatesRepeatTime(weekDayWorkTime.getStartTime(), weekDayWorkTime.getEndTime(),
+							holiday.getStartTime(), holiday.getEndTime());
+					if (null != entity) {//请假时间在工作时间内
+						ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
+						info.setStartTime(entity.getStartTime());
+						info.setEndTime(entity.getEndTime());
+						info.setTechId(serviceTechnicianHoliday.getTechId());//技师ID
+						info.setRemark(serviceTechnicianHoliday.getRemark());//备注
+						list.add(info);
+					}
+				}
+			}
+		}
+		//循环插入
+		if (list!=null && list.size()>0) {
+			for (ServiceTechnicianHoliday saveInfo : list) {
+				i = super.saveAPP(saveInfo);
+			}
+		}
+		return i;
+	}
 	/**
 	 * 获取休假时间
 	 *
@@ -91,10 +178,10 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	 */
 	private ServiceTechnicianHoliday getLastHolidays(ServiceTechnicianHoliday weekDayWorkTime, ServiceTechnicianHoliday holiday) {
 		ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
-		Timestamp workStartTime = weekDayWorkTime.getStartTime();//工作开始时间
-		Timestamp workEndTime = weekDayWorkTime.getEndTime();//工作结束时间
-		Timestamp holidayStartTime = holiday.getStartTime();//休假开始时间
-		Timestamp holidayEndTime = holiday.getEndTime();//休假结束时间
+		Date workStartTime = weekDayWorkTime.getStartTime();//工作开始时间
+		Date workEndTime = weekDayWorkTime.getEndTime();//工作结束时间
+		Date holidayStartTime = holiday.getStartTime();//休假开始时间
+		Date holidayEndTime = holiday.getEndTime();//休假结束时间
 
 		//数据库中工作时间只有时分秒 拼接年月日
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
@@ -165,13 +252,13 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	 * @param workEndTime
 	 * @return
 	 */
-	private void getHolidays(Timestamp workStartTime, Timestamp workEndTime) {
+	private void getHolidays(Date workStartTime, Date workEndTime) {
 		ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat ymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String newEndStr = ymd.format(workStartTime) + " 23:59:59"; //获取开始时间日最后时间
 		Timestamp newEndTime = Timestamp.valueOf(newEndStr);
-		int weekDay = getWeek(workStartTime);
+		int weekDay = DateUtils.getWeekNum(workStartTime);
 
 		if (workEndTime.before(newEndTime)) {//最后时间大于结束时间
 			holiday.setStartTime(workStartTime);
@@ -193,9 +280,53 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 	}
 
+	/**
+	 * 把请假时间按天分割
+	 * 如：2018-01-01 09:00:00  2018-01-03 18:00:00
+	 * 返回三条数据：
+	 * 	2018-01-01 09:00:00 2018-01-01 23:59:59
+	 * 	2018-01-02 00:00:00 2018-01-02 23:59:59
+	 * 	2018-01-03 00:00:00 2018-01-03 18:00:00
+	 *
+	 * @param workStartTime
+	 * @param workEndTime
+	 * @return
+	 */
+	private static List<ServiceTechnicianHoliday>  getHolidaysList(Date workStartTime, Date workEndTime) {
+		if(workStartTime != null && workEndTime != null){//开始结束时间不为空
+			List<ServiceTechnicianHoliday> holidayList = new ArrayList<>();
+			Date newFirstTime = workStartTime;
+			Date newEndTime = DateUtils.getDateLastTime(workStartTime);
+			while (workEndTime.after(newEndTime)){//结束时间在新的结束时间之后
+				ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
+				int weekDay = DateUtils.getWeekNum(newFirstTime);//周几
+				holiday.setStartTime(newFirstTime);
+				holiday.setEndTime(newEndTime);
+				holiday.setHoliday(String.valueOf(weekDay));
+				holidayList.add(holiday);
+
+				newFirstTime = DateUtils.getDateFirstTime(DateUtils.addDays(newFirstTime,1));//新的开始时间
+				newEndTime = DateUtils.addDays(newEndTime,1);//新的结束时间
+
+			}
+			if(newFirstTime.getTime() != workEndTime.getTime()) {//最后一天的数据(2018-01-03 00:00:00 2018-01-03 18:00:00) 如果只有00:00:00 则不考虑
+				ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
+				int weekDay = DateUtils.getWeekNum(newFirstTime);//周几
+				holiday.setStartTime(newFirstTime);
+				holiday.setEndTime(workEndTime);
+				holiday.setHoliday(String.valueOf(weekDay));
+				holidayList.add(holiday);
+			}
+
+			return holidayList;
+		}else {
+			return null;
+		}
+	}
+	//app删除休假时间
 	@Transactional(readOnly = false)
-	public void delete(ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		super.delete(serviceTechnicianHoliday);
+	public int delete1(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		return dao.delete(serviceTechnicianHoliday);
 	}
 
 	public int getOrderTechRelationHoliday(ServiceTechnicianHoliday info) {
@@ -203,22 +334,15 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	}
 
 	public int getHolidayHistory(ServiceTechnicianHoliday info) {
-		return serviceTechnicianHolidayDao.getHolidayHistory(info);
-	}
-	/**
-	 * 获取传入时间是周几
-	 *
-	 * @param today
-	 * @return
-	 */
-	public int getWeek(Timestamp today) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(today);
-		int weekday = c.get(Calendar.DAY_OF_WEEK) - 1;
-		if (0 == weekday) {
-			weekday = 7;
+		List<ServiceTechnicianHoliday> list = serviceTechnicianHolidayDao.getHolidayHistory(info);
+		int num = 0;
+		if(null != list && list.size()>0){
+			for(ServiceTechnicianHoliday holiday : list){
+				if(!DateUtils.checkDatesRepeat(holiday.getStartTime(),holiday.getEndTime(),info.getStartTime(),info.getEndTime())){
+					num++;
+				}
+			}
 		}
-		return weekday;
+		return num;
 	}
-
 }

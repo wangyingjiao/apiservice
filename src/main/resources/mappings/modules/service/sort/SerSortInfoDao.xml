@@ -51,7 +51,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
-			ORDER BY a.major_sort DESC
+			ORDER BY a.major_sort,a.create_date DESC
 	</select>
 
 	<!-- 验证服务分类名称是否重复 -->
@@ -59,6 +59,14 @@
 		SELECT COUNT(*) FROM ser_sort_info
 		WHERE name = #{name}
 		AND del_flag = #{DEL_FLAG_NORMAL}
+		AND major_Sort= #{majorSort}
+	</select>
+	<select id="checkRepeatByNameMajorSort" resultType="int">
+		SELECT COUNT(*) FROM ser_sort_info
+		WHERE name = #{name}
+		AND major_Sort= #{majorSort}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+		AND id!=#{id}
 	</select>
 
 	<insert id="insert">
@@ -100,6 +108,12 @@
 		UPDATE ser_sort_info SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+	</update>
+
+	<update id="deleteSkillSort">
+		UPDATE ser_skill_sort SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE sort_id = #{id}
 	</update>
 
 	<!-- 验证此分类下是否有服务项目 -->

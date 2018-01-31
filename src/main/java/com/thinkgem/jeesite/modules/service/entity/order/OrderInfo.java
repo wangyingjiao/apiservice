@@ -3,8 +3,10 @@
  */
 package com.thinkgem.jeesite.modules.service.entity.order;
 
+import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import org.hibernate.validator.constraints.Length;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +29,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String orgId;		// 所属服务机构ID
 	private String stationId;		// 服务站id
 	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
-	//private String originPrice;		// 订单总价原价
+	private String originPrice;		// 订单总价原价
+	private String majorSortName;	//app订单类型名称
 	private String payPrice;		// 实际付款价格
 	private String orderAddressId;		// 订单地址ID
 	private String longitude;		// 经度
@@ -36,6 +39,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private Date serviceTime;		// 服务时间 上门时间
 	private Date finishTime;		// 完成时间 实际完成时间（用来计算库存）
 	private Date suggestFinishTime;		// 建议完成时间
+	private Date realServiceTime;		//操作‘上门服务’动作的时间
 	private Double serviceHour; //建议服务时长（小时）
 	private String serviceStatus;//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 	private String orderStatus;		// 订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)
@@ -56,17 +60,26 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String shopRemark;		// 门店备注
 	private String shopRemarkPic;		// 门店备注图片
 	private List<String> shopRemarkPics;		// 门店备注图片
+
+	private String shopId;
+	private String eshopCode;
+
 	private String orderRemark;		// 订单备注（技师添加的）
 	private String orderRemarkPic;   //订单备注图片
 	private List<String> orderRemarkPics;   //订单备注图片
 	private String orderContent;		// 下单服务内容
+	private String cancelReason;//取消原因
+	private String jointOrderId;//对接订单ID
 
 	private String customerName;         //客户姓名
 	private String customerPhone;         //客户电话
+	private OrderCustomInfo customerInfo;
 	private String orgName;         //机构
 	private String stationName;         //服务站
 	private Timestamp orderTimeStart;		// 下单起始时
 	private Timestamp orderTimeEnd;		// 下单结束时
+	private Timestamp serviceTimeStart;		// 服务时间 上门时间 起始时
+	private Timestamp serviceTimeEnd;		// 服务时间 上门时间 结束时
 
 	private OrderPayInfo payInfo;       // 支付信息
 	//private OrderRefund refundInfo;    //退款信息
@@ -77,6 +90,93 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<String> techIdList; //技师List
 	private String dispatchTechId;//改派前技师ID
 	private String techName;
+	private String techPhone;
+	private BusinessInfo businessInfo; //业务人员
+	private ShopInfo shopInfo;	//门店信息
+	private BigDecimal openPrice;
+	private String serviceStatusName;//app
+	private String orderStatusName;//app
+	private String payStatusName;//app
+	private String nowId;  //app 当前技师id
+	private List<AppServiceTechnicianInfo> appTechList;//app技师列表
+	private String techId; //app改派接收的技师id
+	private String isTech="no"; //app技师修改服务状态时做展示功能标识符
+	private String pageSize;	//app 订单列表
+	private String pageNo;	//app 订单列表
+
+	public String getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(String pageNo) {
+		this.pageNo = pageNo;
+	}
+
+	public String getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(String pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public Date getRealServiceTime() {
+		return realServiceTime;
+	}
+
+	public void setRealServiceTime(Date realServiceTime) {
+		this.realServiceTime = realServiceTime;
+	}
+
+	public String getIsTech() {
+		return isTech;
+	}
+
+	public void setIsTech(String isTech) {
+		this.isTech = isTech;
+	}
+
+	private List<OrderTimeList> orderTimeList;
+
+	public List<OrderTimeList> getOrderTimeList() {
+		return orderTimeList;
+	}
+
+	public void setOrderTimeList(List<OrderTimeList> orderTimeList) {
+		this.orderTimeList = orderTimeList;
+	}
+
+	public String getTechId() {
+		return techId;
+	}
+
+	public void setTechId(String techId) {
+		this.techId = techId;
+	}
+
+	public String getPayStatusName() {
+		return payStatusName;
+	}
+
+	public void setPayStatusName(String payStatusName) {
+		this.payStatusName = payStatusName;
+	}
+
+	public String getOrderStatusName() {
+		return orderStatusName;
+	}
+
+	public void setOrderStatusName(String orderStatusName) {
+		this.orderStatusName = orderStatusName;
+	}
+
+	public String getServiceStatusName() {
+		return serviceStatusName;
+	}
+
+	public void setServiceStatusName(String serviceStatusName) {
+		this.serviceStatusName = serviceStatusName;
+	}
 
 	public OrderInfo() {
 		super();
@@ -86,9 +186,25 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		super(id);
 	}
 
+	public List<AppServiceTechnicianInfo> getAppTechList() {
+		return appTechList;
+	}
+
+	public void setAppTechList(List<AppServiceTechnicianInfo> appTechList) {
+		this.appTechList = appTechList;
+	}
+
 	@Length(min=1, max=32, message="主订单ID长度必须介于 1 和 32 之间")
 	public String getMasterId() {
 		return masterId;
+	}
+
+	public String getNowId() {
+		return nowId;
+	}
+
+	public void setNowId(String nowId) {
+		this.nowId = nowId;
 	}
 
 	public void setMasterId(String masterId) {
@@ -177,6 +293,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setServiceStatus(String serviceStatus) {
 		this.serviceStatus = serviceStatus;
+	}
+
+	public String getOriginPrice() {
+		return originPrice;
+	}
+
+	public void setOriginPrice(String originPrice) {
+		this.originPrice = originPrice;
 	}
 
 	public String getPayPrice() {
@@ -378,6 +502,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.orderContent = orderContent;
 	}
 
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
+	}
+
 	public String getCustomerName() {
 		return customerName;
 	}
@@ -530,5 +662,96 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setTechName(String techName) {
 		this.techName = techName;
+	}
+
+	public String getTechPhone() {
+		return techPhone;
+	}
+
+	public void setTechPhone(String techPhone) {
+		this.techPhone = techPhone;
+	}
+
+	public BusinessInfo getBusinessInfo() {
+		return businessInfo;
+	}
+
+	public void setBusinessInfo(BusinessInfo businessInfo) {
+		this.businessInfo = businessInfo;
+	}
+
+	public ShopInfo getShopInfo() {
+		return shopInfo;
+	}
+
+	public void setShopInfo(ShopInfo shopInfo) {
+		this.shopInfo = shopInfo;
+	}
+
+	public OrderCustomInfo getCustomerInfo() {
+		return customerInfo;
+	}
+
+	public void setCustomerInfo(OrderCustomInfo customerInfo) {
+		this.customerInfo = customerInfo;
+	}
+
+	public String getMajorSortName() {
+		return majorSortName;
+	}
+
+	public void setMajorSortName(String majorSortName) {
+		this.majorSortName = majorSortName;
+	}
+
+	public BigDecimal getOpenPrice() {
+		return openPrice;
+	}
+
+	public void setOpenPrice(BigDecimal openPrice) {
+		this.openPrice = openPrice;
+	}
+
+	public String getJointOrderId() {
+		return jointOrderId;
+	}
+
+	public void setJointOrderId(String jointOrderId) {
+		this.jointOrderId = jointOrderId;
+	}
+
+	public String getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(String shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getEshopCode() {
+		return eshopCode;
+	}
+
+	public void setEshopCode(String eshopCode) {
+		this.eshopCode = eshopCode;
+	}
+
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Timestamp getServiceTimeStart() {
+		return serviceTimeStart;
+	}
+
+	public void setServiceTimeStart(Timestamp serviceTimeStart) {
+		this.serviceTimeStart = serviceTimeStart;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Timestamp getServiceTimeEnd() {
+		return serviceTimeEnd;
+	}
+
+	public void setServiceTimeEnd(Timestamp serviceTimeEnd) {
+		this.serviceTimeEnd = serviceTimeEnd;
 	}
 }

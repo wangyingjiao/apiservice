@@ -40,6 +40,8 @@
 		a.order_remark AS "orderRemark",
 		a.order_remark_pic AS "orderRemarkPic",
 		a.order_content AS "orderContent",
+		a.cancel_reason AS "cancelReason",
+		a.joint_order_id AS "jointOrderId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -57,6 +59,14 @@
 		<include refid="orderInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
+	<!--app 根据订单id获取订单-->
+	<select id="appGet" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		WHERE a.id = #{id}
+	</select>
+
 
 	<select id="findList" resultType="OrderInfo">
 		SELECT
@@ -68,11 +78,13 @@
 			a.major_sort AS majorSort,
 			sta.name AS stationName,
 			a.order_content AS orderContent,
+			a.cancel_reason AS cancelReason,
 			a.pay_price AS payPrice,
 			a.service_time AS serviceTime,
 			a.order_status AS orderStatus,
 			a.service_status AS "serviceStatus",
 			a.pay_status AS payStatus,
+			a.joint_order_id AS "jointOrderId",
 			a.order_time AS orderTime
 		FROM order_info a
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
@@ -107,8 +119,12 @@
 			<if test="orderTimeEnd != null and orderTimeEnd != ''">
 				AND a.order_time &lt;= #{orderTimeEnd}
 			</if>
-			<if test="serviceTime != null and serviceTime != ''">
-				AND a.service_time = #{serviceTime}
+
+			<if test="serviceTimeStart != null and serviceTimeStart != ''">
+				AND a.service_time &gt;= #{serviceTimeStart}
+			</if>
+			<if test="serviceTimeEnd != null and serviceTimeEnd != ''">
+				AND a.service_time &lt;= #{serviceTimeEnd}
 			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
@@ -128,7 +144,6 @@
 		a.id AS id,
 		a.order_number AS orderNumber,
 		a.org_id AS orgId,
-		org.name AS orgName,
 		a.station_id AS stationId,
 		a.major_sort AS majorSort,
 		sta.name AS stationName,
@@ -140,11 +155,12 @@
 		a.pay_status AS payStatus,
 		a.order_time AS orderTime
 		FROM order_info a
-		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station sta ON a.org_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_dispatch od ON a.id = od.order_id AND od.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN tech_info sta ON od.tech_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			 AND a.business_phone = #{businessPhone}
+			 AND sta.id = #{techId}
+			 AND od.status='yes'
 			<if test="orderStatus != null and orderStatus !=''">
 				AND a.order_status= #{orderStatus}
 			</if>
@@ -154,12 +170,11 @@
 			<if test="serviceStatus != null and serviceStatus != ''">
 				AND a.service_status = #{serviceStatus}
 			</if>
-
-			<if test="serviceTime != null and serviceTime != ''">
-				AND a.service_time &gt;= #{serviceTime}
+			<if test="orderTimeStart != null and orderTimeStart != ''">
+				AND a.service_time &gt;= #{orderTimeStart}
 			</if>
-			<if test="finishTime != null and finishTime != ''">
-				AND a.finish_time &lt;= #{finishTime}
+			<if test="orderTimeEnd != null and orderTimeEnd != ''">
+				AND a.service_time &lt;= #{orderTimeEnd}
 			</if>
 		</where>
 		<choose>
@@ -167,7 +182,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date DESC
+				ORDER BY a.service_time DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -205,7 +220,7 @@
 			suggest_finish_time,
 			service_hour,
 			service_status,
-
+origin_price,
 			pay_price,
 			order_address_id,
 			order_time,
@@ -221,14 +236,18 @@
 			business_phone,
 			business_remark,
 			business_remark_pic,
+			shop_id,
 			shop_name,
 			shop_phone,
 			shop_addr,
 			shop_remark,
 			shop_remark_pic,
+			eshop_code,
 			order_remark,
 			order_remark_pic,
 			order_content,
+			cancel_reason,
+			joint_order_id,
 			create_by,
 			create_date,
 			update_by,
@@ -248,7 +267,7 @@
 			#{suggestFinishTime},
 			#{serviceHour},
 			#{serviceStatus},
-
+#{originPrice},
 			#{payPrice},
 			#{orderAddressId},
 			#{orderTime},
@@ -264,14 +283,18 @@
 			#{businessPhone},
 			#{businessRemark},
 			#{businessRemarkPic},
+			#{shopId},
 			#{shopName},
 			#{shopPhone},
 			#{shopAddr},
 			#{shopRemark},
 			#{shopRemarkPic},
+			#{eshopCode},
 			#{orderRemark},
 			#{orderRemarkPic},
 			#{orderContent},
+			#{cancelReason},
+			#{jointOrderId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -294,7 +317,7 @@
 			<if test="suggestFinishTime !=null and suggestFinishTime != ''">suggest_finish_time = #{suggestFinishTime},</if>
 			<if test="serviceHour !=null and serviceHour != ''">service_hour = #{serviceHour},</if>
 			<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
-
+		<if test="originPrice !=null and originPrice != ''">origin_price = #{originPrice},</if>
 			<if test="payPrice !=null and payPrice != ''">pay_price = #{payPrice},</if>
 			<if test="orderAddressId !=null and orderAddressId != ''">order_address_id = #{orderAddressId},</if>
 			<if test="orderTime !=null and orderTime != ''">order_time = #{orderTime},</if>
@@ -318,19 +341,34 @@
 			<if test="orderRemark !=null and orderRemark != ''">order_remark = #{orderRemark},</if>
 			<if test="orderRemarkPic !=null and orderRemarkPic != ''">order_remark_pic = #{orderRemarkPic},</if>
 			<if test="orderContent !=null and orderContent != ''">order_content = #{orderContent},</if>
+			<if test="jointOrderId !=null and jointOrderId != ''">joint_order_id = #{jointOrderId},</if>
+			<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
-	<!--app编辑-->
+	<!--app编辑 限制非完成状态才可以修改数据库-->
 	<update id="appUpdate">
 		UPDATE order_info SET
+		<if test="orderRemark !=null and orderRemark != ''">
 		order_remark = #{orderRemark},
+		</if>
+		<if test="orderRemarkPic !=null and orderRemarkPic != ''">
 		order_remark_pic = #{orderRemarkPic},
-		order_status= #{orderStatus},
+		</if>
+		<if test="serviceStatus !=null and serviceStatus != ''">
+			service_status= #{serviceStatus},
+		</if>
+		<if test="finishTime !=null and finishTime != ''">
+			finish_time= #{finishTime},
+		</if>
+		<if test="realServiceTime !=null and realServiceTime != ''">
+			real_service_time= #{realServiceTime},
+		</if>
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
+		AND service_status != 'finish'
 	</update>
 	<update id="delete">
 		UPDATE order_info SET 
@@ -348,6 +386,7 @@
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
 		</where>
+		ORDER BY create_date DESC
 	</select>
 
 	<select id="formData" resultType="OrderInfo">
@@ -361,11 +400,14 @@
 			a.service_status AS "serviceStatus",
 			a.order_source AS "orderSource",
 			a.order_time AS "orderTime",
-			a.org_id AS orgId,
-			org.name AS orgName,
-			a.station_id AS stationId,
-			sta.name AS stationName,
+			a.org_id AS "orgId",
+			org.name AS "orgName",
+			a.station_id AS "stationId",
+			sta.name AS "stationName",
 
+			a.joint_order_id AS "jointOrderId",
+
+			a.pay_price AS payPrice,
 			a.pay_status AS "payStatus",
 			pay.pay_number AS "payInfo.payNumber",
 			pay.pay_status AS "payInfo.payStatus",
@@ -383,6 +425,7 @@
 			a.order_remark AS "orderRemark",
 			a.order_remark_pic AS "orderRemarkPic",
 			a.order_content AS "orderContent",
+			a.cancel_reason AS "cancelReason",
 			a.business_name AS "businessName",
 			a.business_phone AS "businessPhone",
 			a.business_remark AS "businessRemark",
@@ -397,7 +440,7 @@
 		LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
-		WHERE a.id = #{id}
+		WHERE a.id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<select id="getOrderDispatchList" resultType="OrderDispatch">
@@ -415,6 +458,24 @@
 		AND a.status = 'yes'
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
+	<!--app改派用  app改派根据订单id技师id获取改派表-->
+	<select id="appGetOrderDispatch" resultType="OrderDispatch">
+		SELECT
+		a.id AS id,
+		a.tech_id AS techId,
+		b.name  AS techName,
+		b.head_pic  AS headPic,
+		b.sex  AS techSex,
+		b.phone  AS techPhone
+		FROM
+		order_dispatch a
+		LEFT JOIN tech_info b ON a.tech_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.order_id = #{id}
+		AND b.id = #{dispatchTechId}
+		AND a.status = 'yes'
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
 	<select id="getOrderGoodsList" resultType="OrderGoods">
 		SELECT
 			a.service_time AS "serviceTime",
@@ -424,11 +485,12 @@
 			good.goods_id AS "goodsId",
 			good.goods_name AS "goodsName",
 			good.goods_num AS "goodsNum",
+			good.goods_unit AS "goodsUnit",
 			good.pay_price AS "payPrice",
-
 			good2.convert_hours AS "convertHours",
 			good2.start_per_num AS "startPerNum",
-			good2.capping_per_num AS "cappingPerNum"
+			good2.capping_per_num AS "cappingPerNum",
+			good2.joint_goods_code AS "jointGoodsCode"
 
 		FROM
 		order_info a
@@ -437,6 +499,17 @@
 		WHERE
 		a.id = #{id}
 	</select>
+
+	<select id="appGetPics" resultType="String">
+		SELECT
+		b.picture AS "pictures"
+		FROM order_goods a
+		LEFT JOIN ser_item_info b ON a.item_id=b.id AND b.del_flag = '0'
+		WHERE
+		a.order_id = #{orderId}
+		AND a.del_flag = '0'
+	</select>
+
 	<select id="getGoodsList" resultType="OrderGoods">
 		SELECT
 		a.item_id AS "itemId",
@@ -465,13 +538,17 @@
 	</update>
 
 	<!-- 通过服务分类取得技能ID -->
-	<select id="getSkillIdBySortId" resultType="String">
-		select skill_id from ser_skill_sort WHERE sort_id = #{sortId};
+	<select id="getSkillIdBySortId" resultType="SerSkillSort">
+		select skill_id
+		from ser_skill_sort
+		WHERE sort_id = #{sortId}
+		and org_id = #{orgId}
+		and del_flag='0'
 	</select>
 	<!-- 取得技师List -->
 	<select id="getTechListBySkillId" resultType="OrderDispatch">
 		SELECT
-		t.id as techId, t.name AS techName,t.sex AS techSex,
+		t.id as techId, t.name AS techName,t.sex AS techSex,t.phone AS techPhone,
 		t.head_pic AS headPic,t.job_nature AS jobNature
 		FROM ser_skill_tech a
 		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
@@ -506,7 +583,7 @@
 			AND t.station_id= #{stationId}
 			AND a.week =#{week}
 			AND a.start_time &lt;= #{startTime}
-			AND a.end_time &gt;= #{endTime}
+            AND a.end_time &gt;= #{startTime}
 		</where>
 	</select>
 	<select id="getTechByHoliday" resultType="String">
@@ -517,8 +594,11 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND t.station_id= #{stationId}
-			AND ( (a.start_time BETWEEN #{startTime} AND #{endTime}) OR
+			AND (
+            (a.start_time BETWEEN #{startTime} AND #{endTime}) OR
+
 			(a.end_time BETWEEN #{startTime} AND #{endTime}) OR
+
 			(a.start_time &lt;= #{startTime} AND a.end_time &gt;= #{endTime}))
 		</where>
 	</select>
@@ -533,7 +613,7 @@
 		a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
 		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
-		AND o.finish_time &gt;= #{serviceTime}
+		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
 		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
 		AND a.tech_id  in
 		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
@@ -564,6 +644,7 @@
 	<select id="findTechOrderList" resultType="OrderDispatch">
 		SELECT
 		a.tech_id AS "techId",
+		o.id AS "orderId",
 		o.service_time AS "startTime",
 		o.finish_time AS "endTime"
 		from order_dispatch a
@@ -577,13 +658,20 @@
 		AND a.tech_id  = #{techId}
 	</select>
 	<select id="getTechListOrderByNum" resultType="OrderDispatch">
+
 		SELECT
-			a.tech_id ,COUNT(1) AS num
+		t1.id AS techId,
+		t1.phone AS techPhone
+		from
+		tech_info t1
+		LEFT JOIN (
+		SELECT
+		a.tech_id ,COUNT(1) AS num
 		FROM
 		order_dispatch a
 		LEFT JOIN order_info o ON a.order_id = o.id AND o.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE
-		a.del_flag = #{DEL_FLAG_NORMAL}
+		a.del_flag =  #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
 		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
 		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
@@ -592,6 +680,118 @@
 			#{techId}
 		</foreach>
 		GROUP BY a.tech_id
-		ORDER BY num
+		) t2 on t1.id = t2.tech_id
+		WHERE
+		t1.id in
+		<foreach item="techId" index="index" collection="techIds" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+		ORDER BY t2.num
+
 	</select>
+
+
+	<!-- 对接SQL begin-->
+	<update id="openUpdateOrder">
+		UPDATE order_info SET
+		<if test="businessName !=null and businessName != ''">business_name = #{businessName},</if>
+		<if test="businessPhone !=null and businessPhone != ''">business_phone = #{businessPhone},</if>
+		<if test="businessRemark !=null and businessRemark != ''">business_remark = #{businessRemark},</if>
+		<if test="businessRemarkPic !=null and businessRemarkPic != ''">business_remark_pic = #{businessRemarkPic},</if>
+
+		<if test="customerRemark !=null and customerRemark != ''">customer_remark = #{customerRemark},</if>
+		<if test="customerRemarkPic !=null and customerRemarkPic != ''">customer_remark_pic = #{customerRemarkPic},</if>
+
+		<if test="shopName !=null and shopName != ''">shop_name = #{shopName},</if>
+		<if test="shopPhone !=null and shopPhone != ''">shop_phone = #{shopPhone},</if>
+		<if test="shopRemark !=null and shopRemark != ''">shop_remark = #{shopRemark},</if>
+		<if test="shopRemarkPic !=null and shopRemarkPic != ''">shop_remark_pic = #{shopRemarkPic},</if>
+
+		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
+		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
+		<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
+
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+
+		WHERE id = #{id}
+	</update>
+	<update id="openUpdateOrderBySn">
+		UPDATE order_info SET
+		<if test="businessName !=null and businessName != ''">business_name = #{businessName},</if>
+		<if test="businessPhone !=null and businessPhone != ''">business_phone = #{businessPhone},</if>
+		<if test="businessRemark !=null and businessRemark != ''">business_remark = #{businessRemark},</if>
+		<if test="businessRemarkPic !=null and businessRemarkPic != ''">business_remark_pic = #{businessRemarkPic},</if>
+
+		<if test="customerRemark !=null and customerRemark != ''">customer_remark = #{customerRemark},</if>
+		<if test="customerRemarkPic !=null and customerRemarkPic != ''">customer_remark_pic = #{customerRemarkPic},</if>
+
+		<if test="shopName !=null and shopName != ''">shop_name = #{shopName},</if>
+		<if test="shopPhone !=null and shopPhone != ''">shop_phone = #{shopPhone},</if>
+		<if test="shopRemark !=null and shopRemark != ''">shop_remark = #{shopRemark},</if>
+		<if test="shopRemarkPic !=null and shopRemarkPic != ''">shop_remark_pic = #{shopRemarkPic},</if>
+
+		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
+		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
+		<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
+
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+
+		WHERE order_number = #{orderNumber}
+	</update>
+
+	<select id="getBySn" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<include refid="orderInfoJoins"/>
+		WHERE a.order_number = #{orderNumber}
+	</select>
+	<select id="checkGasqSnOrderSn" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		WHERE a.order_number = #{orderNumber}
+		AND a.joint_order_id = #{jointOrderId}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<!--app获取订单对应商品-->
+	<select id="getGoods" resultType="String">
+		SELECT og.goods_id AS goodsId
+		from order_info a
+		LEFT JOIN order_goods og on a.id=og.order_id AND og.del_flag = '0'
+		where a.id= #{id}
+		AND a.del_flag = '0'
+	</select>
+
+	<!--app根据商品id获取订单对应商品的对接code-->
+	<select id="getGoodsCode" resultType="String">
+		SELECT a.joint_goods_code
+		FROM ser_item_info_goods a
+		WHERE a.id= #{goodsId}
+		AND a.del_flag = '0'
+	</select>
+
+	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
+		select
+		a.id AS id, a.name AS name ,
+		a.joint_eshop_code AS jointEshopCode
+		from basic_organization a
+		WHERE a.id= #{orgId}
+	</select>
+
+	<select id="getOrderDispatchMsgTechList" resultType="OrderDispatch">
+		SELECT
+		a.id AS techId,
+		a.name  AS techName,
+		a.phone  AS techPhone
+		FROM
+		tech_info a
+		WHERE
+		a.id in
+		<foreach item="techId" index="index" collection="techIdList" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+	</select>
+	<!-- 对接SQL end-->
 </mapper>

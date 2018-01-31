@@ -2,7 +2,7 @@ package com.thinkgem.jeesite.common.result;
 
 
 public class Result<T extends Object> {
-    private int code;
+    private int code;//0:系统异常，内容重复，用户名或者密码错误;1:操作成功;2:session过期;
     private T data;
     private String message;
 

@@ -10,9 +10,18 @@ import java.util.Map;
 public class Token {
     private String token;
     private String phone;
+    private String techId;
     private Map map;
 
     public Token() {
+    }
+
+    public String getTechId() {
+        return techId;
+    }
+
+    public void setTechId(String techId) {
+        this.techId = techId;
     }
 
     public Token(String token) {

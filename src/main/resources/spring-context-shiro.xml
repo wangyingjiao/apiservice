@@ -14,6 +14,8 @@
 	<bean name="shiroFilterChainDefinitions" class="java.lang.String">
 		<constructor-arg>
 			<value>
+				${openPath_gasq}/** = anon
+				${appPath}/** = anon
 				/static/** = anon
 				/userfiles/** = anon
 				${adminPath}/login = authc

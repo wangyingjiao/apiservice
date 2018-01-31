@@ -10,14 +10,19 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderTimeList;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +38,8 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +54,8 @@ public class OrderInfoController extends BaseController {
 
 	@Autowired
 	private OrderInfoService orderInfoService;
+	@Autowired
+	private MessageInfoService messageInfoService;
 	
 	@ModelAttribute
 	public OrderInfo get(@RequestParam(required=false) String id) {
@@ -63,7 +72,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取订单列表")
-	//@RequiresPermissions("order")
+	@RequiresPermissions("order_view")
 	public Result listData(@RequestBody(required = false) OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(null == orderInfo){
 			orderInfo = new OrderInfo();
@@ -80,63 +89,288 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
 	@ApiOperation("查看订单")
+	@RequiresPermissions("order_info")
 	public Result formData(@RequestBody OrderInfo orderInfo) {
 		OrderInfo entity = null;
-		if (StringUtils.isNotBlank(orderInfo.getId())) {
-			entity = orderInfoService.formData(orderInfo);
-		}
-		if (entity == null) {
-			return new FailResult("未找到此id对应的订单");
-		} else {
-			return new SuccResult(entity);
+		try {
+			if (StringUtils.isNotBlank(orderInfo.getId())) {
+				entity = orderInfoService.formData(orderInfo);
+			}
+			if (entity == null) {
+				return new FailResult("未找到此id对应的订单");
+			} else {
+				return new SuccResult(entity);
+			}
+		}catch (ServiceException ex){
+			return new FailResult("查看失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("未找到订单详情!");
 		}
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "timeData", method = {RequestMethod.POST})
+	@RequestMapping(value = "timeDataList", method = {RequestMethod.POST})
 	@ApiOperation("更换时间")
-	public Result timeData(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.timeData(orderInfo);
-		return new SuccResult(techList);
+	@RequiresPermissions("order_time")
+	public Result timeDataList(@RequestBody OrderInfo orderInfo) {
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+		}
+
+		try {
+			List<OrderTimeList>  timeList = orderInfoService.timeDataList(orderInfo);
+			return new SuccResult(timeList);
+		}catch (ServiceException ex){
+			return new FailResult("获取时间列表失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("获取时间列表失败!");
+		}
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "saveTime", method = {RequestMethod.POST})
 	@ApiOperation("更换时间保存")
+	@RequiresPermissions("order_time")
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.saveTime(orderInfo);
-		return new SuccResult(techList);
+		try {
+			HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
+
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+
+					String orderSn = orderInfoService.getOrderSnById(map.get("orderId").toString());
+					sendOrder.setOrderNumber(orderSn);//订单编号
+
+					//sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setServiceTime((Date) map.get("serviceDate"));//上门服务时间
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						logger.error("更换时间保存-对接失败-返回值为空");
+					} else if (sendResponse.getCode() != 0) {
+						logger.error("更换时间保存-对接失败-"+sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				logger.error("更换时间保存-对接失败-系统异常");
+			}
+
+			try{
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				// 改派
+				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+				// 时间变化
+				List<OrderDispatch> orderServiceTimeMsgList = (List<OrderDispatch>)map.get("orderServiceTimeMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+
+				OrderInfo orderInfo1 = new OrderInfo();
+				OrderInfo orderInfo2 = new OrderInfo();
+				OrderInfo orderInfo3 = new OrderInfo();
+
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo2.setOrderNumber(orderNumber);
+				orderInfo3.setOrderNumber(orderNumber);
+
+				orderInfo1.setId(orderId);
+				orderInfo2.setId(orderId);
+				orderInfo3.setId(orderId);
+
+				orderInfo1.setTechList(orderCreateMsgList);
+				orderInfo2.setTechList(orderDispatchMsgList);
+				orderInfo3.setTechList(orderServiceTimeMsgList);
+				//时间
+				orderInfo3.setServiceTime((Date)map.get("serviceDate"));
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+				orderInfo2.setCreateBy(user);
+				orderInfo3.setCreateBy(user);
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+				messageInfoService.insert(orderInfo3,"orderServiceTime");//服务时间变更
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
+			}
+
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult("保存失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败!");
+		}
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "addTech", method = {RequestMethod.POST})
 	@ApiOperation("增加技师")
+	@RequiresPermissions("order_addTech")
 	public Result addTech(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
-		return new SuccResult(techList);
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+		}
+
+		try{
+			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+			return new SuccResult(techList);
+		}catch (ServiceException ex){
+			return new FailResult("获取技师列表失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("当前没有可服务的技师!");
+		}
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "addTechSave", method = {RequestMethod.POST})
 	@ApiOperation("增加技师保存")
+	@RequiresPermissions("order_addTech")
 	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.addTechSave(orderInfo);
-		return new SuccResult(techList);
+		try{
+			HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
+
+			try {//对接
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+
+					String orderSn = orderInfoService.getOrderSnById(map.get("orderId").toString());
+					sendOrder.setOrderNumber(orderSn);//订单编号
+
+					//sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						logger.error("增加技师保存-对接失败-返回值为空");
+					} else if (sendResponse.getCode() != 0) {
+						logger.error("增加技师保存-对接失败-"+sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				logger.error("增加技师保存-对接失败-系统异常");
+			}
+
+			try{
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+				OrderInfo orderInfo1 = new OrderInfo();
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo1.setId(orderId);
+				orderInfo1.setTechList(orderCreateMsgList);
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
+			}
+
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult("保存失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败!");
+		}
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "dispatchTech", method = {RequestMethod.POST})
 	@ApiOperation("技师改派")
+	@RequiresPermissions("order_dispatch")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
-		return new SuccResult(techList);
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+		}
+
+		try{
+			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+			return new SuccResult(techList);
+		}catch (ServiceException ex){
+			return new FailResult("获取技师列表失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("当前没有可服务的技师!");
+		}
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "dispatchTechSave", method = {RequestMethod.POST})
 	@ApiOperation("技师改派保存")
+	@RequiresPermissions("order_dispatch")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> techList = orderInfoService.dispatchTechSave(orderInfo);
-		return new SuccResult(techList);
+		try{
+			HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+
+					String orderSn = orderInfoService.getOrderSnById(map.get("orderId").toString());
+					sendOrder.setOrderNumber(orderSn);//订单编号
+
+					//sendOrder.setId(map.get("orderId").toString());//订单ID
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					if (sendResponse == null) {
+						logger.error("技师改派保存-对接失败-返回值为空");
+					} else if (sendResponse.getCode() != 0) {
+						logger.error("技师改派保存-对接失败-"+sendResponse.getMessage());
+					}
+				}
+			}catch (Exception e){
+				logger.error("技师改派保存-对接失败-系统异常");
+			}
+
+			try{
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				// 改派
+				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+
+				OrderInfo orderInfo1 = new OrderInfo();
+				OrderInfo orderInfo2 = new OrderInfo();
+
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo2.setOrderNumber(orderNumber);
+
+				orderInfo1.setId(orderId);
+				orderInfo2.setId(orderId);
+
+				orderInfo1.setTechList(orderCreateMsgList);
+				orderInfo2.setTechList(orderDispatchMsgList);
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+				orderInfo2.setCreateBy(user);
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
+			}
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult("保存失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败-系统异常");
+		}
 	}
+
 }

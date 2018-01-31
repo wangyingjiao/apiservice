@@ -76,12 +76,27 @@ public class ServiceTechnicianInfoController extends BaseController {
         //开始时间
         Date workStartTime = basicOrganization.getWorkStartTime();
         String start = sdf.format(workStartTime);
+        
         //结束时间
         Date workEndTime = basicOrganization.getWorkEndTime();
         String end = sdf.format(workEndTime);
+        
         Map<String,String> map=new HashMap<String,String>();
         map.put("start", start);
         map.put("end", end);
+        
+        //add by wyr 前台新加返回的两字段并处理时间
+        Calendar cal = Calendar.getInstance();  
+        cal.setTime(workStartTime);
+        cal.add(Calendar.MINUTE, -30);
+        String startNew = sdf.format(cal.getTime());
+        cal.setTime(workEndTime);
+        cal.add(Calendar.MINUTE, 30);
+        String endNew = sdf.format(cal.getTime());
+        
+        
+        map.put("startNew", startNew);
+        map.put("endNew", endNew);
         return new SuccResult(map);
     }
 
@@ -98,7 +113,6 @@ public class ServiceTechnicianInfoController extends BaseController {
         User user = UserUtils.getUser();
         String orgId = user.getOrganization().getId();//机构ID
 //        List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
-
         List<BasicServiceStation> stations = serviceTechnicianInfoService.getStationsByOrgId(orgId);
         List<SerSkillInfo> skillInfos = serviceTechnicianInfoService.getSkillInfosByOrgId(orgId);
 
@@ -110,7 +124,8 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult(objectObjectHashMap);
     }
 
-    @ResponseBody
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
     @RequestMapping(value = "formData", method = {RequestMethod.POST})
     @ApiOperation("根据ID查找技师")
     public Result formData(@RequestBody ServiceTechnicianInfo serviceTechnicianInfo) {
@@ -157,11 +172,12 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-
-        ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
-        if (null == techInfo) {
-            User user = UserUtils.getUser();
-            info.setOrgId(user.getOrganization().getId());
+        User user = UserUtils.getUser();
+        info.setOrgId(user.getOrganization().getId());
+        //ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
+        List<ServiceTechnicianInfo> techInfoList=serviceTechnicianInfoService.findTechList(info);
+        
+        if (null == techInfoList||techInfoList.size()==0) {
             String phoneSub = info.getPhone().substring(7,11);
             String appPwd = systemService.entryptPassword(phoneSub);//APP端登录密码默认为手机号的后4位
             info.setAppLoginPassword(appPwd);
@@ -169,7 +185,7 @@ public class ServiceTechnicianInfoController extends BaseController {
 
             return new SuccResult("保存成功");
         } else {
-            return new FailResult("技师名称重复");
+            return new FailResult("技师手机号不能重复！");
         }
     }
 
@@ -188,6 +204,13 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }*/
+    	//add by WYR 校验手机号重复
+        User user = UserUtils.getUser();
+        info.setOrgId(user.getOrganization().getId());
+        int i= serviceTechnicianInfoService.checkPhone(info);
+        if (0!=i) {
+            return new FailResult("技师手机号不能重复！");
+        }
         serviceTechnicianInfoService.saveInfo(info);
         return new SuccResult("保存成功");
     }
@@ -245,18 +268,15 @@ public class ServiceTechnicianInfoController extends BaseController {
      */
     @ResponseBody
     @ApiOperation("APP保存")
+    @RequiresPermissions("techni_app")
     @RequestMapping(value = "saveAppPassWordData", method = RequestMethod.POST)
     public Result saveAppPassWordData(@RequestBody ServiceTechnicianInfo info) {
-       /* List<String> errList = errors(info);
-        if (errList != null && errList.size() > 0) {
-            return new FailResult(errList);
-        }*/
         if(StringUtils.isBlank(info.getAppLoginPassword())){
             return new FailResult("保存失败");
         }
-        String appPwd = systemService.entryptPassword(info.getAppLoginPassword());//APP端登录密码默认为手机号的后4位
+        String appPwd = systemService.entryptPassword(info.getAppLoginPassword());//APP端登录密码加密
         info.setAppLoginPassword(appPwd);
-        serviceTechnicianInfoService.saveApp(info);
+        serviceTechnicianInfoService.savePass(info);
 
         return new SuccResult("保存成功");
     }
@@ -273,7 +293,8 @@ public class ServiceTechnicianInfoController extends BaseController {
     @RequestMapping(value = "saveFamilyMembers", method = RequestMethod.POST)
     public Result saveFamilyMembers(@RequestBody ServiceTechnicianInfo info) {
         serviceTechnicianInfoService.saveFamilyMembers(info);
-        return new SuccResult("保存家庭成员成功");
+        List<ServiceTechnicianFamilyMembers> list = serviceTechnicianInfoService.findFamilyMembersListByTechId(info);
+        return new SuccResult(list);
     }
 
 

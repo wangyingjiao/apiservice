@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.item;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
@@ -32,5 +33,11 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
 
     SerSortInfo getSerSortInfo(String sortId);
 
-    SerItemInfo getByName(SerItemInfo serItemInfo);
+    List<SerItemInfo> getByName(SerItemInfo serItemInfo);
+
+    BasicOrganization getBasicOrganizationByOrgId(SerItemInfo serItemInfo);
+
+    void updateJointStatus(SerItemInfo serItemInfo);
+
+    SerItemInfo getItemInfoByCommodityId(SerItemCommodity serItemCommodity);
 }

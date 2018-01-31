@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.log.ServiceLogDao">
+
+	
+	<select id="findList" resultType="ServiceLog">
+		SELECT
+			a.id AS "id",
+			a.type AS "type",
+			a.title AS "title",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.remote_addr AS "remoteAddr",
+			a.user_agent AS "userAgent",
+			a.request_uri AS "requestUri",
+			a.method AS method,
+			a.params AS params,
+			a.exception AS exceptions
+		FROM sys_log a
+		<where>
+			1=1
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE concat('%',#{title},'%')
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.create_date &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.create_date &lt;= #{endTime}
+			</if>
+			<if test="requestUri != null and requestUri != ''">
+				AND a.request_uri LIKE concat('%',#{requestUri},'%')
+			</if>
+			<if test="params != null and params != ''">
+				AND a.params LIKE concat('%',#{params},'%')
+			</if>
+		</where>
+		ORDER BY a.create_date DESC
+	</select>
+</mapper>

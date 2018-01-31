@@ -143,11 +143,11 @@
         <include refid="userJoins"/>
 
         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-        AND sr.data_scope  &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)
+        <!-- AND sr.data_scope  &lt;= CAST(#{currentUser.role.dataScope} AS SIGNED)-->
 
-        <if test="organization != null and organization.id != null and organization.id != ''">
+       <!--  <if test="organization != null and organization.id != null and organization.id != ''">
             AND (o.id = #{organization.id}
-        </if>
+        </if> -->
         <!-- 如果不是超级管理员，则不显示超级管理员用户 -->
         <if test="!currentUser.admin">
             AND a.id != '1'
@@ -155,11 +155,17 @@
         <if test="mobile != null and mobile != ''">
             AND a.mobile LIKE concat("%",#{mobile},"%")
         </if>
+        <if test="name != null and name != ''">
+            AND a.name LIKE concat("%",#{name},"%")
+        </if>
         <if test="roleName != null and roleName != ''">
             AND sr.name LIKE concat("%",#{roleName},"%")
         </if>
         <if test="stationId != null and stationId != ''">
             AND ss.id = #{stationId}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND a.office_id = #{orgId}
         </if>
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}

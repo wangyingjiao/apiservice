@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.service.dao.station.ServiceStationDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.sys.dao.*;
 import com.thinkgem.jeesite.modules.sys.entity.*;
@@ -67,7 +69,22 @@ public class UserUtils {
         }
         return user;
     }
-
+    /**
+     * 根据ID获取用户
+     *
+     * @param id
+     * @return 取不到返回null
+     */
+    public static User getUser(String id) {
+           User user = userDao.get(id);
+            if (user == null) {
+                return null;
+            }
+            user.setRoleList(roleDao.findList(new Role(user)));
+            CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + user.getId(), user);
+            CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName(), user);
+        return user;
+    }
     /**
      * 根据登录名获取用户
      *
@@ -177,12 +194,20 @@ public class UserUtils {
             if (user.isAdmin()) {
                 menuList = menuDao.findAllList(new Menu());
             } else {
-                Menu m = new Menu();
-                m.setUserId(user.getId());
-                menuList = menuDao.findByUserId(m);
+            	 BasicOrganization org = user.getOrganization();
+                 if (null != org && org.getId().trim().equals("0")) { //add by wyr全平台用户显示左侧菜单栏
+            		Menu m = new Menu();
+                	m.setUserId(user.getId());
+                	//menuList = menuDao.findByUserId(m);
+                	menuList=menuDao.findByUserIdFullPlatform(m);
+                }else {
+                	Menu m = new Menu();
+                	m.setUserId(user.getId());
+                	menuList = menuDao.findByUserId(m);
+				} 
             }
             putCache(CACHE_MENU_LIST, menuList);
-        }
+       }
         return menuList;
     }
 
@@ -356,5 +381,37 @@ public class UserUtils {
         }
         return list;
     }
-//
+    public static List<Menu> genTreeMenuOrder(String id, List<Menu> menus) {
+        ArrayList<Menu> list = new ArrayList<>();
+        /*for (Menu menu : menus) {
+            //如果对象的父id等于传进来的id，则进行递归，进入下一轮；
+            if (menu.getParentId().equals(id)) {
+                List<Menu> menus1 = genTreeMenu(menu.getId(), menus);
+                menu.setSubMenus(menus1);
+                list.add(menu);
+            }
+        }*/
+        for (int i = 0; i < menus.size(); i++) {
+        	if (menus.get(i).getParentId().equals(id)) {
+                List<Menu> menus1 = genTreeMenuOrder(menus.get(i).getId(), menus);
+                menus.get(i).setSubMenus(menus1);
+                list.add(menus.get(i));
+                if (menus.get(i).getPermission().contains("view")) {
+                	list.add(menus.size(), menus.get(i));
+				}
+            }
+			
+		}
+        return list;
+    }
+    /**
+     * 获取当前用户缓存
+     *
+     * @param id
+     * @return 取不到返回null
+     */
+    public static User getUserCache(String id) {
+        User user = (User) CacheUtils.get(USER_CACHE, USER_CACHE_ID_ + id);
+        return user;
+    }
 }

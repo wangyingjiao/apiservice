@@ -34,6 +34,8 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String headPic;		// 头像
     private String idCard;		// 身份证号
     private String idCardPic;		// 身份证照片(正反)
+    private String idCardPicBefor;		// 身份证照片(正)
+    private String idCardPicAfter;		// 身份证照片(反)
     private String lifePic;		// 生活照
     private String jobPic;		// 证件照
     private String phone;		// 手机号
@@ -52,14 +54,20 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private int workTime;		// 工作年限
     private String email;		// 邮箱
     private String education;		// 学历(primary：小学 middle：初中 high：高中 special：中专 junior：大专 university：本科及以上)
-    private int height;		// 身高
-    private int weight;		// 体重
+    private Integer height;		// 身高
+    private Integer weight;		// 体重
     private String marryStatus;		// 婚姻状况(married：已婚 unmarried：未婚 widowed：丧偶 divorce：离婚)
     private String nativeProvinceCode;		// 籍贯
     private Date inJobTime;		// 入职日期
-    private int jobLevel;		// 级别
+    private Integer jobLevel;		// 级别
     private String description;		// 经验描述
     private String remark;		// 备注信息
+
+    private List<SerSkillInfo> skills;  //app使用
+    private List<ServiceTechnicianWorkTime> times;  //app使用
+    private String oldPassword;//app使用
+    private String newPassword;//app使用
+
 
 
     public ServiceTechnicianInfo() {
@@ -148,6 +156,22 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setIdCardPic(String idCardPic) {
         this.idCardPic = idCardPic;
+    }
+
+    public String getIdCardPicBefor() {
+        return idCardPicBefor;
+    }
+
+    public void setIdCardPicBefor(String idCardPicBefor) {
+        this.idCardPicBefor = idCardPicBefor;
+    }
+
+    public String getIdCardPicAfter() {
+        return idCardPicAfter;
+    }
+
+    public void setIdCardPicAfter(String idCardPicAfter) {
+        this.idCardPicAfter = idCardPicAfter;
     }
 
     public String getLifePic() {
@@ -310,19 +334,19 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.education = education;
     }
 
-    public int getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(Integer height) {
         this.height = height;
     }
 
-    public int getWeight() {
+    public Integer getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(Integer weight) {
         this.weight = weight;
     }
 
@@ -352,11 +376,11 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
         this.inJobTime = inJobTime;
     }
 
-    public int getJobLevel() {
+    public Integer getJobLevel() {
         return jobLevel;
     }
 
-    public void setJobLevel(int jobLevel) {
+    public void setJobLevel(Integer jobLevel) {
         this.jobLevel = jobLevel;
     }
 
@@ -415,5 +439,37 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
 
     public void setStations(List<BasicServiceStation> stations) {
         this.stations = stations;
+    }
+
+    public List<SerSkillInfo> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<SerSkillInfo> skills) {
+        this.skills = skills;
+    }
+
+    public List<ServiceTechnicianWorkTime> getTimes() {
+        return times;
+    }
+
+    public void setTimes(List<ServiceTechnicianWorkTime> times) {
+        this.times = times;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 }

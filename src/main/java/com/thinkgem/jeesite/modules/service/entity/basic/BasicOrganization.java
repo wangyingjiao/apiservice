@@ -227,4 +227,24 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setHaveStation(int haveStation) {
 		this.haveStation = haveStation;
 	}
+	private String workStartTimeNew;
+	private String workEndTimeNew;
+
+	public String getWorkStartTimeNew() {
+		return workStartTimeNew;
+	}
+
+	public void setWorkStartTimeNew(String workStartTimeNew) {
+		this.workStartTimeNew = workStartTimeNew;
+	}
+
+	public String getWorkEndTimeNew() {
+		return workEndTimeNew;
+	}
+
+	public void setWorkEndTimeNew(String workEndTimeNew) {
+		this.workEndTimeNew = workEndTimeNew;
+	}
+	
+	
 }

@@ -24,14 +24,17 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String sortId;
 	private String itemId;		// 服务项目ID
 	private String itemName;		// 项目名称
+	private String picture;			//服务图片
 	private String goodsId;		// 商品ID
 	private String goodsName;		// 商品名称
 	private int goodsNum;		// 订购商品数
-	private String originPrice;		// 单价原价
-	private String payPrice;		// 单价(折后价，无折扣时和原价相同)
+	private String goodsUnit;		// 商品名称
+	private String originPrice;		// 单价原价   自营价格
+	private String payPrice;		// 单价(折后价，无折扣时和原价相同) 国安社区价格
+	private String payPriceSum;		// 单价(折后价，无折扣时和原价相同)
 	private String goodsType;		// 计量方式(num：按数量 area：按面积 house：按居室)
 	private int minPurchase;		// 起购数量
-
+	private List<String> pics;
 	private Date serviceTime;		// 服务时间
 	private boolean goodsChecked = false;
 	private List<OrderGoods> goods; //商品list
@@ -41,6 +44,9 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private Double convertHours;		// 折算时长
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
 	private int cappingPerNum;		//封项人数
+	private String jointGoodsCode; //对接方商品CODE
+
+	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
 	
 	public OrderGoods() {
 		super();
@@ -199,5 +205,53 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setCappingPerNum(int cappingPerNum) {
 		this.cappingPerNum = cappingPerNum;
+	}
+
+	public String getPicture() {
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
+
+	public List<String> getPics() {
+		return pics;
+	}
+
+	public void setPics(List<String> pics) {
+		this.pics = pics;
+	}
+
+	public String getMajorSort() {
+		return majorSort;
+	}
+
+	public void setMajorSort(String majorSort) {
+		this.majorSort = majorSort;
+	}
+
+	public String getJointGoodsCode() {
+		return jointGoodsCode;
+	}
+
+	public void setJointGoodsCode(String jointGoodsCode) {
+		this.jointGoodsCode = jointGoodsCode;
+	}
+
+	public String getPayPriceSum() {
+		return payPriceSum;
+	}
+
+	public void setPayPriceSum(String payPriceSum) {
+		this.payPriceSum = payPriceSum;
+	}
+
+	public String getGoodsUnit() {
+		return goodsUnit;
+	}
+
+	public void setGoodsUnit(String goodsUnit) {
+		this.goodsUnit = goodsUnit;
 	}
 }

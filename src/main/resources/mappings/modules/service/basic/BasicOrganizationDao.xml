@@ -62,7 +62,8 @@
 			a.telephone AS "telephone",
 			a.master_name AS "masterName",
 			a.master_phone AS "masterPhone",
-			a.address AS "address"
+			a.address AS "address",
+			a.joint_eshop_code AS jointEshopCode
 		FROM basic_organization a
 		<include refid="basicOrganizationJoins"/>
 		<where>
@@ -180,9 +181,9 @@
 			<if test="workEndTime != null and workEndTime != ''">
 				work_end_time = #{workEndTime},
 			</if>
-			<if test="jointEshopCode != null and jointEshopCode != ''">
+			<!-- <if test="jointEshopCode != null and jointEshopCode != ''"> -->
 				joint_eshop_code = #{jointEshopCode},
-			</if>
+			<!-- </if> -->
 			url = #{url},
 			fax = #{fax},
 			tel_400 = #{tel400},
@@ -206,6 +207,14 @@
 			AND id &lt;&gt; #{id}
 		</if>
 	</select>
+	<select id="getByECode" resultType="BasicOrganization">
+		select * from basic_organization
+		WHERE 1=1
+		AND joint_eshop_code = #{jointEshopCode}
+		<if test="id != null and id != ''">
+			AND id &lt;&gt; #{id}
+		</if>
+	</select>
 	<update id="deleteCitysByOrgId">
 		UPDATE basic_service_city SET
 			del_flag = #{DEL_FLAG_DELETE}
@@ -216,5 +225,17 @@
 		SELECT count(1) FROM basic_service_station a
 		WHERE a.org_id = #{id}
 		AND a.del_flag = '0'
+	</select>
+
+	<select id="getOrganizationListByJointEshopCode" resultType="BasicOrganization">
+		select
+			a.id AS id,
+			a.name AS name,
+			a.scope_type AS scopeType,
+			a.work_start_time AS workStartTime,
+			a.work_end_time AS workEndTime
+		from basic_organization a
+		WHERE a.joint_eshop_code = #{jointEshopCode}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 </mapper>

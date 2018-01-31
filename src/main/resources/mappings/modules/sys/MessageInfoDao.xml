@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MessageInfoDao">
+
+	<!--根据id 查看消息-->
+	<select id="get" resultType="MessageInfo">
+		SELECT
+		a.id AS id,
+		a.title AS title,
+		a.message AS message,
+		a.receive_phone AS receivePhone,
+		a.isread AS isRead,
+		a.target_type AS targetType,
+		a.target_id AS targetId,
+		a.push_time AS pushTime,
+		a.create_by AS createBy,
+		a.create_date AS createDate,
+		a.update_by AS updateBy,
+		a.update_date AS updateDate,
+		a.del_flag AS delFlag
+		FROM sys_push_message a
+		WHERE a.id = #{id}
+		AND a.receive_phone=#{receivePhone}
+		AND a.del_flag= #{delFlag}
+	</select>
+
+	<!--app列表查看消息-->
+	<select id="findList" resultType="MessageInfo">
+		SELECT
+		a.id AS id,
+		a.title AS title,
+		a.message AS message,
+		a.receive_phone AS receivePhone,
+		a.isread AS isRead,
+		a.target_type AS targetType,
+		a.target_id AS targetId,
+		a.push_time AS pushTime,
+		a.push_time AS createTime,
+		a.create_by AS createBy,
+		a.create_date AS createDate,
+		a.update_by AS updateBy,
+		a.update_date AS updateDate,
+		a.del_flag AS delFlag
+		FROM sys_push_message a
+		WHERE a.receive_phone=#{receivePhone}
+		AND a.del_flag=#{delFlag}
+		ORDER BY push_time desc
+	</select>
+
+	<!--新增-->
+	<insert id="insert">
+		INSERT INTO sys_push_message(
+			id,
+			title,
+			message,
+			receive_phone,
+			target_type,
+			target_id,
+			push_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		)VALUES(
+			#{id},
+			#{title},
+			#{message},
+			#{receivePhone},
+			#{targetType},
+			#{targetId},
+			#{pushTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{DEL_FLAG_NORMAL}
+		)
+	</insert>
+	<!--修改推送时间-->
+	<update id="updPushTime">
+		UPDATE sys_push_message SET
+		push_time = #{pushTime}
+		WHERE id = #{id} AND
+		del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<update id="update">
+		UPDATE sys_push_message SET
+			<if test="title != null and title!='' ">
+				title = #{title},
+			</if>
+			<if test="message != null and message!='' ">
+				message = #{message},
+			</if>
+			<if test="receivePhone != null and receivePhone!='' ">
+				receive_phone = #{receivePhone},
+			</if>
+			<if test="targetType != null and targetType!='' ">
+				target_type = #{targetType},
+			</if>
+			<if test="isRead != null and isRead!='' ">
+				isread = #{isRead},
+			</if>
+			<if test="targetId != null and targetId!='' ">
+				target_id = #{targetId} ,
+			</if>
+			<if test="pushTime != null and pushTime!='' ">
+				push_time = #{pushTime} ,
+			</if>
+			<if test="createBy.id != null and createBy.id !='' ">
+				create_by = #{createBy.id} ,
+			</if>
+			<if test="createDate != null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="updateBy.id != null and updateBy.id !='' ">
+				update_by = #{updateBy.id} ,
+			</if>
+			<if test="updateDate != null and updateDate!='' ">
+				update_date = #{updateDate} ,
+			</if>
+		WHERE id = #{id}
+	</update>
+	<!--app编辑消息已读-->
+	<update id="updateMessage">
+		UPDATE sys_push_message SET
+			isread = #{isRead}
+		<if test="updateBy != null and updateBy!='' ">
+			, update_by = #{updateBy.id}
+		</if>
+		<if test="updateDate != null and updateDate!='' ">
+			, update_date = #{updateDate}
+		</if>
+		WHERE id = #{id}
+	</update>
+
+
+
+</mapper>

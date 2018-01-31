@@ -8,12 +8,7 @@
 		a.name,
 		a.zip_code as "zipCode",
 		a.sort,
-		a.level,
-		a.create_by AS "createBy.id",
-		a.create_date,
-		a.update_by AS "updateBy.id",
-		a.update_date,
-		a.del_flag
+		a.level
 	</sql>
 <!--&#45;&#45; 		p.name AS "parent.name"-->
 
@@ -56,7 +51,20 @@
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY a.code
 	</select>
-	
+	<!--app-->
+	<select id="appFindAllList" resultType="Area">
+		SELECT
+		<include refid="areaColumns"/>
+		FROM sys_area a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="level != null and level != ''">
+			AND a.level=#{level}
+		</if>
+		<if test="parentCode != null and parentCode != ''">
+			AND a.parent_code=#{parentCode}
+		</if>
+		ORDER BY a.code
+	</select>
 	<select id="findByParentIdsLike" resultType="Area">
 		SELECT
 			a.id,
@@ -153,9 +161,20 @@
 	</update>
 
 	<select id="getListByLevel" resultType="Area">
-		SELECT * FROM sys_area a
+		SELECT
+		a.name AS "name",
+		a.code AS "code",
+		a.parent_code AS "parentCode"
+		FROM sys_area a
 		WHERE a.level = #{level}
-		AND a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY a.code
+	</select>
+
+	<select id="getNameByCode" resultType="Area">
+		SELECT
+		<include refid="areaColumns"/>
+		FROM sys_area a
+		WHERE a.code = #{code}
+		AND a.del_flag = '0'
 	</select>
 </mapper>

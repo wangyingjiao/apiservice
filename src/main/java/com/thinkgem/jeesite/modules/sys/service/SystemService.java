@@ -3,6 +3,18 @@
  */
 package com.thinkgem.jeesite.modules.sys.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeSet;
+
+import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.security.Digests;
@@ -25,15 +37,6 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
 import com.thinkgem.jeesite.modules.sys.utils.LogUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.identity.Group;
-import org.apache.shiro.session.Session;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 /**
  * 系统管理，安全相关实体的管理类,包括用户、角色、菜单.
@@ -68,7 +71,7 @@ public class SystemService extends BaseService implements InitializingBean {
     }
 
     @Autowired
-    private IdentityService identityService;
+   // private IdentityService identityService;
 
     //-- User Service --//
 
@@ -266,7 +269,7 @@ public class SystemService extends BaseService implements InitializingBean {
         return roleDao.get(id);
     }
 
-    public Role getRoleByName(String name) {
+    public List<Role> getRoleByName(String name) {
         Role r = new Role();
         r.setName(name);
         return roleDao.getByName(r);
@@ -473,128 +476,17 @@ public class SystemService extends BaseService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (!Global.isSynActivitiIndetity()) {
-            return;
-        }
-        if (isSynActivitiIndetity) {
-            isSynActivitiIndetity = false;
-            // 同步角色数据
-            List<Group> groupList = identityService.createGroupQuery().list();
-            if (groupList.size() == 0) {
-                Iterator<Role> roles = roleDao.findAllList(new Role()).iterator();
-                while (roles.hasNext()) {
-                    Role role = roles.next();
-                    saveActivitiGroup(role);
-                }
-            }
-            // 同步用户数据
-            List<org.activiti.engine.identity.User> userList = identityService.createUserQuery().list();
-            if (userList.size() == 0) {
-                Iterator<User> users = userDao.findAllList(new User()).iterator();
-                while (users.hasNext()) {
-                    saveActivitiUser(users.next());
-                }
-            }
-        }
-    }
+}
 
     private void saveActivitiGroup(Role role) {
-        if (!Global.isSynActivitiIndetity()) {
-            return;
-        }
-        String groupId = role.getEnname();
+}
 
-        // 如果修改了英文名，则删除原Activiti角色
-        if (StringUtils.isNotBlank(role.getOldEnname()) && !role.getOldEnname().equals(role.getEnname())) {
-            identityService.deleteGroup(role.getOldEnname());
-        }
+    public void deleteActivitiGroup(Role role) {}
 
-        Group group = identityService.createGroupQuery().groupId(groupId).singleResult();
-        if (group == null) {
-            group = identityService.newGroup(groupId);
-        }
-        group.setName(role.getName());
-        group.setType(role.getRoleType());
-        identityService.saveGroup(group);
-
-        // 删除用户与用户组关系
-        List<org.activiti.engine.identity.User> activitiUserList = identityService.createUserQuery().memberOfGroup(groupId).list();
-        for (org.activiti.engine.identity.User activitiUser : activitiUserList) {
-            identityService.deleteMembership(activitiUser.getId(), groupId);
-        }
-
-        // 创建用户与用户组关系
-        List<User> userList = findUser(new User(new Role(role.getId())));
-        for (User e : userList) {
-            String userId = e.getLoginName();//ObjectUtils.toString(user.getId());
-            // 如果该用户不存在，则创建一个
-            org.activiti.engine.identity.User activitiUser = identityService.createUserQuery().userId(userId).singleResult();
-            if (activitiUser == null) {
-                activitiUser = identityService.newUser(userId);
-                activitiUser.setFirstName(e.getName());
-                activitiUser.setLastName(StringUtils.EMPTY);
-                activitiUser.setEmail(e.getEmail());
-                activitiUser.setPassword(StringUtils.EMPTY);
-                identityService.saveUser(activitiUser);
-            }
-            identityService.createMembership(userId, groupId);
-        }
-    }
-
-    public void deleteActivitiGroup(Role role) {
-        if (!Global.isSynActivitiIndetity()) {
-            return;
-        }
-        if (role != null) {
-            String groupId = role.getEnname();
-            identityService.deleteGroup(groupId);
-        }
-    }
-
-    private void saveActivitiUser(User user) {
-        if (!Global.isSynActivitiIndetity()) {
-            return;
-        }
-        String userId = user.getLoginName();//ObjectUtils.toString(user.getId());
-        org.activiti.engine.identity.User activitiUser = identityService.createUserQuery().userId(userId).singleResult();
-        if (activitiUser == null) {
-            activitiUser = identityService.newUser(userId);
-        }
-        activitiUser.setFirstName(user.getName());
-        activitiUser.setLastName(StringUtils.EMPTY);
-        activitiUser.setEmail(user.getEmail());
-        activitiUser.setPassword(StringUtils.EMPTY);
-        identityService.saveUser(activitiUser);
-
-        // 删除用户与用户组关系
-        List<Group> activitiGroups = identityService.createGroupQuery().groupMember(userId).list();
-        for (Group group : activitiGroups) {
-            identityService.deleteMembership(userId, group.getId());
-        }
-        // 创建用户与用户组关系
-        for (Role role : user.getRoleList()) {
-            String groupId = role.getEnname();
-            // 如果该用户组不存在，则创建一个
-            Group group = identityService.createGroupQuery().groupId(groupId).singleResult();
-            if (group == null) {
-                group = identityService.newGroup(groupId);
-                group.setName(role.getName());
-                group.setType(role.getRoleType());
-                identityService.saveGroup(group);
-            }
-            identityService.createMembership(userId, role.getEnname());
-        }
-    }
+    private void saveActivitiUser(User user) {}
 
     private void deleteActivitiUser(User user) {
-        if (!Global.isSynActivitiIndetity()) {
-            return;
-        }
-        if (user != null) {
-            String userId = user.getLoginName();//ObjectUtils.toString(user.getId());
-            identityService.deleteUser(userId);
-        }
-    }
+}
 
     public List<User> findUserByRole(Role role) {
         return userDao.findUserByRole(role);
@@ -623,7 +515,20 @@ public class SystemService extends BaseService implements InitializingBean {
 
         return list;
     }
-
+	public int checkUpdateName(String name, String id, String roleId) {
+		 return roleDao.checkUpdateName(name,id,roleId);
+	}
+	//add by wyr 判断岗位下是否有员工
+	public int getUserCount(String id) {
+		return roleDao.getUserCount(id);
+	}
+	public int checkAddName(String name, String id) {
+		return roleDao.checkAddName(name,id);
+	}
+	//add by wyr 获取岗位表关联菜单表的数据
+	 public Role getRoleUnion(String id) {
+	        return roleDao.getRoleUnion(id);
+	    }
 
 //	public Page<Role> findRolePage(Page){
 //

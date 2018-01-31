@@ -2,8 +2,8 @@ package com.thinkgem.jeesite.common.security.shiro.session;
 
 import java.util.Collection;
 
+import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import org.apache.shiro.session.Session;
-
 public interface SessionDAO extends org.apache.shiro.session.mgt.eis.SessionDAO {
 
 	/**

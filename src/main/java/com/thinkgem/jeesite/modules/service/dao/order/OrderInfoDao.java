@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 
@@ -22,6 +23,8 @@ import java.util.List;
  */
 @MyBatisDao
 public interface OrderInfoDao extends CrudDao<OrderInfo> {
+    //app根据订单id获取订单
+    OrderInfo appGet(OrderInfo info);
 
     List<BasicOrganization> findOrganizationList(BasicOrganization organization);
 
@@ -30,14 +33,15 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<OrderGoods> getOrderGoodsList(OrderInfo info);
 
     List<OrderDispatch> getOrderDispatchList(OrderInfo info);
-
+    //app改派根据订单id技师id获取改派表
+    OrderDispatch appGetOrderDispatch(OrderInfo info);
     void cancelData(OrderInfo orderInfo);
 
     void saveTime(OrderInfo orderInfo);
 
     List<OrderGoods> getGoodsList(OrderInfo orderInfo);
 
-    String getSkillIdBySortId(String sortId);
+    List<SerSkillSort> getSkillIdBySortId(SerSkillSort serchSkillSort);
 
     List<OrderDispatch> getTechListBySkillId(OrderDispatch serchInfo);
 
@@ -57,5 +61,21 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     //app修改订单
     int appUpdate(OrderInfo orderInfo);
     //app获取订单列表
-    Page<OrderInfo> appFindList(Page<OrderInfo> page,OrderInfo orderInfo);
+    List<OrderInfo> appFindList(OrderInfo orderInfo);
+    //app获取图片
+    String appGetPics(String id);
+    //app获取订单对应商品
+    List<String> getGoods(OrderInfo orderInfo);
+    //app根据商品id获取订单对应商品的对接code
+    String getGoodsCode(String goodsId);
+
+    int openUpdateOrder(OrderInfo orderInfo);
+
+    BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo);
+
+    List<OrderDispatch> getOrderDispatchMsgTechList(OrderInfo orderMsg);
+
+    OrderInfo getBySn(OrderInfo orderInfo);
+
+    OrderInfo checkGasqSnOrderSn(OrderInfo checkInfo);
 }

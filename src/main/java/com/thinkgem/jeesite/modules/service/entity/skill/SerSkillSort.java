@@ -13,6 +13,7 @@ public class SerSkillSort extends DataEntity<SerSkillSort> {
     private static final long serialVersionUID = 1L;
     private String skillId; //技能id
     private String sortId;  //分类id
+    private String orgId;
 
     public SerSkillSort() {
         super();
@@ -36,6 +37,14 @@ public class SerSkillSort extends DataEntity<SerSkillSort> {
 
     public String getSortId() {
         return sortId;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 }
 

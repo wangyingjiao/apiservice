@@ -6,8 +6,11 @@ package com.thinkgem.jeesite.modules.service.dao.station;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 服务站DAO接口
@@ -20,4 +23,14 @@ public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
     int getCount(BasicServiceStation station);
     //根据权限获取服务站
     List<BasicServiceStation> getServiceStationList(BasicServiceStation station);
+
+    List<User> getUserListByStationId(BasicServiceStation serviceStation);
+    //add by WYR 服务站名重复校验
+	int checkRepeatName(@Param("name")String name,@Param("orgId") String orgId);
+	int checkRepeatNameUpdate(@Param("name")String name,@Param("orgId") String orgId, @Param("id")String id);
+	int getCountTech(BasicServiceStation serviceStation);
+
+    List<BasicServiceStation> getStationListByStoreId(BasicServiceStation stationSerch);
+
+    List<BasicServiceStation> getStationListByStoreIdUseable(BasicServiceStation stationSerch);
 }

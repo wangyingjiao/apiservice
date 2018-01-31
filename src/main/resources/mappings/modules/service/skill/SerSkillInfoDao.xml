@@ -96,9 +96,7 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="techNum != null">
-				tech_num = #{techNum},
-			</if>
+
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
@@ -179,6 +177,20 @@
 				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
+	</select>
+
+	<!--app获取技师技能-->
+	<select id="appGetSkillByTech" resultType="SerSkillInfo">
+		SELECT
+		a.id,
+		a.name
+		FROM ser_skill_info a
+		LEFT JOIN ser_skill_tech e ON e.skill_id = a.id AND e.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN tech_info d ON e.tech_id = d.id AND d.del_flag =  #{DEL_FLAG_NORMAL}
+		<where>
+			d.del_flag = #{DEL_FLAG_NORMAL}
+			AND d.id=#{id}
+		</where>
 	</select>
 
 </mapper>

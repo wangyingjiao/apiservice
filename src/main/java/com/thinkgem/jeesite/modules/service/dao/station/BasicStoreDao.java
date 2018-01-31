@@ -3,6 +3,10 @@
  */
 package com.thinkgem.jeesite.modules.service.dao.station;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
@@ -14,5 +18,12 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
  */
 @MyBatisDao
 public interface BasicStoreDao extends CrudDao<BasicStore> {
+	//add by wyr
+	List<BasicStore> findListNotIn(BasicStore basicStore);
+
+	List<BasicStore> findListIn(BasicStore basicStore);
+
+	List<String> getInIds(@Param("orgId")String orgId);
+
 	
 }

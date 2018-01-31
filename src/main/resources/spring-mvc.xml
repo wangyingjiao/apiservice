@@ -20,11 +20,12 @@
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
-    <aop:aspectj-autoproxy />
+    <aop:aspectj-autoproxy expose-proxy="true" proxy-target-class="true" />
 
     <bean class="com.thinkgem.jeesite.common.aspect.ReqResAop" name="reqResAop" />
-    <bean class="com.thinkgem.jeesite.app.aop.AppAop" name="appAop"/>
-
+    <bean class="com.thinkgem.jeesite.app.aop.AppAop" name="appAop">
+    </bean>
+    <bean class="com.thinkgem.jeesite.open.aop.OpenAop" name="openAop" />
 
     <!-- 默认的注解映射的支持，org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping -->
     <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
@@ -110,16 +111,37 @@
         <!--<mvc:mapping path="/**"/>-->
         <!--<bean class="com.thinkgem.jeesite.modules.sys.interceptor.MobileInterceptor"/>-->
         <!--</mvc:interceptor>-->
+        <!--tokenInteceper 拦截app操作 排除登陆-->
         <mvc:interceptor>
-            <mvc:mapping path="${appPath}/**"/>
-            <mvc:exclude-mapping path="${appPath}/appLogin"/>
-            <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
+        <mvc:mapping path="${appPath}/**"/>
+        <mvc:exclude-mapping path="${appPath}/appLogin"/>
+            <!--排除修改籍贯民族下拉列表-->
+            <mvc:exclude-mapping path="${appPath}/selectList"/>
+                <!--排除 根据省，市code获取  市 区-->
+            <mvc:exclude-mapping path="${appPath}/selectListArea"/>
+            <mvc:exclude-mapping path="${appPath}/selectListCity"/>
+            <mvc:exclude-mapping path="${appPath}/selectListPro"/>
+        <bean class="com.thinkgem.jeesite.app.interceptor.TokenInterceptor"></bean>
+        </mvc:interceptor>
+
+        <mvc:interceptor>
+            <mvc:mapping path="${openPath_gasq}/**"/>
+            <bean class="com.thinkgem.jeesite.modules.sys.interceptor.OpenLogInterceptor" />
         </mvc:interceptor>
 
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <bean class="com.thinkgem.jeesite.modules.sys.interceptor.SameUrlDataInterceptor"/>
         </mvc:interceptor>
+        <!-- add by wyr 统一处理用户session过期后的Interceptor -->
+         <!-- <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="${appPath}/**"/>
+            <mvc:exclude-mapping path="${openPath_gasq}/**"/>
+            <mvc:exclude-mapping path="${adminPath}/logout"/>
+            <mvc:exclude-mapping path="${adminPath}/login"/>
+            <bean class="com.thinkgem.jeesite.modules.sys.interceptor.SessionExpiredInterceptor"/>
+        </mvc:interceptor> -->
     </mvc:interceptors>
 
     <!-- 支持Shiro对Controller的方法级AOP安全控制 begin-->

@@ -9,6 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +40,8 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "${adminPath}/service/order/orderDispatch")
 public class OrderDispatchController extends BaseController {
-
+	@Autowired
+	private OrderInfoService orderInfoService;
 	@Autowired
 	private OrderDispatchService orderDispatchService;
 	
@@ -54,27 +60,40 @@ public class OrderDispatchController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取改派列表")
-	public Result listData(@RequestBody(required = false) OrderDispatch dispatchInfo, HttpServletRequest request, HttpServletResponse response) {
+	@RequiresPermissions("dispatch_view")
+	public Result listData(@RequestBody(required = false) OrderInfo dispatchInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(null == dispatchInfo){
-			dispatchInfo = new OrderDispatch();
+			dispatchInfo = new OrderInfo();
 		}
-		Page<OrderDispatch> dispatchInfoPage = new Page<>(request, response);
-		Page<OrderDispatch> data = orderDispatchService.findPage(dispatchInfoPage, dispatchInfo);
+		Page<OrderInfo> dispatchInfoPage = new Page<>(request, response);
+		Page<OrderInfo> data = orderDispatchService.findPage(dispatchInfoPage, dispatchInfo);
 		return new SuccResult(data);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
-	@ApiOperation("查看订单")
+	@ApiOperation("查看订单改派记录")
+	@RequiresPermissions("dispatch_info")
 	public Result formData(@RequestBody OrderDispatch dispatchInfo) {
-		OrderDispatch entity = null;
-		if (StringUtils.isNotBlank(dispatchInfo.getId())) {
-			entity = orderDispatchService.formData(dispatchInfo);
-		}
-		if (entity == null) {
-			return new FailResult("未找到此id对应的记录");
-		} else {
-			return new SuccResult(entity);
-		}
+		List<OrderDispatch> list = orderDispatchService.formData(dispatchInfo);
+		return new SuccResult(list);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "dispatchTech", method = {RequestMethod.POST})
+	@ApiOperation("技师改派")
+	@RequiresPermissions("dispatch_insert")
+	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
+		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+		return new SuccResult(techList);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "dispatchTechSave", method = {RequestMethod.POST})
+	@ApiOperation("技师改派保存")
+	@RequiresPermissions("dispatch_insert")
+	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
+		HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+		return new SuccResult(map.get("list"));
 	}
 }

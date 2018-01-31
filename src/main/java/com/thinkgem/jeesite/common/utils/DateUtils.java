@@ -5,10 +5,7 @@ package com.thinkgem.jeesite.common.utils;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -100,6 +97,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return formatDate(new Date(), "E");
 	}
 
+
 	/**
 	 * 日期型字符串转化为日期 格式
 	 * { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
@@ -185,6 +183,24 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
+	 * 传入一个日期 返回日期年月日+00:00:00
+	 * @param date
+	 * @return
+	 */
+	public static Date getDateFirstTime(Date date) {
+		return parseDate(formatDate(date, "yyyy-MM-dd")+" 00:00:00");
+	}
+
+	/**
+	 * 传入一个日期 返回日期年月日+23:59:59
+	 * @param date
+	 * @return
+	 */
+	public static Date getDateLastTime(Date date) {
+		return parseDate(formatDate(date, "yyyy-MM-dd")+" 23:59:59");
+	}
+
+	/**
 	 * 获取传入时间是周几 1/2/3/4/5/6/7
 	 *
 	 * @param today
@@ -226,6 +242,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		ca.set(Calendar.DAY_OF_MONTH,ca.getActualMaximum(Calendar.DAY_OF_MONTH));
 		return parseDate(formatDate(ca.getTime()));
 	}
+
+    /**
+     * 生成 年月日时分秒 + 随机的十位数
+     * @return
+     */
+    public static String getDateAndRandomTenNum(String type) {
+    	if(!"01".equals(type) && !"02".equals(type) ){//01订单编号   02支付编号
+    		return formatDate(new Date(), "yyyyMMddHHmmss") + (int)((Math.random()*9+1)*1000000000);
+		}
+        return formatDate(new Date(), "yyyyMMddHHmmss") + type + (int)((Math.random()*9+1)*10000000);
+    }
 	/**
 	 * 取得同一天 某时间段内半小时和整点数据
 	 * @param startTime
@@ -236,38 +263,197 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		if(!startTime.before(endTime)){
 			return null;//开始时间在结束时间之前 否则返回null
 		}
-		if(!(DateUtils.formatDate(startTime, "yyyy").equals(DateUtils.formatDate(endTime, "yyyy"))) ||
-				!(DateUtils.formatDate(startTime, "MM").equals(DateUtils.formatDate(endTime, "MM"))) ||
-				!(DateUtils.formatDate(startTime, "dd").equals(DateUtils.formatDate(endTime, "dd")))){
+		if(!(DateUtils.formatDate(startTime, "yyyyMMdd").equals(DateUtils.formatDate(endTime, "yyyyMMdd")))){
 			return null;//开始时间和结束时间是同一天 否则返回null
 		}
 
-		if(!DateUtils.addMinutes(startTime,30).before(endTime)){
+/*		if(!DateUtils.addMinutes(startTime,30).before(endTime)){
 			return null;//开始时间和结束时间之间相隔不到30分钟
-		}
+		}*/
 
-		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy") + "-" +
-				DateUtils.formatDate(startTime, "MM") + "-" +
-				DateUtils.formatDate(startTime, "dd") + " " +
+		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
 				DateUtils.formatDate(startTime, "HH") + ":30:00");
 		if(!startTime.before(heafHourTime)){
-			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy") + "-" +
-					DateUtils.formatDate(startTime, "MM") + "-" +
-					DateUtils.formatDate(startTime, "dd") + " " +
+			heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
 					(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
 		}
 		List<String> heafHourTimeList = new ArrayList<String>();
-		heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH") + ":" + DateUtils.formatDate(heafHourTime, "mm"));
+		heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
 		for (int i = 0; i < 48; i++) {
 
 			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
 			if(endTime.after(heafHourTime)){
-				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH") + ":" + DateUtils.formatDate(heafHourTime, "mm"));
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
 				continue;
 			}
 			break;
 		}
 		return heafHourTimeList;
+	}
+	/**
+	 * 获取今天后15天的日期数组
+	 * @return
+	 */
+	public static List<Date> getAfterFifteenDays() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		list.add(day);
+		for(int i=0;i<14;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
+	}
+
+	/**
+	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回false
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 07:00  不重复    返回 true
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 08:00  不重复    返回 true
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 09:00  重复    返回 false
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 10:00  重复    返回 false
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 11:00  重复    返回 false
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 09:00  重复    返回 false
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 10:00  重复    返回 false
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 11:00  重复    返回 false
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 09:10  重复    返回 false
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 10:00  重复    返回 false
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 11:00  重复    返回 false
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 10:00 2018-01-01 11:00  不重复    返回 true
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 11:00 2018-01-01 12:00  不重复    返回 true
+	 *
+	 *
+	 * @param startTimeOne
+	 * @param endTimeOne
+	 * @param startTimeTwo
+	 * @param endTimeTwo
+	 * @return
+	 */
+	public static boolean checkDatesRepeat(Date startTimeOne, Date endTimeOne, Date startTimeTwo, Date endTimeTwo) {
+		if(!startTimeOne.before(endTimeOne)){
+			return false;//开始时间在结束时间之前 否则返回null
+		}
+		if(!startTimeTwo.before(endTimeTwo)){
+			return false;//开始时间在结束时间之前 否则返回null
+		}
+
+		if(endTimeTwo.before(startTimeOne) || endTimeTwo.compareTo(startTimeOne)==0){
+			return true;
+		}
+
+		if(startTimeTwo.after(endTimeOne) || startTimeTwo.compareTo(endTimeOne)==0){
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 07:00  不重复    返回 null
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 08:00  不重复    返回 null
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 09:00  重复    返回 8-9
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 10:00  重复    返回 8-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 11:00  重复    返回 8-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 09:00  重复    返回 8-9
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 10:00  重复    返回 8-10
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 11:00  重复    返回 8-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 09:10  重复    返回 9-9:10
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 10:00  重复    返回 9-10
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 11:00  重复    返回 9-10
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 10:00 2018-01-01 11:00  不重复    返回 null
+	 *
+	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 11:00 2018-01-01 12:00  不重复    返回 null
+	 *
+	 *
+	 * @param startTimeOne
+	 * @param endTimeOne
+	 * @param startTimeTwo
+	 * @param endTimeTwo
+	 * @return
+	 */
+	public static DateUtilsEntity findDatesRepeatTime(Date startTimeOne, Date endTimeOne, Date startTimeTwo, Date endTimeTwo) {
+		if(startTimeOne!=null && endTimeOne!=null && startTimeTwo!=null && endTimeTwo!=null){
+
+			//数据库中工作时间只有时分秒 拼接年月日 比较一天内的时间区间
+			startTimeOne = parseDate(formatDate(startTimeTwo,"yyyy-MM-dd") + " " + formatDate(startTimeOne,"HH:mm:ss"));
+			endTimeOne = parseDate(formatDate(startTimeTwo,"yyyy-MM-dd") + " " + formatDate(endTimeOne,"HH:mm:ss"));
+
+			if(!startTimeOne.before(endTimeOne)){
+				return null;//开始时间在结束时间之前 否则返回null
+			}
+			if(!startTimeTwo.before(endTimeTwo)){
+				return null;//开始时间在结束时间之前 否则返回null
+			}
+
+			if(endTimeTwo.before(startTimeOne) || endTimeTwo.compareTo(startTimeOne)==0){
+				return null;
+			}
+
+			if(startTimeTwo.after(endTimeOne) || startTimeTwo.compareTo(endTimeOne)==0){
+				return null;
+			}
+			DateUtilsEntity entity = new DateUtilsEntity();
+
+
+			/* * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 09:00  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 10:00  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 11:00  重复    返回 false
+			 */
+			/*
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 09:00  重复    返回 false
+			 *
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 10:00  重复    返回 false
+			 *
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 08:00 2018-01-01 11:00  重复    返回 false
+			 **/
+			if(startTimeOne.after(startTimeTwo) || startTimeOne.compareTo(startTimeTwo) == 0){
+				if(endTimeOne.after(endTimeTwo) || endTimeOne.compareTo(endTimeTwo) == 0){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeOne);
+					entity.setEndTime(endTimeTwo);
+					return  entity;
+				}
+				if(endTimeOne.before(endTimeTwo)){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeOne);
+					entity.setEndTime(endTimeOne);
+					return  entity;
+				}
+			}
+
+			/*
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 09:10  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 10:00  重复    返回 false
+			 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 09:00 2018-01-01 11:00  重复    返回 false
+			*/
+			if(startTimeOne.before(startTimeTwo)){
+				if(endTimeOne.after(endTimeTwo) || endTimeOne.compareTo(endTimeTwo) == 0){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeTwo);
+					entity.setEndTime(endTimeTwo);
+					return  entity;
+				}
+				if(endTimeOne.before(endTimeTwo)){
+					entity = new DateUtilsEntity();
+					entity.setStartTime(startTimeTwo);
+					entity.setEndTime(endTimeOne);
+					return  entity;
+				}
+			}
+		}
+		return null;
 	}
 	/**
 	 * @param args
@@ -278,9 +464,199 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 //		System.out.println(getDate("yyyy年MM月dd日 E"));
 //		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 //		System.out.println(time/(24*60*60*1000));
-		System.out.println(getDistanceOfTwoDate1(parseDate("2010-3-6 8:01:00"),parseDate("2010-3-6 8:01:00")));
+		//System.out.println(getDistanceOfTwoDate1(parseDate("2010-3-6 8:01:00"),parseDate("2010-3-6 8:01:00")));
 
-		String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
-		System.out.println(week);
+		//String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
+
+
+/*
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 07:00:00")));//不重复    返回 true
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 08:00:00")));// 不重复    返回 true
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 09:00:00")));// 重复    返回 false
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 10:00:00")));// 重复    返回 false
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 11:00:00")));//重复    返回 false
+
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));// 重复    返回 false
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00")));// 重复    返回 false
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 11:00:00")));// 重复    返回 false
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 09:10:00")));//重复    返回 false
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 10:00:00")));//重复    返回 false
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 11:00:00")));//重复    返回 false
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 11:00:00")));//不重复    返回 true
+
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
+
+*/
+
+       // System.out.println(getDateAndRandomTenNum("01"));
+
+		/*System.out.println(getAfterFifteenDays().size());
+		for(Date d : getAfterFifteenDays()){
+			System.out.println(formatDate(d, "yyyy-MM-dd HH:mm:ss"));
+		}*/
+
+		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
+		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
+		//System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
+		List<String> list = new ArrayList<>();
+		list = getHeafHourTimeListLeftBorder(parseDate("2018-01-24 10:30:00"),parseDate("2018-01-24 11:01:00"));
+		for(String info : list){
+			System.out.println(info);
+		}
+
 	}
+
+	/**
+	 * 取得同一天 某时间段内半小时和整点数据 包含前边界 不包括后边界
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public static List<String> getHeafHourTimeListLeftBorder(Date startTime, Date endTime) {
+		if(!startTime.before(endTime)){
+			return null;//开始时间在结束时间之前 否则返回null
+		}
+		if(!(DateUtils.formatDate(startTime, "yyyyMMdd").equals(DateUtils.formatDate(endTime, "yyyyMMdd")))){
+			return null;//开始时间和结束时间是同一天 否则返回null
+		}
+		if(startTime.after(DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " 23:30:00")) ||
+				endTime.before(DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " 00:30:00"))){
+			return null;
+		}
+		List<String> heafHourTimeList = new ArrayList<String>();
+
+		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+				DateUtils.formatDate(startTime, "HH") + ":30:00");//取得开始时间的半点 2:00 2:10 2:30 2:50  --> 2:30
+		if(startTime.getTime() == heafHourTime.getTime()){
+			heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+		}else{
+			if(startTime.before(heafHourTime)){//开始时间大于半点
+				Date dateFirst = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						DateUtils.formatDate(startTime, "HH") + ":00:00");//取得开始时间的正点 2:00 2:10 2:30 2:50  --> 2:00
+				if(startTime.getTime() == dateFirst.getTime()){
+					heafHourTimeList.add(DateUtils.formatDate(dateFirst, "HH:mm"));
+				}
+			}else{
+				heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
+			}
+			if(endTime.after(heafHourTime)) {
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+			}
+		}
+		for (int i = 0; i < 48; i++) {
+
+			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
+			if(endTime.after(heafHourTime) ) {
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+				continue;
+			}
+			break;
+		}
+		return heafHourTimeList;
+	}
+
+	/**
+	 * 取得同一天 某时间段内半小时和整点数据 包含边界
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public static List<String> getHeafHourTimeListBorder(Date startTime, Date endTime) {
+		if(!startTime.before(endTime)){
+			return null;//开始时间在结束时间之前 否则返回null
+		}
+		if(!(DateUtils.formatDate(startTime, "yyyyMMdd").equals(DateUtils.formatDate(endTime, "yyyyMMdd")))){
+			return null;//开始时间和结束时间是同一天 否则返回null
+		}
+		if(startTime.after(DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " 23:30:00")) ||
+				endTime.before(DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " 00:30:00"))){
+			return null;
+		}
+		List<String> heafHourTimeList = new ArrayList<String>();
+
+		Date heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+				DateUtils.formatDate(startTime, "HH") + ":30:00");//取得开始时间的半点 2:00 2:10 2:30 2:50  --> 2:30
+		if(startTime.getTime() == heafHourTime.getTime()){
+			heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+		}else {
+			if (startTime.before(heafHourTime)) {//开始时间大于半点
+				Date dateFirst = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						DateUtils.formatDate(startTime, "HH") + ":00:00");//取得开始时间的正点 2:00 2:10 2:30 2:50  --> 2:00
+				if (startTime.getTime() == dateFirst.getTime()) {
+					heafHourTimeList.add(DateUtils.formatDate(dateFirst, "HH:mm"));
+				}
+			} else {
+				heafHourTime = DateUtils.parseDate(DateUtils.formatDate(startTime, "yyyy-MM-dd") + " " +
+						(Integer.parseInt(DateUtils.formatDate(startTime, "HH")) + 1) + ":00:00");
+			}
+			if (endTime.after(heafHourTime) || endTime.getTime() == heafHourTime.getTime()) {
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+			}
+		}
+		for (int i = 0; i < 48; i++) {
+
+			heafHourTime = DateUtils.addMinutes(heafHourTime,30);
+			if(endTime.after(heafHourTime) || endTime.getTime()==heafHourTime.getTime()) {
+				heafHourTimeList.add(DateUtils.formatDate(heafHourTime, "HH:mm"));
+				continue;
+			}
+			break;
+		}
+		return heafHourTimeList;
+	}
+
+    public static boolean timeBeforeNow(Date date) {
+		Date date1 = parseDate("2018-01-01 "+formatDate(new Date(),"HH:mm:ss"));
+		Date date2 = parseDate("2018-01-01 "+formatDate(date,"HH:mm:ss"));
+		return date2.before(date1);
+    }
+
+    public static boolean isToday(Date serviceDate) {
+		return formatDate(new Date(),"yyyy-MM-dd").equals(formatDate(serviceDate,"yyyy-MM-dd"));
+    }
+
+	public static String getWeekL(Date date) {
+		Locale localeCN = Locale.SIMPLIFIED_CHINESE;
+		Date date2 = parseDate(formatDate(date, "yyyy-MM-dd")+" 8:00:00");
+		return DateFormatUtils.formatUTC(date2, "E",localeCN);
+	}
+
+
+	public static Date addSecondsNotDayB(final Date date, final int amount) {
+		Date date2 = addSeconds(date,amount);
+		if(!(DateUtils.formatDate(date, "yyyyMMdd").equals(DateUtils.formatDate(date2, "yyyyMMdd")))){
+			return parseDate(formatDate(date, "yyyy-MM-dd")+" 00:00:00");
+		}
+		return date2;
+	}
+	public static Date addSecondsNotDayE(final Date date, final int amount) {
+		Date date2 = addSeconds(date,amount);
+		if(!(DateUtils.formatDate(date, "yyyyMMdd").equals(DateUtils.formatDate(date2, "yyyyMMdd")))){
+			return parseDate(formatDate(date, "yyyy-MM-dd")+" 23:59:59");
+		}
+		return date2;
+	}
+
 }

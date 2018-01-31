@@ -31,8 +31,9 @@
 	<select id="findList" resultMap="SerItemCommodityResultMap">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
-		FROM ser_item_info a
-		LEFT JOIN ser_sort_info s ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
+		FROM ser_sort_info s
+		RIGHT JOIN ser_item_info a ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_organization b ON a.org_id=b.id
 		<!--<if test="cityCode != null and cityCode !=''">-->
 			<!--LEFT JOIN ser_city_scope b ON a.id = b.master_id AND b.del_flag = #{DEL_FLAG_NORMAL}-->
 		<!--</if>-->
@@ -76,7 +77,9 @@
 		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
 		a.sale AS "sale",
-		a.sort_num AS "sortNum"
+		a.sort_num AS "sortNum",
+		a.joint_status AS "jointStatus",
+		b.joint_eshop_code AS jointEshopCode
 	</sql>
 	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
 		<id column="id" property="id"/>
@@ -89,13 +92,16 @@
 		<result column="name" property="name"/>
 		<result column="all_city" property="allCity"/>
 		<result column="sale" property="sale"/>
+		<result column="joint_status" property="jointStatus"/>
 		<!-- 项目关联商品 -->
 		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
 		<!-- 定向城市 -->
 		<!--<association property="citys" column="{reqId=id}" select="selectCitysById"></association>-->
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
-		select id,name,unit,type,price from ser_item_info_goods
+		select
+		id,name,unit,type,price,joint_goods_code AS jointGoodsCode
+		from ser_item_info_goods
 		where item_id=#{reqId}
 		and del_flag = '0'
 	</select>
@@ -238,12 +244,7 @@
 
 	<update id="updateSerItemPicNum">
 		UPDATE ser_item_info SET
-		<if test="pictureDetail != null and pictureDetail != ''">
-			picture_detail = #{pictureDetail},
-		</if>
-		<if test="sortNum != null and sortNum != ''">
-			sort_num = #{sortNum},
-		</if>
+		picture_detail = #{pictureDetail},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
@@ -264,4 +265,29 @@
 		<!--a.id = #{id}-->
 		<!--AND  a.del_flag = '0'-->
 	<!--</select>-->
+	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
+		select
+		a.id AS id, a.name AS name ,
+		a.joint_eshop_code AS jointEshopCode
+		from basic_organization a
+		WHERE a.id= #{orgId}
+	</select>
+
+	<update id="updateJointStatus">
+		UPDATE ser_item_info SET
+		joint_status = #{jointStatus},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getItemInfoByCommodityId" resultType="SerItemInfo">
+		SELECT
+		b.id AS "id",
+		b.org_id AS "orgId"
+		FROM ser_item_info_goods a
+		LEFT JOIN ser_item_info b ON  b.id = a.item_id
+		WHERE
+		a.id = #{id}
+	</select>
 </mapper>

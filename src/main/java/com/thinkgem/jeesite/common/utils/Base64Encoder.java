@@ -151,28 +151,114 @@ public class Base64Encoder extends FilterOutputStream {
     }
 
     public static void main(String[] args) throws Exception {
-//        if (args.length != 1) {
-//            System.err.println("Usage: java com.oreilly.servlet.Base64Encoder fileToEncode");
-//            return;
-//        }
-//
-//        Base64Encoder encoder = null;
-//        BufferedInputStream in = null;
-//        try {
-//            encoder = new Base64Encoder(System.out);
-//            in = new BufferedInputStream(new FileInputStream(args[0]));
-//
-//            byte[] buf = new byte[4 * 1024];  // 4K buffer
-//            int bytesRead;
-//            while ((bytesRead = in.read(buf)) != -1) {
-//                encoder.write(buf, 0, bytesRead);
-//            }
-//        } finally {
-//            if (in != null) in.close();
-//            if (encoder != null) encoder.close();
-//        }
-        String s = "{\"loginName\":\"13716663777\",\"password\":\"21232f297a57a5a743894a0e4a801fc3\",\"requestTimestamp\":\"1494908307760\"}";
-        System.out.println(Base64Encoder.encode(s));
-//        System.out.println(MD5Util.getStringMD5(Base64Encoder.encode(s)+"4994e425-01df-11e6-8c30-005056800d0e"));
+        //选择服务时间
+        String time =
+                "{\"store_id\":\"00000000000000000000000000000034\"," +
+                "\"eshop_code\":\"E172493508099668134\"," +
+                "\"latitude\":\"114.0909\"," +
+                "\"longitude\":\"42.0808\"," +
+                "\"service_info\": [{" +
+                    "\"cate_goods_id\":\"5bb6d03fd80b4df0b558083b9a927fef_8a2e91df3dbc4336a914075eec494b1a\"," +
+                    "\"gasq_product_id\":\"bda23cc2b60a1fe9ae19a67af537cc6e\"," +
+                    "\"pay_price\":\"1\"," +
+                    "\"buy_num\":\"1\"" +
+                "}]," +
+                "\"platform\":\"gasq\"" +
+                "}";
+        // 订单创建
+        String order=
+                "{\"store_id\":\"00000000000000000000000000000034\"," +
+                        "\"eshop_code\":\"E172493508099668134\"," +
+
+                        "\"phone\":\"18613864806\"," +
+                        "\"remark\":\"\"," +
+                        "\"gasq_order_id\":\"20170129151748122825\"," +
+
+                        "\"province_code\":\"110000\"," +
+                        "\"city_code\":\"010\"," +
+                        "\"area_code\":\"110101\"," +
+                        "\"address\":\"北京市北京市朝阳区关东店北街11号楼热的天\"," +
+
+                        "\"service_time\":\"2018-01-31 10:30:00\"," +
+                        "\"latitude\":\"116.461\"," +
+                        "\"longitude\":\"39.9221\"," +
+
+                        "\"sum_price\":\"1\"," +
+                        "\"order_type\":\"common\"," +
+
+                        "\"service_info\": [{" +
+                        "\"cate_goods_id\":\"5bb6d03fd80b4df0b558083b9a927fef_8a2e91df3dbc4336a914075eec494b1a\"," +
+                        "\"pay_price\":\"1\"," +
+                        "\"buy_num\":\"1\"" +
+                        "}]," +
+                        "\"platform\":\"gasq\"" +
+                        "}";
+
+        //订单状态更新
+        String flag =
+                "{\"platform\":\"gasq\"," +
+                        "\"service_order_id\":\"100\"," +
+                        "\"comment\":\"\"," +
+                        "\"status\":\"finish\"," + //cancel 取消；finish 已签收；success 完成
+                        "\"gasq_order_id\":\"gasq001\"" +
+
+                        "}";
+
+        //更新订单商品信息及门店、商家端、国安侠、用户备注
+        String goods =
+                "{\"platform\":\"gasq\"," +
+                        "\"service_order_id\":\"666601\"," +
+
+                        "\"service_info\": [{" +
+                        "\"cate_goods_id\":\"5a9bd93981f146e3b0755f068e60b630\"," +
+                        "\"pay_price\":\"100\"," +
+                        "\"buy_num\":\"10\"" +
+                        "}]," +
+
+                        "\"guoanxia_info\": {" +
+                            "\"name\":\"国安侠\"," +
+                            "\"phone\":\"13600000001\"," +
+                            "\"remark\":\"国安侠备注\"," +
+                            "\"remark_pic\":[]" +
+                        "}," +
+
+                        "\"costomer_info\": {" +
+                            "\"remark\":\"用户备注\"," +
+                            "\"remark_pic\":[]" +
+                        "}," +
+
+                        "\"store_info\": {" +
+                            "\"name\":\"门店\"," +
+                            "\"telephone\":\"13800000001\"," +
+                            "\"remark\":\"门店备注\"," +
+                            "\"remark_pic\":[\"src/pic/a\",\"src/pic/b\"]" +
+                        "}" +
+
+                        "}";
+        String goods2 =
+                "{\"platform\":\"gasq\"," +
+                        "\"service_order_id\":\"666601\"," +
+
+
+                        "\"guoanxia_info\": {" +
+                        "\"name\":\"国安侠\"," +
+                        "\"phone\":\"136000000011360000000113600000001\"," +
+                        "\"remark\":\"国安侠备注\"," +
+                        "\"remark_pic\":[]" +
+                        "}," +
+
+                        "\"store_info\": {" +
+                        "\"name\":\"门店\"," +
+                        "\"telephone\":\"13800000001\"," +
+                        "\"remark\":\"门店备注\"," +
+                        "\"remark_pic\":[\"src/pic/a\",\"src/pic/b\"]" +
+                        "}" +
+
+                        "}";
+
+
+        String encode = Base64Encoder.encode(time);
+        System.out.println(encode);
+        System.out.println(MD5Util.getStringMD5(encode+"7e1c77ac-29c4-40f3-ad2f-1027dc75713c"));
     }
 }

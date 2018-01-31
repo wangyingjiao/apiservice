@@ -61,7 +61,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date DESC
+				ORDER BY a.start_time DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -73,7 +73,6 @@
 		a.tech_id AS "techId",
 		b.name AS "techName",
 		b.phone AS "techPhone",
-		c.name AS "techStationName",
 		a.start_time AS "startTime",
 		a.end_time AS "endTime",
 		a.remark AS "remark"
@@ -88,7 +87,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date DESC
+				ORDER BY a.start_time DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -159,17 +158,16 @@
 		from order_info a
 		left join order_dispatch b on a.id = b.order_id
 		where a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
+		AND b.status='yes'
 		and b.tech_id = #{techId}
-		and a.service_time BETWEEN #{startTime} AND #{endTime}
+		and ((a.service_time &lt; #{startTime} AND a.finish_time &gt; #{startTime}) OR (a.service_time &gt; #{startTime} AND a.service_time &lt; #{endTime}))
 		and (a.order_status = 'dispatched' or a.order_status = 'started')
 	</select>
-	<select id="getHolidayHistory" resultType="int">
-		select count(*)
+	<select id="getHolidayHistory" resultType="ServiceTechnicianHoliday">
+		select a.tech_id AS techId,a.start_time AS startTime ,a.end_time AS endTime
 		from tech_holiday a
 		where a.del_flag = #{DEL_FLAG_NORMAL}
 		and a.tech_id = #{techId}
-		and (a.start_time BETWEEN #{startTime} AND #{endTime} OR
-		a.end_time BETWEEN #{startTime} AND #{endTime} )
 	</select>
 	<select id="getServiceTechnicianWorkTime" resultType="ServiceTechnicianHoliday">
 		SELECT
@@ -179,6 +177,7 @@
 			a.end_time AS "endTime"
 		FROM tech_work_time a
 		WHERE a.tech_id = #{techId}
+		AND a.del_flag = '0'
 		order by a.week
 	</select>
 </mapper>

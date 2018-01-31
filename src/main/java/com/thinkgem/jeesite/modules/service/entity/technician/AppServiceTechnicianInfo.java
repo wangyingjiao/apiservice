@@ -31,14 +31,122 @@ public class AppServiceTechnicianInfo extends DataEntity<AppServiceTechnicianInf
     private Date techBirthDate;//出生日期
     private String addrDetailInfo;//现住地址
     private String techIdCard;//身份证号
-    private String imgUrlCard;//身份证正面照
+    private String imgUrlCard;//身份证照片
     private String techEmail;//邮箱
     private String techHeight;//身高
     private String techWeight;//体重
-    private String techNativePlace;//籍贯
+    private String techNativePlace;//籍贯 汉字
     private String techNation;//民族
     private String experDesc;//经验描述
     private String imgUrlLife;//生活照
+    private String imgUrl;//app头像
+    private String techNativePlaceValue;//籍贯
+    private String techNationValue;//民族 code
+    private String imgUrlCardAfter;//身份证背面照
+    private String imgUrlCardBefor;//身份证正面照
+    private String provinceCode;		// 省_区号
+    private String cityCode;		// 市_区号
+    private String areaCode;		// 区_区号
+    private String provinceCodeName;		// 省名
+    private String cityCodeName;		// 市名
+    private String areaCodeName;		// 区名
+    private String jobStatus;		// 岗位状态(online:在职，leave:离职)
+
+    public String getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(String jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    public String getProvinceCode() {
+        return provinceCode;
+    }
+
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public String getProvinceCodeName() {
+        return provinceCodeName;
+    }
+
+    public void setProvinceCodeName(String provinceCodeName) {
+        this.provinceCodeName = provinceCodeName;
+    }
+
+    public String getCityCodeName() {
+        return cityCodeName;
+    }
+
+    public void setCityCodeName(String cityCodeName) {
+        this.cityCodeName = cityCodeName;
+    }
+
+    public String getAreaCodeName() {
+        return areaCodeName;
+    }
+
+    public void setAreaCodeName(String areaCodeName) {
+        this.areaCodeName = areaCodeName;
+    }
+
+    public String getTechNativePlaceValue() {
+        return techNativePlaceValue;
+    }
+
+    public void setTechNativePlaceValue(String techNativePlaceValue) {
+        this.techNativePlaceValue = techNativePlaceValue;
+    }
+
+    public String getTechNationValue() {
+        return techNationValue;
+    }
+
+    public void setTechNationValue(String techNationValue) {
+        this.techNationValue = techNationValue;
+    }
+
+    public String getImgUrlCardAfter() {
+        return imgUrlCardAfter;
+    }
+
+    public void setImgUrlCardAfter(String imgUrlCardAfter) {
+        this.imgUrlCardAfter = imgUrlCardAfter;
+    }
+
+    public String getImgUrlCardBefor() {
+        return imgUrlCardBefor;
+    }
+
+    public void setImgUrlCardBefor(String imgUrlCardBefor) {
+        this.imgUrlCardBefor = imgUrlCardBefor;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     @JsonIgnore
     public String getPassword() {

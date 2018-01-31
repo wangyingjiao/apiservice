@@ -37,11 +37,12 @@ public class TokenManager {
 
     public Token createToken(AppServiceTechnicianInfo entity) {
         String phone = entity.getTechPhone();
-
+        String techId = entity.getId();
         String uuid = IdGen.uuid();
         Token token = new Token(uuid);
         token.setPhone(phone);
         clearToken(token);
+        token.setTechId(techId);
         cluster.setex(tokenKey + uuid, expire, token.toString());
         cluster.lpush(tokenKey + phone, uuid);
         cluster.expire(tokenKey + phone, expire);
@@ -54,8 +55,10 @@ public class TokenManager {
         cluster.expire(tokenKey + token.getPhone(), expire);
     }
 
+    //将Json类型的token转换成String  核实token
     public Token verifyToken(Token token) {
         try {
+            //uuid
             String s = cluster.get(tokenKey + token.getToken());
             Token object = JSON.parseObject(s, Token.class);
             return object;

@@ -23,7 +23,28 @@
 					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%', #{description}, '%')</if>
 		</if>
-		ORDER BY type, sort, update_date DESC
+		ORDER BY type, sort, update_date
+	</select>
+	<!--app  查询民族使用-->
+	<select id="appFindList" resultType="Dict">
+		SELECT
+			id,
+			value,
+			label,
+			type,
+			description,
+			sort,
+			parent_id AS parentId,
+			create_by AS createBy,
+			create_date AS createDate,
+			update_by AS updateBy,
+			update_date AS updateDate,
+			remarks,
+			del_flag AS delFlag
+		FROM sys_dict
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+			AND type = #{type}
+		ORDER BY value
 	</select>
 	
 	<select id="findAllList" resultType="Dict">
@@ -32,6 +53,26 @@
 		FROM sys_dict 
 		WHERE del_flag = #{DEL_FLAG_NORMAL} 
 		ORDER BY type, sort, update_date DESC
+	</select>
+
+	<select id="findName" resultType="Dict">
+		SELECT
+		    id,
+			value,
+			label,
+			type,
+			description,
+			sort,
+			parent_id AS parentId,
+			create_by AS createBy,
+			create_date AS createDate,
+			update_by AS updateBy,
+			update_date AS updateDate,
+			remarks,
+			del_flag AS delFlag
+		FROM sys_dict
+		WHERE value=#{value}
+		AND type=#{type}
 	</select>
 	
 	<select id="findTypeList" resultType="string">
@@ -43,7 +84,10 @@
 		ORDER BY type
 	</select>
     <select id="getAllDicts" resultType="Dict">
-		SELECT type,`value`,label FROM sys_dict  ORDER BY type,`value`,label
+		SELECT type,`value`,label FROM sys_dict  ORDER BY type,sort
+	</select>
+	<select id="getGroupDicts" resultType="Dict">
+		SELECT type,COUNT(1) as dictNum FROM sys_dict  GROUP BY TYPE
 	</select>
 
     <insert id="insert">

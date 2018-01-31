@@ -29,8 +29,12 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private Double convertHours;		// 折算时长
 	private int minPurchase;		// 起购数量
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
-	private int cappinPerNum;		//封项人数
+	private int cappingPerNum;		//封项人数
 
+	private String sortId;//分类ID
+	private String sortName;//分类名
+	private String itemName; //项目名
+	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
 
 	public int getStartPerNum() {
 		return startPerNum;
@@ -40,12 +44,12 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 		this.startPerNum = startPerNum;
 	}
 
-	public int getCappinPerNum() {
-		return cappinPerNum;
+	public int getCappingPerNum() {
+		return cappingPerNum;
 	}
 
-	public void setCappinPerNum(int cappinPerNum) {
-		this.cappinPerNum = cappinPerNum;
+	public void setCappingPerNum(int cappingPerNum) {
+		this.cappingPerNum = cappingPerNum;
 	}
 
 	public String getJointGoodsCode() {
@@ -57,11 +61,20 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	}
 
 	private String jointGoodsCode;		//对接方商品CODE
+	private String selfCode;		//自营商品CODE
 	private List<SerItemCommodityPersons> persons;//派人数量
 
 	@NotNull(message = "派人数量不可为空")
 	public List<SerItemCommodityPersons> getPersons() {return persons;}
 	public void setPersons(List<SerItemCommodityPersons> persons) {this.persons = persons;}
+
+	public String getSelfCode() {
+		return selfCode;
+	}
+
+	public void setSelfCode(String selfCode) {
+		this.selfCode = selfCode;
+	}
 
 	public SerItemCommodity() {
 		super();
@@ -80,7 +93,7 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	}
 
 	@NotBlank(message = "商品名称不可为空")
-	@Length(min=2, max=10, message="商品名称长度必须介于 2 和 10 之间")
+	//@Length(min=2, max=10, message="商品名称长度必须介于 2 和 10 之间")
 	public String getName() {
 		return name;
 	}
@@ -142,5 +155,37 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	public void setCommodityChecked(Boolean commodityChecked) {
 		this.commodityChecked = commodityChecked;
+	}
+
+	public String getSortId() {
+		return sortId;
+	}
+
+	public void setSortId(String sortId) {
+		this.sortId = sortId;
+	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public String getMajorSort() {
+		return majorSort;
+	}
+
+	public void setMajorSort(String majorSort) {
+		this.majorSort = majorSort;
 	}
 }

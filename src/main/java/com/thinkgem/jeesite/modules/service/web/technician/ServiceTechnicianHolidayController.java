@@ -60,7 +60,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequiresPermissions("holiday_insert")
+	@RequiresPermissions("techni_holiday")
 	@ApiOperation("保存服务技师休假时间")
 	@RequestMapping(value = "saveData", method = RequestMethod.POST)
 	public Result saveData(@RequestBody ServiceTechnicianHoliday info) {
@@ -77,7 +77,10 @@ public class ServiceTechnicianHolidayController extends BaseController {
 			return new FailResult("请假时间冲突");
 		}
 
-		serviceTechnicianHolidayService.save(info);
+		int i = serviceTechnicianHolidayService.savePc(info);
+		if (i==0) {
+			return new FailResult("设置的时间不在工作时间内");
+		}
 		return new SuccResult("保存成功");
 	}
 
