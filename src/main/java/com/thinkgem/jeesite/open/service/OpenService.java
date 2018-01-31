@@ -1326,10 +1326,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
 		orderInfo.setPayPrice(sum_price);            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
-		Double serviceSecond = serviceHour * 3600;
-		orderInfo.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
-		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));              //建议完成时间',
-		orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
+		//Double serviceSecond = serviceHour * 3600;
+		//orderInfo.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
+		//orderInfo.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));              //建议完成时间',
+		//orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
 
         User user = new User();
