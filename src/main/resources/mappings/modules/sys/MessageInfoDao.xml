@@ -44,7 +44,7 @@
 		FROM sys_push_message a
 		WHERE a.receive_phone=#{receivePhone}
 		AND a.del_flag=#{delFlag}
-		ORDER BY isread desc, push_time desc
+		ORDER BY push_time desc
 	</select>
 
 	<!--新增-->
