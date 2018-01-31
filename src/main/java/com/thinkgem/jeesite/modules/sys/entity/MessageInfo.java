@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.entity;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 import java.util.Date;
@@ -38,9 +39,9 @@ public class MessageInfo extends DataEntity<MessageInfo> {
         this.extParameters = extParameters;
     }
 
-    private String accessKeyId="raAz3o82A1eT3TSy";
-    private String accessKeySecret="mT4z5Umnel0i7voopzqXzhshV5Nnie";
-    private Long appKey=(long)24779049;
+    private String accessKeyId= Global.getConfig("message_access_key_id");//"raAz3o82A1eT3TSy";
+    private String accessKeySecret= Global.getConfig("message_access_key_secret");//"mT4z5Umnel0i7voopzqXzhshV5Nnie";
+    private Long appKey= Long.parseLong(Global.getConfig("message_app_key"));//(long)24779049;
     private String deviceIds;  //要发送的账号
 
     public String getCreateTime() {

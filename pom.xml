@@ -976,12 +976,6 @@
 			</activation>
 		</profile>
 		<profile>
-			<id>prod</id>
-			<properties>
-				<package.environment>prod</package.environment>
-			</properties>
-		</profile>
-		<profile>
 			<id>test</id>
 			<properties>
 				<package.environment>test</package.environment>
