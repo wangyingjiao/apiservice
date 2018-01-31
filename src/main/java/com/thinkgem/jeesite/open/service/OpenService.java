@@ -958,43 +958,40 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	private OrderAddress openCreateForAddress(OpenCreateRequest info) {
 		String phone = info.getPhone();//用户电话
 		String province_code = info.getProvince_code();//省CODE
-		if(null == province_code){
-			throw new ServiceException("省CODE不能为空");
-		}
 		String city_code = info.getCity_code();//市CODE
-		if(null == province_code){
-			throw new ServiceException("市CODE不能为空");
-		}
 		String area_code = info.getArea_code();//区CODE
-		if(null == province_code){
-			throw new ServiceException("区CODE不能为空");
-		}
-		String address = info.getAddress();//服务地址：小区+详细地址
+		String detailAddress = info.getAddress();//服务地址：小区+详细地址
 
 		//省名称
-		List<Area>  provinceList = areaDao.getNameByCode(province_code);
 		String provinceName = "";
-		if(provinceList != null && provinceList.size() > 0){
-			provinceName = provinceList.get(0).getName();
-		}else {
-			throw new ServiceException("未找到省CODE对应的省份名称");
-		}
 		//市名称
-		List<Area>  cityList = areaDao.getNameByCode(province_code);
 		String cityName = "";
-		if(cityList != null && cityList.size() > 0){
-			cityName = cityList.get(0).getName();
-		}else {
-			throw new ServiceException("未找到市CODE对应的市名称");
-		}
 		//区名称
-		List<Area>  areaList = areaDao.getNameByCode(province_code);
 		String areaName = "";
-		if(areaList != null && areaList.size() > 0){
-			areaName = areaList.get(0).getName();
-		}else {
-			throw new ServiceException("未找到区CODE对应的区名称");
+
+		if(null != province_code) {
+			List<Area> provinceList = areaDao.getNameByCode(province_code);
+			if (provinceList != null && provinceList.size() > 0) {
+				provinceName = provinceList.get(0).getName();
+			}
 		}
+		if(null == city_code) {
+			List<Area> cityList = areaDao.getNameByCode(city_code);
+			if (cityList != null && cityList.size() > 0) {
+				cityName = cityList.get(0).getName();
+			}
+		}
+		if(null == area_code) {
+			List<Area> areaList = areaDao.getNameByCode(area_code);
+			if (areaList != null && areaList.size() > 0) {
+				areaName = areaList.get(0).getName();
+			}
+		}
+		String address = "";
+		if(StringUtils.isNotBlank(provinceName) && StringUtils.isNotBlank(cityName) && StringUtils.isNotBlank(areaName)){
+			address = provinceName + cityName + areaName + detailAddress;
+		}
+
 		//--------------------------------------
 		OrderAddress orderAddress = new OrderAddress();
 		orderAddress.setName("");//姓名
@@ -1003,8 +1000,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderAddress.setProvinceCode(province_code);//省_区号
 		orderAddress.setCityCode(city_code);//市_区号
 		orderAddress.setAreaCode(area_code);//区_区号
-		orderAddress.setDetailAddress(address);//详细地址
-		orderAddress.setAddress(provinceName + cityName + areaName + address);//收货人完整地址
+		orderAddress.setDetailAddress(detailAddress);//详细地址
+		orderAddress.setAddress(address);//收货人完整地址
 
         User user = new User();
         user.setId("gasq001");
