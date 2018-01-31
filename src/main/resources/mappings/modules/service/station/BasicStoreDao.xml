@@ -12,12 +12,7 @@
 		a.province_code AS "provinceCode",
 		a.city_code AS "cityCode",
 		a.area_code AS "areaCode",
-		a.address AS "address",
-		a.create_date AS "createDate",
-		a.create_by AS "createBy.id",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.del_flag AS "delFlag"
+		a.address AS "address"
 	</sql>
 
     <sql id="basicStoreJoins">
