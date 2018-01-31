@@ -179,10 +179,12 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 				}
 				if (entity.getJointEshopCode() != null && !entity.getJointEshopCode().equals("")){
 					List<SerItemCommodity> scy = entity.getCommoditys();
-					for (SerItemCommodity com : scy){
-						if (com.getJointGoodsCode() == null && com.getJointGoodsCode().equals("")){
-							entity.setFlag("no");
-							break;
+					if (scy != null && scy.size() >0) {
+						for (SerItemCommodity com : scy) {
+							if (com.getJointGoodsCode() == null) {
+								entity.setFlag("no");
+								break;
+							}
 						}
 					}
 					if (entity.getFlag().equals("yes")){
