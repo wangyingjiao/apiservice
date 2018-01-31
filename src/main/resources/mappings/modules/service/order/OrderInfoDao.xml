@@ -182,7 +182,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date DESC
+				ORDER BY a.service_time DESC
 			</otherwise>
 		</choose>
 	</select>
