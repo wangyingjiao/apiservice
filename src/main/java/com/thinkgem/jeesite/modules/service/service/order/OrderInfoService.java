@@ -171,6 +171,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		shop.setShopPhone(orderInfo.getShopPhone());
 		shop.setShopAddress(orderInfo.getShopAddr());
 		shop.setShopRemark(orderInfo.getShopRemark());
+		/*
+		门店备注图片暂时不展示
 		List<String> ls=new ArrayList<String>();
 		String shopRemarkPic = orderInfo.getShopRemarkPic();
 		if(StringUtils.isNotBlank(shopRemarkPic)){
@@ -183,7 +185,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 			orderInfo.setShopRemarkPics(pictureDetails);
 		}
-		shop.setShopRemarkPic(ls);
+		shop.setShopRemarkPic(ls);*/
 		orderInfo.setShopInfo(shop);
 		String orderSource = orderInfo.getOrderSource();
 		if (StringUtils.isNotBlank(orderSource)) {
@@ -287,11 +289,13 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
 			orderInfo.setBusinessRemarkPics(pictureDetails);
 		}
+		/*
+		门店备注图片暂时不展示
 		String shopRemarkPic = orderInfo.getShopRemarkPic();
 		if(null != shopRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
 			orderInfo.setShopRemarkPics(pictureDetails);
-		}
+		}*/
 		String orderRemarkPic = orderInfo.getOrderRemarkPic();
 		if(null != orderRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
