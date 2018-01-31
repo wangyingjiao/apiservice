@@ -8,12 +8,7 @@
 		a.name,
 		a.zip_code as "zipCode",
 		a.sort,
-		a.level,
-		a.create_by AS "createBy.id",
-		a.create_date,
-		a.update_by AS "updateBy.id",
-		a.update_date,
-		a.del_flag
+		a.level
 	</sql>
 <!--&#45;&#45; 		p.name AS "parent.name"-->
 
