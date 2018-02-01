@@ -171,6 +171,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		shop.setShopPhone(orderInfo.getShopPhone());
 		shop.setShopAddress(orderInfo.getShopAddr());
 		shop.setShopRemark(orderInfo.getShopRemark());
+		/*
+		门店备注图片暂时不展示
 		List<String> ls=new ArrayList<String>();
 		String shopRemarkPic = orderInfo.getShopRemarkPic();
 		if(StringUtils.isNotBlank(shopRemarkPic)){
@@ -183,7 +185,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 			orderInfo.setShopRemarkPics(pictureDetails);
 		}
-		shop.setShopRemarkPic(ls);
+		shop.setShopRemarkPic(ls);*/
 		orderInfo.setShopInfo(shop);
 		String orderSource = orderInfo.getOrderSource();
 		if (StringUtils.isNotBlank(orderSource)) {
@@ -287,11 +289,13 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
 			orderInfo.setBusinessRemarkPics(pictureDetails);
 		}
+		/*
+		门店备注图片暂时不展示
 		String shopRemarkPic = orderInfo.getShopRemarkPic();
 		if(null != shopRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
 			orderInfo.setShopRemarkPics(pictureDetails);
-		}
+		}*/
 		String orderRemarkPic = orderInfo.getOrderRemarkPic();
 		if(null != orderRemarkPic){
 			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
@@ -1591,11 +1595,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
         /*
             订单状态为已取消
-            订单状态为已完成
+            订单状态为已完成/已完成
             服务状态为已完成
             （只要有一个满足就可以）
          */
-	    if(orderStatusCancel.equals(orderStatus) || orderStatusFinish.equals(orderStatus) ||
+	    if(orderStatusCancel.equals(orderStatus) || orderStatusFinish.equals(orderStatus) || orderStatusSuccess.equals(orderStatus) ||
                 serviceStatusFinish.equals(serviceStatus) || serviceStatusCancel.equals(serviceStatus) ){
 	        return  false;
         }else{

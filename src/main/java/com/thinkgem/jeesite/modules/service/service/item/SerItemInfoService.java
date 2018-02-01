@@ -445,11 +445,13 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		if(StringUtils.isNotEmpty(jointEshopCode)) {
 			List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
 			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			List<SerItemCommodity> noSendGoodsList = new ArrayList<>();
 			if (commoditys != null) {
 				//批量插入商品信息
 				for (SerItemCommodity commodity : commoditys) {
 					//对接商品信息
 					SerItemCommodity sendGoods = new SerItemCommodity();
+					SerItemCommodity noSendGoods = new SerItemCommodity();
 					if (StringUtils.isNotBlank(commodity.getId())) {
 						SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
 						if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
@@ -457,6 +459,10 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 							sendGoods.setId(commodity.getId());
 							sendGoods.setName(commodity.getName());
 							sendGoodsList.add(sendGoods);
+						}else{
+							noSendGoods.setId(commodity.getId());
+							noSendGoods.setName(commodity.getName());
+							noSendGoodsList.add(noSendGoods);
 						}
 					}
 				}
@@ -468,6 +474,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 
 			map.put("info", sendItem);
 			map.put("item", serItemInfo);
+			map.put("noSendGoodsList",noSendGoodsList);
 		}
 		return map;
 	}

@@ -317,7 +317,7 @@ origin_price,
 			<if test="suggestFinishTime !=null and suggestFinishTime != ''">suggest_finish_time = #{suggestFinishTime},</if>
 			<if test="serviceHour !=null and serviceHour != ''">service_hour = #{serviceHour},</if>
 			<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
-
+		<if test="originPrice !=null and originPrice != ''">origin_price = #{originPrice},</if>
 			<if test="payPrice !=null and payPrice != ''">pay_price = #{payPrice},</if>
 			<if test="orderAddressId !=null and orderAddressId != ''">order_address_id = #{orderAddressId},</if>
 			<if test="orderTime !=null and orderTime != ''">order_time = #{orderTime},</if>

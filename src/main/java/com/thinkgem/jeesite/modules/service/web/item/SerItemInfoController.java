@@ -282,6 +282,13 @@ public class SerItemInfoController extends BaseController {
             // 机构有对接方E店CODE
             if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
                 SerItemInfo serItemInfo = (SerItemInfo)map.get("info");
+                /*List<SerItemCommodity> noSendGoodsList = (List<SerItemCommodity>)map.get("noSendGoodsList");
+                if(noSendGoodsList != null) {
+                    for (SerItemCommodity commodity : noSendGoodsList) {
+                        serItemInfoService.deleteGoodsInfo(commodity);
+                    }
+                }*/
+
                 if(serItemInfo != null && serItemInfo.getCommoditys() != null && serItemInfo.getCommoditys().size() > 0){
                     List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
                     //对接
@@ -343,7 +350,8 @@ public class SerItemInfoController extends BaseController {
                         return new FailResult("删除失败");
                     }
                 }else{
-                    return new FailResult("删除失败");
+                    serItemInfoService.delete(info);
+                    return new SuccResult("删除成功");
                 }
             }else{
                 serItemInfoService.delete(info);

@@ -1292,13 +1292,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
 			goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
 
-			int goodsNum = buy_num;		// 订购商品数
-			Double convertHours = commodity.getConvertHours();		// 折算时长
+			//int goodsNum = buy_num;		// 订购商品数
+			//Double convertHours = commodity.getConvertHours();		// 折算时长
 
-			Double goodsTime = convertHours * goodsNum;//gon
-			orderTotalTime = orderTotalTime + goodsTime;
+			//Double goodsTime = convertHours * goodsNum;//gon
+			//orderTotalTime = orderTotalTime + goodsTime;
 		}
-
+/*
 		OrderInfo orderInfoBefor = orderInfoDao.get(orderId);//当前订单
 		if(orderInfoBefor == null){
 			throw new ServiceException("未找到当前订单信息");
@@ -1313,7 +1313,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
 			throw new ServiceException("未找到当前订单的技师信息");
-		}
+		}*/
 
 		//删除 订单 原商品信息
 		OrderGoods serchOrderGoods = new OrderGoods();
@@ -1326,10 +1326,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
 		orderInfo.setPayPrice(sum_price);            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
-		Double serviceSecond = serviceHour * 3600;
-		orderInfo.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
-		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));              //建议完成时间',
-		orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
+		//Double serviceSecond = serviceHour * 3600;
+		//orderInfo.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
+		//orderInfo.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));              //建议完成时间',
+		//orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
 
         User user = new User();
