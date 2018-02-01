@@ -198,4 +198,16 @@ public class DictController extends BaseController {
         return o;
     }
 
+    @ResponseBody
+    //@RequiresPermissions("log_view")
+    @RequestMapping(value = "/dictListData", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("获取字典列表")
+    public Result dictListData(@RequestBody(required = false) Dict dict, HttpServletRequest request, HttpServletResponse response) {
+        if(dict == null){
+            dict = new Dict();
+        }
+        Page<Dict> serSortInfoPage = new Page<>(request, response);
+        Page<Dict> page = dictService.findPage(serSortInfoPage, dict);
+        return new SuccResult(page);
+    }
 }
