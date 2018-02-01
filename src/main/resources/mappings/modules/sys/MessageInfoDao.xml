@@ -44,9 +44,103 @@
 		FROM sys_push_message a
 		WHERE a.receive_phone=#{receivePhone}
 		AND a.del_flag=#{delFlag}
+		AND a.is_success='yes'
 		ORDER BY push_time desc
 	</select>
 
+	<!--查询发送失败列表-->
+	<select id="findFailPage" resultType="MessageInfo">
+		SELECT
+		a.id AS id,
+		a.title AS title,
+		a.message AS message,
+		a.receive_phone AS receivePhone,
+		a.isread AS isRead,
+		a.target_type AS targetType,
+		a.target_id AS targetId,
+		a.push_time AS pushTime,
+		a.create_by AS createBy,
+		a.create_date AS createDate,
+		a.update_by AS updateBy,
+		a.is_success AS isSuccess,
+		a.update_date AS updateDate,
+		a.del_flag AS delFlag
+		FROM sys_push_message a
+		WHERE  a.del_flag=#{delFlag}
+		AND a.is_success='no'
+		ORDER BY push_time desc
+	</select>
+
+    <select id="getMessageById" resultType="MessageInfo">
+        SELECT
+        a.id AS id,
+        a.title AS title,
+        a.message AS message,
+        a.receive_phone AS receivePhone,
+        a.isread AS isRead,
+        a.target_type AS targetType,
+        a.target_id AS targetId,
+        a.is_success AS isSuccess,
+        a.push_time AS pushTime,
+        a.create_by AS createBy,
+        a.create_date AS createDate,
+        a.update_by AS updateBy,
+        a.update_date AS updateDate,
+        a.del_flag AS delFlag
+        FROM sys_push_message a
+        WHERE a.id = #{id}
+        AND a.del_flag= #{delFlag}
+    </select>
+
+    <select id="getOrderById" resultType="OrderInfo">
+        SELECT
+        a.id AS "id",
+        a.master_id AS "masterId",
+        a.order_type AS "orderType",
+        a.order_number AS "orderNumber",
+        a.org_id AS "orgId",
+        a.station_id AS "stationId",
+        a.major_sort AS "majorSort",
+
+        a.longitude AS "longitude",
+        a.latitude AS "latitude",
+        a.suggest_finish_time AS "suggestFinishTime",
+        a.service_hour AS "serviceHour",
+        a.service_status AS "serviceStatus",
+
+        a.pay_price AS "payPrice",
+        a.order_address_id AS "orderAddressId",
+        a.order_time AS "orderTime",
+        a.service_time AS "serviceTime",
+        a.finish_time AS "finishTime",
+        a.order_status AS "orderStatus",
+        a.order_source AS "orderSource",
+        a.pay_status AS "payStatus",
+        a.customer_id AS "customerId",
+        a.customer_remark AS "customerRemark",
+        a.customer_remark_pic AS "customerRemarkPic",
+        a.business_name AS "businessName",
+        a.business_phone AS "businessPhone",
+        a.business_remark AS "businessRemark",
+        a.business_remark_pic AS "businessRemarkPic",
+        a.shop_name AS "shopName",
+        a.shop_phone AS "shopPhone",
+        a.shop_addr AS "shopAddr",
+        a.shop_remark AS "shopRemark",
+        a.shop_remark_pic AS "shopRemarkPic",
+        a.order_remark AS "orderRemark",
+        a.order_remark_pic AS "orderRemarkPic",
+        a.order_content AS "orderContent",
+        a.cancel_reason AS "cancelReason",
+        a.joint_order_id AS "jointOrderId",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag"
+        FROM order_info a
+        WHERE a.id = #{id}
+    </select>
 	<!--新增-->
 	<insert id="insert">
 		INSERT INTO sys_push_message(
@@ -80,7 +174,18 @@
 	<!--修改推送时间-->
 	<update id="updPushTime">
 		UPDATE sys_push_message SET
-		push_time = #{pushTime}
+		<if test="pushTime != null and pushTime!='' ">
+			push_time = #{pushTime},
+		</if>
+		<if test="isSuccess != null and isSuccess!='' ">
+			is_success = #{isSuccess},
+		</if>
+		<if test="updateBy.id != null and updateBy.id!='' ">
+			update_by = #{updateBy.id},
+		</if>
+		<if test="updateDate != null and updateDate!='' ">
+			update_date = #{updateDate}
+		</if>
 		WHERE id = #{id} AND
 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>

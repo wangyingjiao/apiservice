@@ -78,6 +78,10 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             int flag = PushMessageUtil.pushMessage(messageInfo);
             if (flag==1){
                 messageInfo.setPushTime(new Date());
+                messageInfo.setIsSuccess("yes");
+                messageInfoDao.updPushTime(messageInfo);
+            }else {
+                messageInfo.setIsSuccess("no");
                 messageInfoDao.updPushTime(messageInfo);
             }
         }
@@ -135,5 +139,33 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             throw new ServiceException("你没有该消息");
         }
         return i;
+    }
+
+    public Page<MessageInfo> findFailPage(Page<MessageInfo> page, MessageInfo entity) {
+        entity.setPage(page);
+        page.setList(messageInfoDao.findFailPage(entity));
+        return page;
+    }
+
+    public OrderInfo getOrderById(String id) {
+        return messageInfoDao.getOrderById(id);
+    }
+
+    @Transactional(readOnly = false)
+    public int pushFailMessage( MessageInfo messageInfo) {
+        MessageInfo mi=messageInfoDao.getMessageById(messageInfo);
+        OrderInfo orderInfo=messageInfoDao.getOrderById(mi.getTargetId());
+        mi.setDeviceIds("community_tech_"+mi.getReceivePhone());
+        mi.setExtParameters("{\"type\":\""+mi.getTargetType()+"\",\"relate\":\""+orderInfo.getMajorSort()+"$."+orderInfo.getId()+"$."+mi.getId()+"\"}");
+        int flag = PushMessageUtil.pushMessage(mi);
+        if (flag==1){
+            mi.setIsSuccess("yes");
+            mi.preUpdate();
+            mi.setPushTime(new Date());
+            messageInfoDao.updPushTime(mi);
+            return 1;
+        }else {
+            return 0;
+        }
     }
 }

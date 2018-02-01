@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.sys.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
 
 import java.util.List;
@@ -26,4 +27,10 @@ public interface MessageInfoDao extends CrudDao<MessageInfo> {
     int updateMessage(MessageInfo messageInfo);
 
     void updPushTime(MessageInfo messageInfo);
+
+    List<MessageInfo> findFailPage(MessageInfo messageInfo);
+
+    OrderInfo getOrderById(String id);
+
+    MessageInfo getMessageById(MessageInfo messageInfo);
 }
