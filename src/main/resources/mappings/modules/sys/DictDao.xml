@@ -23,7 +23,7 @@
 					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%', #{description}, '%')</if>
 		</if>
-		ORDER BY type, sort, update_date
+		ORDER BY type, sort, create_date
 	</select>
 	<!--app  查询民族使用-->
 	<select id="appFindList" resultType="Dict">
@@ -52,7 +52,7 @@
 			* 
 		FROM sys_dict 
 		WHERE del_flag = #{DEL_FLAG_NORMAL} 
-		ORDER BY type, sort, update_date DESC
+		ORDER BY type, sort, create_date DESC
 	</select>
 
 	<select id="findName" resultType="Dict">

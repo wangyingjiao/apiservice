@@ -25,7 +25,7 @@
 				AND a.response_content LIKE concat('%',#{responseContent},'%')
 			</if>
 			<if test="isSuccess != null and isSuccess != ''">
-				AND a.is_success LIKE concat('%',#{isSuccess},'%')
+				AND a.is_success =#{isSuccess}
 			</if>
 		</where>
 		ORDER BY a.create_date DESC
