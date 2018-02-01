@@ -781,6 +781,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app改派保存
 	@Transactional(readOnly = false)
 	public int appDispatchTechSave(OrderInfo orderInfo) {
+		int insert =0;
 		//改派前技师ID
 		String dispatchTechId = orderInfo.getDispatchTechId();
 		//改派后技师id
@@ -803,26 +804,41 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		//根据订单技师  获取老派单 订单id和改派前技师id去查
 		OrderDispatch orderDispatch = dao.appGetOrderDispatch(orderInfo);
-
-		OrderDispatch orderDispatchUpdate = new OrderDispatch();
-		orderDispatchUpdate.setId(dispatchTechId);//ID
-		orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
-		orderDispatch.appPreUpdate();
-		//数据库将改派前技师派单 设为不可用
-		int update1 = orderDispatchDao.update(orderDispatch);
-		//将老派单改成无效  再新增
-		int insert =0;
-		if (update1 > 0){
-			OrderDispatch newDis = new OrderDispatch();
-			newDis.setTechId(techId);//技师ID
-			newDis.setOrderId(orderInfo.getId());//订单ID
-			newDis.setStatus("yes");//状态(yes：可用 no：不可用)
-			newDis.appreInsert();
-			insert = orderDispatchDao.insert(newDis);
-		}else {
-			throw new ServiceException("删除改派前技师派单失败");
+		//如果派单为空 说明订单不属于该技师
+		if(null == orderDispatch){
+			throw new ServiceException("订单不属于该技师！");
 		}
-		return insert;
+		if (StringUtils.isNotBlank(orderInfo.getServiceStatus()) && StringUtils.isNotBlank(orderInfo.getOrderStatus())) {
+			//订单服务状态为 wait_service:待服务 started:已上门 订单状态 waitdispatch:待派单;dispatched:已派单 可以改派
+			if ((orderInfo.getServiceStatus().equals("wait_service") || orderInfo.getServiceStatus().equals("started"))
+					&& (orderInfo.getOrderStatus().equals("waitdispatch") || orderInfo.getOrderStatus().equals("dispatched")) ) {
+
+				OrderDispatch orderDispatchUpdate = new OrderDispatch();
+				orderDispatchUpdate.setId(dispatchTechId);//ID
+				orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
+				orderDispatch.appPreUpdate();
+				//数据库将改派前技师派单 设为不可用
+				int update1 = orderDispatchDao.update(orderDispatch);
+				//将老派单改成无效  再新增
+
+				if (update1 > 0){
+					OrderDispatch newDis = new OrderDispatch();
+					newDis.setTechId(techId);//技师ID
+					newDis.setOrderId(orderInfo.getId());//订单ID
+					newDis.setStatus("yes");//状态(yes：可用 no：不可用)
+					newDis.appreInsert();
+					insert = orderDispatchDao.insert(newDis);
+				}else {
+					throw new ServiceException("删除改派前技师派单失败");
+				}
+				return insert;
+			}else {
+				//
+				throw new ServiceException("订单状态与服务状态不符合！");
+			}
+		}else {
+			throw new ServiceException("订单状态与服务状态不可为空！");
+		}
 	}
 
 	public List<OrderTimeList> timeDataList(OrderInfo orderInfo) {
