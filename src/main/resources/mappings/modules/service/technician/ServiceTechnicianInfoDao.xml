@@ -793,6 +793,7 @@
 			a.description AS experDesc,
 			a.life_pic AS imgUrlLife,
 			a.job_status AS jobStatus,
+			a.job_nature AS jobNature,
 			a.app_login_password AS password
 		FROM
 			tech_info a
