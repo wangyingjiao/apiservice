@@ -340,7 +340,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
-						List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
+						//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeList(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
 						while (it1.hasNext()) {
 							String work = (String) it1.next();
