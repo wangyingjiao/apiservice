@@ -63,6 +63,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         List<OrderDispatch> techList=orderInfo.getTechList();
         for (OrderDispatch odp:techList){
             messageInfo.setId(IdGen.uuid());
+            messageInfo.setTechId(odp.getTechId());
             messageInfo.setReceivePhone(odp.getTechPhone());
             messageInfo.setTargetId(orderInfo.getId());
             messageInfo.setCreateDate(new Date());
