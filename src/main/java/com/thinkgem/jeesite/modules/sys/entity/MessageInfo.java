@@ -27,10 +27,19 @@ public class MessageInfo extends DataEntity<MessageInfo> {
     private Date pushTime;      //推送时间
     private String extParameters;    //额外带参
     private String isSuccess;
+    private String techId;
 
     private String createTime;    //app展示的推送时间
     private String orderId; //订单id
     private String orderType;
+
+    public String getTechId() {
+        return techId;
+    }
+
+    public void setTechId(String techId) {
+        this.techId = techId;
+    }
 
     public String getIsSuccess() {
         return isSuccess;
