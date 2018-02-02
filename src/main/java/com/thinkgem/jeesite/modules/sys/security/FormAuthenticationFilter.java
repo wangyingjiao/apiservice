@@ -252,7 +252,7 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
 			if (null == cache) {
 				logger.info("=============FormAuthenticationFilter说明session过期请重新登录");
 				response.getWriter()
-						.print(JSON.toJSONString(new FailResult(2, "session过期请重新登录FormAuthenticationFilter过滤器")));
+						.print(JSON.toJSONString(new FailResult(2, "session过期请重新登录")));
 				return false;
 			}
 			//saveRequestAndRedirectToLogin(request, response);
