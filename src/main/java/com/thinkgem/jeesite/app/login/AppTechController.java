@@ -431,7 +431,7 @@ public class AppTechController extends BaseController {
 		Token token = (Token) request.getAttribute("token");
 		//根据消息的id 收件人查看
 		MessageInfo messageInfo=new MessageInfo();
-		messageInfo.setReceivePhone(token.getPhone());
+		messageInfo.setTechId(token.getTechId());
 		Page<MessageInfo> list = messageInfoService.findList(page, messageInfo);
 		long count = page.getCount();
 		int pageSize = page.getPageSize();

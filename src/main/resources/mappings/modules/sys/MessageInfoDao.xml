@@ -42,7 +42,7 @@
 		a.update_date AS updateDate,
 		a.del_flag AS delFlag
 		FROM sys_push_message a
-		WHERE a.receive_phone=#{receivePhone}
+		WHERE a.tech_id=#{techId}
 		AND a.del_flag=#{delFlag}
 		AND a.is_success='yes'
 		ORDER BY push_time desc
