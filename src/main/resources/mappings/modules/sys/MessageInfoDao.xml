@@ -48,6 +48,16 @@
 		ORDER BY push_time desc
 	</select>
 
+	<!--查看未读消息数量-->
+	<select id="getCount" resultType="int">
+		SELECT
+			COUNT(1)
+		FROM sys_push_message a
+		WHERE a.tech_id=#{techId}
+		AND a.del_flag=#{delFlag}
+		AND a.is_success='no'
+	</select>
+
 	<!--查询发送失败列表-->
 	<select id="findFailPage" resultType="MessageInfo">
 		SELECT

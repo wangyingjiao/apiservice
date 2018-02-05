@@ -453,6 +453,20 @@ public class AppTechController extends BaseController {
 		return new AppSuccResult(0,map,"查看消息列表");
 	}
 
+	//app未读消息数量
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/getCount", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation(value = "消息列表", notes = "消息列表")
+	public AppResult getCount(HttpServletRequest request, HttpServletResponse response) {
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		//根据登陆技师的id去查询对应的未读消息数量
+		MessageInfo messageInfo=new MessageInfo();
+		messageInfo.setTechId(token.getTechId());
+		int count = messageInfoService.getCount(messageInfo);
+		return new AppFailResult(0,count,"未读消息数量");
+	}
+
 	//消息已读
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/updateMessage", method = {RequestMethod.POST, RequestMethod.GET})

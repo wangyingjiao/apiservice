@@ -21,6 +21,8 @@ public interface MessageInfoDao extends CrudDao<MessageInfo> {
     MessageInfo get(MessageInfo messageInfo);
     //app 列表查看消息
     List<MessageInfo> findList(MessageInfo messageInfo);
+    //app未读消息数量
+    int getCount(MessageInfo messageInfo);
     //增加
     int insert(MessageInfo messageInfo);
     //编辑

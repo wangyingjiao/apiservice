@@ -57,6 +57,12 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         return page;
     }
 
+    //app未读消息数量
+    public int getCount(MessageInfo messageInfo){
+        int count = messageInfoDao.getCount(messageInfo);
+        return count;
+    }
+
     @Transactional(readOnly = false)
     public int insertAndPush(OrderInfo orderInfo, MessageInfo messageInfo){
 
