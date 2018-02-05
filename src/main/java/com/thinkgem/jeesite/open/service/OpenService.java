@@ -682,8 +682,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
 				originPrice = originPrice.add(price);//商品总价
 				openPrice = openPrice.add(new BigDecimal(pay_price));
-				sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
-				goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
+				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
+				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
 
 				int goodsNum = buy_num;		// 订购商品数
 				Double convertHours = commodity.getConvertHours();		// 折算时长
@@ -774,7 +774,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setCustomerId(null);    // 客户ID
 		orderInfo.setCustomerRemark(remark);   // 客户备注
 		orderInfo.setCustomerRemarkPic(remark_pic_String);    //客户备注图片
-		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
+		orderInfo.setOrderContent(sortItemNames + goodsNames);  //下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
 		orderInfo.setJointOrderId(gasq_order_id);//国安社区订单编号
 		orderInfo.setShopId(store_id);
 		orderInfo.setShopName(shop_name);
