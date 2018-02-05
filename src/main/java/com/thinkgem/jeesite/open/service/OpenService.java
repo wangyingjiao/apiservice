@@ -50,6 +50,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	@Autowired
 	OrderAddressDao orderAddressDao;
 	@Autowired
+    OrderCustomInfoDao orderCustomInfoDao;
+	@Autowired
 	OrderDispatchDao orderDispatchDao;
 	@Autowired
 	OrderGoodsDao orderGoodsDao;
@@ -452,10 +454,20 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("保存订单地址表信息失败");
 		}
 
+        // customer_info  客户表---------------------------------------------------------------------------------
+        OrderCustomInfo orderCustomInfo = new OrderCustomInfo();
+        try{
+            orderCustomInfo = openCreateForCustom(info);
+        }catch (ServiceException ex){
+            throw new ServiceException(ex.getMessage());
+        }catch (Exception e){
+            throw new ServiceException("保存客户表信息失败");
+        }
+
 		// order_info  子订单信息 -------------------------------------------------------------------------------
 		OrderInfo orderInfo = new OrderInfo();
 		try{
-			orderInfo = openCreateForOrder(info, masterInfo, orderAddress);
+			orderInfo = openCreateForOrder(info, masterInfo, orderAddress, orderCustomInfo);
 		}catch (ServiceException ex){
 			throw new ServiceException(ex.getMessage());
 		}catch (Exception e){
@@ -519,7 +531,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		return map;
 	}
 
-	/**
+    /**
 	 * 订单创建 - 支付信息
 	 * @param masterInfo
 	 * @param openPrice
@@ -596,7 +608,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param orderAddress
 	 * @return
 	 */
-	private OrderInfo openCreateForOrder(OpenCreateRequest info, OrderMasterInfo masterInfo, OrderAddress orderAddress) {
+	private OrderInfo openCreateForOrder(OpenCreateRequest info, OrderMasterInfo masterInfo, OrderAddress orderAddress, OrderCustomInfo orderCustomInfo) {
 		String store_id = info.getStore_id();//门店ID
 		if(null == store_id){
 			throw new ServiceException("门店ID不能为空");
@@ -715,7 +727,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 
 		//通过对接方E店CODE获取机构
-		BasicOrganization organizationSerch = new BasicOrganization();
+        String orgId = orderCustomInfo.getOrgId();
+		/*BasicOrganization organizationSerch = new BasicOrganization();
 		organizationSerch.setJointEshopCode(eshop_code);
 		List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(organizationSerch);
 		String orgId = "";
@@ -723,7 +736,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			orgId = organization.get(0).getId();
 		}else{
 			throw new ServiceException("未找到E店CODE对应的机构信息");
-		}
+		}*/
 		//通过门店ID获取服务站
 		BasicServiceStation stationSerch = new BasicServiceStation();
 		stationSerch.setStoreId(store_id);
@@ -771,7 +784,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setOrderStatus("dispatched");   // 订单状态(waitdispatch:待派单dispatched:已派单cancel:已取消started:已上门finish:已完成success:已成功stop:已暂停)
 		orderInfo.setOrderSource("gasq");  // 订单来源(own:本机构 gasq:国安社区)
 		orderInfo.setPayStatus("waitpay");   //支付状态（waitpay:待支付  payed：已支付） 冗余字段
-		orderInfo.setCustomerId(null);    // 客户ID
+		orderInfo.setCustomerId(orderCustomInfo.getId());    // 客户ID
 		orderInfo.setCustomerRemark(remark);   // 客户备注
 		orderInfo.setCustomerRemarkPic(remark_pic_String);    //客户备注图片
 		orderInfo.setOrderContent(sortItemNames + goodsNames);  //下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
@@ -950,6 +963,62 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("技师数量不满足当前商品的需求人数");
 		}
 	}
+
+    /**
+     * 客户表
+     * @param info
+     * @return
+     */
+    private OrderCustomInfo openCreateForCustom(OpenCreateRequest info) {
+        String phone = info.getPhone();//用户电话
+        String province_code = info.getProvince_code();//省CODE
+        String city_code = info.getCity_code();//市CODE
+        String area_code = info.getArea_code();//区CODE
+        String detailAddress = info.getAddress();//服务地址：小区+详细地址
+
+        String latitude = info.getLatitude();//服务地址：纬度
+        String longitude = info.getLongitude();//服务地址：经度
+
+        String eshop_code = info.getEshop_code();//E店编码
+        if(null == eshop_code){
+            throw new ServiceException("E店编码不能为空");
+        }
+        //通过对接方E店CODE获取机构
+        BasicOrganization organizationSerch = new BasicOrganization();
+        organizationSerch.setJointEshopCode(eshop_code);
+        List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(organizationSerch);
+        String orgId = "";
+        if(null != organization && organization.size() > 0){
+            orgId = organization.get(0).getId();
+        }else{
+            throw new ServiceException("未找到E店CODE对应的机构信息");
+        }
+        //--------------------------------------
+        OrderCustomInfo orderCustomInfo = new OrderCustomInfo();
+        orderCustomInfo.setName("");//姓名
+        orderCustomInfo.setPhone(phone);//手机号
+        orderCustomInfo.setEmail("");//邮编
+        orderCustomInfo.setProvinceCode(province_code);//省_区号
+        orderCustomInfo.setCityCode(city_code);//市_区号
+        orderCustomInfo.setAreaCode(area_code);//区_区号
+        orderCustomInfo.setAddress(detailAddress);//详细地址
+        orderCustomInfo.setAddrLatitude(latitude);//服务地址：纬度
+        orderCustomInfo.setAddrLongitude(longitude);//服务地址：经度
+        orderCustomInfo.setSource("gasq");//来源   本机构:own    国安社区:gasq',
+        orderCustomInfo.setOrgId(orgId);
+
+        User user = new User();
+        user.setId("gasq001");
+        orderCustomInfo.setId(IdGen.uuid());
+        orderCustomInfo.setCreateBy(user);
+        orderCustomInfo.setCreateDate(new Date());
+        orderCustomInfo.setUpdateBy(user);
+        orderCustomInfo.setUpdateDate(orderCustomInfo.getCreateDate());
+
+        orderCustomInfoDao.insert(orderCustomInfo);
+
+        return orderCustomInfo;
+    }
 
 	/**
 	 * 订单创建 - 订单地址表
