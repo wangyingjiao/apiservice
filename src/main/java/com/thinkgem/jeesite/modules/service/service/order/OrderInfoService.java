@@ -9,17 +9,19 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Sets;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.utils.map.GaoDeMapUtil;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
+import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
+import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
+import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -27,16 +29,17 @@ import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnici
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
+import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
-import com.thinkgem.jeesite.open.entity.OpenSendSaveOrderResponse;
-import com.thinkgem.jeesite.open.send.OpenSendUtil;
+import com.thinkgem.jeesite.open.entity.OpenCreateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
 
 /**
  * 子订单Service
@@ -48,11 +51,34 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
 public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 	@Autowired
+	ServiceTechnicianInfoDao serviceTechnicianInfoDao;
+
+	@Autowired
+	OrderMasterInfoDao orderMasterInfoDao;
+	@Autowired
+	OrderInfoDao orderInfoDao;
+	@Autowired
+	OrderCustomInfoDao orderCustomInfoDao;
+	@Autowired
+	OrderAddressDao orderAddressDao;
+	@Autowired
 	OrderDispatchDao orderDispatchDao;
 	@Autowired
-    BasicServiceStationDao basicServiceStationDao;
+	OrderGoodsDao orderGoodsDao;
 	@Autowired
-	ServiceTechnicianInfoDao serviceTechnicianInfoDao;
+	OrderPayInfoDao orderPayInfoDao;
+	@Autowired
+	AreaDao areaDao;
+	@Autowired
+	BasicOrganizationDao basicOrganizationDao;
+	@Autowired
+	BasicServiceStationDao basicServiceStationDao;
+	@Autowired
+	BasicStoreDao basicStoreDao;
+
+
+
+
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -1407,54 +1433,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 	}
 
-	public List<OrderGoods> editGoodsInit(OrderInfo orderInfo) {
-		List<OrderGoods>  list = new ArrayList<OrderGoods>();
-		List<OrderGoods> orderGoodsList = dao.getOrderGoodsList(orderInfo);    //订单已选商品信息
-		List<OrderGoods> goodsList = dao.getGoodsList(orderInfo);    //服务项目下所有商品信息
-
-		OrderGoods houseInfo = new OrderGoods();
-
-		//得到除了居室以外的商品及选择信息
-		if(goodsList!=null && goodsList.size()!=0){
-			List<OrderGoodsTypeHouse> houses = new ArrayList<OrderGoodsTypeHouse>();
-			for (OrderGoods goods : goodsList){//循环所有商品
-				if("house".equals(goods.getGoodsType())){//按居室的商品
-					OrderGoodsTypeHouse house = new OrderGoodsTypeHouse();
-					house.setId(goods.getGoodsId());
-					house.setName(goods.getGoodsName());
-					houses.add(house);
-				}else{
-					if(orderGoodsList!=null && orderGoodsList.size()!=0){
-						for (OrderGoods orderGoods : orderGoodsList){//循环订单选择商品
-							if(goods.getGoodsId().equals(orderGoods.getGoodsId())){//同一个商品
-								goods.setGoodsNum(orderGoods.getGoodsNum());
-								goods.setGoodsChecked(true);
-							}
-						}
-					}
-					list.add(goods);
-				}
-			}
-			//得到居室商品及选择信息
-			for (OrderGoods orderGoods : orderGoodsList){//循环订单选择商品
-				if("house".equals(orderGoods.getGoodsType())){//按居室的商品
-					houseInfo.setItemId(orderGoods.getItemId());
-					houseInfo.setItemName(orderGoods.getItemName());
-					houseInfo.setGoodsId(orderGoods.getGoodsId());
-					houseInfo.setGoodsName(orderGoods.getGoodsName());
-					houseInfo.setPayPrice(orderGoods.getPayPrice());
-					houseInfo.setMinPurchase(orderGoods.getMinPurchase());
-					houseInfo.setGoodsType(orderGoods.getGoodsType());
-					houseInfo.setGoodsNum(orderGoods.getGoodsNum());
-					houseInfo.setGoodsChecked(true);
-					houseInfo.setHouses(houses);
-					list.add(houseInfo);
-				}
-			}
-		}
-
-		return list;
-	}
 	//app订单列表
 	public Page<OrderInfo> appFindPage(Page<OrderInfo> page, OrderInfo orderInfo) {
 		orderInfo.setPage(page);
@@ -1636,5 +1614,631 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	public String getOrderSnById(String orderId) {
     	OrderInfo orderInfo = get(orderId);
 		return orderInfo.getOrderNumber();
+	}
+
+	@Transactional(readOnly = false)
+	public HashMap<String,Object> createOrder(OrderInfo info) {
+		// 一期暂定-普通订单
+		String order_type = "common";//订单类型：common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单
+
+		// order_master_info  订单主表 ---------------------------------------------------------------------------
+		OrderMasterInfo masterInfo = new OrderMasterInfo();
+		try {
+			masterInfo = openCreateForMaster(info,order_type);
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("保存订单主表信息失败");
+		}
+
+		// order_address  订单地址表---------------------------------------------------------------------------------
+		OrderAddress orderAddress = new OrderAddress();
+		try{
+			orderAddress = openCreateForAddress(info);
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("保存订单地址表信息失败");
+		}
+
+		// order_info  子订单信息 -------------------------------------------------------------------------------
+		OrderInfo orderInfo = new OrderInfo();
+		try{
+			orderInfo = openCreateForOrder(info, masterInfo, orderAddress);
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("保存子订单信息表信息失败!");
+		}
+		if(null == orderInfo){
+			throw new ServiceException("保存子订单信息表信息失败!");
+		}
+
+		// order_dispatch -派单表----------------------------------------------------------------------------------
+		List<OrderDispatch> orderDispatches = orderInfo.getTechList();//派单信息
+		if(null != orderDispatches && orderDispatches.size() > 0) {
+			try{
+				openCreateForDispatch(orderInfo, orderDispatches);
+			}catch (ServiceException ex){
+				throw new ServiceException(ex.getMessage());
+			}catch (Exception e){
+				throw new ServiceException("保存派单信息表失败!");
+			}
+		}else {
+			throw new ServiceException("未找到派单信息");
+		}
+
+		// order_goods-订单服务关联--------------------------------------------------------------------
+		List<OrderGoods> orderGoods = orderInfo.getGoodsInfoList();//商品信息
+		if(null != orderGoods && orderGoods.size() > 0){
+			try{
+				openCreateForGoods(orderInfo, orderGoods);
+			}catch (ServiceException ex){
+				throw new ServiceException(ex.getMessage());
+			}catch (Exception e){
+				throw new ServiceException("保存订单商品信息表失败!");
+			}
+		}else {
+			throw new ServiceException("未找到商品信息");
+		}
+
+		// order_pay_info  支付信息 ------------------------------------------------------------------------------
+		try{
+			String originPrice = orderInfo.getOriginPrice();//对接总价
+			openCreateForPay( masterInfo, originPrice);
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("保存订单支付信息表失败!");
+		}
+
+		//------------------------------------------------------------------------------------------------
+		OpenCreateResponse response = new OpenCreateResponse();
+
+		OrderInfo orderInfoMsg = new OrderInfo();
+		orderInfoMsg.setId(orderInfo.getId());
+		orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+		orderInfoMsg.setTechList(orderDispatches);
+
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("response",response);
+		map.put("orderInfoMsg",orderInfoMsg);
+		return map;
+	}
+
+	/**
+	 * 订单创建 - 支付信息
+	 * @param masterInfo
+	 * @param originPrice
+	 */
+	private void openCreateForPay(OrderMasterInfo masterInfo, String originPrice) {
+		OrderPayInfo payInfo = new OrderPayInfo();
+		payInfo.setPayNumber(DateUtils.getDateAndRandomTenNum("02"));//支付编号
+		payInfo.setMasterId(masterInfo.getId());//主订单ID',
+		payInfo.setPayPlatform(null);//支付平台(cash:现金 wx_pub_qr:微信扫码 wx:微信 alipay_qr:支付宝扫码 alipay:支付宝 pos:银行卡 balance:余额)
+		payInfo.setPayMethod(null);//支付方式(online:在线 offline:货到付款)',
+		payInfo.setPayTime(null);//支付时间',
+		payInfo.setPayAccount(originPrice);//支付总额',
+		payInfo.setPayStatus("waitpay");//支付状态(waitpay:待支付 payed:已支付)',
+		payInfo.preInsert();
+
+		orderPayInfoDao.insert(payInfo);
+	}
+
+	/**
+	 * 订单创建 - 订单服务关联
+	 * @param orderGoods
+	 */
+	private void openCreateForGoods(OrderInfo orderInfo, List<OrderGoods> orderGoods) {
+		for(OrderGoods goods : orderGoods){
+			goods.setOrderId(orderInfo.getId());//订单ID
+			goods.preInsert();
+
+			orderGoodsDao.insert(goods);
+		}
+	}
+
+	/**
+	 * 订单创建 - 派单表
+	 * @param orderInfo
+	 * @param orderDispatches
+	 */
+	private void openCreateForDispatch(OrderInfo orderInfo, List<OrderDispatch> orderDispatches) {
+		for(OrderDispatch dispatch : orderDispatches){
+			OrderDispatch orderDispatch = new OrderDispatch();
+			orderDispatch.setOrderId(orderInfo.getId());//订单ID
+			orderDispatch.setTechId(dispatch.getTechId());//技师ID
+			orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
+			orderDispatch.preInsert();
+
+			orderDispatchDao.insert(orderDispatch);
+		}
+	}
+
+	/**
+	 * 订单创建 - 子订单信息
+	 * @param info
+	 * @param masterInfo
+	 * @param orderAddress
+	 * @return
+	 */
+	private OrderInfo openCreateForOrder(OrderInfo info, OrderMasterInfo masterInfo, OrderAddress orderAddress) {
+		String customerId = info.getCustomerId();
+		String remark = info.getCustomerRemark();//订单备注(用户备注)
+		List<String> remark_pic = info.getCustomerRemarkPics();//订单备注(用户备注)
+		String remark_pic_String = "";
+		if(null != remark_pic){
+			remark_pic_String = JsonMapper.toJsonString(remark_pic);
+		}
+		Date servie_time = info.getServiceTime();//服务时间
+		if(null == servie_time){
+			throw new ServiceException("服务时间不能为空");
+		}
+
+		String orgId = orderAddress.getOrgId();
+		String stationId = orderAddress.getStationId();
+		String latitude = orderAddress.getAddrLatitude();//服务地址：纬度
+		String longitude = orderAddress.getAddrLongitude();//服务地址：经度
+
+		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
+		BigDecimal originPrice = new BigDecimal(0);//商品总价
+
+		String sortItemNames = "";//服务分类+服务项目
+		String goodsNames = "";//商品名称
+
+		int techDispatchNum = 0;//派人数量
+		double orderTotalTime = 0.0;//订单所需时间
+		double serviceHour = 0.0;//建议服务时长（小时）
+
+		List<OrderGoods> orderGoodsList = info.getGoodsInfoList();
+		if(null != orderGoodsList && orderGoodsList.size() > 0){
+			OrderGoods goods = new OrderGoods();
+			for(OrderGoods orderGoodsInfo : orderGoodsList){
+				String cate_goods_id = orderGoodsInfo.getId();
+				if("house".equals(orderGoodsInfo.getGoodsType())) {//按居室的商品
+					cate_goods_id = orderGoodsInfo.getHouseId();
+				}
+				int buy_num = orderGoodsInfo.getGoodsNum();
+
+				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
+				if(null == commodity){
+					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
+				}
+				goods = new OrderGoods();
+				goods.setSortId(commodity.getSortId());//服务分类ID
+				goods.setItemId(commodity.getItemId());//服务项目ID
+				goods.setItemName(commodity.getItemName());//项目名称
+				goods.setGoodsId(commodity.getId());//商品ID
+				goods.setGoodsName(commodity.getName());//商品名称
+				goods.setGoodsNum(buy_num);//订购商品数
+				goods.setGoodsType(commodity.getType());
+				goods.setGoodsUnit(commodity.getUnit());
+				goods.setPayPrice(commodity.getPrice().toString());//对接后单价
+				goods.setOriginPrice(commodity.getPrice().toString());//原价
+				goods.setMajorSort(commodity.getMajorSort());
+
+				goods.setConvertHours(commodity.getConvertHours());		// 折算时长
+				goods.setStartPerNum(commodity.getStartPerNum());   		//起步人数（第一个4小时时长派人数量）
+				goods.setCappingPerNum(commodity.getCappingPerNum());		//封项人数
+
+				orderGoods.add(goods);
+				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
+				originPrice = originPrice.add(price);//商品总价
+				sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
+				goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
+
+				int goodsNum = buy_num;		// 订购商品数
+				Double convertHours = commodity.getConvertHours();		// 折算时长
+				int startPerNum = commodity.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
+				int cappinPerNum = commodity.getCappingPerNum();		//封项人数
+
+				int techNum = 0;//当前商品派人数量
+				int addTechNum=0;
+				Double goodsTime = convertHours * goodsNum;//折算时长 * 订购商品数
+				orderTotalTime = orderTotalTime + goodsTime;//订单商品总时长
+
+				if(goodsTime > 4){//每4小时增加1人
+					BigDecimal b1 = new BigDecimal(goodsTime);
+					BigDecimal b2 = new BigDecimal(new Double(4));
+					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+				}
+				techNum = startPerNum + addTechNum;
+				if(techNum > cappinPerNum){//每个商品的人数
+					techNum = cappinPerNum;
+				}
+				if(techNum > techDispatchNum){//订单的最大人数
+					techDispatchNum = techNum;
+				}
+			}
+			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
+			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
+		}else{
+			throw new ServiceException("商品信息不能为空");
+		}
+
+		//通过对接方E店CODE获取机构
+		BasicOrganization organization = basicOrganizationDao.get(orgId);
+		String eshop_code = "";
+		if(null != organization){
+			eshop_code = organization.getJointEshopCode();
+		}
+
+		//--------------------------------------------------
+		OrderInfo orderInfo = new OrderInfo();
+		orderInfo.setMasterId(masterInfo.getId());//主订单ID
+		orderInfo.setOrderType("common");//订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
+		orderInfo.setOrderNumber(DateUtils.getDateAndRandomTenNum("01")); // 订单编号
+		orderInfo.setOrgId(orgId);  //所属服务机构ID
+		orderInfo.setStationId(stationId);        //服务站id
+		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
+		orderInfo.setPayPrice(originPrice.toString());            //实际付款价格
+		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
+		orderInfo.setOrderAddressId(orderAddress.getId());  // 订单地址ID
+		orderInfo.setLatitude(latitude);                //服务地址  纬度
+		orderInfo.setLongitude(longitude);         //服务地址  经度
+		orderInfo.setOrderTime(DateUtils.parseDate(DateUtils.getDateTime()));    //下单时间
+		orderInfo.setServiceTime(DateUtils.parseDate(servie_time));     //上门时间（服务时间）
+		Double serviceSecond = serviceHour * 3600;
+		orderInfo.setFinishTime(DateUtils.addSeconds(DateUtils.parseDate(servie_time),serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
+		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(DateUtils.parseDate(servie_time),serviceSecond.intValue()));              //建议完成时间',
+		orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
+		orderInfo.setServiceStatus("wait_service");   // 服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+		orderInfo.setOrderStatus("dispatched");   // 订单状态(waitdispatch:待派单dispatched:已派单cancel:已取消started:已上门finish:已完成success:已成功stop:已暂停)
+		orderInfo.setOrderSource("own");  // 订单来源(own:本机构 gasq:国安社区)
+		orderInfo.setPayStatus("waitpay");   //支付状态（waitpay:待支付  payed：已支付） 冗余字段
+		orderInfo.setCustomerId(customerId);    // 客户ID
+		orderInfo.setCustomerRemark(remark);   // 客户备注
+		orderInfo.setCustomerRemarkPic(remark_pic_String);    //客户备注图片
+		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
+		orderInfo.setEshopCode(eshop_code);
+		orderInfo.preInsert();
+		orderInfoDao.insert(orderInfo);
+
+		orderInfo.setGoodsInfoList(orderGoods);//商品信息
+
+		try {
+			List<OrderDispatch> techList = info.getTechList();
+			if(techList == null || techList.size() == 0) {
+				techList = openCreateForOrderFindDispatchList(orderInfo, techDispatchNum, serviceSecond);//获取派单技师
+			}
+			orderInfo.setTechList(techList);//派单技师List
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("派单失败");
+		}
+
+		return orderInfo;
+	}
+
+	/**
+	 * 订单创建 - 子订单信息 - 获取派单技师
+	 * @param orderInfo
+	 * @return
+	 */
+	private List<OrderDispatch> openCreateForOrderFindDispatchList(OrderInfo orderInfo,int techDispatchNum,Double serviceSecond){
+
+		List<OrderGoods> goodsInfoList = orderInfo.getGoodsInfoList(); //取得订单服务信息
+		String orgId = orderInfo.getOrgId();
+		String stationId = orderInfo.getStationId();//服务站ID
+		Date serviceTime = orderInfo.getServiceTime();//服务时间
+		Date finishTime = orderInfo.getFinishTime();//完成时间
+
+		//取得技师List
+		OrderDispatch serchInfo = new OrderDispatch();
+		//展示当前下单客户所在服务站的所有可服务的技师
+		serchInfo.setStationId(stationId);
+		//（1）会此技能的
+		SerSkillSort serchSkillSort = new SerSkillSort();
+		serchSkillSort.setOrgId(orgId);
+		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+		String skillId = "";
+		List<SerSkillSort> skillSortList = orderInfoDao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		if(skillSortList!=null && skillSortList.size()==1){
+			skillId = skillSortList.get(0).getSkillId();
+		}else{
+			throw new ServiceException("未找到商品需求的技能信息");
+		}
+		if(null == skillId){
+			throw new ServiceException("未找到当前商品对应的技能信息");
+		}
+		serchInfo.setSkillId(skillId);
+		//（2）上线、在职
+		serchInfo.setTechStatus("yes");
+		serchInfo.setJobStatus("online");
+		//自动派单 全职 ; 手动派单没有条件
+		serchInfo.setJobNature("full_time");
+		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
+		//serchInfo.setOrderId(orderInfo.getId());
+		//serchInfo.setTechName(techName);
+		//serchInfo.setOrderId(orderInfo.getId());
+		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
+
+		if(techList== null || techList.size() < techDispatchNum){//技师数量不够
+			throw new ServiceException("技师数量不满足当前商品的需求人数");
+		}
+
+		//（3）考虑技师的工作时间
+		//取得当前机构下工作时间包括服务时间的技师
+		serchInfo.setWeek(DateUtils.getWeekNum(serviceTime));
+		serchInfo.setStartTime(serviceTime);
+		serchInfo.setEndTime(finishTime);
+		List<String> workTechIdList = orderInfoDao.getTechByWorkTime(serchInfo);
+		//（4）考虑技师的休假时间
+		List<String> holidayTechIdList = orderInfoDao.getTechByHoliday(serchInfo);
+
+		List<OrderDispatch> techListRe = new ArrayList<>();
+		List<OrderDispatch> beforTimeCheckTechList = new ArrayList<OrderDispatch>();
+		List<String> beforTimeCheckTechIdList = new ArrayList<String>();
+		if(techList != null){
+			for(OrderDispatch tech : techList){//有工作时间并且没有休假的技师 有时间接单 还未考虑是否有订单
+				if((workTechIdList!=null && workTechIdList.contains(tech.getTechId()))
+						&& (holidayTechIdList == null || (holidayTechIdList!=null && !holidayTechIdList.contains(tech.getTechId()))) ){
+					beforTimeCheckTechList.add(tech);
+					beforTimeCheckTechIdList.add(tech.getTechId());
+				}
+			}
+		}
+		if(beforTimeCheckTechIdList.size() != 0){
+			serchInfo.setTechIds(beforTimeCheckTechIdList);
+			//今天的订单
+			serchInfo.setStartTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 00:00:00"));
+			serchInfo.setEndTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 23:59:59"));
+			//（5）考虑技师是否已有订单" //去除有订单并且时间冲突的技师
+			List<OrderDispatch> orderTechList = orderInfoDao.getTechByOrder(serchInfo);//订单结束时间在当前订单上门时间前90分钟之后的技师列表
+
+			List<String> timeCheckDelTechIdList = new ArrayList<String>();
+
+			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
+			/*if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
+					Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) < 14) {
+				//可以接单的时间则为：40分钟+路上时间+富余时间
+				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
+			} else {
+				//可以接单的时间则为：路上时间+富余时间
+				intervalTimeS = 15 * 60 + 10 * 60;
+			}*/
+
+			int intervalTimeE =  15 * 60 + 10 * 60;//必须间隔时间 秒
+			/*if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
+					Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
+				//可以接单的时间则为：40分钟+路上时间+富余时间
+				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+			} else {
+				//可以接单的时间则为：路上时间+富余时间
+				intervalTimeE = 15 * 60 + 10 * 60;
+			}*/
+
+			Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
+			Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
+
+			for(OrderDispatch orderTech : orderTechList){
+				//（1）路上时间：计算得出，--按照骑行的时间计算 --> 15MIN
+				//		上一单的用户地址与下一单用户地址之间的距离，则可以接单的时间为：路上时间+富余时间
+				//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
+				//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
+				//（4）富余时间定为10分钟"
+
+				if(!DateUtils.checkDatesRepeat(checkServiceTime,checkFinishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
+					timeCheckDelTechIdList.add(orderTech.getTechId());
+				}
+			}
+			for(OrderDispatch tech : beforTimeCheckTechList){
+				if(!timeCheckDelTechIdList.contains(tech.getTechId())){
+					techListRe.add(tech);
+				}
+			}
+
+			if(techListRe.size() < techDispatchNum){//技师数量不够
+				throw new ServiceException("技师数量不满足当前商品的需求人数");
+			}
+
+			//一个自然月内，根据当前服务站内各个技师的订单数量，优先分配给订单数量少的技师
+			List<String> serchTechIds = new ArrayList<>();
+			for(OrderDispatch tech :techListRe){
+				serchTechIds.add(tech.getTechId());
+			}
+			Date monthFristDay = DateUtils.getMonthFristDay(serviceTime);
+			Date monthLastDay = DateUtils.getMonthLastDay(serviceTime);
+			OrderDispatch serchTechInfo = new OrderDispatch();
+			serchTechInfo.setStartTime(monthFristDay);
+			serchTechInfo.setEndTime(monthLastDay);
+			serchTechInfo.setTechIds(serchTechIds);
+			List<OrderDispatch> techListOrderByNum = orderInfoDao.getTechListOrderByNum(serchTechInfo);//订单数量少的技师
+			List<OrderDispatch> dispatchTechs = new ArrayList<>();
+			for(int i=0;i<techDispatchNum;i++){//订单数量少的技师  订单需要技师数量
+				dispatchTechs.add(techListOrderByNum.get(i));
+			}
+			return dispatchTechs;
+		}else {
+			throw new ServiceException("技师数量不满足当前商品的需求人数");
+		}
+	}
+
+	/**
+	 * 订单创建 - 订单地址表
+	 * @param info
+	 * @return
+	 */
+	private OrderAddress openCreateForAddress(OrderInfo info) {
+		String customerId = info.getCustomerId();
+		if(StringUtils.isBlank(customerId)){
+			throw new ServiceException("未找到客户信息");
+		}
+		OrderCustomInfo customInfo = orderCustomInfoDao.get(customerId);
+		if(null == customInfo){
+			throw new ServiceException("未找到客户信息");
+		}
+		String name = customInfo.getName();
+		String phone = customInfo.getPhone();//用户电话
+		String province_code = customInfo.getProvinceCode();//省CODE
+		String city_code = customInfo.getCityCode();//市CODE
+		String area_code = customInfo.getAreaCode();//区CODE
+		String detailAddress = customInfo.getAddress();//服务地址：小区+详细地址
+
+		//省名称
+		String provinceName = "";
+		//市名称
+		String cityName = "";
+		//区名称
+		String areaName = "";
+
+		if(null != province_code) {
+			List<Area> provinceList = areaDao.getNameByCode(province_code);
+			if (provinceList != null && provinceList.size() > 0) {
+				provinceName = provinceList.get(0).getName();
+			}
+		}
+		if(null == city_code) {
+			List<Area> cityList = areaDao.getNameByCode(city_code);
+			if (cityList != null && cityList.size() > 0) {
+				cityName = cityList.get(0).getName();
+			}
+		}
+		if(null == area_code) {
+			List<Area> areaList = areaDao.getNameByCode(area_code);
+			if (areaList != null && areaList.size() > 0) {
+				areaName = areaList.get(0).getName();
+			}
+		}
+		String address = "";
+		if(StringUtils.isNotBlank(provinceName) && StringUtils.isNotBlank(cityName) && StringUtils.isNotBlank(areaName)){
+			address = provinceName + cityName + areaName + detailAddress;
+		}
+
+		//--------------------------------------
+		OrderAddress orderAddress = new OrderAddress();
+		orderAddress.setName(name);//姓名
+		orderAddress.setPhone(phone);//手机号
+		orderAddress.setZipcode("");//邮编
+		orderAddress.setProvinceCode(province_code);//省_区号
+		orderAddress.setCityCode(city_code);//市_区号
+		orderAddress.setAreaCode(area_code);//区_区号
+		orderAddress.setDetailAddress(detailAddress);//详细地址
+		orderAddress.setAddress(address);//收货人完整地址
+		orderAddress.preInsert();
+		orderAddressDao.insert(orderAddress);
+
+		orderAddress.setOrgId(customInfo.getOrgId());//客户所属机构
+		orderAddress.setStationId(customInfo.getStationId());//客户所属服务站
+		orderAddress.setAddrLatitude(customInfo.getAddrLatitude());//纬度
+		orderAddress.setAddrLongitude(customInfo.getAddrLongitude());//经度
+		return orderAddress;
+	}
+
+	/**
+	 * 订单创建 - 订单主表
+	 * @param info
+	 * @return
+	 */
+	private OrderMasterInfo openCreateForMaster(OrderInfo info,String order_type) {
+		OrderMasterInfo masterInfo = new OrderMasterInfo();
+		masterInfo.setOrderType(order_type);//订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
+		masterInfo.preInsert();
+		orderMasterInfoDao.insert(masterInfo);
+		return masterInfo;
+	}
+
+	/**
+	 * 根据ID查找客户
+	 * @param info
+	 * @return
+	 */
+	public OrderCustomInfo findCustomerById(OrderCustomInfo info) {
+		OrderCustomInfo customInfo = orderCustomInfoDao.get(info);
+		if(null != customInfo){
+			info.setOrgId(UserUtils.getUser().getOrganization().getId());
+			List<OrderDropdownInfo> stationList = orderCustomInfoDao.findStationList(info);
+			customInfo.setStationList(stationList);
+		}
+		return customInfo;
+	}
+	/**
+	 * 根据手机号查找客户
+	 * @param info
+	 * @return
+	 */
+	public OrderCustomInfo findCustomerByPhone(OrderCustomInfo info) {
+		info.setOrgId(UserUtils.getUser().getOrganization().getId());
+		info.setSource("own");
+		OrderCustomInfo customInfo = orderCustomInfoDao.findCustomerByPhone(info);
+		if(null != customInfo){
+			info.setOrgId(UserUtils.getUser().getOrganization().getId());
+			List<OrderDropdownInfo> stationList = orderCustomInfoDao.findStationList(info);
+			customInfo.setStationList(stationList);
+		}
+		return customInfo;
+	}
+	/**
+	 * 获取服务项目列表
+	 * @param info
+	 * @return
+	 */
+	public List<OrderDropdownInfo> findItemList(OrderInfo info) {
+		info.setOrgId(UserUtils.getUser().getOrganization().getId());
+		return orderGoodsDao.findItemList(info);
+	}
+	/**
+	 * 获取服务项目下的商品列表
+	 * @param orderInfo
+	 * @return
+	 */
+	public List<OrderGoods> findGoodsListByItem(OrderGoods orderInfo) {
+		List<OrderGoods>  list = new ArrayList<OrderGoods>();
+		List<OrderGoods> goodsList = dao.getGoodsList(orderInfo);    //服务项目下所有商品信息
+		OrderGoods houseInfo = null;
+
+		//得到除了居室以外的商品及选择信息
+		if(goodsList!=null && goodsList.size()!=0) {
+			List<OrderGoodsTypeHouse> houses = new ArrayList<OrderGoodsTypeHouse>();
+			for (OrderGoods goods : goodsList) {//循环所有商品
+				if ("house".equals(goods.getGoodsType())) {//按居室的商品
+					OrderGoodsTypeHouse house = new OrderGoodsTypeHouse();
+					house.setId(goods.getGoodsId());
+					house.setName(goods.getGoodsName());
+					house.setPayPrice(goods.getPayPrice());
+					houses.add(house);
+
+					if (null == houseInfo) {
+						houseInfo = new OrderGoods();
+						BeanUtils.copyProperties(goods, houseInfo);
+					}
+				} else {
+
+					String dj = goods.getPayPrice();//商品单价
+					if (StringUtils.isEmpty(dj)) {
+						dj = "0";
+					}
+					int num = goods.getMinPurchase();//商品数量
+					BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
+					goods.setPayPriceSum(price.toString());//总价
+
+					list.add(goods);
+				}
+			}
+
+			if (null != houseInfo) {
+
+				String dj = houseInfo.getPayPrice();//商品单价
+				if (StringUtils.isEmpty(dj)) {
+					dj = "0";
+				}
+				int num = houseInfo.getMinPurchase();//商品数量
+				BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
+				houseInfo.setPayPriceSum(price.toString());//总价
+
+				houseInfo.setGoodsChecked(true);
+
+				if (houses != null && houses.size() > 0) {
+					houseInfo.setHouseId(houses.get(0).getId());
+					houseInfo.setHouses(houses);
+				} else {
+					houseInfo.setHouseId("");
+					houseInfo.setHouses(null);
+				}
+				list.add(houseInfo);
+			}
+		}
+		return list;
 	}
 }

@@ -23,7 +23,12 @@ public class OrderAddress extends DataEntity<OrderAddress> {
 	private String areaCode;		// 区_区号
 	private String detailAddress;		// 详细地址
 	private String address;		// 收货人完整地址
-	
+
+	private String orgId;//所属服务机构ID 新增订单用
+	private String stationId;//所属服务站ID 新增订单用
+	private String addrLongitude;//经度 新增订单用
+	private String addrLatitude;//纬度 新增订单用
+
 	public OrderAddress() {
 		super();
 	}
@@ -103,5 +108,36 @@ public class OrderAddress extends DataEntity<OrderAddress> {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
+	public String getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+
+	public String getStationId() {
+		return stationId;
+	}
+
+	public void setStationId(String stationId) {
+		this.stationId = stationId;
+	}
+
+	public String getAddrLongitude() {
+		return addrLongitude;
+	}
+
+	public void setAddrLongitude(String addrLongitude) {
+		this.addrLongitude = addrLongitude;
+	}
+
+	public String getAddrLatitude() {
+		return addrLatitude;
+	}
+
+	public void setAddrLatitude(String addrLatitude) {
+		this.addrLatitude = addrLatitude;
+	}
 }

@@ -519,9 +519,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
 		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
 		//System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
-		List<String> list = new ArrayList<>();
-		list = getHeafHourTimeListLeftBorder(parseDate("2018-01-24 10:30:00"),parseDate("2018-01-24 11:01:00"));
-		for(String info : list){
+		List<Date> list = new ArrayList<>();
+		list = getAfterFifteenDays();
+		for(Date info : list){
 			System.out.println(info);
 		}
 

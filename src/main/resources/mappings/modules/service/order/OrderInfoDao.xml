@@ -519,6 +519,7 @@ origin_price,
 		a.name AS "goodsName",
 		a.price AS "payPrice",
 		a.type AS "goodsType",
+		a.unit AS "goodsUnit",
 		a.min_purchase AS "minPurchase"
 		FROM
 		ser_item_info_goods a

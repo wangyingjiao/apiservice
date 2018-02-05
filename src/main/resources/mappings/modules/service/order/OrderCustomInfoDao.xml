@@ -211,4 +211,35 @@
 		AND a.del_flag = '0'
 		AND a.is_useable = 'yes'
 	</select>
+
+	<select id="findCustomerByPhone" resultType="OrderCustomInfo">
+		SELECT
+			a.id AS "id",
+			a.name AS "name",
+			a.sex AS "sex",
+			a.phone AS "phone",
+			a.province_code AS "provinceCode",
+			a.city_code AS "cityCode",
+			a.area_code AS "areaCode",
+			a.address AS "address",
+			a.addr_longitude AS "addrLongitude",
+			a.addr_latitude AS "addrLatitude",
+			a.email AS "email",
+			a.org_id AS "orgId",
+			a.source AS "source",
+			a.station_id AS "stationId"
+		FROM customer_info a
+		WHERE a.phone = #{phone}
+		AND a.org_id = #{orgId}
+		AND a.source = #{source}
+		AND a.del_flag = '0'
+	</select>
+	<select id="findStationList" resultType="OrderDropdownInfo">
+		SELECT
+			a.id AS "id",a.name AS "name"
+		from basic_service_station a
+		WHERE
+		a.org_id = #{orgId}
+		AND a.del_flag = '0'
+	</select>
 </mapper>

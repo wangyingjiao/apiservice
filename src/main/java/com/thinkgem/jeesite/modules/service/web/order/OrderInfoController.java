@@ -6,18 +6,12 @@ package com.thinkgem.jeesite.modules.service.web.order;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
-import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderTimeList;
-import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -27,15 +21,11 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 
 import java.util.ArrayList;
@@ -372,5 +362,100 @@ public class OrderInfoController extends BaseController {
 			return new FailResult("保存失败-系统异常");
 		}
 	}
+
+
+	/**
+	 * 订单创建
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequiresPermissions("order_insert")
+	@RequestMapping(value = "create", method = {RequestMethod.POST})
+	public Result create(@RequestBody OrderInfo info) {
+		try {
+			HashMap<String,Object> map = orderInfoService.createOrder(info);
+			//OpenCreateResponse responseRe = (OpenCreateResponse)map.get("response");
+
+			try {
+				OrderInfo orderInfo = (OrderInfo)map.get("orderInfoMsg");
+				User user = new User();
+				user.setId("gasq001");
+				orderInfo.setCreateBy(user);
+				messageInfoService.insert(orderInfo, "orderCreate");//新增
+			}catch (Exception e){
+				logger.error("订单创建-推送消息失败-系统异常");
+			}
+
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult("订单创建失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("订单创建失败-系统异常");
+		}
+	}
+
+
+	/**
+	 * 根据ID查找客户
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "findCustomerById", method = {RequestMethod.POST})
+	public Result findCustomerById(@RequestBody OrderCustomInfo info) {
+		try {
+			OrderCustomInfo customInfo = orderInfoService.findCustomerById(info);
+			return new SuccResult(customInfo);
+		}catch (Exception e){
+			return new FailResult("未找到客户信息");
+		}
+	}
+	/**
+	 * 根据手机号查找客户(phone)
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "findCustomerByPhone", method = {RequestMethod.POST})
+	public Result findCustomerByPhone(@RequestBody OrderCustomInfo info) {
+		try {
+			OrderCustomInfo customInfo = orderInfoService.findCustomerByPhone(info);
+			return new SuccResult(customInfo);
+		}catch (Exception e){
+			return new FailResult("未找到客户信息");
+		}
+	}
+	/**
+	 * 获取服务项目列表
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "findItemList", method = {RequestMethod.POST})
+	public Result findItemList(@RequestBody OrderInfo info) {
+		try {
+			List<OrderDropdownInfo> list = orderInfoService.findItemList(info);
+			return new SuccResult(list);
+		}catch (Exception e){
+			return new SuccResult(new ArrayList<OrderDropdownInfo>());
+		}
+	}
+	/**
+	 * 获取服务项目下的商品列表
+	 * @param info(itemId)
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "findGoodsListByItem", method = {RequestMethod.POST})
+	public Result findGoodsListByItem(@RequestBody OrderGoods info) {
+		try {
+			List<OrderGoods> list = orderInfoService.findGoodsListByItem(info);
+			return new SuccResult(list);
+		}catch (Exception e){
+			return new SuccResult(new ArrayList<OrderGoods>());
+		}
+	}
+
 
 }

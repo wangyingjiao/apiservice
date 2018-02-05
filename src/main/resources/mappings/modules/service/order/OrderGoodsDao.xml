@@ -158,4 +158,13 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE order_id = #{orderId}
 	</update>
+
+	<select id="findItemList" resultType="OrderDropdownInfo">
+		SELECT
+			a.id AS "id",a.name AS "name"
+		from ser_item_info a
+		WHERE
+		a.org_id = #{orgId}
+		AND a.del_flag = '0'
+	</select>
 </mapper>

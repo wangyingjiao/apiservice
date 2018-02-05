@@ -39,6 +39,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private boolean goodsChecked = false;
 	private List<OrderGoods> goods; //商品list
 	private List<OrderGoodsTypeHouse> houses; //按居室商品列表
+	private String houseId; //按居室商品列表
 
 
 	private Double convertHours;		// 折算时长
@@ -253,5 +254,13 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setGoodsUnit(String goodsUnit) {
 		this.goodsUnit = goodsUnit;
+	}
+
+	public String getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(String houseId) {
+		this.houseId = houseId;
 	}
 }

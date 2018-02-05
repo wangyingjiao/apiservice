@@ -39,7 +39,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     void saveTime(OrderInfo orderInfo);
 
-    List<OrderGoods> getGoodsList(OrderInfo orderInfo);
+    List<OrderGoods> getGoodsList(OrderGoods orderInfo);
 
     List<SerSkillSort> getSkillIdBySortId(SerSkillSort serchSkillSort);
 

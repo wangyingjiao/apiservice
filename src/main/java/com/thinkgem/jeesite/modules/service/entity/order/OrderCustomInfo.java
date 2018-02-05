@@ -33,6 +33,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	private String orgId;		// 所属服务机构ID
 	private String source;		// 来源   本机构:own    第三方:other
 	private String stationId;		// 所属服务站ID
+	private List<OrderDropdownInfo> stationList;
 	private String orgName;
 	private String customerRemark;		//备注
 	private List<String> customerRemarkPic;		//备注 图片
@@ -190,5 +191,13 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 
 	public void setCustomerRemarkPic(List<String> customerRemarkPic) {
 		this.customerRemarkPic = customerRemarkPic;
+	}
+
+	public List<OrderDropdownInfo> getStationList() {
+		return stationList;
+	}
+
+	public void setStationList(List<OrderDropdownInfo> stationList) {
+		this.stationList = stationList;
 	}
 }
