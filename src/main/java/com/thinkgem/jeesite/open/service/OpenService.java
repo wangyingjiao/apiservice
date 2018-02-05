@@ -1069,6 +1069,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null == checkInfoRe){
 			throw new ServiceException("未找到订单,请确认订单sn是否正确");
 		}
+
 		String cancelReason = info.getComment();//取消原因
 		String status = info.getStatus();//cancel 取消；finish 已签收；success 完成
 
@@ -1076,6 +1077,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             OrderInfo orderInfo = new OrderInfo();
 			orderInfo.setId(checkInfoRe.getId());
             if("cancel".equals(status)){
+				if("finish".equals(checkInfoRe.getServiceStatus())){
+					throw new ServiceException("当前服务状态不允许取消");
+				}
                 orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
                 orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
                 orderInfo.setCancelReason(cancelReason);//取消原因
