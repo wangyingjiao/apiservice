@@ -500,6 +500,7 @@ origin_price,
 		a.id = #{id}
 	</select>
 
+	<!--app 获取订单对应图片-->
 	<select id="appGetPics" resultType="String">
 		SELECT
 		b.picture AS "pictures"

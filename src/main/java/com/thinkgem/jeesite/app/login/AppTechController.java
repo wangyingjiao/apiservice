@@ -456,7 +456,7 @@ public class AppTechController extends BaseController {
 	//app未读消息数量
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/getCount", method = {RequestMethod.POST, RequestMethod.GET})
-	@ApiOperation(value = "消息列表", notes = "消息列表")
+	@ApiOperation(value = "未读消息数量", notes = "未读消息数量")
 	public AppResult getCount(HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");

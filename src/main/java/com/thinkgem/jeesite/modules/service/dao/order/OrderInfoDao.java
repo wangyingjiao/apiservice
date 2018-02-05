@@ -63,7 +63,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     //app获取订单列表
     List<OrderInfo> appFindList(OrderInfo orderInfo);
     //app获取图片
-    String appGetPics(String id);
+    List<String> appGetPics(String id);
     //app获取订单对应商品
     List<String> getGoods(OrderInfo orderInfo);
     //app根据商品id获取订单对应商品的对接code

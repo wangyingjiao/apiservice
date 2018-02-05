@@ -55,7 +55,7 @@
 		FROM sys_push_message a
 		WHERE a.tech_id=#{techId}
 		AND a.del_flag=#{delFlag}
-		AND a.is_success='no'
+		AND a.isread='no'
 	</select>
 
 	<!--查询发送失败列表-->

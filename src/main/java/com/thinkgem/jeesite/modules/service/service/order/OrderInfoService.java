@@ -83,7 +83,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		PropertiesLoader loader = new PropertiesLoader("oss.properties");
 		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		//商品图片
-		String pics = dao.appGetPics(orderInfo.getId());
+		List<String> picc = dao.appGetPics(orderInfo.getId());
+		String pics=null;
+		if (picc !=null && picc.size()>0){
+			pics=picc.get(0);
+		}
 		if (StringUtils.isNotBlank(pics)){
 			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
 			if (picl !=null && picl.size()>0){
