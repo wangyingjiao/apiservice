@@ -595,10 +595,8 @@ origin_price,
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND t.station_id= #{stationId}
 			AND (
-            (a.start_time BETWEEN #{startTime} AND #{endTime}) OR
-
-			(a.end_time BETWEEN #{startTime} AND #{endTime}) OR
-
+			(a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}) OR
+			(a.end_time &gt; #{startTime} AND a.end_time &lt;= #{endTime}) OR
 			(a.start_time &lt;= #{startTime} AND a.end_time &gt;= #{endTime}))
 		</where>
 	</select>
