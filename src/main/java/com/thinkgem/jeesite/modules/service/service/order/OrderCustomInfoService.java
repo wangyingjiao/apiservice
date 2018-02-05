@@ -8,6 +8,7 @@ import java.util.List;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,8 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderCustomInfoDao;
 @Service
 @Transactional(readOnly = true)
 public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, OrderCustomInfo> {
+	@Autowired
+	private OrderCustomInfoDao orderCustomInfoDao;
 
 	public OrderCustomInfo get(String id) {
 		return super.get(id);
@@ -60,5 +63,10 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 
 	public List<ServiceStation> getStationsByOrgId(String orgId) {
 		return dao.getStationsByOrgId(orgId);
+	}
+
+
+	public List<OrderCustomInfo> findCusList(OrderCustomInfo orderCustomInfo) {
+		return orderCustomInfoDao.findCusList(orderCustomInfo);
 	}
 }

@@ -85,9 +85,13 @@ public class OrderCustomInfoController extends BaseController {
 				}
 			}
 		}*/
-
-		orderCustomInfoService.save(orderCustomInfo);
-		return new SuccResult("保存成功");
+		List<OrderCustomInfo> techInfoList=orderCustomInfoService.findCusList(orderCustomInfo);
+		if (null == techInfoList||techInfoList.size()==0) {
+			orderCustomInfoService.save(orderCustomInfo);
+			return new SuccResult("保存成功");
+		}else {
+			return new FailResult("客户手机号不能重复！");
+		}
 	}
 
 	@ResponseBody

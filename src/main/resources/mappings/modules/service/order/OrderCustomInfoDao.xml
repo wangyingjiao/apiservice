@@ -26,7 +26,20 @@
 	
 	<sql id="orderCustomInfoJoins">
 	</sql>
-    
+
+    <select id="findCusList" resultType="OrderCustomInfo">
+        SELECT
+        a.id AS "id",
+        a.name AS "name",
+        a.phone AS "phone"
+        FROM customer_info a
+        WHERE
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.phone = #{phone}
+        AND a.org_id = #{orgId}
+        AND a.source = #{source}
+    </select>
+
 	<select id="get" resultType="OrderCustomInfo">
 		SELECT 
 			<include refid="orderCustomInfoColumns"/>
