@@ -289,8 +289,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(goodsInfoList != null && goodsInfoList.size() != 0){
 			OrderGoods goodsInfo = new OrderGoods();
 			goodsInfo.setServiceTime(goodsInfoList.get(0).getServiceTime());
-			goodsInfo.setItemId(goodsInfoList.get(0).getItemId());
-			goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
+			//goodsInfo.setItemId(goodsInfoList.get(0).getItemId());
+			//goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
 
 			for(OrderGoods orderGoods : goodsInfoList){
 				String dj = orderGoods.getPayPrice();//商品单价
