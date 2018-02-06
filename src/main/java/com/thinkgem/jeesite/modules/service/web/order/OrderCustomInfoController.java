@@ -120,4 +120,43 @@ public class OrderCustomInfoController extends BaseController {
 		return new SuccResult("删除客户成功");
 	}
 
+
+
+
+
+	@ResponseBody
+	@RequestMapping(value = "formData", method = {RequestMethod.POST})
+	@ApiOperation("客户编辑")
+	public Result formData(@RequestBody OrderCustomInfo orderCustomInfo) {
+		OrderCustomInfo entity = null;
+		if (StringUtils.isNotBlank(orderCustomInfo.getId())) {
+			entity = orderCustomInfoService.formData(orderCustomInfo);
+		}
+		if (entity == null) {
+			return new FailResult("未找到此id对应的客户。");
+		} else {
+			return new SuccResult(entity);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "upData", method = { RequestMethod.POST })
+	@RequiresPermissions("customer_update")
+	@ApiOperation(value = "更新保存客户")
+	public Result upData(@RequestBody OrderCustomInfo orderCustomInfo) {
+		List<String> errList = errors(orderCustomInfo);
+		if (errList != null && errList.size() > 0) {
+			return new FailResult(errList);
+		}
+		User user = UserUtils.getUser();
+		orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
+		orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
+		List<OrderCustomInfo> techInfoList=orderCustomInfoService.findCusList(orderCustomInfo);
+		if (null == techInfoList||techInfoList.size()==0) {
+			orderCustomInfoService.save(orderCustomInfo);
+			return new SuccResult("保存成功");
+		}else {
+			return new FailResult("客户手机号不能重复！");
+		}
+	}
 }

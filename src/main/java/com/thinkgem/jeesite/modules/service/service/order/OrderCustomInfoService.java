@@ -69,4 +69,9 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	public List<OrderCustomInfo> findCusList(OrderCustomInfo orderCustomInfo) {
 		return orderCustomInfoDao.findCusList(orderCustomInfo);
 	}
+
+	public OrderCustomInfo formData(OrderCustomInfo orderCustomInfo) {
+		OrderCustomInfo info = super.get(orderCustomInfo.getId());
+		return info;
+	}
 }

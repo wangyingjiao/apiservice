@@ -38,6 +38,9 @@
         AND a.phone = #{phone}
         AND a.org_id = #{orgId}
         AND a.source = #{source}
+		<if test="id != null and id != ''">
+			AND a.id! = #{id}
+		</if>
     </select>
 
 	<select id="get" resultType="OrderCustomInfo">
@@ -159,7 +162,7 @@
 		<if test="address !=null and address != ''">address = #{address},</if>
 		<if test="addrLongitude !=null and addrLongitude != ''">addr_longitude = #{addrLongitude},</if>
 		<if test="addrLatitude !=null and addrLatitude != ''">addr_latitude = #{addrLatitude},</if>
-		<if test="email !=null and email != ''">email = #{email},</if>
+		email = #{email},
 		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
 		<if test="source !=null and source != ''">source = #{source},</if>
 		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
