@@ -379,9 +379,7 @@ public class OrderInfoController extends BaseController {
 
 			try {
 				OrderInfo orderInfo = (OrderInfo)map.get("orderInfoMsg");
-				User user = new User();
-				user.setId("gasq001");
-				orderInfo.setCreateBy(user);
+				orderInfo.setCreateBy(UserUtils.getUser());
 				messageInfoService.insert(orderInfo, "orderCreate");//新增
 			}catch (Exception e){
 				logger.error("订单创建-推送消息失败-系统异常");
@@ -397,11 +395,12 @@ public class OrderInfoController extends BaseController {
 
 
 	/**
-	 * 根据ID查找客户
+	 * 根据ID查找客户(id)
 	 * @param info
 	 * @return
 	 */
 	@ResponseBody
+	//@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findCustomerById", method = {RequestMethod.POST})
 	public Result findCustomerById(@RequestBody OrderCustomInfo info) {
 		try {
@@ -417,6 +416,7 @@ public class OrderInfoController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
+	//@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findCustomerByPhone", method = {RequestMethod.POST})
 	public Result findCustomerByPhone(@RequestBody OrderCustomInfo info) {
 		try {
@@ -432,6 +432,7 @@ public class OrderInfoController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
+	//@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findItemList", method = {RequestMethod.POST})
 	public Result findItemList(@RequestBody OrderInfo info) {
 		try {
@@ -442,11 +443,12 @@ public class OrderInfoController extends BaseController {
 		}
 	}
 	/**
-	 * 获取服务项目下的商品列表
+	 * 获取服务项目下的商品列表(itemId)
 	 * @param info(itemId)
 	 * @return
 	 */
 	@ResponseBody
+	//@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findGoodsListByItem", method = {RequestMethod.POST})
 	public Result findGoodsListByItem(@RequestBody OrderGoods info) {
 		try {
@@ -454,6 +456,38 @@ public class OrderInfoController extends BaseController {
 			return new SuccResult(list);
 		}catch (Exception e){
 			return new SuccResult(new ArrayList<OrderGoods>());
+		}
+	}
+	/**
+	 * 获取商品的技师列表
+	 * @param info(goodsList,stationId)
+	 * @return
+	 */
+	@ResponseBody
+	//@RequiresPermissions("order_insert")
+	@RequestMapping(value = "findTechListByGoods", method = {RequestMethod.POST})
+	public Result findTechListByGoods(@RequestBody OrderInfo info) {
+		try {
+			List<OrderDispatch> list = orderInfoService.findTechListByGoods(info);
+			return new SuccResult(list);
+		}catch (Exception e){
+			return new SuccResult(new ArrayList<OrderDispatch>());
+		}
+	}
+	/**
+	 * 获取技师的时间列表
+	 * @param info(goodsList,stationId,tech(null))
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "findTimeListByTech", method = {RequestMethod.POST})
+	//@RequiresPermissions("order_insert")
+	public Result findTimeListByTech(@RequestBody OrderInfo info) {
+		try {
+			List<OrderTimeList>  timeList = orderInfoService.findTimeListByTech(info);
+			return new SuccResult(timeList);
+		}catch (Exception e){
+			return new FailResult("获取时间列表失败!");
 		}
 	}
 

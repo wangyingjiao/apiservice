@@ -1146,10 +1146,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             OrderInfo orderInfo = new OrderInfo();
 			orderInfo.setId(checkInfoRe.getId());
             if("cancel".equals(status)){
-				if("finish".equals(checkInfoRe.getServiceStatus())){
-					throw new ServiceException("当前服务状态不允许取消");
+				if(!"finish".equals(checkInfoRe.getServiceStatus())){
+					// 当前服务状态不允许取消
+					orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 				}
-                orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+
                 orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
                 orderInfo.setCancelReason(cancelReason);//取消原因
             }else if("signed".equals(status)){
@@ -1247,34 +1248,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
                 orderInfo.setUpdateBy(user);
                 orderInfo.setUpdateDate(new Date());
 
-                num = num + orderInfoDao.openUpdateOrder(orderInfo);
+                num = num + orderInfoDao.openUpdateOrderForBusiness(orderInfo);
             }catch (Exception e){
 				throw new ServiceException("更新国安侠信息失败E!");
             }
 		}
-/*
-		OpenCostomerInfo costomer_info = info.getCostomer_info();//用户信息
-		if(null != costomer_info){
-            try{
-                OrderInfo orderInfo = new OrderInfo();
-                orderInfo.setId(info.getService_order_id());// 自营服务订单ID
-                orderInfo.setCustomerRemark(costomer_info.getRemark());//用户备注
-                List<String> remark_pic = costomer_info.getRemark_pic();
-                if(null != remark_pic){
-                    String remarkPic = JsonMapper.toJsonString(remark_pic);
-                    orderInfo.setCustomerRemarkPic(remarkPic);// 用户备注图片
-                }
-
-                User user = new User();
-                user.setId("gasq001");
-                orderInfo.setUpdateBy(user);
-                orderInfo.setUpdateDate(new Date());
-
-                num = num + orderInfoDao.openUpdateOrder(orderInfo);
-            }catch (Exception e){
-				throw new ServiceException("更新用户信息失败E!");
-            }
-		}*/
 
 		OpenStoreInfo store_info = info.getStore_info();//门店信息
 		if(null != store_info){
@@ -1295,7 +1273,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
                 orderInfo.setUpdateBy(user);
                 orderInfo.setUpdateDate(new Date());
 
-                num = num + orderInfoDao.openUpdateOrder(orderInfo);
+                num = num + orderInfoDao.openUpdateOrderForShop(orderInfo);
             }catch (Exception e){
 				throw new ServiceException("更新门店信息失败E!");
             }
@@ -1363,8 +1341,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
             originPrice = originPrice.add(price);//商品总价
 
-			sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
-			goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
+			sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',
+			goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
 
 			//int goodsNum = buy_num;		// 订购商品数
 			//Double convertHours = commodity.getConvertHours();		// 折算时长

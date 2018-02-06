@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,9 @@ import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
+import com.thinkgem.jeesite.common.utils.map.GaoDeMapUtil;
+import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
@@ -66,6 +70,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	@Autowired
 	OrderGoodsDao orderGoodsDao;
 	@Autowired
+	SerItemInfoDao serItemInfoDao;
 	OrderPayInfoDao orderPayInfoDao;
 	@Autowired
 	AreaDao areaDao;
@@ -91,35 +96,60 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app查询详情
 	public OrderInfo appFormData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
+		//图片路径
+		PropertiesLoader loader = new PropertiesLoader("oss.properties");
+		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		if (null == orderInfo){
 			throw new ServiceException("没有该订单");
 		}
 		orderInfo.setNowId(info.getNowId());
 		OrderGoods goodsInfo = new OrderGoods();
+		List<String> ids = new ArrayList<>();
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
+		List<OrderGoods> tem=new ArrayList<OrderGoods>();
 		if(goodsInfoList != null && goodsInfoList.size() > 0){
-			goodsInfo.setServiceTime(goodsInfoList.get(0).getServiceTime());
-			goodsInfo.setItemId(goodsInfoList.get(0).getItemId());
-			goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
-			goodsInfo.setGoods(goodsInfoList);
+			//获取服务项目id集合
+			for (int i=0;i<goodsInfoList.size();i++) {
+				if(!ids.contains(goodsInfoList.get(i).getItemId())) {
+					ids.add(goodsInfoList.get(i).getItemId());
+				}
+			}
+			//循环 id
+			for(String id:ids){
+				OrderGoods orderGoods = serItemInfoDao.getById(id);
+				List<OrderGoods> orderGoodsList1 = new ArrayList<>();
+				for (int i=0;i<goodsInfoList.size();i++) {
+					if(goodsInfoList.get(i).getItemId() == id){
+
+						orderGoodsList1.add(goodsInfoList.get(i));
+					}
+				}
+				orderGoods.setGoods(orderGoodsList1);
+				String picture = orderGoods.getPicture();
+				if (StringUtils.isNotBlank(picture)) {
+					List<String> picl = (List<String>) JsonMapper.fromJsonString(picture, ArrayList.class);
+					if (picl !=null && picl.size()>0){
+						orderGoods.setPicture(ossHost+picl.get(0));
+					}
+				}
+				tem.add(orderGoods);
+			}
 		}else {
 			throw new ServiceException("没有商品信息");
 		}
-
-		PropertiesLoader loader = new PropertiesLoader("oss.properties");
-		String ossHost = loader.getProperty("OSS_THUMB_HOST");
+		orderInfo.setGoodsInfoList(tem);
 		//商品图片
-		List<String> picc = dao.appGetPics(orderInfo.getId());
-		String pics=null;
-		if (picc !=null && picc.size()>0){
-			pics=picc.get(0);
-		}
-		if (StringUtils.isNotBlank(pics)){
-			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
-			if (picl !=null && picl.size()>0){
-				goodsInfo.setPicture(ossHost+picl.get(0));
-			}
-		}
+//		List<String> picc = dao.appGetPics(orderInfo.getId());
+//		String pics=null;
+//		if (picc !=null && picc.size()>0){
+//			pics=picc.get(0);
+//		}
+//		if (StringUtils.isNotBlank(pics)){
+//			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
+//			if (picl !=null && picl.size()>0){
+//				goodsInfo.setPicture(ossHost+picl.get(0));
+//			}
+//		}
 		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
 		if (techList==null || techList.size()==0){
@@ -1475,6 +1505,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//订单的编辑（订单备注以及订单的服务状态修改）
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		//判断订单是否属于该技师
 		OrderDispatch dis=new OrderDispatch();
 		dis.setTechId(orderInfo.getNowId());
@@ -1516,12 +1547,26 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (date.before(finishTime)){
 					orderInfo.setFinishTime(date);
 				}
+				//比数据库中结束时间早1个小时的时间
+				String format = df.format(new Date(finishTime.getTime() - (long) 1 * 60 * 60 * 1000));
+				Date date1 = DateUtils.parseDate(format);
+				//如果提前一个多小时 不能点击 抛异常
+				if (date.before(date1)){
+					throw new ServiceException("最多提前一个小时点击完成");
+				}
 			}
 			//如果是上门服务 把点击时间加入数据库
 			if (orderInfo.getServiceStatus().equals("started")){
 				//数据库查询出来的状态不是上门 将第一次上门时间添加到数据库 不是第一次不添加数据库
 				if (!info.getServiceStatus().equals("started")){
 					orderInfo.setRealServiceTime(new Date());
+				}
+				Date serviceTime = info.getServiceTime();
+				Date date=new Date();
+				String beforeService = df.format(new Date(serviceTime.getTime() - (long) 30 * 60 * 1000));
+				Date before = DateUtils.parseDate(beforeService);
+				if (date.before(before)){
+					throw new ServiceException("最多提前半个小时点击上门服务");
 				}
 			}
 		}
@@ -1824,8 +1869,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderGoods.add(goods);
 				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
 				originPrice = originPrice.add(price);//商品总价
-				sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
-				goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
+				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',
+				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
 
 				int goodsNum = buy_num;		// 订购商品数
 				Double convertHours = commodity.getConvertHours();		// 折算时长
@@ -2240,5 +2285,326 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * 获取商品的技师列表
+	 * @param orderInfo(itemId)
+	 * @return
+	 */
+	public List<OrderDispatch> findTechListByGoods(OrderInfo orderInfo) {
+		String techName = orderInfo.getTechName();//查询条件
+		List<OrderGoods> goodsInfoList = orderInfo.getGoodsInfoList();
+		if(goodsInfoList == null || goodsInfoList.size() == 0 ){
+			throw new ServiceException("订单没有服务信息！");
+		}
+		String stationId = orderInfo.getStationId();//服务站ID
+
+		//取得技师List
+		OrderDispatch serchInfo = new OrderDispatch();
+		//展示当前下单客户所在服务站的所有可服务的技师
+		serchInfo.setStationId(stationId);
+		//（1）会此技能的
+		String orgId = UserUtils.getUser().getOrganization().getId();
+		SerSkillSort serchSkillSort = new SerSkillSort();
+		serchSkillSort.setOrgId(orgId);
+		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+		String skillId = "";
+		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		if(skillSortList!=null && skillSortList.size()==1){
+			skillId = skillSortList.get(0).getSkillId();
+		}else{
+			throw new ServiceException("未找到商品需求的技能信息");
+		}
+		serchInfo.setSkillId(skillId);
+		//（2）上线、在职
+		serchInfo.setTechStatus("yes");
+		serchInfo.setJobStatus("online");
+		//自动派单 全职 ; 手动派单没有条件
+		serchInfo.setJobNature("full_time");
+		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
+		//serchInfo.setOrderId(orderInfo.getId());
+		serchInfo.setTechName(techName);//查询条件
+		List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
+
+		return techList;
+	}
+
+	/**
+	 * 获取技师的时间列表
+	 * @param orderInfo(goodsList,tech(null))
+	 * @return
+	 */
+	public List<OrderTimeList> findTimeListByTech(OrderInfo orderInfo) {
+
+		List<Date> dateList = DateUtils.getAfterFifteenDays();
+		List<OrderTimeList> list = new ArrayList<>();
+		int value = 1;
+		List<OrderGoods> goodsInfoList = orderInfo.getGoodsInfoList();
+		int techDispatchNum = 0;//派人数量
+		double orderTotalTime = 0.0;//订单所需时间
+		double serviceHour = 0.0;//建议服务时长（小时）
+		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
+			for(OrderGoods goods :goodsInfoList){//
+
+				String cate_goods_id = goods.getGoodsId();
+				if("house".equals(goods.getGoodsType())) {//按居室的商品
+					cate_goods_id = goods.getHouseId();
+				}
+				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
+				int goodsNum = goods.getGoodsNum();		// 订购商品数
+				if(0 == goodsNum){
+					logger.error("未找到当前订单服务商品信息的订购商品数");
+				}
+				Double convertHours = commodity.getConvertHours();		// 折算时长
+				if(convertHours == null || 0 == convertHours){
+					logger.error("未找到当前订单服务商品信息的订购商品数");
+				}
+				int startPerNum = commodity.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
+				if(0 == startPerNum){
+					startPerNum =1;
+				}
+				int cappinPerNum = commodity.getCappingPerNum();		//封项人数
+				if(0 == cappinPerNum){
+					cappinPerNum = 30;
+				}
+
+				int techNum = 0;//当前商品派人数量
+				int addTechNum=0;
+				Double totalTime = 0.0;
+				if(convertHours!=null) {
+					totalTime = convertHours * goodsNum;//商品需要时间
+				}
+				Double goodsTime = convertHours * goodsNum;//gon
+				orderTotalTime = orderTotalTime + goodsTime;
+
+				if(totalTime > 4){//每4小时增加1人
+					BigDecimal b1 = new BigDecimal(totalTime);
+					BigDecimal b2 = new BigDecimal(new Double(4));
+					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+				}
+				techNum = startPerNum + addTechNum;
+				if(techNum > cappinPerNum){//每个商品需求的人数
+					techNum = cappinPerNum;
+				}
+				if(techNum > techDispatchNum) {//订单需求的最少人数
+					techDispatchNum = techNum;
+				}
+			}
+			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
+			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
+		} else {
+			logger.error("未找到当前订单服务商品信息");
+			return null;
+		}
+		String stationId = orderInfo.getStationId();//服务站ID
+		if(null == stationId){
+			logger.error("未找到当前订单的服务站信息");
+			return null;
+		}
+		Double serviceSecond = (serviceHour * 3600);
+
+		List<OrderDispatch> techList = orderInfo.getTechList();
+		if(techList==null || techList.size()==0) {
+			//取得技师List
+			OrderDispatch serchInfo = new OrderDispatch();
+			//展示当前下单客户所在服务站的所有可服务的技师
+			serchInfo.setStationId(stationId);
+			//（1）会此技能的
+			String orgId =  UserUtils.getUser().getOrganization().getId();
+			SerSkillSort serchSkillSort = new SerSkillSort();
+			serchSkillSort.setOrgId(orgId);
+			serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+			String skillId = "";
+			List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+			if (skillSortList != null && skillSortList.size() == 1) {
+				skillId = skillSortList.get(0).getSkillId();
+			} else {
+				logger.error("未找到商品需求的技能信息");
+				return null;
+			}
+			serchInfo.setSkillId(skillId);
+			//（2）上线、在职
+			serchInfo.setTechStatus("yes");
+			serchInfo.setJobStatus("online");
+			//自动派单 全职 ; 手动派单没有条件
+			serchInfo.setJobNature("full_time");
+			//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
+			//serchInfo.setOrderId(orderInfo.getId());
+			techList = dao.getTechListBySkillId(serchInfo);
+		}
+		if(techList.size() < techDispatchNum){//技师数量不够
+			return null;
+		}
+
+		for(Date date : dateList){
+			OrderTimeList responseRe = new OrderTimeList();
+			try {
+				responseRe.setValue(String.valueOf(value));
+				value++;
+				responseRe.setLabel(DateUtils.formatDate(date, "yyyy-MM-dd"));
+				//该日服务时间点列表
+				List<OrderDispatch> hours = findTimeListHours(date,techList, techDispatchNum,serviceSecond);
+				if(hours!= null && hours.size()>0){
+					responseRe.setServiceTime(hours);
+					list.add(responseRe);
+				}
+			}catch (Exception e){
+				logger.error(responseRe.getLabel()+"未找到服务时间点列表");
+			}
+
+		}
+		return list;
+	}
+
+	private List<OrderDispatch> findTimeListHours(Date date, List<OrderDispatch> techList,int techDispatchNum,Double serviceSecond ) {
+		List<OrderDispatch> techForList = new ArrayList<>();
+		if(techList != null){//深浅拷贝问题
+			for(OrderDispatch dispatch: techList){
+				techForList.add(dispatch);
+			}
+		}
+		int week = DateUtils.getWeekNum(date); //周几
+		Date serviceDateMin = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 00:00:00");
+		Date serviceDateMax = DateUtils.parseDate(DateUtils.formatDate(date, "yyyy-MM-dd") + " 23:59:59");
+
+		Iterator<OrderDispatch> it = techForList.iterator();
+		while(it.hasNext()) {//循环技师List 取得可用时间
+			OrderDispatch tech = it.next();
+
+			//-----------------取得技师 当天(15天中的某天)可用工作时间 并且转成时间点列表 开始----------------------------------------------------------
+			OrderDispatch serchTech = new OrderDispatch();
+			//取得符合条件的技师的 工作时间 服务时间List
+			serchTech.setTechId(tech.getTechId());
+			serchTech.setWeek(week);
+			List<ServiceTechnicianWorkTime> workTimeList = dao.findTechWorkTimeList(serchTech);
+			if(workTimeList == null || workTimeList.size() == 0){
+				it.remove();
+
+				if(techForList.size() < techDispatchNum){//技师数量不够
+					return null;
+				}
+				continue;
+			}else {
+				if(DateUtils.isToday(date)){
+					if(DateUtils.timeBeforeNow(workTimeList.get(0).getEndTime())){
+						it.remove();
+
+						if(techForList.size() < techDispatchNum){//技师数量不够
+							return null;
+						}
+						continue;
+					}
+				}
+			}
+			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
+			Date startDateForWork = workTime.getStartTime();
+			if(DateUtils.isToday(date)) {
+				if (DateUtils.timeBeforeNow(workTime.getStartTime())) {
+					startDateForWork = DateUtils.parseDate(
+							DateUtils.formatDate(startDateForWork, "yyyy-MM-dd") + " " +
+									DateUtils.formatDate(new Date(), "HH:mm:ss"));
+				}
+			}
+			List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(startDateForWork,workTime.getEndTime());
+			//-------------------取得技师 当天(15天中的某天)可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
+
+			if(workTimes != null) {
+				//-------------------取得技师 当天(15天中的某天)休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
+				serchTech.setStartTime(serviceDateMin);
+				serchTech.setEndTime(serviceDateMax);
+				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
+				if (holidayList != null && holidayList.size() != 0) {
+					for (ServiceTechnicianHoliday holiday : holidayList) {
+						//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeList(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
+						Iterator<String> it1 = workTimes.iterator();
+						while (it1.hasNext()) {
+							String work = (String) it1.next();
+							if (holidays.contains(work)) {//去除休假时间
+								it1.remove();
+								//continue;
+							}
+						}
+					}
+				}
+				//-------------------取得技师 当天(15天中的某天)休假时间 转成时间点列表 如果和工作时间重复 删除该时间点  结束-------------
+
+				//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
+				//--- 订单时间段--订单开始时间 减去商品需求时间 减去准备时间；---订单结束时间 加上准备时间 ----------------------
+				//--- 服务状态(wait_service:待服务 started:已上门, finish:已完成)',
+				List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
+				if (orderList != null && orderList.size() != 0) {
+					for (OrderDispatch order : orderList) {
+						int intervalTimeS = 0;//必须间隔时间 秒
+						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) < 14) {
+							//可以接单的时间则为：40分钟+路上时间+富余时间
+							intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
+						} else {
+							//可以接单的时间则为：路上时间+富余时间
+							intervalTimeS = 15 * 60 + 10 * 60 + serviceSecond.intValue();
+						}
+
+						int intervalTimeE = 0;//必须间隔时间 秒
+						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
+							//可以接单的时间则为：40分钟+路上时间+富余时间
+							intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+						} else {
+							//可以接单的时间则为：路上时间+富余时间
+							intervalTimeE = 15 * 60 + 10 * 60;
+						}
+
+						List<String> orders = DateUtils.getHeafHourTimeListBorder(
+								DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
+								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
+						if (orders != null && workTimes!= null) {
+							Iterator<String> it2 = workTimes.iterator();
+							while (it2.hasNext()) {
+								String work = (String) it2.next();
+								if (orders.contains(work)) {//去除订单时间
+									it2.remove();
+									//continue;
+								}
+							}
+						}
+					}
+				}
+				//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 结束------------------
+
+			}
+			tech.setWorkTimes(workTimes);//可用的时间列表
+		}
+
+		List<String> allTimeList = new ArrayList<String>();
+		List<String> resTimeList = new ArrayList<String>();
+		for(OrderDispatch tech : techForList){
+			if(tech.getWorkTimes() != null) {
+				allTimeList.addAll(tech.getWorkTimes());
+			}
+		}
+		//统计每一个元素出现的频率
+		//将List转换为Set
+		Set uniqueSet = new HashSet(allTimeList);
+		for (Object temp : uniqueSet) {
+			if(Collections.frequency(allTimeList, temp) >= techDispatchNum){
+				resTimeList.add(temp.toString());
+			}
+		}
+		//时间排序
+		String[] strings = new String[resTimeList.size()];
+		resTimeList.toArray(strings);
+		Arrays.sort(strings);//排序
+		List<String> list = java.util.Arrays.asList(strings);
+
+		List<OrderDispatch> listRe = new ArrayList<>();
+		for(String time : list){
+			OrderDispatch info = new OrderDispatch();
+			info.setServiceTimeStr(time);
+			listRe.add(info);
+		}
+
+		return listRe;
 	}
 }
