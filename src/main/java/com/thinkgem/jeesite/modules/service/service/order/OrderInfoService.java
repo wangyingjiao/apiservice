@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
@@ -492,24 +493,16 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
-			/*if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
-					Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) < 14) {
-				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
-			} else {
-				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeS = 15 * 60 + 10 * 60;
-			}*/
+			int intervalTimeS =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 
 			int intervalTimeE = 0;//必须间隔时间 秒
 			if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
 					Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
 				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+				intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
 			} else {
 				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeE = 15 * 60 + 10 * 60;
+				intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 			}
 
 			Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
@@ -625,12 +618,12 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
 					//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
 					//（4）富余时间定为10分钟"
-					orderTech.setServiceTime(DateUtils.addSeconds(orderTech.getServiceTime(), -(15 * 60 + 10 * 60)));
+					orderTech.setServiceTime(DateUtils.addSeconds(orderTech.getServiceTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))));
 					int finishTimeHH = Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH"));
 					if (11 <= finishTimeHH && finishTimeHH < 14) {
-						orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(), (15 * 60 + 40 * 60 + 10 * 60)));
+						orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(), (Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")))));
 					} else {
-						orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(), (15 * 60 + 10 * 60)));
+						orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(), (Integer.parseInt(Global.getConfig("order_split_time")))));
 					}
 
 					if (!DateUtils.checkDatesRepeat(serviceTime, finishTime, orderTech.getServiceTime(), orderTech.getFinishTime())) {
@@ -798,8 +791,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 				List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-				int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
-				int intervalTimeE = 15 * 60 + 10 * 60;//必须间隔时间 秒
+				int intervalTimeS =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+				int intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 
 				Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
 				Date checkFinishTime = DateUtils.addSecondsNotDayE(serviceTime, intervalTimeE);
@@ -1222,23 +1215,23 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					for (OrderDispatch order : orderList) {
 						if(!orderInfo.getId().equals(order.getOrderId())) {//当前订单不考虑
 							int intervalTimeS = 0;//必须间隔时间 秒
-							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) &&
-									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) < 14) {
+							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 								//可以接单的时间则为：40分钟+路上时间+富余时间
-								intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
+								intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
 							} else {
 								//可以接单的时间则为：路上时间+富余时间
-								intervalTimeS = 15 * 60 + 10 * 60 + serviceSecond.intValue();
+								intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
 							}
 
 							int intervalTimeE = 0;//必须间隔时间 秒
 							if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 									Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 								//可以接单的时间则为：40分钟+路上时间+富余时间
-								intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+								intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
 							} else {
 								//可以接单的时间则为：路上时间+富余时间
-								intervalTimeE = 15 * 60 + 10 * 60;
+								intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));
 							}
 
 							List<String> orders = DateUtils.getHeafHourTimeListBorder(
@@ -1424,25 +1417,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
-			/*if (11 <= Integer.parseInt(DateUtils.formatDate(newServiceDate, "HH")) &&
-					Integer.parseInt(DateUtils.formatDate(newServiceDate, "HH")) < 14) {
-				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
-			} else {
-				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeS = 15 * 60 + 10 * 60;
-			}*/
+			int intervalTimeS =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 
-			int intervalTimeE = 15 * 60 + 10 * 60;//必须间隔时间 秒
-			/*if (11 <= Integer.parseInt(DateUtils.formatDate(newFinishTime, "HH")) &&
-					Integer.parseInt(DateUtils.formatDate(newFinishTime, "HH")) < 14) {
-				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
-			} else {
-				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeE = 15 * 60 + 10 * 60;
-			}*/
+			int intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 
 			Date checkServiceTime = DateUtils.addSecondsNotDayB(newServiceDate, -intervalTimeS);
 			Date checkFinishTime = DateUtils.addSecondsNotDayE(newFinishTime, intervalTimeE);
@@ -2148,25 +2125,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
-			/*if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
-					Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) < 14) {
-				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
-			} else {
-				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeS = 15 * 60 + 10 * 60;
-			}*/
-
-			int intervalTimeE =  15 * 60 + 10 * 60;//必须间隔时间 秒
-			/*if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
-					Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
-				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
-			} else {
-				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeE = 15 * 60 + 10 * 60;
-			}*/
+			int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+			int intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 
 			Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
 			Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
@@ -2651,23 +2611,23 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (orderList != null && orderList.size() != 0) {
 					for (OrderDispatch order : orderList) {
 						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) < 14) {
+						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
+							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
 						} else {
 							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = 15 * 60 + 10 * 60 + serviceSecond.intValue();
+							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
 						}
 
 						int intervalTimeE = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
 						} else {
 							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeE = 15 * 60 + 10 * 60;
+							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 						}
 
 						List<String> orders = DateUtils.getHeafHourTimeListBorder(

@@ -360,23 +360,23 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (orderList != null && orderList.size() != 0) {
 					for (OrderDispatch order : orderList) {
 						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(15 * 60 + 10 * 60)), "HH")) < 14) {
+						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 + serviceSecond.intValue();
+							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
 						} else {
 							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = 15 * 60 + 10 * 60 + serviceSecond.intValue();
+							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
 						}
 
 						int intervalTimeE = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
+							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
 						} else {
 							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeE = 15 * 60 + 10 * 60;
+							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 						}
 
 						List<String> orders = DateUtils.getHeafHourTimeListBorder(
@@ -898,25 +898,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 			List<String> timeCheckDelTechIdList = new ArrayList<String>();
 
-			int intervalTimeS =  15 * 60 + 10 * 60;//必须间隔时间 秒
-			/*if (11 <= Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) &&
-					Integer.parseInt(DateUtils.formatDate(serviceTime, "HH")) < 14) {
-				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeS = 40 * 60 + 15 * 60 + 10 * 60 ;
-			} else {
-				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeS = 15 * 60 + 10 * 60;
-			}*/
-
-			int intervalTimeE =  15 * 60 + 10 * 60;//必须间隔时间 秒
-			/*if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
-					Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
-				//可以接单的时间则为：40分钟+路上时间+富余时间
-				intervalTimeE = 40 * 60 + 15 * 60 + 10 * 60;
-			} else {
-				//可以接单的时间则为：路上时间+富余时间
-				intervalTimeE = 15 * 60 + 10 * 60;
-			}*/
+			int intervalTimeS =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+			int intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 
 			Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
 			Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
