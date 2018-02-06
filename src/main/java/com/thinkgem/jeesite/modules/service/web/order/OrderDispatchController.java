@@ -84,6 +84,12 @@ public class OrderDispatchController extends BaseController {
 	@ApiOperation("技师改派")
 	@RequiresPermissions("dispatch_insert")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+		}
+
 		List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
 		return new SuccResult(techList);
 	}
