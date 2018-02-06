@@ -22,6 +22,8 @@ import com.thinkgem.jeesite.modules.service.service.sort.SerCityScopeService;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +75,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			String picture = JsonMapper.toJsonString(pictures);
 			serItemInfo.setPicture(picture);
 		}
+		//add by wyr 保存服务项目图文详情 saveData方法里的 pictureDetails属性
+		List<String> pictureDetails = serItemInfo.getPictureDetails();
+		if(null != pictureDetails){
+			String pictureDetail = JsonMapper.toJsonString(pictureDetails);
+			serItemInfo.setPictureDetail(pictureDetail);
+		}
+		serItemInfo.preUpdate();
+		
 		//add by wyr编辑项目服务需要获取当前的机构id
 		User user = UserUtils.getUser();
 		serItemInfo.setOrgId(user.getOrganization().getId());
@@ -167,6 +177,16 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 	
 	public Page<SerItemInfo> findPage(Page<SerItemInfo> page, SerItemInfo serItemInfo) {
+		//add by wyr 对接编号模糊查询赋值
+		if (null!=serItemInfo.getSortIdandGoodsId()) {
+			String goodsId="";
+			String ids = serItemInfo.getSortIdandGoodsId();
+			if (ids.contains("_")) {
+				goodsId = ids.substring(ids.indexOf("_")+1);//截取到商品id编号
+			}
+			serItemInfo.setSortIdandGoodsId(goodsId);
+		}
+		
 		serItemInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 		Page<SerItemInfo> pageResult = super.findPage(page, serItemInfo);
 		List<SerItemInfo> list = pageResult.getList();

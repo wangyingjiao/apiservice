@@ -146,15 +146,15 @@ public class SerItemInfoController extends BaseController {
         HashMap<String,Object> map = serItemInfoService.saveItem(serItemInfo);
         return doSendItem(map);
     }
-
-    @ResponseBody
+    //add by wyr 保存服务项目图文详情 saveData方法里的 pictureDetails属性
+    /*@ResponseBody
     @RequestMapping(value = "upDataSortNum", method = {RequestMethod.POST})
     @RequiresPermissions("project_detail")
     @ApiOperation("保存服务项目图文详情")
     public Result upDataSortNum(@RequestBody SerItemInfo serItemInfo) {
         HashMap<String,Object> map =  serItemInfoService.updateSerItemPicNum(serItemInfo);
         return doSendItem(map);
-    }
+    }*/
 
     @ResponseBody
     @RequestMapping(value = "sendData", method = {RequestMethod.POST})
