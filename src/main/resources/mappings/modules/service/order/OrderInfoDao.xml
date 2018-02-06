@@ -514,6 +514,7 @@ origin_price,
 	<select id="getGoodsList" resultType="OrderGoods">
 		SELECT
 		a.item_id AS "itemId",
+		b.sort_id AS "sortId",
 		b.name AS "itemName",
 		a.id AS "goodsId",
 		a.name AS "goodsName",
