@@ -187,7 +187,7 @@ public class OrderInfoController extends BaseController {
 				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
 				messageInfoService.insert(orderInfo3,"orderServiceTime");//服务时间变更
 			}catch (Exception e){
-				logger.error("增加技师保存-推送消息失败-系统异常");
+				logger.error("更换时间保存-推送消息失败-系统异常");
 			}
 
 			return new SuccResult(map);
@@ -353,7 +353,7 @@ public class OrderInfoController extends BaseController {
 				messageInfoService.insert(orderInfo1,"orderCreate");//新增
 				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
 			}catch (Exception e){
-				logger.error("增加技师保存-推送消息失败-系统异常");
+				logger.error("技师改派保存-推送消息失败-系统异常");
 			}
 			return new SuccResult(map);
 		}catch (ServiceException ex){
@@ -371,8 +371,8 @@ public class OrderInfoController extends BaseController {
 	 */
 	@ResponseBody
 	@RequiresPermissions("order_insert")
-	@RequestMapping(value = "create", method = {RequestMethod.POST})
-	public Result create(@RequestBody OrderInfo info) {
+	@RequestMapping(value = "createOrder", method = {RequestMethod.POST})
+	public Result createOrder(@RequestBody OrderInfo info) {
 		try {
 			HashMap<String,Object> map = orderInfoService.createOrder(info);
 			//OpenCreateResponse responseRe = (OpenCreateResponse)map.get("response");
@@ -400,11 +400,14 @@ public class OrderInfoController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	//@RequiresPermissions("order_insert")
+	@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findCustomerById", method = {RequestMethod.POST})
 	public Result findCustomerById(@RequestBody OrderCustomInfo info) {
 		try {
 			OrderCustomInfo customInfo = orderInfoService.findCustomerById(info);
+			if(customInfo == null){
+				return new SuccResult(3,"未找到客户信息");
+			}
 			return new SuccResult(customInfo);
 		}catch (Exception e){
 			return new FailResult("未找到客户信息");
@@ -416,11 +419,14 @@ public class OrderInfoController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	//@RequiresPermissions("order_insert")
+	@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findCustomerByPhone", method = {RequestMethod.POST})
 	public Result findCustomerByPhone(@RequestBody OrderCustomInfo info) {
 		try {
 			OrderCustomInfo customInfo = orderInfoService.findCustomerByPhone(info);
+			if(customInfo == null){
+				return new SuccResult(3,"未找到客户信息");
+			}
 			return new SuccResult(customInfo);
 		}catch (Exception e){
 			return new FailResult("未找到客户信息");
@@ -432,7 +438,7 @@ public class OrderInfoController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	//@RequiresPermissions("order_insert")
+	@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findItemList", method = {RequestMethod.POST})
 	public Result findItemList(@RequestBody OrderInfo info) {
 		try {
@@ -448,11 +454,14 @@ public class OrderInfoController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	//@RequiresPermissions("order_insert")
+	@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findGoodsListByItem", method = {RequestMethod.POST})
 	public Result findGoodsListByItem(@RequestBody OrderGoods info) {
 		try {
 			List<OrderGoods> list = orderInfoService.findGoodsListByItem(info);
+			if(list == null || list.size()==0){
+				return new FailResult(3,"未找到商品信息");
+			}
 			return new SuccResult(list);
 		}catch (Exception e){
 			return new SuccResult(new ArrayList<OrderGoods>());
@@ -464,11 +473,12 @@ public class OrderInfoController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	//@RequiresPermissions("order_insert")
+	@RequiresPermissions("order_insert")
 	@RequestMapping(value = "findTechListByGoods", method = {RequestMethod.POST})
 	public Result findTechListByGoods(@RequestBody OrderInfo info) {
 		try {
 			List<OrderDispatch> list = orderInfoService.findTechListByGoods(info);
+
 			return new SuccResult(list);
 		}catch (Exception e){
 			return new SuccResult(new ArrayList<OrderDispatch>());
@@ -481,11 +491,12 @@ public class OrderInfoController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "findTimeListByTech", method = {RequestMethod.POST})
-	//@RequiresPermissions("order_insert")
+	@RequiresPermissions("order_insert")
 	public Result findTimeListByTech(@RequestBody OrderInfo info) {
 		try {
-			List<OrderTimeList>  timeList = orderInfoService.findTimeListByTech(info);
-			return new SuccResult(timeList);
+			List<OrderTimeList>  list = orderInfoService.findTimeListByTech(info);
+
+			return new SuccResult(list);
 		}catch (Exception e){
 			return new FailResult("获取时间列表失败!");
 		}
