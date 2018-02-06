@@ -1363,8 +1363,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
             originPrice = originPrice.add(price);//商品总价
 
-			sortItemNames = commodity.getSortName() + commodity.getItemName();//下单服务内容(服务分类+服务项目+商品名称)',
-			goodsNames = goodsNames + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
+			sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',
+			goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
 
 			//int goodsNum = buy_num;		// 订购商品数
 			//Double convertHours = commodity.getConvertHours();		// 折算时长
