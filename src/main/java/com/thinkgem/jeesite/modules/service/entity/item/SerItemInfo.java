@@ -242,4 +242,26 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setJointStatus(String jointStatus) {
 		this.jointStatus = jointStatus;
 	}
+	
+	//add by wyr 对接编码
+	private String sortIdandGoodsId;
+
+	public String getSortIdandGoodsId() {
+		return sortIdandGoodsId;
+	}
+
+	public void setSortIdandGoodsId(String sortIdandGoodsId) {
+		this.sortIdandGoodsId = sortIdandGoodsId;
+	}
+	private String goodsName;
+
+	public String getGoodsName() {
+		return goodsName;
+	}
+
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
+	
+	
 }
