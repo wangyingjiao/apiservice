@@ -722,10 +722,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 
 		HashMap<String,Object> map = new HashMap<>();
-		map.put("serviceHour",serviceHourRe);
-		map.put("list",techListRe);
+		map.put("serviceHour", serviceHourRe);
+		map.put("list", techListRe);
 
-		map.put("orderId",orderInfo.getId());
+		map.put("orderId", orderInfo.getId());
 		map.put("jointGoodsCodes",jointGoodsCodes);
 		map.put("jointEshopCode", jointEshopCode);
 
@@ -957,6 +957,16 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String techId = orderInfo.getTechId();
 		String orderId = orderInfo.getId();
 		ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
+		Date serviceTime = orderInfo.getServiceTime();
+		Date finishTime = orderInfo.getFinishTime();
+		List techIdList=new ArrayList();
+		techIdList.add(techId);
+		//新增、改派判断库存
+		boolean flag = checkTechTime(techIdList,serviceTime,finishTime);
+		if(!flag){
+			throw new ServiceException("技师已经派单，请重新选择！");
+		}
+
 		//改派前技师信息
 //		tec.setId(dispatchTechId);
 //		ServiceTechnicianInfo oldTech = serviceTechnicianInfoDao.getById(tec);
