@@ -27,10 +27,33 @@
 		<include refid="serItemInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
+	<!--app根据id获取服务项目的名称 图片 服务时间-->
+	<select id="getById" resultType="OrderGoods">
+		SELECT
+		a.id AS "itemId",
+		a.name AS "itemName",
+		a.picture AS "picture"
+		FROM ser_item_info a
+		WHERE a.id = #{id}
+		AND a.del_flag = '0'
+	</select>
+
 	<select id="findList" resultMap="SerItemCommodityResultMap">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
+			<if test="goodsName != null and goodsName != ''">
+			,#{goodsName} AS goodsName
+		</if>
+		<if test="sortIdandGoodsId != null and sortIdandGoodsId != ''">
+			,#{sortIdandGoodsId} AS sortIdandGoodsId
+		</if>
+		<if test="goodsName == null or goodsName == ''">
+			,'' AS goodsName
+		</if>
+		<if test="sortIdandGoodsId == null or sortIdandGoodsId == ''">
+			,'' AS sortIdandGoodsId
+		</if>
 		FROM ser_sort_info s
 		RIGHT JOIN ser_item_info a ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization b ON a.org_id=b.id
@@ -49,9 +72,24 @@
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
 			</if>
-			<!--<if test="cityCode != null and cityCode !=''">-->
-				<!--AND (b.city_code = #{cityCode} OR a.all_city = 'yes')-->
-			<!--</if>-->
+			<if test="goodsName != null and goodsName != ''">
+				AND a.id in (
+				SELECT a.id FROM ser_item_info a LEFT JOIN ser_item_info_goods g ON a.id =g.item_id
+				where
+				a.del_flag = '0'
+				 and g.del_flag = '0'
+				AND g.name LIKE concat('%',#{goodsName},'%')
+				)
+			</if>
+			<if test="sortIdandGoodsId != null and sortIdandGoodsId != ''">
+				AND a.id in (
+				SELECT a.id FROM ser_item_info a LEFT JOIN ser_item_info_goods g ON a.id =g.item_id
+				where
+				a.del_flag = '0'
+				and g.del_flag = '0'
+				AND g.id LIKE concat('%',#{sortIdandGoodsId},'%')
+				)
+			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
 		</where>
@@ -94,7 +132,7 @@
 		<result column="sale" property="sale"/>
 		<result column="joint_status" property="jointStatus"/>
 		<!-- 项目关联商品 -->
-		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
+		<association property="commoditys" column="{reqId=id,goodsName=goodsName,sortIdandGoodsId=sortIdandGoodsId}" select="selectCommodityById"></association>
 		<!-- 定向城市 -->
 		<!--<association property="citys" column="{reqId=id}" select="selectCitysById"></association>-->
 	</resultMap>
@@ -104,6 +142,15 @@
 		from ser_item_info_goods
 		where item_id=#{reqId}
 		and del_flag = '0'
+		<!-- 商品名称模糊查询 -->
+		<if test="goodsName != null and goodsName != ''">
+				AND name LIKE concat('%',#{goodsName},'%')
+		</if>
+		<!-- 对接编号模糊查询 -->
+		<if test="sortIdandGoodsId != null and sortIdandGoodsId != ''">
+				AND id LIKE concat('%',#{sortIdandGoodsId},'%')
+		</if>
+		
 	</select>
 	<!--<select id="selectCitysById" parameterType="java.util.Map" resultType="SerCityScope">-->
 		<!--select-->
