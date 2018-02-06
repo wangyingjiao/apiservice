@@ -716,28 +716,25 @@ origin_price,
 
 		WHERE id = #{id}
 	</update>
-	<update id="openUpdateOrderBySn">
+	<update id="openUpdateOrderForBusiness">
 		UPDATE order_info SET
-		<if test="businessName !=null and businessName != ''">business_name = #{businessName},</if>
-		<if test="businessPhone !=null and businessPhone != ''">business_phone = #{businessPhone},</if>
-		<if test="businessRemark !=null and businessRemark != ''">business_remark = #{businessRemark},</if>
-		<if test="businessRemarkPic !=null and businessRemarkPic != ''">business_remark_pic = #{businessRemarkPic},</if>
-
-		<if test="customerRemark !=null and customerRemark != ''">customer_remark = #{customerRemark},</if>
-		<if test="customerRemarkPic !=null and customerRemarkPic != ''">customer_remark_pic = #{customerRemarkPic},</if>
-
-		<if test="shopName !=null and shopName != ''">shop_name = #{shopName},</if>
-		<if test="shopPhone !=null and shopPhone != ''">shop_phone = #{shopPhone},</if>
-		<if test="shopRemark !=null and shopRemark != ''">shop_remark = #{shopRemark},</if>
-		<if test="shopRemarkPic !=null and shopRemarkPic != ''">shop_remark_pic = #{shopRemarkPic},</if>
-
-		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
-		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
-		<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
-
-		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
-
-		WHERE order_number = #{orderNumber}
+		business_name = #{businessName},
+		business_phone = #{businessPhone},
+		business_remark = #{businessRemark},
+		business_remark_pic = #{businessRemarkPic},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	<update id="openUpdateOrderForShop">
+		UPDATE order_info SET
+		shop_name = #{shopName},
+		shop_phone = #{shopPhone},
+		shop_remark = #{shopRemark},
+		shop_remark_pic = #{shopRemarkPic},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
 	</update>
 
 	<select id="getBySn" resultType="OrderInfo">

@@ -1247,34 +1247,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
                 orderInfo.setUpdateBy(user);
                 orderInfo.setUpdateDate(new Date());
 
-                num = num + orderInfoDao.openUpdateOrder(orderInfo);
+                num = num + orderInfoDao.openUpdateOrderForBusiness(orderInfo);
             }catch (Exception e){
 				throw new ServiceException("更新国安侠信息失败E!");
             }
 		}
-/*
-		OpenCostomerInfo costomer_info = info.getCostomer_info();//用户信息
-		if(null != costomer_info){
-            try{
-                OrderInfo orderInfo = new OrderInfo();
-                orderInfo.setId(info.getService_order_id());// 自营服务订单ID
-                orderInfo.setCustomerRemark(costomer_info.getRemark());//用户备注
-                List<String> remark_pic = costomer_info.getRemark_pic();
-                if(null != remark_pic){
-                    String remarkPic = JsonMapper.toJsonString(remark_pic);
-                    orderInfo.setCustomerRemarkPic(remarkPic);// 用户备注图片
-                }
-
-                User user = new User();
-                user.setId("gasq001");
-                orderInfo.setUpdateBy(user);
-                orderInfo.setUpdateDate(new Date());
-
-                num = num + orderInfoDao.openUpdateOrder(orderInfo);
-            }catch (Exception e){
-				throw new ServiceException("更新用户信息失败E!");
-            }
-		}*/
 
 		OpenStoreInfo store_info = info.getStore_info();//门店信息
 		if(null != store_info){
@@ -1295,7 +1272,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
                 orderInfo.setUpdateBy(user);
                 orderInfo.setUpdateDate(new Date());
 
-                num = num + orderInfoDao.openUpdateOrder(orderInfo);
+                num = num + orderInfoDao.openUpdateOrderForShop(orderInfo);
             }catch (Exception e){
 				throw new ServiceException("更新门店信息失败E!");
             }

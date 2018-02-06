@@ -78,4 +78,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     OrderInfo getBySn(OrderInfo orderInfo);
 
     OrderInfo checkGasqSnOrderSn(OrderInfo checkInfo);
+
+    int openUpdateOrderForBusiness(OrderInfo orderInfo);
+
+    int openUpdateOrderForShop(OrderInfo orderInfo);
 }
