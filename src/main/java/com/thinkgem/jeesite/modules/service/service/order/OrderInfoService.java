@@ -119,8 +119,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				OrderGoods orderGoods = serItemInfoDao.getById(id);
 				List<OrderGoods> orderGoodsList1 = new ArrayList<>();
 				for (int i=0;i<goodsInfoList.size();i++) {
-					if(goodsInfoList.get(i).getItemId() == id){
-
+					//如果服务项目的id与商品的服务项目id相同
+					if(id.equals(goodsInfoList.get(i).getItemId())){
+						//加入到集合中
 						orderGoodsList1.add(goodsInfoList.get(i));
 					}
 				}
