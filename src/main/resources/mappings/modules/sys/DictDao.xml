@@ -11,20 +11,77 @@
 	
 	<select id="findList" resultType="Dict">
 		SELECT 
-			* 
-		FROM sys_dict 
-		WHERE del_flag = #{DEL_FLAG_NORMAL} 
+			*
+		FROM sys_dict
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
 		<if test="type != null and type != ''">
 			AND type = #{type}
 		</if>
 		<if test="description != null and description != ''">
-			AND description LIKE 
+			AND description LIKE
 					<if test="dbName == 'oracle'">'%'||#{description}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%', #{description}, '%')</if>
 		</if>
 		ORDER BY type, sort, create_date
 	</select>
+
+	<select id="dictListData" resultType="Dict">
+		SELECT
+		a.description AS "description",
+		a.type AS "type",
+		a.remarks AS "remarks",
+		COUNT(a.type) AS "dictNum"
+		FROM sys_dict a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="type != null and type != ''">
+			AND a.type LIKE CONCAT('%', #{type}, '%')
+		</if>
+		<if test="description != null and description != ''">
+			AND a.description LIKE
+			<if test="dbName == 'oracle'">'%'||#{description}||'%'</if>
+			<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{description}, '%')</if>
+		</if>
+		GROUP BY a.type
+		ORDER BY a.type, a.sort, a.create_date DESC
+	</select>
+
+	<select id="dictListDataByType" resultType="Dict">
+		SELECT
+			a.id,
+			a.value,
+			a.label,
+			a.type,
+			a.description,
+			a.sort,
+			a.parent_id AS parentId,
+			a.create_date AS createDate,
+			a.update_date AS updateDate,
+			a.remarks
+			FROM sys_dict a
+			WHERE a.type = #{type}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+			ORDER BY a.create_date DESC
+	</select>
+
+	<select id="dictListDataById" resultType="Dict">
+		SELECT
+			a.id,
+			a.value,
+			a.label,
+			a.type,
+			a.description,
+			a.sort,
+			a.parent_id AS parentId,
+			a.create_date AS createDate,
+			a.update_date AS updateDate,
+			a.remarks
+			FROM sys_dict a
+			WHERE a.id = #{id}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
 	<!--app  查询民族使用-->
 	<select id="appFindList" resultType="Dict">
 		SELECT
@@ -116,7 +173,7 @@
 			#{updateBy.id}, 
 			#{updateDate}, 
 			#{remarks}, 
-			#{delFlag}
+			#{DEL_FLAG_NORMAL}
 		)
 	</insert>
 	
@@ -136,7 +193,44 @@
 	<update id="delete">
 		UPDATE sys_dict SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		WHERE
+		<if test="id != null and id != ''">
+			 id = #{id}
+		</if>
+		<if test="type != null and type != ''">
+			type = #{type}
+		</if>
+	</update>
+
+	<update id="upData">
+		UPDATE sys_dict a SET
+		<if test="value != null and value != ''">
+			a.value = #{value},
+		</if>
+		<if test="label != null and label != ''">
+			a.label = #{label},
+		</if>
+		<if test="type != null and type != ''">
+			a.type = #{type},
+		</if>
+		<if test="description != null and description != ''">
+			a.description = #{description},
+		</if>
+		<if test="sort != null and sort != ''">
+			a.sort = #{sort},
+		</if>
+		<if test="remarks != null and remarks != ''">
+			a.remarks = #{remarks}
+		</if>
+		a.update_by = #{updateBy.id},
+		a.update_date = #{updateDate}
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="id != null and id != ''">
+			AND a.id = #{id}
+		</if>
+		<if test="typeStr != null and typeStr != ''">
+			AND a.type = #{typeStr}
+		</if>
 	</update>
 	
 </mapper>

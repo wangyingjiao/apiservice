@@ -28,4 +28,12 @@ public interface DictDao extends CrudDao<Dict> {
     List<Dict> getAllDicts();
 
     List<Dict> getGroupDicts();
+
+    List<Dict> dictListData(Dict entity);
+
+    List<Dict> dictListDataByType(Dict dict);
+
+    Dict dictListDataById(Dict dict);
+
+    void upData(Dict dict);
 }
