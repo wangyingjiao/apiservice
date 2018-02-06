@@ -27,7 +27,18 @@
 		<include refid="serItemInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
+	<!--app根据id获取服务项目的名称 图片 服务时间-->
+	<select id="getById" resultType="OrderGoods">
+		SELECT
+		a.id AS "itemId",
+		a.name AS "itemName",
+		a.picture AS "picture"
+		FROM ser_item_info a
+		WHERE a.id = #{id}
+		AND a.del_flag = '0'
+	</select>
+
 	<select id="findList" resultMap="SerItemCommodityResultMap">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>

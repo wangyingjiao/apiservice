@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,9 @@ import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
+import com.thinkgem.jeesite.common.utils.map.GaoDeMapUtil;
+import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
@@ -66,6 +70,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	@Autowired
 	OrderGoodsDao orderGoodsDao;
 	@Autowired
+	SerItemInfoDao serItemInfoDao;
 	OrderPayInfoDao orderPayInfoDao;
 	@Autowired
 	AreaDao areaDao;
@@ -91,35 +96,60 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//app查询详情
 	public OrderInfo appFormData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
+		//图片路径
+		PropertiesLoader loader = new PropertiesLoader("oss.properties");
+		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		if (null == orderInfo){
 			throw new ServiceException("没有该订单");
 		}
 		orderInfo.setNowId(info.getNowId());
 		OrderGoods goodsInfo = new OrderGoods();
+		List<String> ids = new ArrayList<>();
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
+		List<OrderGoods> tem=new ArrayList<OrderGoods>();
 		if(goodsInfoList != null && goodsInfoList.size() > 0){
-			goodsInfo.setServiceTime(goodsInfoList.get(0).getServiceTime());
-			goodsInfo.setItemId(goodsInfoList.get(0).getItemId());
-			goodsInfo.setItemName(goodsInfoList.get(0).getItemName());
-			goodsInfo.setGoods(goodsInfoList);
+			//获取服务项目id集合
+			for (int i=0;i<goodsInfoList.size();i++) {
+				if(!ids.contains(goodsInfoList.get(i).getItemId())) {
+					ids.add(goodsInfoList.get(i).getItemId());
+				}
+			}
+			//循环 id
+			for(String id:ids){
+				OrderGoods orderGoods = serItemInfoDao.getById(id);
+				List<OrderGoods> orderGoodsList1 = new ArrayList<>();
+				for (int i=0;i<goodsInfoList.size();i++) {
+					if(goodsInfoList.get(i).getItemId() == id){
+
+						orderGoodsList1.add(goodsInfoList.get(i));
+					}
+				}
+				orderGoods.setGoods(orderGoodsList1);
+				String picture = orderGoods.getPicture();
+				if (StringUtils.isNotBlank(picture)) {
+					List<String> picl = (List<String>) JsonMapper.fromJsonString(picture, ArrayList.class);
+					if (picl !=null && picl.size()>0){
+						orderGoods.setPicture(ossHost+picl.get(0));
+					}
+				}
+				tem.add(orderGoods);
+			}
 		}else {
 			throw new ServiceException("没有商品信息");
 		}
-
-		PropertiesLoader loader = new PropertiesLoader("oss.properties");
-		String ossHost = loader.getProperty("OSS_THUMB_HOST");
+		orderInfo.setGoodsInfoList(tem);
 		//商品图片
-		List<String> picc = dao.appGetPics(orderInfo.getId());
-		String pics=null;
-		if (picc !=null && picc.size()>0){
-			pics=picc.get(0);
-		}
-		if (StringUtils.isNotBlank(pics)){
-			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
-			if (picl !=null && picl.size()>0){
-				goodsInfo.setPicture(ossHost+picl.get(0));
-			}
-		}
+//		List<String> picc = dao.appGetPics(orderInfo.getId());
+//		String pics=null;
+//		if (picc !=null && picc.size()>0){
+//			pics=picc.get(0);
+//		}
+//		if (StringUtils.isNotBlank(pics)){
+//			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
+//			if (picl !=null && picl.size()>0){
+//				goodsInfo.setPicture(ossHost+picl.get(0));
+//			}
+//		}
 		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
 		if (techList==null || techList.size()==0){
@@ -1475,6 +1505,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	//订单的编辑（订单备注以及订单的服务状态修改）
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		//判断订单是否属于该技师
 		OrderDispatch dis=new OrderDispatch();
 		dis.setTechId(orderInfo.getNowId());
@@ -1516,12 +1547,26 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (date.before(finishTime)){
 					orderInfo.setFinishTime(date);
 				}
+				//比数据库中结束时间早1个小时的时间
+				String format = df.format(new Date(finishTime.getTime() - (long) 1 * 60 * 60 * 1000));
+				Date date1 = DateUtils.parseDate(format);
+				//如果提前一个多小时 不能点击 抛异常
+				if (date.before(date1)){
+					throw new ServiceException("最多提前一个小时点击完成");
+				}
 			}
 			//如果是上门服务 把点击时间加入数据库
 			if (orderInfo.getServiceStatus().equals("started")){
 				//数据库查询出来的状态不是上门 将第一次上门时间添加到数据库 不是第一次不添加数据库
 				if (!info.getServiceStatus().equals("started")){
 					orderInfo.setRealServiceTime(new Date());
+				}
+				Date serviceTime = info.getServiceTime();
+				Date date=new Date();
+				String beforeService = df.format(new Date(serviceTime.getTime() - (long) 30 * 60 * 1000));
+				Date before = DateUtils.parseDate(beforeService);
+				if (date.before(before)){
+					throw new ServiceException("最多提前半个小时点击上门服务");
 				}
 			}
 		}
