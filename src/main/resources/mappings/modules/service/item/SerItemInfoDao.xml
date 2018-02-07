@@ -36,7 +36,6 @@
 		a.picture AS "picture"
 		FROM ser_item_info a
 		WHERE a.id = #{id}
-		AND a.del_flag = '0'
 	</select>
 
 	<select id="findList" resultMap="SerItemCommodityResultMap">

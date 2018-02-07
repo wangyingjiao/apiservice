@@ -141,7 +141,7 @@ public class AppOrderController extends BaseController {
 
 					//sendOrder.setId(orderInfo.getId());
 					sendOrder.setOrderRemark(orderInfo.getOrderRemark());
-					sendOrder.setOrderRemarkPic(orderInfo.getOrderRemarkPic());
+					sendOrder.setOrderRemarkPics(orderInfo.getOrderRemarkPics());
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						return new AppFailResult(-1,null,"对接失败N");
@@ -169,7 +169,7 @@ public class AppOrderController extends BaseController {
 		Token token = (Token) request.getAttribute("token");
 		info.setNowId(token.getTechId());
 		try{
-			int i = orderInfoService.appSaveRemark(info);
+			int i = orderInfoService.appSaveOrder(info);
 			//如果完成状态 不管是否成功 全返回成功
 			if (!info.getServiceStatus().equals("finish")){
 				if (i>0){

@@ -370,6 +370,17 @@ origin_price,
 		WHERE id = #{id}
 		AND service_status != 'finish'
 	</update>
+
+	<!--app编辑 限制非完成状态才可以修改数据库-->
+	<update id="appUpdateRemark">
+		UPDATE order_info SET
+		order_remark = #{orderRemark},
+		order_remark_pic = #{orderRemarkPic},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
 	<update id="delete">
 		UPDATE order_info SET 
 			del_flag = #{DEL_FLAG_DELETE}

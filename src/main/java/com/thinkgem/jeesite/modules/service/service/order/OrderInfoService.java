@@ -1598,10 +1598,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         station.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
         return basicServiceStationDao.getServiceStationList(station);
     }
+
 	//订单的编辑（订单备注以及订单的服务状态修改）
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
-		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		//判断订单是否属于该技师
 		OrderDispatch dis=new OrderDispatch();
 		dis.setTechId(orderInfo.getNowId());
@@ -1627,6 +1627,30 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 			String s = JsonMapper.toJsonString(tem);
 			orderInfo.setOrderRemarkPic(s);
+		}
+		orderInfo.appPreUpdate();
+		int i =0;
+		try{
+			i = dao.appUpdateRemark(orderInfo);
+		}catch (Exception e){
+			//更改订单备注时 长度过长捕获异常信息
+			throw new ServiceException("修改数据库失败可能是长度过长");
+		}
+		return i;
+	}
+
+	//订单的编辑（订单备注以及订单的服务状态修改）
+	@Transactional(readOnly = false)
+	public int appSaveOrder(OrderInfo orderInfo){
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//判断订单是否属于该技师
+		OrderDispatch dis=new OrderDispatch();
+		dis.setTechId(orderInfo.getNowId());
+		dis.setOrderId(orderInfo.getId());
+		OrderDispatch byOrderTechId = orderDispatchDao.getByOrderTechId(dis);
+		//派单表为空 不属于
+		if (null == byOrderTechId){
+			throw new ServiceException("订单不属于该技师");
 		}
 		//根据服务状态 更改订单的服务状态
 		if (StringUtils.isNotBlank(orderInfo.getServiceStatus())){
