@@ -1156,7 +1156,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				HashMap<String,Object> map = new HashMap<>();
 				map.put("response",response);
 
-				if("cancel".equals(status)){
+				if("cancel".equals(status) && !"finish".equals(checkInfoRe.getServiceStatus())){
 					//推送消息  取消订单时
 					//标题：订单已取消
 					//内容：编号为XXXXXXXXX的订单已取消，请点击查看
