@@ -138,9 +138,12 @@ public class AppOrderController extends BaseController {
 
 					String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
 					sendOrder.setOrderNumber(orderSn);//订单编号
-
-					//sendOrder.setId(orderInfo.getId());
 					sendOrder.setOrderRemark(orderInfo.getOrderRemark());
+					String orderRemarkPic = orderInfo.getOrderRemarkPic();
+					if (StringUtils.isNotBlank(orderRemarkPic)){
+						List<String> strings = (List<String>) JsonMapper.fromJsonString(orderRemarkPic, ArrayList.class);
+						orderInfo.setOrderRemarkPics(strings);
+					}
 					sendOrder.setOrderRemarkPics(orderInfo.getOrderRemarkPics());
 					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
