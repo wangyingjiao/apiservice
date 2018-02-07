@@ -177,14 +177,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 	
 	public Page<SerItemInfo> findPage(Page<SerItemInfo> page, SerItemInfo serItemInfo) {
-		//add by wyr 对接编号模糊查询赋值
+		//add by wyr 对接编号(商品id编号)查询赋值
 		if (null!=serItemInfo.getSortIdandGoodsId()) {
 			String goodsId="";
 			String ids = serItemInfo.getSortIdandGoodsId();
 			if (ids.contains("_")) {
 				goodsId = ids.substring(ids.indexOf("_")+1);//截取到商品id编号
+				serItemInfo.setSortIdandGoodsId(goodsId);
 			}
-			serItemInfo.setSortIdandGoodsId(goodsId);
 		}
 		
 		serItemInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
