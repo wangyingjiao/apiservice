@@ -39,7 +39,7 @@
         AND a.org_id = #{orgId}
         AND a.source = #{source}
 		<if test="id != null and id != ''">
-			AND a.id! = #{id}
+			AND a.id != #{id}
 		</if>
     </select>
 

@@ -72,6 +72,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	OrderGoodsDao orderGoodsDao;
 	@Autowired
 	SerItemInfoDao serItemInfoDao;
+	@Autowired
 	OrderPayInfoDao orderPayInfoDao;
 	@Autowired
 	AreaDao areaDao;
@@ -1934,9 +1935,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null == servie_time){
 			throw new ServiceException("服务时间不能为空");
 		}
+		String stationId = info.getStationId();
 
 		String orgId = orderAddress.getOrgId();
-		String stationId = orderAddress.getStationId();
 		String latitude = orderAddress.getAddrLatitude();//服务地址：纬度
 		String longitude = orderAddress.getAddrLongitude();//服务地址：经度
 
@@ -2037,10 +2038,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setLatitude(latitude);                //服务地址  纬度
 		orderInfo.setLongitude(longitude);         //服务地址  经度
 		orderInfo.setOrderTime(DateUtils.parseDate(DateUtils.getDateTime()));    //下单时间
-		orderInfo.setServiceTime(DateUtils.parseDate(servie_time));     //上门时间（服务时间）
+		orderInfo.setServiceTime(servie_time);     //上门时间（服务时间）
 		Double serviceSecond = serviceHour * 3600;
-		orderInfo.setFinishTime(DateUtils.addSeconds(DateUtils.parseDate(servie_time),serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
-		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(DateUtils.parseDate(servie_time),serviceSecond.intValue()));              //建议完成时间',
+		orderInfo.setFinishTime(DateUtils.addSeconds(servie_time,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
+		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(servie_time,serviceSecond.intValue()));              //建议完成时间',
 		orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
 		orderInfo.setServiceStatus("wait_service");   // 服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 		orderInfo.setOrderStatus("dispatched");   // 订单状态(waitdispatch:待派单dispatched:已派单cancel:已取消started:已上门finish:已完成success:已成功stop:已暂停)
@@ -2263,7 +2264,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderAddressDao.insert(orderAddress);
 
 		orderAddress.setOrgId(customInfo.getOrgId());//客户所属机构
-		orderAddress.setStationId(customInfo.getStationId());//客户所属服务站
+		//orderAddress.setStationId(customInfo.getStationId());//客户所属服务站
 		orderAddress.setAddrLatitude(customInfo.getAddrLatitude());//纬度
 		orderAddress.setAddrLongitude(customInfo.getAddrLongitude());//经度
 		return orderAddress;
