@@ -13,7 +13,7 @@
 		a.sort,
 		a.is_show,
 		a.permission,
-
+        a.type,
 		a.create_by AS "createBy.id",
 		a.create_date,
 		a.update_by AS "updateBy.id",
@@ -172,7 +172,7 @@
             update_by = #{updateBy.id},
         </if>
         <if test="updateDate != null">
-            update_date = #{updateDate}
+            update_date = #{updateDate},
         </if>
         <if test="type != null">
             type = #{type}
