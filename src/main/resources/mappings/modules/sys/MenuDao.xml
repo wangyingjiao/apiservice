@@ -44,6 +44,15 @@
         ORDER BY a.sort
     </select>
 
+    <select id="findAllMenuList" resultType="Menu">
+        SELECT
+        <include refid="menuColumns"/>
+        FROM sys_menu a
+        <include refid="menuJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ORDER BY a.sort
+    </select>
+
     <select id="findByParentIdsLike" resultType="Menu">
 		SELECT
 			a.id,

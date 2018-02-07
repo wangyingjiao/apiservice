@@ -375,6 +375,10 @@ public class UserUtils {
         }
     }
 
+    public static List<Menu> getAllMenuListForPlatform(Menu menu) {
+            return menuDao.findAllMenuList(menu);
+    }
+
     public static List<Menu> genTreeMenu(String id, List<Menu> menus) {
         ArrayList<Menu> list = new ArrayList<>();
         for (Menu menu : menus) {
