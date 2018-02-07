@@ -438,5 +438,14 @@ public class User extends DataEntity<User> {
 	public void setOrgId(String orgId) {
 		this.orgId = orgId;
 	}
-    
+	//add by wyr 用户类型：'sys','business')
+		private String type;
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
 }

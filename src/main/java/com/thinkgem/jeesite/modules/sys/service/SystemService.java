@@ -526,8 +526,8 @@ public class SystemService extends BaseService implements InitializingBean {
 		return roleDao.checkAddName(name,id);
 	}
 	//add by wyr 获取岗位表关联菜单表的数据
-	 public Role getRoleUnion(String id) {
-	        return roleDao.getRoleUnion(id);
+	 public Role getRoleUnion(String id,String type) {
+	        return roleDao.getRoleUnion(id,type);
 	    }
 
 //	public Page<Role> findRolePage(Page){

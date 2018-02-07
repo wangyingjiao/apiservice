@@ -79,7 +79,7 @@
         a.update_by AS "updateBy.id",
         a.update_date,
         a.del_flag,
-
+		a.type,
         org.id as "organization.id",
         org.name as "organization.name",
 

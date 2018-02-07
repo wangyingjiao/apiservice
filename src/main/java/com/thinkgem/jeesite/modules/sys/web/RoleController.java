@@ -542,7 +542,11 @@ public class RoleController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "getRoleDetail", method = RequestMethod.GET)
 	public Result getRoleDetail(@RequestParam String id) {
-		Role role = systemService.getRoleUnion(id);
+		User user = UserUtils.getUser();
+		@SuppressWarnings("rawtypes")
+		Role role = systemService.getRoleUnion(id,user.getType());
+		
+		
 		// add by wyr 判断岗位下是否有员工
 		int count = systemService.getUserCount(id);
 		if (count > 0) {
@@ -550,7 +554,7 @@ public class RoleController extends BaseController {
 		} else {
 			role.setFlag(false);
 		}
-		User user = UserUtils.getUser();
+		
 		String roleId = user.getRole().getId();
 		// String orgId = user.getOrganization().getId();//获取当前登录用户的所属机构id
 		if (org.apache.commons.lang3.StringUtils.isNoneEmpty(roleId)) {
