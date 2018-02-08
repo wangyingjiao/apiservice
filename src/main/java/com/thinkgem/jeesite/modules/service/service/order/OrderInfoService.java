@@ -516,7 +516,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
 				//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
 				//（4）富余时间定为10分钟"
-
+				if (11 <= Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH")) &&
+						Integer.parseInt(DateUtils.formatDate(orderTech.getFinishTime(), "HH")) < 14) {
+					orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(),Integer.parseInt(Global.getConfig("order_eat_time"))));
+				}
 				if(!DateUtils.checkDatesRepeat(checkServiceTime,checkFinishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
 					timeCheckDelTechIdList.add(orderTech.getTechId());//有订单的技师 删除
 				}
@@ -628,6 +631,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 						orderTech.setFinishTime(DateUtils.addSeconds(orderTech.getFinishTime(), (Integer.parseInt(Global.getConfig("order_split_time")))));
 					}
 
+					if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
+						finishTime = DateUtils.addSeconds(finishTime,Integer.parseInt(Global.getConfig("order_eat_time")));
+					}
 					if (!DateUtils.checkDatesRepeat(serviceTime, finishTime, orderTech.getServiceTime(), orderTech.getFinishTime())) {
 						timeCheckDelTechIdList.add(orderTech.getTechId());//有订单的技师 删除
 					}
