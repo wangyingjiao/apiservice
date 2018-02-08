@@ -120,7 +120,7 @@ public class AppTechController extends BaseController {
 			map.put("list", page.getList());
 			map.put("totalPage", totalPage);
 			map.put("pageNo", page.getPageNo());
-			if (list.getList().size() == 0) {
+			if (list.getList()==null || list.getList().size() == 0) {
 				return new AppSuccResult(1, null, "查询通讯录");
 			}
 			return new AppSuccResult(0, map, "查询通讯录");
@@ -153,7 +153,7 @@ public class AppTechController extends BaseController {
 		map.put("list",page.getList());
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
-		if (page.getList().size() == 0){
+		if (page.getList() == null || page.getList().size() == 0){
 			return new AppSuccResult(1,null,"技师休假列表");
 		}
 		return new AppSuccResult(0,map,"技师休假列表");
@@ -387,7 +387,7 @@ public class AppTechController extends BaseController {
 				}
 			}
 			map.put("city",cityList);
-			if (cityList.size()>0){
+			if (cityList !=null && cityList.size()>0){
 				return new AppSuccResult(0,map,"下拉列表");
 			}
 		}
@@ -415,7 +415,7 @@ public class AppTechController extends BaseController {
 				}
 			}
 			map.put("area",areaList);
-			if (areaList.size()>0){
+			if (areaList != null && areaList.size()>0){
 				return new AppSuccResult(0,map,"下拉列表");
 			}
 		}
@@ -447,7 +447,7 @@ public class AppTechController extends BaseController {
 		map.put("list",list.getList());
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
-		if (list.getList().size() == 0){
+		if (list.getList() ==null || list.getList().size() == 0){
 			return new AppFailResult(1,null,"没有消息");
 		}
 		return new AppSuccResult(0,map,"查看消息列表");
