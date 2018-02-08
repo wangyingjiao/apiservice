@@ -392,10 +392,16 @@ public class User extends DataEntity<User> {
     public boolean isAdmin() {
         return isAdmin(this.id);
     }
-
     public static boolean isAdmin(String id) {
-        return id != null && "1".equals(id);
+    	return id != null && "1".equals(id);
     }
+
+   /* public boolean isAdmin() {
+        return isAdmin(this.type);
+    }
+    public static boolean isAdmin(String type) {
+    	return type != null && "sys".equals(type);
+    }*/
 
     @Override
     public String toString() {

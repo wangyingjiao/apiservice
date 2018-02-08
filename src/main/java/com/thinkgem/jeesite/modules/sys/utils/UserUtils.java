@@ -191,7 +191,8 @@ public class UserUtils {
         List<Menu> menuList = (List<Menu>) getCache(CACHE_MENU_LIST);
         if (menuList == null) {
             User user = getUser();
-            if (user.isAdmin()) {
+            //if (user.isAdmin) {
+            if (null!=user.getType()&&user.getType().equals("sys")) {
             	Menu menu = new Menu();
             	menu.setType(user.getType());
                 menuList = menuDao.findAllList(menu);
