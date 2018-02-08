@@ -331,6 +331,10 @@
 		LEFT JOIN sys_role_office ro ON ro.role_id = a.id
 		LEFT JOIN sys_menu sm on sm.id=rm.menu_id and sm.del_flag =0
 		LEFT JOIN sys_menu p ON p.id = sm.parent_id
-		WHERE a.id = #{id} AND sm.type=#{type}
+		WHERE a.id = #{id}
+		 <if test="type!= null and type=='business' ">
+            AND sm.type=#{type}
+        </if>
+		
 	</select>
 </mapper>
