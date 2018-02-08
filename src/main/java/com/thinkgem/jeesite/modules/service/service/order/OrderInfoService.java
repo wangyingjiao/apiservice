@@ -834,7 +834,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				return insert;
 			}else {
 				//
-				throw new ServiceException("订单状态与服务状态不符合！");
+				throw new ServiceException("订单状态与服务状态不符合改派要求！");
 			}
 		}else {
 			throw new ServiceException("订单状态与服务状态不可为空！");
