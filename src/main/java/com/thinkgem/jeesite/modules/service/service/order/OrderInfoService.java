@@ -1608,7 +1608,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         return basicServiceStationDao.getServiceStationList(station);
     }
 
-	//订单的编辑（订单备注以及订单的服务状态修改）
+	//订单的编辑（订单备注修改）
 	@Transactional(readOnly = false)
 	public int appSaveRemark(OrderInfo orderInfo){
 		//判断订单是否属于该技师
@@ -1648,7 +1648,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		return i;
 	}
 
-	//订单的编辑（订单备注以及订单的服务状态修改）
+	//订单的编辑（订单的服务状态修改）
 	@Transactional(readOnly = false)
 	public int appSaveOrder(OrderInfo orderInfo){
 		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1717,7 +1717,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	public List<String> getGoodsCode(OrderInfo orderInfo){
 		List<String> goods = dao.getGoods(orderInfo);
 		List<String> code = new ArrayList<String>();
-		if (goods.size() > 0) {
+		if (goods != null && goods.size() > 0) {
 			for (String goodId : goods) {
 				String goodsCode = dao.getGoodsCode(goodId);
 				code.add(goodsCode);

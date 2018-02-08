@@ -91,7 +91,7 @@ public class AppOrderController extends BaseController {
 		map.put("list",page.getList());
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
-		if(page.getList().size()==0){
+		if(page.getList() ==null || page.getList().size()==0){
 			return new AppSuccResult(1,null,"列表查询");
 		}
 
@@ -200,7 +200,7 @@ public class AppOrderController extends BaseController {
 			PropertiesLoader loader = new PropertiesLoader("oss.properties");
 			String ossHost = loader.getProperty("OSS_THUMB_HOST");
 			List<AppServiceTechnicianInfo> apt=new ArrayList<AppServiceTechnicianInfo>();
-			if (techList.size()>0){
+			if (techList !=null && techList.size()>0){
 				for (OrderDispatch dis:techList){
 					ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
 					tec.setId(dis.getTechId());
