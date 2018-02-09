@@ -197,23 +197,23 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			serItemInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 			pageResult = super.findPage(page, serItemInfo);
 			list = pageResult.getList();
-			if (list.size() != 0 && null != list) {
+			/*if (list.size() != 0 && null != list) {
 				for (SerItemInfo itemInfo : list) {
 					List<SerItemCommodity> findListByItemId = serItemCommodityDao.findListByItemId(itemInfo);
 					itemInfo.setCommoditys(findListByItemId);
 				}
-			}
+			}*/
 		} else {
 			serItemInfo.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 			pageResult = super.findPage(page, serItemInfo);
 			list = pageResult.getList();
 		}
-		/*if (list.size() != 0 && null != list) {//返回查询条件对应的服务分类的商品集合
+		if (list.size() != 0 && null != list) {//返回查询条件对应的服务分类的商品集合
 			for (SerItemInfo itemInfo : list) {
 				List<SerItemCommodity> findListByItemId = serItemCommodityDao.findListByItemId(itemInfo);
 				itemInfo.setCommoditys(findListByItemId);
 			}
-		}*/
+		}
 		if (null != list) {
 			for (SerItemInfo entity : list) {
 				String picture = entity.getPicture();
