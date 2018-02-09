@@ -158,6 +158,7 @@
 		from order_info a
 		left join order_dispatch b on a.id = b.order_id
 		where a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
+		AND b.status='yes'
 		and b.tech_id = #{techId}
 		and ((a.service_time &lt; #{startTime} AND a.finish_time &gt; #{startTime}) OR (a.service_time &gt; #{startTime} AND a.service_time &lt; #{endTime}))
 		and (a.order_status = 'dispatched' or a.order_status = 'started')
