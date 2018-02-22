@@ -59,7 +59,7 @@ public class AppOrderController extends BaseController {
 
 	//查询订单列表
 	@ResponseBody
-    @RequestMapping(value = "${appPath}/getOrderListPage",  method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "${appPath}/getOrderListPage",  method = {RequestMethod.POST})
     @ApiOperation(value = "订单列表", notes = "订单")
     public AppResult getOrderListPage(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		//获取登录用户id 获取用户手机set进去
@@ -99,7 +99,7 @@ public class AppOrderController extends BaseController {
     }
 	//订单详情
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/getOrderById",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/getOrderById",method = {RequestMethod.POST})
 	@ApiOperation(value = "订单详情", notes = "订单")
 	public AppResult getOrderById(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
@@ -115,7 +115,7 @@ public class AppOrderController extends BaseController {
 
 	//技师添加订单备注
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/saveRemark",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/saveRemark",method = {RequestMethod.POST})
 	@ApiOperation(value = "技师添加订单备注", notes = "订单")
 	public AppResult saveRemark(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response){
 		//获取技师id
@@ -161,7 +161,7 @@ public class AppOrderController extends BaseController {
 	}
 	//修改服务状态
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/updateOrderByServiceStatus",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/updateOrderByServiceStatus",method = {RequestMethod.POST})
 	@ApiOperation(value = "修改服务状态", notes = "订单")
 	public AppResult updateOrderByServiceStatus(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		List<String> errList = errors(info, SavePersonalGroup.class);
@@ -188,7 +188,7 @@ public class AppOrderController extends BaseController {
 
 
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/techList",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/techList",method = {RequestMethod.POST})
 	@ApiOperation("技师列表")
 	public AppResult techList(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		Token token = (Token) request.getAttribute("token");
@@ -218,7 +218,7 @@ public class AppOrderController extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/appDispatchTechSave", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/appDispatchTechSave", method = {RequestMethod.POST})
 	@ApiOperation("技师改派保存")
 	public AppResult appDispatchTechSave(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response) {
 		Token token = (Token) request.getAttribute("token");
