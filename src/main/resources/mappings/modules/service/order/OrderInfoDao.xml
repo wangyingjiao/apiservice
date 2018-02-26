@@ -778,7 +778,6 @@ origin_price,
 		SELECT a.joint_goods_code
 		FROM ser_item_info_goods a
 		WHERE a.id= #{goodsId}
-		AND a.del_flag = '0'
 	</select>
 
 	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
