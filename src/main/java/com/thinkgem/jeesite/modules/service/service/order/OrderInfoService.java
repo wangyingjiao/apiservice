@@ -2349,6 +2349,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					house.setId(goods.getGoodsId());
 					house.setName(goods.getGoodsName());
 					house.setPayPrice(goods.getPayPrice());
+					house.setMinPurchase(goods.getMinPurchase());
+					house.setGoodsUnit(goods.getGoodsUnit());
+					house.setGoodsNum(goods.getMinPurchase());
 					houses.add(house);
 
 					if (null == houseInfo) {
@@ -2378,8 +2381,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				int num = houseInfo.getMinPurchase();//商品数量
 				BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
 				houseInfo.setPayPriceSum(price.toString());//总价
-
-				houseInfo.setGoodsChecked(true);
 
 				if (houses != null && houses.size() > 0) {
 					houseInfo.setHouseId(houses.get(0).getId());
