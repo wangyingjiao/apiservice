@@ -245,5 +245,6 @@
 		a.org_id = #{orgId}
 		AND a.is_useable = 'yes'
 		AND a.del_flag = '0'
+		ORDER BY a.create_date DESC
 	</select>
 </mapper>
