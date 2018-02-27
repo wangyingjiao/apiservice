@@ -2273,8 +2273,16 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		orderAddress.setOrgId(customInfo.getOrgId());//客户所属机构
 		//orderAddress.setStationId(customInfo.getStationId());//客户所属服务站
-		orderAddress.setAddrLatitude(customInfo.getAddrLatitude());//纬度
-		orderAddress.setAddrLongitude(customInfo.getAddrLongitude());//经度
+		if(StringUtils.isNotBlank(customInfo.getAddrLatitude())){
+			orderAddress.setAddrLatitude(customInfo.getAddrLatitude());//纬度
+		}else{
+			orderAddress.setAddrLatitude(null);//纬度
+		}
+		if(StringUtils.isNotBlank(customInfo.getAddrLongitude())){
+			orderAddress.setAddrLongitude(customInfo.getAddrLongitude());//经度
+		}else{
+			orderAddress.setAddrLongitude(null);//经度
+		}
 		return orderAddress;
 	}
 
