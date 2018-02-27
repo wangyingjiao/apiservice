@@ -2552,10 +2552,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
 			//serchInfo.setOrderId(orderInfo.getId());
 			techList = dao.getTechListBySkillId(serchInfo);
-		}
-		if(techList.size() < techDispatchNum){//技师数量不够
-			return null;
-		}
+            if(techList.size() < techDispatchNum){//技师数量不够
+                return null;
+            }
+		}else{
+            if(techList.size() < techDispatchNum){//技师数量不够
+                return null;
+            }
+            techDispatchNum = techList.size();
+        }
 
 		for(Date date : dateList){
 			OrderTimeList responseRe = new OrderTimeList();
@@ -2708,7 +2713,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//将List转换为Set
 		Set uniqueSet = new HashSet(allTimeList);
 		for (Object temp : uniqueSet) {
-			if(Collections.frequency(allTimeList, temp) >= techList.size()){
+			if(Collections.frequency(allTimeList, temp) >= techDispatchNum){
 				resTimeList.add(temp.toString());
 			}
 		}
