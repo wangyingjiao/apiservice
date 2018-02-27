@@ -2708,7 +2708,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//将List转换为Set
 		Set uniqueSet = new HashSet(allTimeList);
 		for (Object temp : uniqueSet) {
-			if(Collections.frequency(allTimeList, temp) >= techDispatchNum){
+			if(Collections.frequency(allTimeList, temp) >= techList.size()){
 				resTimeList.add(temp.toString());
 			}
 		}
