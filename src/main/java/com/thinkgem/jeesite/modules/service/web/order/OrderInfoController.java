@@ -28,10 +28,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * 子订单Controller
@@ -502,5 +499,21 @@ public class OrderInfoController extends BaseController {
 		}
 	}
 
+	/**
+	 * 获取商品所需人数和时间
+	 * @param info(goodsList)
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "findGoodsNeedTech", method = {RequestMethod.POST})
+	@RequiresPermissions("order_insert")
+	public Result findGoodsNeedTech(@RequestBody OrderInfo info) {
+		try {
+			Map<String,String> list = orderInfoService.findGoodsNeedTech(info);
+			return new SuccResult(list);
+		}catch (Exception e){
+			return new FailResult("获取提示信息失败!");
+		}
+	}
 
 }
