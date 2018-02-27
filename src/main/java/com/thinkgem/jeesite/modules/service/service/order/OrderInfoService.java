@@ -2070,6 +2070,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(techList == null || techList.size() == 0) {
 				techList = openCreateForOrderFindDispatchList(orderInfo, techDispatchNum, serviceSecond);//获取派单技师
 			}
+
+			if(techList== null || techList.size() < techDispatchNum){//技师数量不够
+				throw new ServiceException("技师数量不满足当前商品的需求人数");
+			}
 			orderInfo.setTechList(techList);//派单技师List
 		}catch (ServiceException ex){
 			throw new ServiceException(ex.getMessage());
