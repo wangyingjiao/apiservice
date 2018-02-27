@@ -57,7 +57,7 @@
 			a.name AS "name",
 			a.sex AS "sex",
 			a.phone AS "phone",
-			a.address AS "address",
+			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),a.address) AS "address",
 			a.addr_longitude AS "addrLongitude",
 			a.addr_latitude AS "addrLatitude",
 			a.org_id AS "orgId",
@@ -65,6 +65,9 @@
 			a.source AS "source"
 		FROM customer_info a
 		LEFT JOIN basic_organization b ON a.org_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN sys_area t1 ON a.province_code = t1.code
+		LEFT JOIN sys_area t2 ON a.city_code = t2.code
+		LEFT JOIN sys_area t3 ON a.area_code = t3.code
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="phone != null and phone != ''">
