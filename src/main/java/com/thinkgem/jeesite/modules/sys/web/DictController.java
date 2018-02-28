@@ -219,9 +219,9 @@ public class DictController extends BaseController {
         if(dict == null){
             dict = new Dict();
         }
-        Page<Dict> DictPage = new Page<>(request, response);
-        Page<Dict> page = dictService.dictListDataByType(DictPage, dict);
-        return new SuccResult(page);
+        //Page<Dict> DictPage = new Page<>(request, response);
+        List<Dict> dicts = dictService.dictListDataByType(dict);
+        return new SuccResult(dicts);
     }
 
     @ResponseBody

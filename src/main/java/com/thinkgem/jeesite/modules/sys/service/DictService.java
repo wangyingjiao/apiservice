@@ -142,10 +142,11 @@ public class DictService extends CrudService<DictDao, Dict> {
         return page;
     }
 
-    public Page<Dict> dictListDataByType(Page<Dict> dictPage, Dict dict) {
-        dict.setPage(dictPage);
-        dictPage.setList(dictDao.dictListDataByType(dict));
-        return dictPage;
+    public List<Dict> dictListDataByType(Dict dict) {
+        //dict.setPage(dictPage);
+        //dictPage.setList(dictDao.dictListDataByType(dict));
+        return dictDao.dictListDataByType(dict);
+        //return dictPage;
     }
 
     public Dict dictListDataById(Dict dict) {
