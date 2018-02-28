@@ -117,7 +117,8 @@ public class OrderDispatchController extends BaseController {
 			try {
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
 				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
-						StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
+						StringUtils.isNotEmpty(map.get("jointEshopCode").toString()) &&
+						!"own".equals(map.get("orderSource").toString())){
 					OrderInfo sendOrder = new OrderInfo();
 
 					String orderSn = orderInfoService.getOrderSnById(map.get("orderId").toString());

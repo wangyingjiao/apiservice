@@ -730,6 +730,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		map.put("orderId", orderInfo.getId());
 		map.put("jointGoodsCodes",jointGoodsCodes);
 		map.put("jointEshopCode", jointEshopCode);
+        map.put("orderSource",orderInfo.getOrderSource());
 
 		map.put("orderCreateMsgList",orderCreateMsgList);
 		map.put("orderNumber",orderInfo.getOrderNumber());
@@ -1035,6 +1036,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		map.put("orderId",orderInfo.getId());
 		map.put("jointGoodsCodes",jointGoodsCodes);
 		map.put("jointEshopCode", jointEshopCode);
+		map.put("orderSource",orderInfo.getOrderSource());
 
 		map.put("orderDispatchMsgList", orderDispatchMsgList);
 		map.put("orderCreateMsgList", orderCreateMsgList);
@@ -1658,6 +1660,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			map.put("serviceDate",newServiceDate);
 			map.put("jointGoodsCodes",jointGoodsCodes);
 			map.put("jointEshopCode", jointEshopCode);
+            map.put("orderSource",orderInfo.getOrderSource());
 
 			map.put("orderServiceTimeMsgList", orderServiceTimeMsgList);
 			map.put("orderDispatchMsgList", orderDispatchMsgList);
