@@ -586,6 +586,7 @@ origin_price,
 				)
 			</if>
 		</where>
+		ORDER BY t.create_date DESC
 	</select>
 	<select id="getTechByWorkTime" resultType="String">
 		SELECT
