@@ -393,7 +393,8 @@ public class RoleController extends BaseController {
 		 * 
 		 * } } } } }
 		 */
-		User user = UserUtils.getUser();
+		User user1 = UserUtils.getUser();
+		User user = UserUtils.getUser(user1.getId());
 		// 获取岗位机构
 		BasicOrganization organization = user.getOrganization();
 		if (role.getOrganization() == null) {
@@ -433,7 +434,8 @@ public class RoleController extends BaseController {
 		 * 
 		 * } } }
 		 */
-		User user = UserUtils.getUser();
+		User user1 = UserUtils.getUser();
+		User user = UserUtils.getUser(user1.getId());
 		// 获取岗位机构
 		BasicOrganization organization = user.getOrganization();
 		if (role.getOrganization() == null) {
