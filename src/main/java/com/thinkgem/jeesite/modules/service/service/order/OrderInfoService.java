@@ -2185,7 +2185,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				//新增、改派判断库存
 				boolean flag = checkTechTimeWithStationId(techIdList,stationId,servie_time,DateUtils.addSeconds(servie_time, serviceSecond.intValue()));
 				if(!flag){
-					throw new ServiceException("技师不可派单，请重新选择！");
+					throw new ServiceException("订单创建失败，库存不足，请重新选择技师或服务时间");
 				}
 			}
 /*
