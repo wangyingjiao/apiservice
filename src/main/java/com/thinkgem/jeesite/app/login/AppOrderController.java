@@ -128,28 +128,32 @@ public class AppOrderController extends BaseController {
 		try{
 			int i = orderInfoService.appSaveRemark(orderInfo);
 			if (i>0){
-				//查询数据库获取订单对应的机构  获取对接code
-				OrderInfo info = orderInfoService.get(orderInfo.getId());
-				BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
-				//获取商品的对接code
-				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
-				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
-					OrderInfo sendOrder = new OrderInfo();
+				OrderInfo orderInfo1 = orderInfoService.get(orderInfo.getId());
+				String orderSource = orderInfo1.getOrderSource();
+				if (StringUtils.isNotBlank(orderSource) || orderSource.equals("own")) {
+					//查询数据库获取订单对应的机构  获取对接code
+					OrderInfo info = orderInfoService.get(orderInfo.getId());
+					BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
+					//获取商品的对接code
+					List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
+					if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size() > 0) {
+						OrderInfo sendOrder = new OrderInfo();
 
-					String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
-					sendOrder.setOrderNumber(orderSn);//订单编号
-					sendOrder.setOrderRemark(orderInfo.getOrderRemark());
-					String orderRemarkPic = orderInfo.getOrderRemarkPic();
-					if (StringUtils.isNotBlank(orderRemarkPic)){
-						List<String> strings = (List<String>) JsonMapper.fromJsonString(orderRemarkPic, ArrayList.class);
-						orderInfo.setOrderRemarkPics(strings);
-					}
-					sendOrder.setOrderRemarkPics(orderInfo.getOrderRemarkPics());
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-					if (sendResponse == null) {
-						return new AppFailResult(-1,null,"对接失败N");
-					} else if (sendResponse.getCode() != 0) {
-						return new AppFailResult(-1,null,sendResponse.getMessage());
+						String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
+						sendOrder.setOrderNumber(orderSn);//订单编号
+						sendOrder.setOrderRemark(orderInfo.getOrderRemark());
+						String orderRemarkPic = orderInfo.getOrderRemarkPic();
+						if (StringUtils.isNotBlank(orderRemarkPic)) {
+							List<String> strings = (List<String>) JsonMapper.fromJsonString(orderRemarkPic, ArrayList.class);
+							orderInfo.setOrderRemarkPics(strings);
+						}
+						sendOrder.setOrderRemarkPics(orderInfo.getOrderRemarkPics());
+						OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+						if (sendResponse == null) {
+							return new AppFailResult(-1, null, "对接失败N");
+						} else if (sendResponse.getCode() != 0) {
+							return new AppFailResult(-1, null, sendResponse.getMessage());
+						}
 					}
 				}
 				return new AppSuccResult(0,null,"添加备注成功");
@@ -249,23 +253,26 @@ public class AppOrderController extends BaseController {
 
 				//查询数据库获取订单对应的机构  获取对接code
 				OrderInfo info = orderInfoService.get(orderInfo.getId());
-				BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
-				//获取商品的对接code
-				List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
-				if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size()>0){
-					OrderInfo sendOrder = new OrderInfo();
+				String orderSource = info.getOrderSource();
+				if (StringUtils.isNotBlank(orderSource) || orderSource.equals("own")) {
+					BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
+					//获取商品的对接code
+					List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
+					if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size() > 0) {
+						OrderInfo sendOrder = new OrderInfo();
 
-					String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
-					sendOrder.setOrderNumber(orderSn);//订单编号
+						String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
+						sendOrder.setOrderNumber(orderSn);//订单编号
 
-					//sendOrder.setId(orderInfo.getId());
-					List<OrderDispatch> orderDispatchList = orderInfoService.getOrderDispatchList(info);
-					sendOrder.setTechList(orderDispatchList);
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-					if (sendResponse == null) {
-						return new AppFailResult(-1,null,"对接失败N");
-					} else if (sendResponse.getCode() != 0) {
-						return new AppFailResult(-1,null,sendResponse.getMessage());
+						//sendOrder.setId(orderInfo.getId());
+						List<OrderDispatch> orderDispatchList = orderInfoService.getOrderDispatchList(info);
+						sendOrder.setTechList(orderDispatchList);
+						OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+						if (sendResponse == null) {
+							return new AppFailResult(-1, null, "对接失败N");
+						} else if (sendResponse.getCode() != 0) {
+							return new AppFailResult(-1, null, sendResponse.getMessage());
+						}
 					}
 				}
 				return new AppSuccResult(0,null,"改派成功");
