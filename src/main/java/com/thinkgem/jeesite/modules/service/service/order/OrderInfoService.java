@@ -752,12 +752,114 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			for (String techId : techIdList) {
 				ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoDao.get(techId);
 				if (technicianInfo != null) {
+					if("no".equals(technicianInfo.getStatus())){
+						return false;
+					}
 					if("full_time".equals(technicianInfo.getJobNature())) {//岗位性质（full_time:全职，part_time:兼职）
 						techIdListFull.add(techId);
 					}else{
 						techIdListPart.add(techId);
 					}
 					stationId= technicianInfo.getStationId();
+				}
+			}
+		}else{
+			return false;
+		}
+		int techNum = techIdList.size();
+		List<String> techListRe = new ArrayList<>();
+		if(techIdListPart!=null && techIdListPart.size()>0) {
+			for(String techId : techIdListPart){
+				techListRe.add(techId);
+			}
+		}
+		if(techIdListFull!=null && techIdListFull.size()>0) {
+			OrderDispatch serchInfo = new OrderDispatch();
+			serchInfo.setWeek(DateUtils.getWeekNum(serviceTime));
+			serchInfo.setStartTime(serviceTime);
+			serchInfo.setEndTime(finishTime);
+			serchInfo.setStationId(stationId);
+			List<String> workTechIdList = dao.getTechByWorkTime(serchInfo);
+			//（4）考虑技师的休假时间
+			List<String> holidayTechIdList = dao.getTechByHoliday(serchInfo);
+
+			List<OrderDispatch> beforTimeCheckTechList = new ArrayList<OrderDispatch>();
+			List<String> beforTimeCheckTechIdList = new ArrayList<String>();
+
+			for(String techId : techIdListFull){//有工作时间并且没有休假的技师 有时间接单 还未考虑是否有订单
+				if((workTechIdList!=null && workTechIdList.contains(techId))
+						&& (holidayTechIdList == null || (holidayTechIdList!=null && !holidayTechIdList.contains(techId))) ){
+					beforTimeCheckTechIdList.add(techId);
+				}
+			}
+
+			if(beforTimeCheckTechIdList.size() != 0){
+				serchInfo.setTechIds(beforTimeCheckTechIdList);
+				//今天的订单
+				serchInfo.setStartTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 00:00:00"));
+				serchInfo.setEndTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 23:59:59"));
+				//（5）考虑技师是否已有订单" //去除有订单并且时间冲突的技师
+				List<OrderDispatch> orderTechList = dao.getTechByOrder(serchInfo);//技师列表
+
+				List<String> timeCheckDelTechIdList = new ArrayList<String>();
+
+				int intervalTimeS =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+				int intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+
+				Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
+				Date checkFinishTime = DateUtils.addSecondsNotDayE(serviceTime, intervalTimeE);
+
+				for(OrderDispatch orderTech : orderTechList){
+					//（1）路上时间：计算得出，--按照骑行的时间计算 --> 15MIN
+					//		上一单的用户地址与下一单用户地址之间的距离，则可以接单的时间为：路上时间+富余时间
+					//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
+					//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
+					//（4）富余时间定为10分钟"
+					if (!DateUtils.checkDatesRepeat(checkServiceTime, checkFinishTime, orderTech.getServiceTime(), orderTech.getFinishTime())) {
+						timeCheckDelTechIdList.add(orderTech.getTechId());//有订单的技师 删除
+					}
+				}
+				for(String techId : beforTimeCheckTechIdList){
+					if(!timeCheckDelTechIdList.contains(techId)){
+						techListRe.add(techId);
+					}
+				}
+			}
+		}
+		if(techListRe.size() != techNum){
+			return false;
+		}
+
+		return flag;
+	}
+
+	/**
+	 * 新增、改派判断库存
+	 * @param techIdList
+	 * @param serviceTime
+	 * @param finishTime
+	 * @return
+	 */
+	private boolean checkTechTimeWithStationId(List<String> techIdList, String stationId, Date serviceTime, Date finishTime) {
+		boolean flag = true;
+		//String stationId = "";
+		List<String> techIdListFull = new ArrayList<>();
+		List<String> techIdListPart = new ArrayList<>();
+		if(techIdList!=null && techIdList.size()>0) {
+			for (String techId : techIdList) {
+				ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoDao.get(techId);
+				if (technicianInfo != null) {
+					if("no".equals(technicianInfo.getStatus())){
+						return false;
+					}
+					if(!stationId.equals( technicianInfo.getStationId())){
+						return false;
+					}
+					if("full_time".equals(technicianInfo.getJobNature())) {//岗位性质（full_time:全职，part_time:兼职）
+						techIdListFull.add(techId);
+					}else{
+						techIdListPart.add(techId);
+					}
 				}
 			}
 		}else{
@@ -2072,6 +2174,16 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<OrderDispatch> techList = info.getTechList();
 			if(techList == null || techList.size() == 0) {
 				techList = openCreateForOrderFindDispatchList(orderInfo, techDispatchNum, serviceSecond);//获取派单技师
+			}else{
+				List techIdList=new ArrayList();
+				for(OrderDispatch tech : techList){
+					techIdList.add(tech.getTechId());
+				}
+				//新增、改派判断库存
+				boolean flag = checkTechTimeWithStationId(techIdList,stationId,servie_time,DateUtils.addSeconds(servie_time, serviceSecond.intValue()));
+				if(!flag){
+					throw new ServiceException("技师不可派单，请重新选择！");
+				}
 			}
 /*
 			if(techList== null || techList.size() < techDispatchNum){//技师数量不够
