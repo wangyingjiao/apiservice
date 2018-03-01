@@ -467,19 +467,15 @@ public class OpenSendUtil {
 			e.printStackTrace();
 		}
 		OpenSendSaveOrderResponse failRe = new OpenSendSaveOrderResponse();
-		failRe.setMessage("对接保存信息失败-系统异常");
+		failRe.setMessage("对接保存信息失败-系统异常或链接超时");
 		failRe.setCode(1);
 
-		/*SysJointLog log = new SysJointLog();
+		SysJointLog log = new SysJointLog();
 		log.setUrl(url);
-		if(failRe != null) {
-			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
-			log.setResponseContent(JsonMapper.toJsonString(failRe));
-		}else{
-			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
-		}
+		log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+		log.setResponseContent(JsonMapper.toJsonString(failRe));
 		log.setRequestContent(json);
-		OpenLogUtils.saveSendLog(log);*/
+		OpenLogUtils.saveSendLog(log);
 
 		return failRe;
 	}
