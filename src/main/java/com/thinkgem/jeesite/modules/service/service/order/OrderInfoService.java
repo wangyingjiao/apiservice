@@ -2629,6 +2629,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					techDispatchNum = techNum;
 				}
 			}
+
+			if(orderInfo.getTechList()!=null && orderInfo.getTechList().size()!=0) {
+				techDispatchNum = orderInfo.getTechList().size();
+			}
 			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		} else {
