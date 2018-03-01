@@ -130,7 +130,7 @@ public class AppOrderController extends BaseController {
 			if (i>0){
 				OrderInfo orderInfo1 = orderInfoService.get(orderInfo.getId());
 				String orderSource = orderInfo1.getOrderSource();
-				if (StringUtils.isNotBlank(orderSource) || orderSource.equals("own")) {
+				if (StringUtils.isNotBlank(orderSource) && orderSource.equals("gasq")) {
 					//查询数据库获取订单对应的机构  获取对接code
 					OrderInfo info = orderInfoService.get(orderInfo.getId());
 					BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
@@ -254,7 +254,7 @@ public class AppOrderController extends BaseController {
 				//查询数据库获取订单对应的机构  获取对接code
 				OrderInfo info = orderInfoService.get(orderInfo.getId());
 				String orderSource = info.getOrderSource();
-				if (StringUtils.isNotBlank(orderSource) || orderSource.equals("own")) {
+				if (StringUtils.isNotBlank(orderSource) && orderSource.equals("gasq")) {
 					BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
 					//获取商品的对接code
 					List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
