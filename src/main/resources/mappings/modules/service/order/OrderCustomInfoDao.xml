@@ -227,7 +227,7 @@
 			a.province_code AS "provinceCode",
 			a.city_code AS "cityCode",
 			a.area_code AS "areaCode",
-			a.address AS "address",
+			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),a.address) AS "address",
 			a.addr_longitude AS "addrLongitude",
 			a.addr_latitude AS "addrLatitude",
 			a.email AS "email",
@@ -235,10 +235,35 @@
 			a.source AS "source",
 			a.station_id AS "stationId"
 		FROM customer_info a
+		LEFT JOIN sys_area t1 ON a.province_code = t1.code
+		LEFT JOIN sys_area t2 ON a.city_code = t2.code
+		LEFT JOIN sys_area t3 ON a.area_code = t3.code
 		WHERE a.phone = #{phone}
 		AND a.org_id = #{orgId}
 		AND a.source = #{source}
 		AND a.del_flag = '0'
+	</select>
+	<select id="findCustomerById" resultType="OrderCustomInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.province_code AS "provinceCode",
+		a.city_code AS "cityCode",
+		a.area_code AS "areaCode",
+		CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),a.address) AS "address",
+		a.addr_longitude AS "addrLongitude",
+		a.addr_latitude AS "addrLatitude",
+		a.email AS "email",
+		a.org_id AS "orgId",
+		a.source AS "source",
+		a.station_id AS "stationId"
+		FROM customer_info a
+		LEFT JOIN sys_area t1 ON a.province_code = t1.code
+		LEFT JOIN sys_area t2 ON a.city_code = t2.code
+		LEFT JOIN sys_area t3 ON a.area_code = t3.code
+		WHERE a.id = #{id}
 	</select>
 	<select id="findStationList" resultType="OrderDropdownInfo">
 		SELECT

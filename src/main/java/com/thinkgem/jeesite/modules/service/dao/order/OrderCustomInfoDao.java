@@ -31,4 +31,6 @@ public interface OrderCustomInfoDao extends CrudDao<OrderCustomInfo> {
     List<OrderDropdownInfo> findStationList(OrderCustomInfo info);
 
     List<OrderCustomInfo> findCusList(OrderCustomInfo orderCustomInfo);
+
+    OrderCustomInfo findCustomerById(OrderCustomInfo info);
 }

@@ -1167,7 +1167,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if(totalTime > 4){//每4小时增加1人
 					BigDecimal b1 = new BigDecimal(totalTime);
 					BigDecimal b2 = new BigDecimal(new Double(4));
-					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					//addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					addTechNum= (b1.subtract(b2).divide(b2, 0, BigDecimal.ROUND_UP).intValue());
 				}
 				techNum = startPerNum + addTechNum;
 				if(techNum > cappinPerNum){//每个商品需求的人数
@@ -1450,7 +1451,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if(totalTime > 4){//每4小时增加1人
 					BigDecimal b1 = new BigDecimal(totalTime);
 					BigDecimal b2 = new BigDecimal(new Double(4));
-					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					//addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					addTechNum= (b1.subtract(b2).divide(b2, 0, BigDecimal.ROUND_UP).intValue());
 				}
 				techNum = startPerNum + addTechNum;
 				if(techNum > cappinPerNum){//每个商品需求的人数
@@ -2114,7 +2116,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if(goodsTime > 4){//每4小时增加1人
 					BigDecimal b1 = new BigDecimal(goodsTime);
 					BigDecimal b2 = new BigDecimal(new Double(4));
-					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					//addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					addTechNum= (b1.subtract(b2).divide(b2, 0, BigDecimal.ROUND_UP).intValue());
 				}
 				techNum = startPerNum + addTechNum;
 				if(techNum > cappinPerNum){//每个商品的人数
@@ -2427,7 +2430,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	public OrderCustomInfo findCustomerById(OrderCustomInfo info) {
-		OrderCustomInfo customInfo = orderCustomInfoDao.get(info);
+		OrderCustomInfo customInfo = orderCustomInfoDao.findCustomerById(info);
 		if(null != customInfo){
 			info.setOrgId(UserUtils.getUser().getOrganization().getId());
 			List<OrderDropdownInfo> stationList = orderCustomInfoDao.findStationList(info);
@@ -2619,7 +2622,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if(totalTime > 4){//每4小时增加1人
 					BigDecimal b1 = new BigDecimal(totalTime);
 					BigDecimal b2 = new BigDecimal(new Double(4));
-					addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					//addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					addTechNum= (b1.subtract(b2).divide(b2, 0, BigDecimal.ROUND_UP).intValue());
 				}
 				techNum = startPerNum + addTechNum;
 				if(techNum > cappinPerNum){//每个商品需求的人数
@@ -2895,7 +2899,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
                 if(totalTime > 4){//每4小时增加1人
                     BigDecimal b1 = new BigDecimal(totalTime);
                     BigDecimal b2 = new BigDecimal(new Double(4));
-                    addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+                    //addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
+					addTechNum= (b1.subtract(b2).divide(b2, 0, BigDecimal.ROUND_UP).intValue());
                 }
                 techNum = startPerNum + addTechNum;
                 if(techNum > cappinPerNum){//每个商品需求的人数
