@@ -519,4 +519,48 @@ public class OrderInfoController extends BaseController {
 		}
 	}
 
+	/**
+	 * 取消订单
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "orderCancel", method = {RequestMethod.POST})
+	@RequiresPermissions("order_cancel")
+	public Result orderCancel(@RequestBody OrderInfo info) {
+		//判断订单状态
+		boolean flag = orderInfoService.checkOrderCancelStatus(info);
+		if(flag){
+			return new FailResult("当前订单状态不允许取消订单");
+		}
+
+		try{
+			HashMap<String,Object>  map = orderInfoService.orderCancel(info);
+			if(map.get("list") != null) {
+				try {
+					List<OrderDispatch> orderCancelMsgList = (List<OrderDispatch>) map.get("list");
+					OrderInfo orderInfo = (OrderInfo) map.get("info");
+					String orderNumber = orderInfo.getOrderNumber();
+					String orderId = orderInfo.getId();
+
+					OrderInfo orderInfo1 = new OrderInfo();
+					orderInfo1.setOrderNumber(orderNumber);
+					orderInfo1.setId(orderId);
+					orderInfo1.setTechList(orderCancelMsgList);
+					User user = UserUtils.getUser();
+					orderInfo1.setCreateBy(user);
+
+					messageInfoService.insert(orderInfo1, "orderCancel");//取消
+				} catch (Exception e) {
+					logger.error("取消订单-推送消息失败-系统异常");
+				}
+
+			}
+			return new SuccResult("取消订单成功");
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("取消订单失败!");
+		}
+	}
 }

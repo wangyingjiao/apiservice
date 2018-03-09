@@ -69,6 +69,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<String> orderRemarkPics;   //订单备注图片
 	private String orderContent;		// 下单服务内容
 	private String cancelReason;//取消原因
+	private String cancelReasonRemark;//取消原因
 	private String jointOrderId;//对接订单ID
 
 	private String customerName;         //客户姓名
@@ -508,6 +509,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setCancelReason(String cancelReason) {
 		this.cancelReason = cancelReason;
+	}
+
+	public String getCancelReasonRemark() {
+		return cancelReasonRemark;
+	}
+
+	public void setCancelReasonRemark(String cancelReasonRemark) {
+		this.cancelReasonRemark = cancelReasonRemark;
 	}
 
 	public String getCustomerName() {

@@ -82,6 +82,7 @@
 			a.pay_price AS payPrice,
 			a.service_time AS serviceTime,
 			a.order_status AS orderStatus,
+			a.order_source AS orderSource,
 			a.service_status AS "serviceStatus",
 			a.pay_status AS payStatus,
 			a.joint_order_id AS "jointOrderId",
@@ -91,6 +92,9 @@
 		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderSource != null and orderSource !=''">
+				AND a.order_source= #{orderSource}
+			</if>
 			<if test="orderStatus != null and orderStatus !=''">
 				AND a.order_status= #{orderStatus}
 			</if>
@@ -302,7 +306,6 @@ origin_price,
 			#{delFlag}
 		)
 	</insert>
-	
 	<update id="update">
 		UPDATE order_info SET
 			<if test="masterId !=null and masterId != ''">master_id = #{masterId},</if>
@@ -443,6 +446,7 @@ origin_price,
 			a.order_remark_pic AS "orderRemarkPic",
 			a.order_content AS "orderContent",
 			a.cancel_reason AS "cancelReason",
+			a.cancel_reason_remark AS "cancelReasonRemark",
 			a.business_name AS "businessName",
 			a.business_phone AS "businessPhone",
 			a.business_remark AS "businessRemark",
@@ -809,4 +813,15 @@ origin_price,
 		</foreach>
 	</select>
 	<!-- 对接SQL end-->
+
+	<update id="orderCancel">
+		UPDATE order_info SET
+		service_status = #{serviceStatus},
+		order_status = #{orderStatus},
+		cancel_reason = #{cancelReason},
+		cancel_reason_remark = #{cancelReasonRemark},
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
 </mapper>

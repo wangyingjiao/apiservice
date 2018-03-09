@@ -70,6 +70,7 @@
 		LEFT JOIN sys_area t3 ON a.area_code = t3.code
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.source = 'own'
 			<if test="phone != null and phone != ''">
 				AND a.phone LIKE concat('%',#{phone},'%')
 			</if>

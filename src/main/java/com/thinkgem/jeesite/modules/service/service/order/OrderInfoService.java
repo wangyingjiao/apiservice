@@ -36,6 +36,7 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianI
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.open.entity.OpenCreateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -409,7 +410,13 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 
 	public Page<OrderInfo> findPage(Page<OrderInfo> page, OrderInfo orderInfo) {
-		orderInfo.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
+		User user = UserUtils.getUser();
+		BasicOrganization org = user.getOrganization();
+		BasicServiceStation sts = user.getStation();
+		if (null != org && org.getId().trim().equals("0")) {
+			orderInfo.setOrderSource("gasq");//全平台：只展示订单来源为国安社区的订单列表
+		}
+		orderInfo.getSqlMap().put("dsf", dataStatioRoleFilter(user, "a"));
 		Page<OrderInfo> pageResult = super.findPage(page, orderInfo);
 		return pageResult;
 	}
@@ -2968,4 +2975,64 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         map.put("serviceHour",Double.toString(orderTotalTime));
         return map;
     }
+
+	public boolean checkOrderCancelStatus(OrderInfo info) {
+		info = get(info);
+		String orderStatus =  info.getOrderStatus();
+		String serviceStatus =  info.getServiceStatus();
+		String payStatus = info.getPayStatus();
+		String orderSource = info.getOrderSource();
+
+		//服务状态
+		String serviceStatusWait = "wait_service";//待服务
+		String serviceStatusStarted = "started";//已上门
+		String serviceStatusFinish = "finish";//已完成
+		String serviceStatusCancel = "cancel";//已取消
+		//订单状态
+		String orderStatusWaitdispatch = "waitdispatch";//待派单
+		String orderStatusDispatched = "dispatched";//已派单
+		String orderStatusCancel = "cancel";//已取消
+		String orderStatusStarted = "started";//已上门
+		String orderStatusFinish = "finish";//已完成
+		String orderStatusSuccess = "success";//已成功
+		String orderStatusStop = "stop";//已暂停
+		//支付状态
+		String waitpay = "waitpay";//待支付
+		String payed = "payed";//已支付
+		//订单来源
+		String own = "own";//本机构
+		String gasq = "gasq";//国安社区
+
+        /*
+       		只有订单来源为本机构的订单
+            若支付状态不是未支付、或服务状态是已取消或订单状态已取消,此时无需执行取消订单的流程
+         */
+        if(!own.equals(orderSource)){
+			return true;
+		}
+
+		if(!waitpay.equals(payStatus) || serviceStatusCancel.equals(serviceStatus) || orderStatusCancel.equals(orderStatus)){
+        	return true;
+		}
+
+		return false;
+	}
+
+	public HashMap<String,Object>  orderCancel(OrderInfo orderInfo) {
+		orderInfo.setServiceStatus("cancel");
+		orderInfo.setOrderStatus("cancel");
+		orderInfo.preUpdate();
+		dao.orderCancel(orderInfo);
+
+		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+		OrderInfo info = get(orderInfo.getId());
+		HashMap<String,Object> map = new HashMap<>();
+		if(techListRe==null || techListRe.size()==0){
+			map.put("list",null);
+		}else{
+			map.put("list",techListRe);
+		}
+		map.put("info",info);
+		return map;
+	}
 }
