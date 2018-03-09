@@ -35,6 +35,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<OrderDispatch> getOrderDispatchList(OrderInfo info);
     //app改派根据订单id技师id获取改派表
     OrderDispatch appGetOrderDispatch(OrderInfo info);
+
     void cancelData(OrderInfo orderInfo);
 
     void saveTime(OrderInfo orderInfo);
@@ -62,6 +63,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     int appUpdate(OrderInfo orderInfo);
     //app修改订单备注
     int appUpdateRemark(OrderInfo orderInfo);
+    //app订单支付
+    int appUpdatePay(OrderInfo orderInfo);
     //app获取订单列表
     List<OrderInfo> appFindList(OrderInfo orderInfo);
     //app获取图片

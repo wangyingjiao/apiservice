@@ -314,6 +314,45 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		return orderInfo;
 	}
 
+
+	//app订单支付 修改订单的支付状态
+	public int savePayStatus(OrderInfo info){
+		int i=0;
+		String payStatus = info.getPayStatus();
+		String serviceStatus = info.getServiceStatus();
+		String masterId = info.getMasterId();
+		OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
+		String payStatus1 = byMasterId.getPayStatus();
+		//修改订单表中支付状态
+		//服务状态为已上门后，才可以支付
+		if (StringUtils.isNotBlank(serviceStatus) && "started".equals(serviceStatus)){
+			if (StringUtils.isNotBlank(payStatus) && "waitpay".equals(payStatus)){
+				info.appPreUpdate();
+				info.setPayStatus("payed");
+				i = dao.appUpdatePay(info);
+				//修改支付信息中的订单状态
+				if (i>0) {
+					if (byMasterId != null && "waitpay".equals(payStatus1)) {
+						byMasterId.appPreUpdate();
+						byMasterId.setPayPlatform("cash");
+						byMasterId.setPayMethod("offline");
+						byMasterId.setPayTime(new Date());
+						byMasterId.setPayTech(info.getNowId());
+						byMasterId.setPayStatus("payed");
+						i = orderPayInfoDao.update(byMasterId);
+					}
+				}else {
+					throw new ServiceException("支付失败");
+				}
+			}else {
+				throw new ServiceException("订单支付状态为空或者订单已支付");
+			}
+		}else {
+			throw new ServiceException("订单状态为空或者订单状态不是已上门");
+		}
+		return i;
+	}
+
 	public OrderInfo formData(OrderInfo info) {
 		OrderInfo orderInfo = dao.formData(info);
 		if(orderInfo == null){
@@ -1773,10 +1812,18 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			//查询数据库 获取 完成时间和服务状态
 			OrderInfo info = dao.appGet(orderInfo);
 			//如果查询出来的订单的服务状态是取消的 返回订单已取消
-			if (info.getServiceStatus().equals("cancel")){
-				throw new ServiceException("订单已取消");
+			if (StringUtils.isBlank(info.getServiceStatus()) || "cancel".equals(info.getServiceStatus())){
+				throw new ServiceException("订单状态为空 或者 订单已取消");
 			}
-			if (orderInfo.getServiceStatus().equals("finish")){
+			//如果未支付
+			if (StringUtils.isBlank(info.getPayStatus()) || "waitpay".equals(info.getPayStatus())){
+				throw new ServiceException("订单支付状态为空 或者 订单尚未支付，请完成支付");
+			}
+			if ("finish".equals(orderInfo.getServiceStatus())){
+				//订单来源为本机构的 完成服务后，同时将订单的状态改为已成功
+				if ("own".equals(orderInfo.getOrderSource())){
+					orderInfo.setOrderStatus("finish");
+				}
 				Date finishTime = info.getFinishTime();
 				Date date=new Date();
 				//如果提前完成  更新完成时间

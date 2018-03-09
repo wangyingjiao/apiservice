@@ -176,6 +176,7 @@ public class AppTechController extends BaseController {
 		info.setTechId(token.getTechId());
 		int i ;
 		try{
+			info.setReviewStatus("submit");
 			i = holidayService.appSave(info);
 			if (i>0){
 				return new AppSuccResult(0,null,"保存成功");
@@ -201,6 +202,22 @@ public class AppTechController extends BaseController {
 		return new AppFailResult(-1,null,"删除休假失败");
 	}
 
+	//修改休假
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/saveHoliday", method = {RequestMethod.POST})
+	@ApiOperation(value = "修改休假", notes = "技师休假")
+	public AppResult saveHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
+
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		serviceTechnicianHoliday.setTechId(token.getTechId());
+		//只有审核未通过的休假可以修改，修改后，清空不通过原因，并将审核状态修改为待审核
+		int delete = holidayService.saveHoliday(serviceTechnicianHoliday);
+		if (delete > 0){
+			return new AppSuccResult(0,null,"删除休假成功");
+		}
+		return new AppFailResult(-1,null,"删除休假失败");
+	}
 
 	//技师改密码
 	@ResponseBody

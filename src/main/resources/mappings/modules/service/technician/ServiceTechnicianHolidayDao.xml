@@ -75,12 +75,16 @@
 		b.phone AS "techPhone",
 		a.start_time AS "startTime",
 		a.end_time AS "endTime",
-		a.remark AS "remark"
+		a.remark AS "remark",
+		a.review_status AS reviewStatus,
+		a.fail_reason AS failReason,
+		a.source AS source
 		FROM tech_holiday a
 		LEFT JOIN tech_info b ON a.tech_id = b.id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.tech_id=#{techId}
+			AND a.review_status=#{reviewStatus}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

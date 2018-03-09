@@ -323,10 +323,23 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 			return null;
 		}
 	}
-	//app删除休假时间
+	//app删除休假
 	@Transactional(readOnly = false)
 	public int delete1(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		return dao.delete(serviceTechnicianHoliday);
+	}
+	//修改中
+	//app修改休假
+	@Transactional(readOnly = false)
+	public int saveHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		int i=0;
+		//去数据库中查询出这个休假
+		ServiceTechnicianHoliday holiday = dao.get(serviceTechnicianHoliday.getId());
+		String reviewStatus = holiday.getReviewStatus();
+		if (StringUtils.isNotBlank(reviewStatus) && "no".equals(reviewStatus)){
+			i = dao.update(serviceTechnicianHoliday);
+		}
+		return i;
 	}
 
 	public int getOrderTechRelationHoliday(ServiceTechnicianHoliday info) {

@@ -21,10 +21,19 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	private String masterId;		// 主订单ID
 	private String payPlatform;		// 支付平台(cash:现金 wx_pub_qr:微信扫码 wx:微信 alipay_qr:支付宝扫码 alipay:支付宝 pos:银行卡 balance:余额)
 	private String payMethod;		// 支付方式(online:在线 offline:货到付款)
-	private Date payTime;		// 支付时间
+	private Date payTime;			// 支付时间
 	private String payAccount;		// 支付总额
 	private String payStatus;		// 支付状态(waitpay:待支付 payed:已支付)
-	
+	private String payTech;			//收款人（技师ID）
+
+	public String getPayTech() {
+		return payTech;
+	}
+
+	public void setPayTech(String payTech) {
+		this.payTech = payTech;
+	}
+
 	public OrderPayInfo() {
 		super();
 	}

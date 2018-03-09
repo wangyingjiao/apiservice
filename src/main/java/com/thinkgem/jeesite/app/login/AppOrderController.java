@@ -283,4 +283,32 @@ public class AppOrderController extends BaseController {
 		}
 	}
 
+	/**
+	 * 订单支付 修改订单的支付状态
+	 * 参数： 订单id 订单支付状态（要去协商是否需要）
+	 * @param info
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/savePayStatus",method = {RequestMethod.POST})
+	@ApiOperation(value = "订单支付", notes = "订单")
+	public AppResult savePayStatus(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
+		//获取登录用户id
+		Token token = (Token) request.getAttribute("token");
+		//根据id获取订单
+		OrderInfo orderInfo = orderInfoService.appGet(info);
+		orderInfo.setNowId(token.getTechId());
+		int i;
+		try{
+			i= orderInfoService.savePayStatus(orderInfo);
+			if (i>0){
+				return new AppSuccResult(0,null,"支付成功");
+			}
+			return new AppFailResult(-1,null,"支付失败");
+		}catch (ServiceException e ){
+			return new AppFailResult(-1,null,e.getMessage());
+		}
+	}
 }

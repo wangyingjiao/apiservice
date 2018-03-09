@@ -347,14 +347,11 @@ origin_price,
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
-	<!--app编辑 限制非完成状态才可以修改数据库-->
+	<!--app编辑订单状态 限制非完成状态才可以修改数据库-->
 	<update id="appUpdate">
 		UPDATE order_info SET
-		<if test="orderRemark !=null and orderRemark != ''">
-		order_remark = #{orderRemark},
-		</if>
-		<if test="orderRemarkPic !=null and orderRemarkPic != ''">
-		order_remark_pic = #{orderRemarkPic},
+		<if test="orderStatus !=null and orderStatus != ''">
+			order_status = #{orderStatus},
 		</if>
 		<if test="serviceStatus !=null and serviceStatus != ''">
 			service_status= #{serviceStatus},
@@ -371,11 +368,20 @@ origin_price,
 		AND service_status != 'finish'
 	</update>
 
-	<!--app编辑 限制非完成状态才可以修改数据库-->
+	<!--app编辑订单备注 -->
 	<update id="appUpdateRemark">
 		UPDATE order_info SET
 		order_remark = #{orderRemark},
 		order_remark_pic = #{orderRemarkPic},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<!--app订单支付 修改支付状态-->
+	<update id="appUpdatePay">
+		UPDATE order_info SET
+		pay_status = #{payStatus}
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
