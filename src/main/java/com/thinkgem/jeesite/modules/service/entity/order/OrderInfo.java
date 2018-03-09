@@ -44,6 +44,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String serviceStatus;//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 	private String orderStatus;		// 订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)
 	private String orderSource;		// 订单来源(own:本机构 gasq:国安社区)
+	private String orderSourceName; // 订单来源 app中文
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
 	private String customerId;		// 客户ID
 	private String customerRemark;		// 客户备注
@@ -105,6 +106,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String pageSize;	//app 订单列表
 	private String pageNo;	//app 订单列表
 	private OrderPayInfo orderPayInfo; //app 订单的对应支付信息表
+
+	public String getOrderSourceName() {
+		return orderSourceName;
+	}
+
+	public void setOrderSourceName(String orderSourceName) {
+		this.orderSourceName = orderSourceName;
+	}
 
 	public OrderPayInfo getOrderPayInfo() {
 		return orderPayInfo;

@@ -255,9 +255,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String orderSource = orderInfo.getOrderSource();
 		if (StringUtils.isNotBlank(orderSource)) {
 			if (orderSource.equals("own")) {
-				orderInfo.setOrderSource("本机构");
+				orderInfo.setOrderSourceName("本机构");
 			} else if (orderSource.equals("gasq")) {
-				orderInfo.setOrderSource("国安社区");
+				orderInfo.setOrderSourceName("国安社区");
 			}
 		}
 		String serviceStatus = orderInfo.getServiceStatus();
