@@ -103,4 +103,9 @@
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+
+	<select id="getNewestVersion" resultType="AppVersion">
+		SELECT * FROM sys_app_version ORDER BY create_date DESC limit 1
+	</select>
 </mapper>

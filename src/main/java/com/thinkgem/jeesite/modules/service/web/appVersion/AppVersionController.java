@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
+import static com.thinkgem.jeesite.modules.service.service.appVersion.AppVersionService.CACHE_NEWEST_VERSION;
+
 /**
  * APP发版管理Controller
  *
@@ -110,8 +112,23 @@ public class AppVersionController extends BaseController {
     @RequestMapping(value = "deleteAppVersion", method = { RequestMethod.POST, RequestMethod.GET })
     @ApiOperation("删除APP发版信息")
     public Result deleteSortInfo(@RequestBody AppVersion appVersion) {
+        AppVersion newest = appVersionService.getNewest();
+        if(!appVersion.getId().equals(newest.getId())){
+            return new FailResult("非最新版本，不能删除");
+        }
         appVersionService.delete(appVersion);
         return new SuccResult("删除成功");
     }
 
+
+    @ResponseBody
+    @RequestMapping(value = "getNewest", method = { RequestMethod.POST })
+    @ApiOperation("获取最新APP版本")
+    public Result getNewest() {
+        Object cache = UserUtils.getCache(CACHE_NEWEST_VERSION);
+        if (cache==null){
+            cache = appVersionService.getNewest();
+        }
+        return new SuccResult(cache);
+    }
 }

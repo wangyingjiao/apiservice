@@ -23,6 +23,8 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     @Autowired
     private AppVersionDao appVersionDao;
 
+    public static final String CACHE_NEWEST_VERSION = "newestVersion";
+
     public Page<AppVersion> findPage(Page<AppVersion> page, AppVersion appVersion) {
         //appVersion.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
         return super.findPage(page, appVersion);
@@ -33,6 +35,8 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
             appVersion.setUpdateBy(UserUtils.getUser());
             appVersion.setUpdateDate(new Date());
             super.save(appVersion);
+        AppVersion newest = appVersionDao.getNewestVersion();
+        UserUtils.putCache(CACHE_NEWEST_VERSION,newest);
     }
 
     public AppVersion getData(String id) {
@@ -43,6 +47,12 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     @Transactional(readOnly = false)
     public void delete(AppVersion appVersion) {
         super.delete(appVersion);
+        AppVersion newest = appVersionDao.getNewestVersion();
+        UserUtils.putCache(CACHE_NEWEST_VERSION,newest);
     }
 
+    public AppVersion getNewest() {
+        AppVersion newest = appVersionDao.getNewestVersion();
+        return newest;
+    }
 }

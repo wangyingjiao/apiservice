@@ -12,4 +12,5 @@ import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
  */
 @MyBatisDao
 public interface AppVersionDao extends CrudDao<AppVersion> {
+    AppVersion getNewestVersion();
 }
