@@ -104,6 +104,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String isTech="no"; //app技师修改服务状态时做展示功能标识符
 	private String pageSize;	//app 订单列表
 	private String pageNo;	//app 订单列表
+	private OrderPayInfo orderPayInfo; //app 订单的对应支付信息表
+
+	public OrderPayInfo getOrderPayInfo() {
+		return orderPayInfo;
+	}
+
+	public void setOrderPayInfo(OrderPayInfo orderPayInfo) {
+		this.orderPayInfo = orderPayInfo;
+	}
 
 	public String getPageNo() {
 		return pageNo;

@@ -311,7 +311,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		orderInfo.setOrderRemarkPics(orp);
-
+        //订单详情中对应的支付信息表
+        String masterId = orderInfo.getMasterId();
+        //如果主订单ID为空
+        if (StringUtils.isBlank(masterId)){
+            throw new ServiceException("订单ID不可为空");
+        }
+        OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
+        if (byMasterId == null){
+            throw new ServiceException("支付信息为空");
+        }
+        orderInfo.setOrderPayInfo(byMasterId);
 		return orderInfo;
 	}
 
@@ -322,7 +332,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String payStatus = info.getPayStatus();
 		String serviceStatus = info.getServiceStatus();
 		String masterId = info.getMasterId();
+		//如果主订单ID为空
+		if (StringUtils.isBlank(masterId)){
+            throw new ServiceException("订单ID不可为空");
+        }
 		OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
+		if (byMasterId == null){
+            throw new ServiceException("支付信息为空");
+        }
 		String payStatus1 = byMasterId.getPayStatus();
 		//修改订单表中支付状态
 		//服务状态为已上门后，才可以支付
