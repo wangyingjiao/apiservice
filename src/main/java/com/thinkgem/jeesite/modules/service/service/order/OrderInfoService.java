@@ -3041,6 +3041,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		return false;
 	}
 
+	@Transactional(readOnly = false)
 	public HashMap<String,Object>  orderCancel(OrderInfo orderInfo) {
 		orderInfo.setServiceStatus("cancel");
 		orderInfo.setOrderStatus("cancel");
