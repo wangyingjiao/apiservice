@@ -313,15 +313,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setOrderRemarkPics(orp);
         //订单详情中对应的支付信息表
         String masterId = orderInfo.getMasterId();
-        //如果主订单ID为空
-        if (StringUtils.isBlank(masterId)){
-            throw new ServiceException("订单ID不可为空");
-        }
-        OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
-        if (byMasterId == null){
-            throw new ServiceException("支付信息为空");
-        }
-        orderInfo.setOrderPayInfo(byMasterId);
+        if ("own".equals(orderInfo.getOrderSource())) {
+			//如果主订单ID为空
+			if (StringUtils.isBlank(masterId)) {
+				throw new ServiceException("订单ID不可为空");
+			}
+			OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
+			if (byMasterId == null) {
+				throw new ServiceException("支付信息为空");
+			}
+			orderInfo.setOrderPayInfo(byMasterId);
+		}
 		return orderInfo;
 	}
 
@@ -348,30 +350,29 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String payStatus1 = byMasterId.getPayStatus();
 		//修改订单表中支付状态
 		//服务状态为已上门后，才可以支付
-		if (StringUtils.isNotBlank(serviceStatus) && "started".equals(serviceStatus)){
-			if (StringUtils.isNotBlank(payStatus) && "waitpay".equals(payStatus)){
-				info.appPreUpdate();
-				info.setPayStatus("payed");
-				i = dao.appUpdatePay(info);
-				//修改支付信息中的订单状态
-				if (i>0) {
-					if (byMasterId != null && "waitpay".equals(payStatus1)) {
-						byMasterId.appPreUpdate();
-						byMasterId.setPayPlatform("cash");
-						byMasterId.setPayMethod("offline");
-						byMasterId.setPayTime(new Date());
-						byMasterId.setPayTech(info.getNowId());
-						byMasterId.setPayStatus("payed");
-						i = orderPayInfoDao.update(byMasterId);
-					}
-				}else {
-					throw new ServiceException("支付失败");
+		if (StringUtils.isBlank(serviceStatus) || !"started".equals(serviceStatus)){
+			throw new ServiceException("订单状态不是已上门");
+		}
+		if (StringUtils.isNotBlank(payStatus) && "waitpay".equals(payStatus)){
+			info.appPreUpdate();
+			info.setPayStatus("payed");
+			i = dao.appUpdatePay(info);
+			//修改支付信息中的订单状态
+			if (i>0) {
+				if (byMasterId != null && "waitpay".equals(payStatus1)) {
+					byMasterId.appPreUpdate();
+					byMasterId.setPayPlatform("cash");
+					byMasterId.setPayMethod("offline");
+					byMasterId.setPayTime(new Date());
+					byMasterId.setPayTech(info.getNowId());
+					byMasterId.setPayStatus("payed");
+					i = orderPayInfoDao.update(byMasterId);
 				}
 			}else {
-				throw new ServiceException("订单已支付");
+				throw new ServiceException("支付失败");
 			}
 		}else {
-			throw new ServiceException("订单状态不是已上门");
+			throw new ServiceException("订单已支付");
 		}
 		return i;
 	}

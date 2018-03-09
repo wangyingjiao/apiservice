@@ -177,7 +177,7 @@ public class AppOrderController extends BaseController {
         OrderInfo orderInfo = orderInfoService.appGet(info);
         orderInfo.setNowId(token.getTechId());
 		try{
-            //如果完成状态 不管是否成功 全返回成功
+            //如果数据库中订单的状态是完成状态 不管是否成功 全返回成功
 			if (!"finish".equals(orderInfo.getServiceStatus())){
                 int i = orderInfoService.appSaveOrder(orderInfo);
 				if (i>0){

@@ -69,7 +69,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<String> orderRemarkPics;   //订单备注图片
 	private String orderContent;		// 下单服务内容
 	private String cancelReason;//取消原因
-	private String cancelReasonRemark;//取消原因
+	private String cancelReasonRemark;//取消原因备注
 	private String jointOrderId;//对接订单ID
 
 	private String customerName;         //客户姓名

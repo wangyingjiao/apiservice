@@ -106,4 +106,23 @@ public class ServiceTechnicianHolidayController extends BaseController {
 		return new SuccResult("删除休假成功");
 	}
 
+	/**
+	 * 审核app休假
+	 * @param serviceTechnicianHoliday
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+//	@ResponseBody
+//	@RequiresPermissions("holiday_view")
+//	@RequestMapping(value = "/reviewedHoliday", method = {RequestMethod.POST, RequestMethod.GET})
+//	@ApiOperation("审核app休假")
+//	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday, HttpServletRequest request, HttpServletResponse response) {
+//		if(serviceTechnicianHoliday == null){
+//			serviceTechnicianHoliday = new ServiceTechnicianHoliday();
+//		}
+//		Page<ServiceTechnicianHoliday> serSortInfoPage = new Page<>(request, response);
+//		Page<ServiceTechnicianHoliday> page = serviceTechnicianHolidayService.findPage(serSortInfoPage, serviceTechnicianHoliday);
+//		return new SuccResult(page);
+//	}
 }
