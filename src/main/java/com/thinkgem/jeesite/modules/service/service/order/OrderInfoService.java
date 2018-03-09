@@ -331,7 +331,12 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		int i=0;
 		String payStatus = info.getPayStatus();
 		String serviceStatus = info.getServiceStatus();
-		String masterId = info.getMasterId();
+        String orderSource = info.getOrderSource();
+        //订单来源为国安社区的 或者 为空的 不可点击支付
+        if (StringUtils.isBlank(orderSource) || "gasq".equals(orderSource)){
+            throw new ServiceException("订单来源不可为国安社区");
+        }
+        String masterId = info.getMasterId();
 		//如果主订单ID为空
 		if (StringUtils.isBlank(masterId)){
             throw new ServiceException("订单ID不可为空");
@@ -363,10 +368,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					throw new ServiceException("支付失败");
 				}
 			}else {
-				throw new ServiceException("订单支付状态为空或者订单已支付");
+				throw new ServiceException("订单已支付");
 			}
 		}else {
-			throw new ServiceException("订单状态为空或者订单状态不是已上门");
+			throw new ServiceException("订单状态不是已上门");
 		}
 		return i;
 	}
@@ -1837,11 +1842,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			OrderInfo info = dao.appGet(orderInfo);
 			//如果查询出来的订单的服务状态是取消的 返回订单已取消
 			if (StringUtils.isBlank(info.getServiceStatus()) || "cancel".equals(info.getServiceStatus())){
-				throw new ServiceException("订单状态为空 或者 订单已取消");
+				throw new ServiceException("订单已取消");
 			}
 			//如果未支付
 			if (StringUtils.isBlank(info.getPayStatus()) || "waitpay".equals(info.getPayStatus())){
-				throw new ServiceException("订单支付状态为空 或者 订单尚未支付，请完成支付");
+				throw new ServiceException("订单尚未支付，请完成支付");
 			}
 			if ("finish".equals(orderInfo.getServiceStatus())){
 				//订单来源为本机构的 完成服务后，同时将订单的状态改为已成功

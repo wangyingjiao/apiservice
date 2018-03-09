@@ -174,11 +174,12 @@ public class AppOrderController extends BaseController {
 		}
 		//参数 订单id 服务状态
 		Token token = (Token) request.getAttribute("token");
-		info.setNowId(token.getTechId());
+        OrderInfo orderInfo = orderInfoService.appGet(info);
+        orderInfo.setNowId(token.getTechId());
 		try{
-			int i = orderInfoService.appSaveOrder(info);
-			//如果完成状态 不管是否成功 全返回成功
-			if (!info.getServiceStatus().equals("finish")){
+            //如果完成状态 不管是否成功 全返回成功
+			if (!"finish".equals(orderInfo.getServiceStatus())){
+                int i = orderInfoService.appSaveOrder(orderInfo);
 				if (i>0){
 					return new AppSuccResult(0,null,"修改服务状态成功");
 				}
