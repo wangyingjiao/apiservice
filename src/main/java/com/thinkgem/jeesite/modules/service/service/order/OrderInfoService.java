@@ -316,7 +316,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         if ("own".equals(orderInfo.getOrderSource())) {
 			//如果主订单ID为空
 			if (StringUtils.isBlank(masterId)) {
-				throw new ServiceException("订单ID不可为空");
+				throw new ServiceException("主订单ID不可为空");
 			}
 			OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
 			if (byMasterId == null) {
@@ -329,10 +329,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 
 	//app订单支付 修改订单的支付状态
+	@Transactional(readOnly = false)
 	public int savePayStatus(OrderInfo info){
 		int i=0;
+		//订单支付状态
 		String payStatus = info.getPayStatus();
+		//订单服务状态
 		String serviceStatus = info.getServiceStatus();
+		//订单来源
         String orderSource = info.getOrderSource();
         //订单来源为国安社区的 或者 为空的 不可点击支付
         if (StringUtils.isBlank(orderSource) || "gasq".equals(orderSource)){
@@ -341,39 +345,42 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         String masterId = info.getMasterId();
 		//如果主订单ID为空
 		if (StringUtils.isBlank(masterId)){
-            throw new ServiceException("订单ID不可为空");
+            throw new ServiceException("主订单ID不可为空");
         }
-		OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
-		if (byMasterId == null){
-            throw new ServiceException("支付信息为空");
-        }
-		String payStatus1 = byMasterId.getPayStatus();
 		//修改订单表中支付状态
 		//服务状态为已上门后，才可以支付
 		if (StringUtils.isBlank(serviceStatus) || !"started".equals(serviceStatus)){
 			throw new ServiceException("订单状态不是已上门");
 		}
-		if (StringUtils.isNotBlank(payStatus) && "waitpay".equals(payStatus)){
-			info.appPreUpdate();
-			info.setPayStatus("payed");
-			i = dao.appUpdatePay(info);
-			//修改支付信息中的订单状态
-			if (i>0) {
-				if (byMasterId != null && "waitpay".equals(payStatus1)) {
-					byMasterId.appPreUpdate();
-					byMasterId.setPayPlatform("cash");
-					byMasterId.setPayMethod("offline");
-					byMasterId.setPayTime(new Date());
-					byMasterId.setPayTech(info.getNowId());
-					byMasterId.setPayStatus("payed");
-					i = orderPayInfoDao.update(byMasterId);
-				}
-			}else {
-				throw new ServiceException("支付失败");
-			}
-		}else {
+		//订单状态必须为未支付
+		if (StringUtils.isBlank(payStatus) || "payed".equals(payStatus)){
 			throw new ServiceException("订单已支付");
 		}
+		info.appPreUpdate();
+		info.setPayStatus("payed");
+		i = dao.appUpdatePay(info);
+		//根据主订单id  master_id查询出对应的支付信息
+		OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
+		if (byMasterId == null){
+			throw new ServiceException("支付信息为空");
+		}
+		//支付信息中的支付状态
+		String payStatus1 = byMasterId.getPayStatus();
+		//修改支付信息中的订单状态
+		if (i>0) {
+			if (StringUtils.isNotBlank(payStatus1) && "waitpay".equals(payStatus1)) {
+				byMasterId.appPreUpdate();
+				byMasterId.setPayPlatform("cash");
+				byMasterId.setPayMethod("offline");
+				byMasterId.setPayTime(new Date());
+				byMasterId.setPayTech(info.getNowId());
+				byMasterId.setPayStatus("payed");
+				i = orderPayInfoDao.update(byMasterId);
+			}
+		}else {
+			throw new ServiceException("支付失败");
+		}
+
 		return i;
 	}
 
