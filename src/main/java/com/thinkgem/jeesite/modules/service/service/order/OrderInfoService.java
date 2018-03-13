@@ -336,6 +336,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String payStatus = info.getPayStatus();
 		//订单服务状态
 		String serviceStatus = info.getServiceStatus();
+		//订单的状态是已取消 也不可点击支付
+		String orderStatus = info.getOrderStatus();
 		//订单来源
         String orderSource = info.getOrderSource();
         //订单来源为国安社区的 或者 为空的 不可点击支付
@@ -347,6 +349,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (StringUtils.isBlank(masterId)){
             throw new ServiceException("主订单ID不可为空");
         }
+		//订单的状态是已取消 也不可点击支付
+		if (StringUtils.isBlank(orderStatus) || "cancel".equals(orderStatus)){
+			throw new ServiceException("订单已取消不可点击支付");
+		}
 		//修改订单表中支付状态
 		//服务状态为已上门后，才可以支付
 		if (StringUtils.isBlank(serviceStatus) || !"started".equals(serviceStatus)){
@@ -1890,6 +1896,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 			}
 		}
+		info.setServiceStatus(orderInfo.getServiceStatus());
 		info.appPreUpdate();
 		int i =0;
 		try{
