@@ -5,8 +5,11 @@ package com.thinkgem.jeesite.modules.service.dao.basic;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 
 import java.util.List;
 
@@ -27,4 +30,16 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
     int getStationList(String id);
 
     List<BasicOrganization> getOrganizationListByJointEshopCode(BasicOrganization organizationSerch);
+
+    List<Dict> getPlatform();
+
+    BasicGasqEshop getEShopByCode(BasicGasqEshop basicGasqEshop);
+
+    int getOrgEShopByCode(BasicGasqEshop basicGasqEshop);
+
+    void deleteEcode(BasicOrganization basicOrganization);
+
+    void insetOrgEshop(BasicOrganizationEshop boe);
+
+    List<BasicOrganizationEshop> findListByOrgId(BasicOrganization basicOrganization);
 }

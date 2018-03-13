@@ -39,6 +39,8 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	private Date workEndTime;//工作结束时间
 	private String jointEshopCode;//对接方E店CODE
 	private String remark;		// 备注信息
+	private String dockType;   //平台
+	private List<BasicOrganizationEshop> basicOrganizationEshops; //E店集合
 	
 	public BasicOrganization() {
 		super();
@@ -245,6 +247,20 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public void setWorkEndTimeNew(String workEndTimeNew) {
 		this.workEndTimeNew = workEndTimeNew;
 	}
-	
-	
+
+	public String getDockType() {
+		return dockType;
+	}
+
+	public void setDockType(String dockType) {
+		this.dockType = dockType;
+	}
+
+	public List<BasicOrganizationEshop> getBasicOrganizationEshops() {
+		return basicOrganizationEshops;
+	}
+
+	public void setBasicOrganizationEshops(List<BasicOrganizationEshop> basicOrganizationEshops) {
+		this.basicOrganizationEshops = basicOrganizationEshops;
+	}
 }

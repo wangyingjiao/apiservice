@@ -241,4 +241,53 @@
 		WHERE a.joint_eshop_code = #{jointEshopCode}
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
+
+	<select id="getPlatform" resultType="Dict">
+		SELECT
+			a.id,
+			a.value,
+			a.label,
+			a.type,
+			a.description,
+			a.sort
+			FROM sys_dict a
+			WHERE a.type = 'dock_platform'
+	</select>
+
+    <select id="getEShopByCode" resultType="BasicGasqEshop">
+        SELECT
+            a.name,
+            a.code
+            FROM basic_gasq_eshop a
+            WHERE a.code = #{code}
+            AND a.status = 0
+            AND a.third_part = 'selfService'
+    </select>
+
+    <select id="getOrgEShopByCode" resultType="int">
+        SELECT
+            count(*)
+            FROM basic_organization_eshop
+            WHERE eshop_code = #{code}
+    </select>
+	
+	<delete id="deleteEcode">
+		DELETE FROM basic_organization_eshop WHERE org_id = #{id}
+	</delete>
+
+	<insert id="insetOrgEshop">
+		INSERT INTO basic_organization_eshop(id,org_id,dock_type,eshop_code)
+		VALUES (#{id},#{orgId},#{dockType},#{eshopCode})
+	</insert>
+
+	<select id="findListByOrgId" resultType="BasicOrganizationEshop">
+		SELECT
+			  a.id,
+			  a.org_id AS orgId,
+			  a.dock_type AS dockType,
+			  a.eshop_code AS eshopCode,
+			  b.name
+			  FROM basic_organization_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
+			  WHERE a.org_id = #{id}
+	</select>
 </mapper>

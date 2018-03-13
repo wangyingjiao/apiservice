@@ -8,8 +8,11 @@ import java.util.List;
 
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -33,12 +36,24 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 
 	@Autowired
 	BasicServiceCityService basicServiceCityService;
+	@Autowired
+	private BasicOrganizationDao basicOrganizationDao;
 
 	public Page<BasicOrganization> findPage(Page<BasicOrganization> page, BasicOrganization office){
-		office.setPage(page);
+		//office.setPage(page);
+        List<BasicOrganization> list = null;
+        Page<BasicOrganization> pageResult = null;
 		User user = UserUtils.getUser();
 		office.getSqlMap().put("dsf", BaseService.dataOrganFilter(user, "a"));
-		page.setList(dao.findList(office));
+		//page.setList(dao.findList(office));
+        pageResult = super.findPage(page, office);
+        list = pageResult.getList();
+        if (list.size() != 0 && null != list) {//返回查询条件对应的服务分类的商品集合
+            for (BasicOrganization basicOrganization : list) {
+                List<BasicOrganizationEshop> findListByOrgId = basicOrganizationDao.findListByOrgId(basicOrganization);
+                basicOrganization.setBasicOrganizationEshops(findListByOrgId);
+            }
+        }
 		return page;
 	}
 
@@ -67,8 +82,36 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 			//更新
 			deleteCitysByOrgId(basicOrganization);
 		}
+        //修改时，如平台选为请选择时，执行删除
+        if (basicOrganization.getIsNewRecord()) {
+		    basicOrganization.preInsert();
+            List<BasicOrganizationEshop> eList=basicOrganization.getBasicOrganizationEshops();
+            for (BasicOrganizationEshop boe : eList){
+               boe.preInsert();
+               boe.setOrgId(basicOrganization.getId());
+               boe.setDockType(basicOrganization.getDockType());
+                basicOrganizationDao.insetOrgEshop(boe);
+            }
+            dao.insert(basicOrganization);
+        }else {
+            if (basicOrganization.getDockType().equals("0")) {
+                basicOrganizationDao.deleteEcode(basicOrganization);
+            }else {
+                List<BasicOrganizationEshop> eshopList=basicOrganization.getBasicOrganizationEshops();
+                for (BasicOrganizationEshop boe : eshopList){
+                    if (boe.getId()==null){
+                        boe.preInsert();
+                        boe.setOrgId(basicOrganization.getId());
+                        boe.setDockType(basicOrganization.getDockType());
+                        basicOrganizationDao.insetOrgEshop(boe);
+                    }
+                }
+            }
+            basicOrganization.preUpdate();
+            dao.update(basicOrganization);
+        }
 
-		super.save(basicOrganization);
+        //super.save(basicOrganization);
 
 		List<String> cityCodes = basicOrganization.getCityCodes();
 		if(null != cityCodes){
@@ -136,4 +179,20 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		basicOrganization.getSqlMap().put("dsf", BaseService.dataOrganFilter( UserUtils.getUser(), "a"));
 		return dao.findList(basicOrganization);
 	}
+
+    public List<Dict> getPlatform() {
+    	return basicOrganizationDao.getPlatform();
+    }
+
+	public BasicGasqEshop getEShopByCode(BasicGasqEshop basicGasqEshop) {
+    	return basicOrganizationDao.getEShopByCode(basicGasqEshop);
+	}
+
+	public int getOrgEShopByCode(BasicGasqEshop basicGasqEshop) {
+    	return basicOrganizationDao.getOrgEShopByCode(basicGasqEshop);
+	}
+
+    public void deleteEcode(BasicOrganization basicOrganization) {
+        basicOrganizationDao.deleteEcode(basicOrganization);
+    }
 }
