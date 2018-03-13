@@ -160,6 +160,17 @@ public class BasicOrganizationController extends BaseController {
 	}
 
 	@ResponseBody
+	//@RequiresPermissions("office_update")
+	@RequestMapping(value = "deleteEshop", method = RequestMethod.POST)
+	@ApiOperation(value = "删除E店")
+	public Result deleteEshop(@RequestBody BasicOrganization basicOrganization) {
+		if (basicOrganization!=null&&!basicOrganization.getEshopCode().equals("")){
+			basicOrganizationService.deleteEshop(basicOrganization);
+		}
+		return new SuccResult("删除成功");
+	}
+
+	@ResponseBody
 	@RequiresPermissions("office_update")
 	@RequestMapping(value = "upData", method = RequestMethod.POST)
 	@ApiOperation(value = "更新机构保存")
@@ -173,7 +184,7 @@ public class BasicOrganizationController extends BaseController {
 		if (basicOrganizationService.getByName(basicOrganization)) {
 			return new FailResult("机构名称不能重复");
 		}
-		//E店编码不能重复
+		/*//E店编码不能重复
 		if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
 			if (basicOrganizationService.getByECode(basicOrganization)) {
 				return new FailResult("E店编码不能重复");
@@ -192,7 +203,7 @@ public class BasicOrganizationController extends BaseController {
 			}
 		}catch (Exception e){
 			return new FailResult("对接失败-系统异常");
-		}
+		}*/
 
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");

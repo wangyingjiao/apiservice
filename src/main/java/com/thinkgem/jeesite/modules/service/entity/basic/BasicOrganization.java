@@ -41,7 +41,25 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	private String remark;		// 备注信息
 	private String dockType;   //平台
 	private List<BasicOrganizationEshop> basicOrganizationEshops; //E店集合
-	
+	private String eshopNames;
+	private String eshopCode;
+
+	public String getEshopCode() {
+		return eshopCode;
+	}
+
+	public void setEshopCode(String eshopCode) {
+		this.eshopCode = eshopCode;
+	}
+
+	public String getEshopNames() {
+		return eshopNames;
+	}
+
+	public void setEshopNames(String eshopNames) {
+		this.eshopNames = eshopNames;
+	}
+
 	public BasicOrganization() {
 		super();
 	}

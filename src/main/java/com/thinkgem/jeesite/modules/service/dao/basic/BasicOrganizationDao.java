@@ -42,4 +42,10 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
     void insetOrgEshop(BasicOrganizationEshop boe);
 
     List<BasicOrganizationEshop> findListByOrgId(BasicOrganization basicOrganization);
+
+    void deleteEshop(BasicOrganization basicOrganization);
+
+    void updEshopGoods(BasicOrganization basicOrganization);
+
+    void updEshopGoodsYes(BasicOrganizationEshop boe);
 }

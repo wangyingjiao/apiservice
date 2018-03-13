@@ -51,7 +51,15 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
         if (list.size() != 0 && null != list) {//返回查询条件对应的服务分类的商品集合
             for (BasicOrganization basicOrganization : list) {
                 List<BasicOrganizationEshop> findListByOrgId = basicOrganizationDao.findListByOrgId(basicOrganization);
-                basicOrganization.setBasicOrganizationEshops(findListByOrgId);
+                //basicOrganization.setBasicOrganizationEshops(findListByOrgId);
+                if (findListByOrgId.size()>0) {
+                    String names = "";
+                    for (BasicOrganizationEshop boe : findListByOrgId) {
+                        names += boe.getName() + ",";
+                    }
+                    names = names.substring(0, names.length() - 1);
+                    basicOrganization.setEshopNames(names);
+                }
             }
         }
 		return page;
@@ -91,10 +99,11 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
                boe.setOrgId(basicOrganization.getId());
                boe.setDockType(basicOrganization.getDockType());
                 basicOrganizationDao.insetOrgEshop(boe);
+                basicOrganizationDao.updEshopGoodsYes(boe);
             }
             dao.insert(basicOrganization);
         }else {
-            if (basicOrganization.getDockType().equals("0")) {
+            if (basicOrganization.getDockType().equals("")) {
                 basicOrganizationDao.deleteEcode(basicOrganization);
             }else {
                 List<BasicOrganizationEshop> eshopList=basicOrganization.getBasicOrganizationEshops();
@@ -104,6 +113,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
                         boe.setOrgId(basicOrganization.getId());
                         boe.setDockType(basicOrganization.getDockType());
                         basicOrganizationDao.insetOrgEshop(boe);
+                        basicOrganizationDao.updEshopGoodsYes(boe);
                     }
                 }
             }
@@ -161,6 +171,8 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		}else{
 			basicOrganizationRe.setHaveStation(1);
 		}
+		List<BasicOrganizationEshop> boeList = basicOrganizationDao.findListByOrgId(basicOrganizationRe);
+		basicOrganizationRe.setBasicOrganizationEshops(boeList);
 
 		return basicOrganizationRe;
 	}
@@ -195,4 +207,10 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
     public void deleteEcode(BasicOrganization basicOrganization) {
         basicOrganizationDao.deleteEcode(basicOrganization);
     }
+
+    @Transactional(readOnly = false)
+	public void deleteEshop(BasicOrganization basicOrganization) {
+    	basicOrganizationDao.deleteEshop(basicOrganization);
+        basicOrganizationDao.updEshopGoods(basicOrganization);
+	}
 }

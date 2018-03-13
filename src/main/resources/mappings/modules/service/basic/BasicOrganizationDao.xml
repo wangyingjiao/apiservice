@@ -290,4 +290,16 @@
 			  FROM basic_organization_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
 			  WHERE a.org_id = #{id}
 	</select>
+
+    <delete id="deleteEshop">
+        DELETE FROM basic_organization_eshop WHERE eshop_code = #{eshopCode}
+    </delete>
+
+    <update id="updEshopGoods">
+        UPDATE ser_item_info_goods_eshop SET status = 'no' WHERE eshop_code = #{eshopCode}
+    </update>
+
+    <update id="updEshopGoodsYes">
+        UPDATE ser_item_info_goods_eshop SET status = 'yes' WHERE eshop_code = #{eshopCode}
+    </update>
 </mapper>
