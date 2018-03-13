@@ -1844,28 +1844,28 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (null == byOrderTechId){
 			throw new ServiceException("订单不属于该技师");
 		}
+		//查询数据库 获取 完成时间和服务状态
+		OrderInfo info = dao.appGet(orderInfo);
 		//根据服务状态 更改订单的服务状态
 		if (StringUtils.isNotBlank(orderInfo.getServiceStatus())){
-			//查询数据库 获取 完成时间和服务状态
-			OrderInfo info = dao.appGet(orderInfo);
 			//如果查询出来的订单的服务状态是取消的 返回订单已取消
 			if (StringUtils.isBlank(info.getServiceStatus()) || "cancel".equals(info.getServiceStatus())){
 				throw new ServiceException("订单已取消");
 			}
-			//如果未支付
-			if (StringUtils.isBlank(info.getPayStatus()) || "waitpay".equals(info.getPayStatus())){
-				throw new ServiceException("订单尚未支付，请完成支付");
-			}
+			//完成服务  如果未支付 不能点击
 			if ("finish".equals(orderInfo.getServiceStatus())){
+				if (StringUtils.isBlank(info.getPayStatus()) || "waitpay".equals(info.getPayStatus())){
+					throw new ServiceException("订单尚未支付，请完成支付");
+				}
 				//订单来源为本机构的 完成服务后，同时将订单的状态改为已成功
-				if ("own".equals(orderInfo.getOrderSource())){
-					orderInfo.setOrderStatus("finish");
+				if ("own".equals(info.getOrderSource())){
+					info.setOrderStatus("finish");
 				}
 				Date finishTime = info.getFinishTime();
 				Date date=new Date();
 				//如果提前完成  更新完成时间
 				if (date.before(finishTime)){
-					orderInfo.setFinishTime(date);
+					info.setFinishTime(date);
 				}
 				//比数据库中结束时间早1个小时的时间
 				String format = df.format(new Date(finishTime.getTime() - (long) 1 * 60 * 60 * 1000));
@@ -1875,11 +1875,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					throw new ServiceException("最多提前一个小时点击完成");
 				}
 			}
-			//如果是上门服务 把点击时间加入数据库
+			//上门服务 把点击时间加入数据库
 			if (orderInfo.getServiceStatus().equals("started")){
 				//数据库查询出来的状态不是上门 将第一次上门时间添加到数据库 不是第一次不添加数据库
-				if (!info.getServiceStatus().equals("started")){
-					orderInfo.setRealServiceTime(new Date());
+				if (!"started".equals(info.getServiceStatus())){
+					info.setRealServiceTime(new Date());
 				}
 				Date serviceTime = info.getServiceTime();
 				Date date=new Date();
@@ -1890,10 +1890,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 			}
 		}
-		orderInfo.appPreUpdate();
+		info.appPreUpdate();
 		int i =0;
 		try{
-			i = dao.appUpdate(orderInfo);
+			i = dao.appUpdate(info);
 		}catch (Exception e){
 			//更改订单备注时 长度过长捕获异常信息
 			throw new ServiceException("修改数据库失败可能是长度过长");
