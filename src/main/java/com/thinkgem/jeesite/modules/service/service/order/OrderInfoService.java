@@ -322,6 +322,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			if (byMasterId == null) {
 				throw new ServiceException("支付信息为空");
 			}
+			if ("cash".equals(byMasterId.getPayPlatform())){
+				byMasterId.setPayPlatform("现金");
+			}
 			orderInfo.setOrderPayInfo(byMasterId);
 		}
 		return orderInfo;
@@ -330,8 +333,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 	//app订单支付 修改订单的支付状态
 	@Transactional(readOnly = false)
-	public int savePayStatus(OrderInfo info){
+	public int savePayStatus(OrderInfo orderInfo){
 		int i=0;
+		//当前登陆技师id
+		String nowId = orderInfo.getNowId();
+		//根据订单id获取当前订单
+		OrderInfo info = orderInfoDao.appGet(orderInfo);
+		if (info == null){
+			throw new ServiceException("订单不可为空");
+		}
 		//订单支付状态
 		String payStatus = info.getPayStatus();
 		//订单服务状态

@@ -25,6 +25,15 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	private String payAccount;		// 支付总额
 	private String payStatus;		// 支付状态(waitpay:待支付 payed:已支付)
 	private String payTech;			//收款人（技师ID）
+	private String payPlatformName;		// 支付平台中文app使用
+
+	public String getPayPlatformName() {
+		return payPlatformName;
+	}
+
+	public void setPayPlatformName(String payPlatformName) {
+		this.payPlatformName = payPlatformName;
+	}
 
 	public String getPayTech() {
 		return payTech;

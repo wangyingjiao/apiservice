@@ -299,11 +299,9 @@ public class AppOrderController extends BaseController {
 		//获取登录用户id
 		Token token = (Token) request.getAttribute("token");
 		//根据id获取订单
-		OrderInfo orderInfo = orderInfoService.appGet(info);
-		orderInfo.setNowId(token.getTechId());
-		int i;
+		info.setNowId(token.getTechId());
 		try{
-			i= orderInfoService.savePayStatus(orderInfo);
+			int i= orderInfoService.savePayStatus(info);
 			if (i>0){
 				return new AppSuccResult(0,null,"支付成功");
 			}
