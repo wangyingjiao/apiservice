@@ -19,7 +19,8 @@
 		a.tel_400 AS "tel400",
 		a.work_start_time AS "workStartTime",
 		a.work_end_time AS "workEndTime",
-		a.joint_eshop_code AS "jointEshopCode",
+		a.dock_type AS dockType,
+		<!--a.joint_eshop_code AS "jointEshopCode",-->
 		a.remark AS "remark",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -49,7 +50,8 @@
 			a.tel_400 AS "tel400",
 			a.work_start_time AS "workStartTime",
 			a.work_end_time AS "workEndTime",
-			a.joint_eshop_code AS "jointEshopCode",
+			a.dock_type AS dockType,
+			<!--a.joint_eshop_code AS "jointEshopCode",-->
 			a.remark AS "remark"
 		FROM basic_organization a
 		WHERE a.id = #{id}
@@ -62,8 +64,8 @@
 			a.telephone AS "telephone",
 			a.master_name AS "masterName",
 			a.master_phone AS "masterPhone",
-			a.address AS "address",
-			a.joint_eshop_code AS jointEshopCode
+			a.address AS "address"
+			<!--a.joint_eshop_code AS jointEshopCode-->
 		FROM basic_organization a
 		<include refid="basicOrganizationJoins"/>
 		<where>
@@ -77,9 +79,9 @@
 			<if test="masterPhone != null and masterPhone != ''">
 				AND a.master_phone like concat('%',#{masterPhone},'%')
 			</if>
-			<if test="jointEshopCode != null and jointEshopCode != ''">
+			<!--<if test="jointEshopCode != null and jointEshopCode != ''">
 				AND a.joint_eshop_code like concat('%',#{jointEshopCode},'%')
-			</if>
+			</if>-->
 			<if test="eshopNames != null and eshopNames != ''">
 				AND a.id in (
 				SELECT a.org_id FROM  basic_organization_eshop a LEFT JOIN basic_gasq_eshop g ON a.eshop_code =g.code
@@ -119,7 +121,8 @@
 			tel_400,
 			work_start_time,
 			work_end_time,
-			joint_eshop_code,
+			dock_type,
+			<!--joint_eshop_code,-->
 			remark,
 			create_by,
 			create_date,
@@ -143,7 +146,8 @@
 			#{tel400},
 			#{workStartTime},
 			#{workEndTime},
-			#{jointEshopCode},
+			#{dockType},
+			<!--#{jointEshopCode},-->
 			#{remark},
 			#{createBy.id},
 			#{createDate},
@@ -182,6 +186,9 @@
 			<if test="scopeType != null and scopeType != ''">
 				scope_type = #{scopeType},
 			</if>
+			<if test="dockType != null and dockType != ''">
+				dock_type = #{dockType},
+			</if>
 			<if test="visable != null and visable != ''">
 				visable = #{visable},
 			</if>
@@ -192,7 +199,7 @@
 				work_end_time = #{workEndTime},
 			</if>
 			<!-- <if test="jointEshopCode != null and jointEshopCode != ''"> -->
-				joint_eshop_code = #{jointEshopCode},
+				<!--joint_eshop_code = #{jointEshopCode},-->
 			<!-- </if> -->
 			url = #{url},
 			fax = #{fax},
@@ -220,7 +227,7 @@
 	<select id="getByECode" resultType="BasicOrganization">
 		select * from basic_organization
 		WHERE 1=1
-		AND joint_eshop_code = #{jointEshopCode}
+		<!--AND joint_eshop_code = #{jointEshopCode}-->
 		<if test="id != null and id != ''">
 			AND id &lt;&gt; #{id}
 		</if>
@@ -245,8 +252,8 @@
 			a.work_start_time AS workStartTime,
 			a.work_end_time AS workEndTime
 		from basic_organization a
-		WHERE a.joint_eshop_code = #{jointEshopCode}
-		AND a.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE <!--a.joint_eshop_code = #{jointEshopCode}-->
+		a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<select id="getPlatform" resultType="Dict">
@@ -309,4 +316,12 @@
     <update id="updEshopGoodsYes">
         UPDATE ser_item_info_goods_eshop SET status = 'yes' WHERE eshop_code = #{eshopCode}
     </update>
+
+    <delete id="deleteEshopGoodsByEshopCode">
+        DELETE FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode}
+    </delete>
+
+    <select id="getJointGoodsCodes" resultType="SerItemCommodityEshop">
+        SELECT joint_goods_code FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode}
+    </select>
 </mapper>

@@ -11,11 +11,13 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +101,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
                boe.setOrgId(basicOrganization.getId());
                boe.setDockType(basicOrganization.getDockType());
                 basicOrganizationDao.insetOrgEshop(boe);
-                basicOrganizationDao.updEshopGoodsYes(boe);
+                //basicOrganizationDao.updEshopGoodsYes(boe);
             }
             dao.insert(basicOrganization);
         }else {
@@ -113,7 +115,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
                         boe.setOrgId(basicOrganization.getId());
                         boe.setDockType(basicOrganization.getDockType());
                         basicOrganizationDao.insetOrgEshop(boe);
-                        basicOrganizationDao.updEshopGoodsYes(boe);
+                        //basicOrganizationDao.updEshopGoodsYes(boe);
                     }
                 }
             }
@@ -211,6 +213,12 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
     @Transactional(readOnly = false)
 	public void deleteEshop(BasicOrganization basicOrganization) {
     	basicOrganizationDao.deleteEshop(basicOrganization);
-        basicOrganizationDao.updEshopGoods(basicOrganization);
+        //basicOrganizationDao.updEshopGoods(basicOrganization);
+        basicOrganizationDao.deleteEshopGoodsByEshopCode(basicOrganization);
+        String eshopCode = basicOrganization.getEshopCode();
+        List<SerItemCommodityEshop> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(basicOrganization);
+        if (jointGoodsCodes.size()>0) {
+            //OpenSendUtil.delGoodsByOrgEshop(eshopCode, jointGoodsCodes);
+        }
 	}
 }

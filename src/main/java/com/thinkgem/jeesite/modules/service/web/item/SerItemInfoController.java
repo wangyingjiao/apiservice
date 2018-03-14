@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import com.thinkgem.jeesite.modules.service.service.item.SerItemInfoService;
@@ -285,7 +286,21 @@ public class SerItemInfoController extends BaseController {
             return new FailResult("未找到项目ID");
         }
 
+        List<SerItemCommodity> scList = serItemInfoService.getListByInfoId(info);
+        for (SerItemCommodity serItemCommodity : scList){
+            List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(serItemCommodity);
+        }
 
+
+        if (scList.size()==1){
+            List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(scList.get(0));
+            if (siceList.size()==0){
+                serItemInfoService.delete(info);
+                return new SuccResult("删除成功");
+            }else {
+                return new FailResult("商品已对接，不可删除");
+            }
+        }
         return new SuccResult("删除成功");
     }
 

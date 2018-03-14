@@ -216,4 +216,19 @@
 		<!--where goods_id=#{reqId}-->
 		<!--and del_flag = '0'-->
 	<!--</select>-->
+
+	<select id="getEshopGoodsList" resultType="SerItemCommodityEshop">
+		SELECT
+			a.id,
+			a.org_id AS orgId,
+			a.eshop_code AS eshopCode,
+			a.status,
+			a.item_id AS itemId,
+			a.goods_id AS goodsId,
+			a.joint_goods_code AS jointGoodsCode,
+			a.joint_status AS jointStatus
+			FROM ser_item_info_goods_eshop
+			WHERE a.goods_id = #{id}
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 </mapper>

@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 import com.thinkgem.jeesite.modules.service.service.sort.SerCityScopeService;
@@ -559,5 +560,13 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			map.put("noSendGoodsList", noSendGoodsList);
 		}
 		return map;
+	}
+
+	public List<SerItemCommodity> getListByInfoId(SerItemInfo info) {
+		return serItemCommodityDao.getSerItemCommodityByItem(info);
+	}
+
+	public List<SerItemCommodityEshop> getEshopGoodsList(SerItemCommodity serItemCommodity) {
+		return serItemCommodityDao.getEshopGoodsList();
 	}
 }
