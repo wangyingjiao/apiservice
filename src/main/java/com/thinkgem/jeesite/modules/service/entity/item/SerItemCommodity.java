@@ -62,11 +62,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	private String jointGoodsCode;		//对接方商品CODE
 	private String selfCode;		//自营商品CODE
-	private List<SerItemCommodityPersons> persons;//派人数量
-
-	@NotNull(message = "派人数量不可为空")
-	public List<SerItemCommodityPersons> getPersons() {return persons;}
-	public void setPersons(List<SerItemCommodityPersons> persons) {this.persons = persons;}
 
 	public String getSelfCode() {
 		return selfCode;

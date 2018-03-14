@@ -10,7 +10,6 @@ import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
-import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
@@ -36,8 +35,6 @@ import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 @Transactional(readOnly = true)
 public class BasicOrganizationService extends CrudService<BasicOrganizationDao, BasicOrganization> {
 
-	@Autowired
-	BasicServiceCityService basicServiceCityService;
 	@Autowired
 	private BasicOrganizationDao basicOrganizationDao;
 
@@ -124,7 +121,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
         }
 
         //super.save(basicOrganization);
-
+/*
 		List<String> cityCodes = basicOrganization.getCityCodes();
 		if(null != cityCodes){
 			for(String cityCode : cityCodes ){
@@ -133,7 +130,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 				city.setCityCode(cityCode);
 				basicServiceCityService.save(city);
 			}
-		}
+		}*/
 	}
 
 	private void deleteCitysByOrgId(BasicOrganization basicOrganization) {
@@ -158,14 +155,14 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 			return null;
 		}
 		BasicOrganization basicOrganizationRe = get(basicOrganization.getId());
-        List<String> cityCodes = new ArrayList<String>();//服务城市
+/*        List<String> cityCodes = new ArrayList<String>();//服务城市
 		List<BasicServiceCity> cityCodeList = basicServiceCityService.getCityCodesByOrgId(basicOrganization.getId());
 		if(null != cityCodeList){
             for(BasicServiceCity city : cityCodeList){
                 cityCodes.add(city.getCityCode());
             }
         }
-		basicOrganizationRe.setCityCodes(cityCodes);
+		basicOrganizationRe.setCityCodes(cityCodes);*/
 
 		int stations = dao.getStationList(basicOrganization.getId());
 		if(stations == 0){
@@ -178,16 +175,6 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 
 		return basicOrganizationRe;
 	}
-
-	/**
-	 * 获取当前机构下所有城市
-	 * @param orgId
-	 * @return
-	 */
-    public List<BasicServiceCity> getOrgCityCodes(String orgId) {
-		List<BasicServiceCity> cityCodeList = basicServiceCityService.getCityCodesByOrgId(orgId);
-		return cityCodeList;
-    }
 
 	public List<BasicOrganization> findListAll(BasicOrganization basicOrganization) {
 		basicOrganization.getSqlMap().put("dsf", BaseService.dataOrganFilter( UserUtils.getUser(), "a"));

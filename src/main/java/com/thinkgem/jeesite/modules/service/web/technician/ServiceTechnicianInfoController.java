@@ -11,7 +11,6 @@ import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
-import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
@@ -112,13 +111,11 @@ public class ServiceTechnicianInfoController extends BaseController {
 
         User user = UserUtils.getUser();
         String orgId = user.getOrganization().getId();//机构ID
-//        List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
         List<BasicServiceStation> stations = serviceTechnicianInfoService.getStationsByOrgId(orgId);
         List<SerSkillInfo> skillInfos = serviceTechnicianInfoService.getSkillInfosByOrgId(orgId);
 
         HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
         objectObjectHashMap.put("page",page);
-//        objectObjectHashMap.put("cityCodes",cityCodes);
         objectObjectHashMap.put("stations",stations);
         objectObjectHashMap.put("skillInfos",skillInfos);
         return new SuccResult(objectObjectHashMap);

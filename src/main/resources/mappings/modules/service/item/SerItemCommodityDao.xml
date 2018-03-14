@@ -160,12 +160,6 @@
 		WHERE item_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
-	<!--<update id="delSerItemCommodityPersons">-->
-		<!--UPDATE ser_item_info_goods_persons SET-->
-		<!--del_flag = #{DEL_FLAG_DELETE}-->
-		<!--WHERE goods_id = #{id}-->
-		<!--AND del_flag = #{DEL_FLAG_NORMAL}-->
-	<!--</update>-->
 
 	<update id="delSerItemCommodity">
 		UPDATE ser_item_info_goods SET
@@ -208,14 +202,7 @@
 		<result column="price" property="price"/>
 		<result column="convert_hours" property="convertHours"/>
 		<result column="min_purchase" property="minPurchase"/>
-		<!-- 派人数量 -->
-		<!--<association property="persons" column="{reqId=id}" select="selectPersonsById"></association>-->
 	</resultMap>
-	<!--<select id="selectPersonsById" parameterType="java.util.Map" resultType="SerItemCommodityPersons">-->
-		<!--select id,critical,sort,quantity from ser_item_info_goods_persons-->
-		<!--where goods_id=#{reqId}-->
-		<!--and del_flag = '0'-->
-	<!--</select>-->
 
 	<select id="getEshopGoodsList" resultType="SerItemCommodityEshop">
 		SELECT

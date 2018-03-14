@@ -480,6 +480,16 @@ public class OpenSendUtil {
 		return failRe;
 	}
 
+    /***
+     * 编辑机构删除关联E店
+     * 机构E店表已经删除
+     * 商品E店表已经删除
+     *
+     * 删除E店对接商品信息
+     * 成功失败都不进行任何操作
+     * @param eshopCode
+     * @param jointGoodsCodes
+     */
 	public static void delGoodsByOrgEshop(String eshopCode,List<String> jointGoodsCodes){
 
 	}

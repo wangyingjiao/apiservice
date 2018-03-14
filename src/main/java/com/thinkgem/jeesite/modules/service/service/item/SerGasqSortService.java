@@ -7,7 +7,6 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerGasqSortDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerGasqTagsDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;

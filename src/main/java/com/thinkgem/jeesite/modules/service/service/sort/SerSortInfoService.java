@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.dao.basic.BasicServiceCityDao;
 import com.thinkgem.jeesite.modules.service.dao.office.OfficeSeviceAreaListDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillSortDao;
 import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
-import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;

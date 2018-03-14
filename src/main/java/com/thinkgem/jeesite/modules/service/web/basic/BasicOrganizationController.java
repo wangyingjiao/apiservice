@@ -14,7 +14,6 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
-import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
@@ -236,16 +235,6 @@ public class BasicOrganizationController extends BaseController {
 		} else {
 			return new BasicOrganization();
 		}
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "getOrgCityCodes", method = {RequestMethod.GET})
-	@ApiOperation("获取当前机构下所有城市")
-	public Result getOrgCityCodes(HttpServletRequest request, HttpServletResponse response) {
-		User user = UserUtils.getUser();
-		String orgId = user.getOrganization().getId();//机构ID
-		List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
-		return new SuccResult(cityCodes);
 	}
 
 	@ResponseBody
