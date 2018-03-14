@@ -12,8 +12,8 @@
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS "startPerNum",
-		a.capping_per_num AS "cappingPerNum",
-		a.joint_goods_code AS "jointGoodsCode"
+		a.capping_per_num AS "cappingPerNum"
+		<!--a.joint_goods_code AS "jointGoodsCode"-->
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -79,7 +79,7 @@
 			min_purchase,
 			start_per_num,
 			capping_per_num,
-			joint_goods_code,
+			<!--joint_goods_code,-->
 			create_by,
 			create_date,
 			update_by,
@@ -97,7 +97,7 @@
 			#{minPurchase},
 			#{startPerNum},
 			#{cappingPerNum},
-			#{jointGoodsCode},
+			<!--#{jointGoodsCode},-->
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -132,9 +132,9 @@
 			<if test="cappingPerNum != null and cappingPerNum != ''">
 				capping_per_num = #{cappingPerNum},
 			</if>
-			<if test="jointGoodsCode != null and jointGoodsCode != ''">
+			<!--<if test="jointGoodsCode != null and jointGoodsCode != ''">
 				joint_goods_code = #{jointGoodsCode},
-			</if>
+			</if>-->
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
@@ -142,7 +142,7 @@
 
 	<update id="updateJointGoodsCode">
 		UPDATE ser_item_info_goods SET
-		joint_goods_code = #{jointGoodsCode},
+		<!--joint_goods_code = #{jointGoodsCode},-->
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
@@ -190,8 +190,8 @@
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS startPerNum,
-		a.capping_per_num AS cappingPerNum,
-		a.joint_goods_code AS jointGoodsCode
+		a.capping_per_num AS cappingPerNum
+		<!--a.joint_goods_code AS jointGoodsCode-->
 	</sql>
 	<resultMap type="SerItemCommodity" id="SerItemGoodsResultMap">
 		<id column="id" property="id"/>
@@ -212,7 +212,7 @@
 			a.status,
 			a.item_id AS itemId,
 			a.goods_id AS goodsId,
-			a.joint_goods_code AS jointGoodsCode,
+			<!--a.joint_goods_code AS jointGoodsCode,-->
 			a.joint_status AS jointStatus
 			FROM ser_item_info_goods_eshop
 			WHERE a.goods_id = #{id}

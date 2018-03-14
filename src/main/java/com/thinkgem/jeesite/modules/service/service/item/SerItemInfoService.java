@@ -290,6 +290,11 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		super.delete(serItemInfo);
 	}
 
+	@Transactional(readOnly = false)
+	public void deleteSerItemInfo(SerItemInfo serItemInfo) {
+		super.delete(serItemInfo);
+	}
+
 	/**
 	 * 检查服务项目名是否重复
 	 * 

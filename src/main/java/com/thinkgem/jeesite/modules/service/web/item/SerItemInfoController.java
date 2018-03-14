@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.service.item.SerItemCommodityService;
 import com.thinkgem.jeesite.modules.service.service.item.SerItemInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -47,6 +48,8 @@ public class SerItemInfoController extends BaseController {
 
     @Autowired
     private SerItemInfoService serItemInfoService;
+    @Autowired
+    private SerItemCommodityService serItemCommodityService;
 
     @ModelAttribute
     public SerItemInfo get(@RequestParam(required = false) String id) {
@@ -285,11 +288,6 @@ public class SerItemInfoController extends BaseController {
         }
 
         List<SerItemCommodity> scList = serItemInfoService.getListByInfoId(info);
-        for (SerItemCommodity serItemCommodity : scList){
-            List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(serItemCommodity);
-        }
-
-
         if (scList.size()==1){
             List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(scList.get(0));
             if (siceList.size()==0){
@@ -298,8 +296,21 @@ public class SerItemInfoController extends BaseController {
             }else {
                 return new FailResult("商品已对接，不可删除");
             }
+        }else {
+            for (SerItemCommodity serItemCommodity : scList) {
+                List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(serItemCommodity);
+                if (siceList.size() == 0) {
+                    serItemCommodityService.delete(serItemCommodity);
+                }
+            }
+            List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
+            if (scLists.size() == 0) {
+                serItemInfoService.deleteSerItemInfo(info);
+                return new SuccResult("删除成功");
+            } else {
+                return new SuccResult(3, "部分商品删除成功");
+            }
         }
-        return new SuccResult("删除成功");
     }
 
 
@@ -407,6 +418,28 @@ public class SerItemInfoController extends BaseController {
     @RequestMapping(value = "deleteGoodsData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("单个删除服务项目商品")
     public Result deleteGoodsData(@RequestBody SerItemCommodity serItemCommodity) {
+        if (serItemCommodity == null) {
+            return new FailResult("未找到商品ID");
+        }
+        //前台传过来商品id 字段名:id
+        String goodsId = serItemCommodity.getId();
+        if (StringUtils.isBlank(goodsId)) {
+            return new FailResult("未找到商品ID");
+        }
+        List<SerItemCommodityEshop> commodityEshopList = serItemInfoService.getEshopGoodsList(serItemCommodity);
+        if (commodityEshopList.size()==0){
+            serItemCommodityService.delete(serItemCommodity);
+            return new SuccResult("删除成功");
+        }else {
+            return new FailResult("商品已对接，不可删除");
+        }
+    }
+
+    /*@ResponseBody
+    @RequiresPermissions("project_update")
+    @RequestMapping(value = "deleteGoodsData", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("单个删除服务项目商品")
+    public Result deleteGoodsData(@RequestBody SerItemCommodity serItemCommodity) {
         if(serItemCommodity == null){
             return new FailResult("未找到商品ID");
         }
@@ -468,6 +501,6 @@ public class SerItemInfoController extends BaseController {
         }catch (Exception e){
             return new FailResult("删除失败，第三方不允许删除此商品");
         }
-    }
+    }*/
 
 }
