@@ -4,7 +4,6 @@
 package com.thinkgem.jeesite.modules.service.entity.item;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
