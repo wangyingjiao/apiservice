@@ -480,4 +480,7 @@ public class OpenSendUtil {
 		return failRe;
 	}
 
+	public static void delGoodsByOrgEshop(String eshopCode,List<String> jointGoodsCodes){
+
+	}
 }
