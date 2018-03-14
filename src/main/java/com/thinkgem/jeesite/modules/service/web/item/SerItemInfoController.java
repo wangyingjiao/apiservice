@@ -100,8 +100,12 @@ public class SerItemInfoController extends BaseController {
             serItemInfo.setCusTags(tags);
         }
 
-        HashMap<String,Object> map = serItemInfoService.saveItem(serItemInfo);
-        return doSendItem(map);
+        int i = serItemInfoService.saveItem(serItemInfo);
+        if (i==1){
+            return new SuccResult("新增成功");
+        }else {
+            return new FailResult("新增失败");
+        }
     }
 
     @ResponseBody
@@ -143,8 +147,12 @@ public class SerItemInfoController extends BaseController {
             serItemInfo.setCusTags(tags);
         }
 
-        HashMap<String,Object> map = serItemInfoService.saveItem(serItemInfo);
-        return doSendItem(map);
+        int i = serItemInfoService.saveItem(serItemInfo);
+        if (i==1){
+            return new SuccResult("修改成功");
+        }else {
+            return new FailResult("修改失败");
+        }
     }
     //add by wyr 保存服务项目图文详情 saveData方法里的 pictureDetails属性
     /*@ResponseBody
@@ -277,17 +285,36 @@ public class SerItemInfoController extends BaseController {
             return new FailResult("未找到项目ID");
         }
 
+
+        return new SuccResult("删除成功");
+    }
+
+
+   /* @ResponseBody
+    @RequiresPermissions("project_delete")
+    @RequestMapping(value = "deleteData", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("删除服务项目")
+    public Result deleteData(@RequestBody SerItemInfo info) {
+        if(info == null){
+            return new FailResult("未找到项目ID");
+        }
+        //前台传过来项目id 字段名:id
+        String itemId = info.getId();
+        if(StringUtils.isBlank(itemId)){
+            return new FailResult("未找到项目ID");
+        }
+
         HashMap<String,Object> map =  serItemInfoService.getDeleteGoodsSendList(info);
         try {
             // 机构有对接方E店CODE
             if(map.get("jointEshopCode") != null && StringUtils.isNotEmpty(map.get("jointEshopCode").toString())){
                 SerItemInfo serItemInfo = (SerItemInfo)map.get("info");
-                /*List<SerItemCommodity> noSendGoodsList = (List<SerItemCommodity>)map.get("noSendGoodsList");
+                *//*List<SerItemCommodity> noSendGoodsList = (List<SerItemCommodity>)map.get("noSendGoodsList");
                 if(noSendGoodsList != null) {
                     for (SerItemCommodity commodity : noSendGoodsList) {
                         serItemInfoService.deleteGoodsInfo(commodity);
                     }
-                }*/
+                }*//*
 
                 if(serItemInfo != null && serItemInfo.getCommoditys() != null && serItemInfo.getCommoditys().size() > 0){
                     List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
@@ -360,7 +387,7 @@ public class SerItemInfoController extends BaseController {
         }catch (Exception e){
             return new FailResult("系统异常");
         }
-    }
+    }*/
 
     @ResponseBody
     @RequiresPermissions("project_update")

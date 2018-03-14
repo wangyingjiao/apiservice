@@ -80,6 +80,13 @@
 			<if test="jointEshopCode != null and jointEshopCode != ''">
 				AND a.joint_eshop_code like concat('%',#{jointEshopCode},'%')
 			</if>
+			<if test="eshopNames != null and eshopNames != ''">
+				AND a.id in (
+				SELECT a.org_id FROM  basic_organization_eshop a LEFT JOIN basic_gasq_eshop g ON a.eshop_code =g.code
+				where
+			    g.name LIKE concat('%',#{eshopNames},'%')
+				)
+			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
 		</where>

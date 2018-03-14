@@ -72,79 +72,80 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 
 	@Transactional(readOnly = false)
-	public HashMap<String, Object> saveItem(SerItemInfo serItemInfo) {
-		List<String> pictures = serItemInfo.getPictures();
-		if (null != pictures) {
-			String picture = JsonMapper.toJsonString(pictures);
-			serItemInfo.setPicture(picture);
-		}
-		// add by wyr 保存服务项目图文详情 saveData方法里的 pictureDetails属性
-		List<String> pictureDetails = serItemInfo.getPictureDetails();
-		if (null != pictureDetails) {
-			String pictureDetail = JsonMapper.toJsonString(pictureDetails);
-			serItemInfo.setPictureDetail(pictureDetail);
-		}
-		serItemInfo.preUpdate();
+	public int saveItem(SerItemInfo serItemInfo) {
+		try {
+			List<String> pictures = serItemInfo.getPictures();
+			if (null != pictures) {
+                String picture = JsonMapper.toJsonString(pictures);
+                serItemInfo.setPicture(picture);
+            }
+			// add by wyr 保存服务项目图文详情 saveData方法里的 pictureDetails属性
+			List<String> pictureDetails = serItemInfo.getPictureDetails();
+			if (null != pictureDetails) {
+                String pictureDetail = JsonMapper.toJsonString(pictureDetails);
+                serItemInfo.setPictureDetail(pictureDetail);
+            }
+			serItemInfo.preUpdate();
 
-		// add by wyr编辑项目服务需要获取当前的机构id
-		User user = UserUtils.getUser();
-		serItemInfo.setOrgId(user.getOrganization().getId());
+			// add by wyr编辑项目服务需要获取当前的机构id
+			User user = UserUtils.getUser();
+			serItemInfo.setOrgId(user.getOrganization().getId());
 
-		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
-		/*
-		 * if (StringUtils.isNotBlank(serItemInfo.getId())) { //删除商品信息
-		 * //serItemCommodityDao.delSerItemCommodity(serItemInfo);
-		 * 
-		 * //只删除前台删除的数据，其余商品新增或者编辑 List<SerItemCommodity> commodityListOld =
-		 * serItemCommodityDao.findListByItemId(serItemInfo);
-		 * if(commodityListOld != null){ commodityListOld.removeAll(commoditys);
-		 * if(commodityListOld.size() != 0){ for (SerItemCommodity commodityDel
-		 * : commodityListOld) { serItemCommodityDao.delete(commodityDel); } } }
-		 * }
-		 */
+			List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
+			/*
+             * if (StringUtils.isNotBlank(serItemInfo.getId())) { //删除商品信息
+             * //serItemCommodityDao.delSerItemCommodity(serItemInfo);
+             *
+             * //只删除前台删除的数据，其余商品新增或者编辑 List<SerItemCommodity> commodityListOld =
+             * serItemCommodityDao.findListByItemId(serItemInfo);
+             * if(commodityListOld != null){ commodityListOld.removeAll(commoditys);
+             * if(commodityListOld.size() != 0){ for (SerItemCommodity commodityDel
+             * : commodityListOld) { serItemCommodityDao.delete(commodityDel); } } }
+             * }
+             */
 
-		List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
 
-		super.save(serItemInfo);
-		if (commoditys != null) {
-			// 批量插入商品信息
-			for (SerItemCommodity commodity : commoditys) {
-				commodity.setItemId(serItemInfo.getId());
-				commodity.setSortId(serItemInfo.getSortId());
+			super.save(serItemInfo);
+			if (commoditys != null) {
+                // 批量插入商品信息
+                for (SerItemCommodity commodity : commoditys) {
+                    commodity.setItemId(serItemInfo.getId());
+                    commodity.setSortId(serItemInfo.getSortId());
 
-				commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
-																											// '1'
-																											// '起购数量',
-				commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
-																											// '1'
-																											// '起步人数（第一个4小时时长派人数量）',
-				commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
-																													// '30'
-																													// '封项人数',
+                    commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
+                                                                                                                // '1'
+                                                                                                                // '起购数量',
+                    commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
+                                                                                                                // '1'
+                                                                                                                // '起步人数（第一个4小时时长派人数量）',
+                    commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
+                                                                                                                        // '30'
+                                                                                                                        // '封项人数',
 
-				serItemCommodityService.save(commodity);
+                    serItemCommodityService.save(commodity);
 
-				// 对接商品信息
-				SerItemCommodity sendGoods = new SerItemCommodity();
-				sendGoods.setName(commodity.getName());// 商品名称格式：项目名称（商品名）
-				sendGoods.setPrice(commodity.getPrice());// 商品价格
-				sendGoods.setUnit(commodity.getUnit());// 商品单位格式：次/个/间
-				sendGoods.setJointGoodsCode("");
-				if (StringUtils.isNotBlank(commodity.getId())) {
-					SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
-					if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
-						sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
-					}
-				}
-				sendGoods.setSelfCode(
-						serItemInfo.getSortId() + Global.getConfig("openSendPath_goods_split") + commodity.getId()); // 自营平台商品code
-																														// ID
-				sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
-				sendGoodsList.add(sendGoods);
-			}
-		}
+                    // 对接商品信息
+                    /*SerItemCommodity sendGoods = new SerItemCommodity();
+                    sendGoods.setName(commodity.getName());// 商品名称格式：项目名称（商品名）
+                    sendGoods.setPrice(commodity.getPrice());// 商品价格
+                    sendGoods.setUnit(commodity.getUnit());// 商品单位格式：次/个/间
+                    sendGoods.setJointGoodsCode("");
+                    if (StringUtils.isNotBlank(commodity.getId())) {
+                        SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
+                        if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
+                            sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
+                        }
+                    }
+                    sendGoods.setSelfCode(
+                            serItemInfo.getSortId() + Global.getConfig("openSendPath_goods_split") + commodity.getId()); // 自营平台商品code
+                                                                                                                            // ID
+                    sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
+                    sendGoodsList.add(sendGoods);*/
+                }
+            }
 
-		serItemInfo = dao.get(serItemInfo);
+		/*serItemInfo = dao.get(serItemInfo);
 		String pictureDetail = serItemInfo.getPictureDetail();
 		if (null != pictureDetail) {
 			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail, ArrayList.class);
@@ -176,7 +177,12 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		map.put("info", sendItem);
 		map.put("jointEshopCode", jointEshopCode);
 		map.put("item", serItemInfo);
-		return map;
+		return map;*/
+		return 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 
 	public List<SerItemInfo> findList(SerItemInfo serItemInfo) {
