@@ -471,17 +471,4 @@ public class SerItemInfoController extends BaseController {
         }
     }
 
-   /* @ResponseBody
-    @RequestMapping(value = "getAllCityCodes", method = {RequestMethod.POST})
-    @ApiOperation("机构或分类下定向城市")
-    public Result getAllCityCodes(@RequestBody SerItemInfo serItemInfo) {
-        if(null == serItemInfo){
-            serItemInfo = new SerItemInfo();
-        }
-        User user = UserUtils.getUser();
-        serItemInfo.setOrgId(user.getOrganization().getId());//机构ID
-        List<SerCityScope> list = serItemInfoService.getAllCityCodes(serItemInfo);
-        return new SuccResult(list);
-    }*/
-
 }

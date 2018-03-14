@@ -110,7 +110,6 @@
 		a.sort_id AS "sortId",
 		s.name AS "sortName",
 		a.name AS "name",
-		a.all_city AS "allCity",
 		a.picture AS "picture",
 		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
@@ -128,7 +127,6 @@
 		<result column="sort_id" property="sortId"/>
 		<result column="sort_name" property="sortName"/>
 		<result column="name" property="name"/>
-		<result column="all_city" property="allCity"/>
 		<result column="sale" property="sale"/>
 		<result column="joint_status" property="jointStatus"/>
 		<!-- 项目关联商品 -->
@@ -232,9 +230,6 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<!--<if test="allCity != null and allCity != ''">-->
-				<!--all_city = #{allCity},-->
-			<!--</if>-->
 			<if test="picture != null and picture != ''">
 				picture = #{picture},
 			</if>
@@ -306,13 +301,6 @@
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
-	<!--<select id="getSerSortInfo" resultType="SerSortInfo">-->
-		<!--select a.all_city AS allCity-->
-		<!--from ser_sort_info a-->
-		<!--where-->
-		<!--a.id = #{id}-->
-		<!--AND  a.del_flag = '0'-->
-	<!--</select>-->
 	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
 		select
 		a.id AS id, a.name AS name ,
