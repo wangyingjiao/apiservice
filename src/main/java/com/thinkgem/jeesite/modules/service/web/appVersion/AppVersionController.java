@@ -4,6 +4,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -125,7 +126,7 @@ public class AppVersionController extends BaseController {
     @RequestMapping(value = "getNewest", method = { RequestMethod.POST })
     @ApiOperation("获取最新APP版本")
     public Result getNewest() {
-        Object cache = UserUtils.getCache(CACHE_NEWEST_VERSION);
+        Object cache = CacheUtils.get(CACHE_NEWEST_VERSION);
         if (cache==null){
             cache = appVersionService.getNewest();
         }

@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.service.service.appVersion;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.dao.appVersion.AppVersionDao;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
@@ -36,7 +37,7 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
             appVersion.setUpdateDate(new Date());
             super.save(appVersion);
         AppVersion newest = appVersionDao.getNewestVersion();
-        UserUtils.putCache(CACHE_NEWEST_VERSION,newest);
+        CacheUtils.put(CACHE_NEWEST_VERSION,newest);
     }
 
     public AppVersion getData(String id) {
@@ -48,7 +49,7 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     public void delete(AppVersion appVersion) {
         super.delete(appVersion);
         AppVersion newest = appVersionDao.getNewestVersion();
-        UserUtils.putCache(CACHE_NEWEST_VERSION,newest);
+        CacheUtils.put(CACHE_NEWEST_VERSION,newest);
     }
 
     public AppVersion getNewest() {
