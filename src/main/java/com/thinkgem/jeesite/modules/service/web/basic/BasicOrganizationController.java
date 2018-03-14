@@ -152,8 +152,10 @@ public class BasicOrganizationController extends BaseController {
 		}catch (Exception e){
 			return new FailResult("对接失败-系统异常");
 		}*/
-		if (basicOrganization.getBasicOrganizationEshops().size()==0){
-			return new FailResult("请选择E店");
+		if (!basicOrganization.getDockType().equals("")) {
+			if (basicOrganization.getBasicOrganizationEshops().size() == 0) {
+				return new FailResult("请选择E店");
+			}
 		}
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
