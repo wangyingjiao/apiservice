@@ -11,13 +11,10 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
-import com.thinkgem.jeesite.modules.service.dao.sort.SerCityScopeDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
-import com.thinkgem.jeesite.modules.service.entity.sort.SerCityScope;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
-import com.thinkgem.jeesite.modules.service.service.sort.SerCityScopeService;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -49,10 +46,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	SerItemCommodityDao serItemCommodityDao;
 	@Autowired
 	SerItemCommodityService serItemCommodityService;
-	@Autowired
-	SerCityScopeDao serCityScopeDao;
-	@Autowired
-	SerCityScopeService serCityScopeService;
 
 	public SerItemInfo get(String id) {
 		return super.get(id);

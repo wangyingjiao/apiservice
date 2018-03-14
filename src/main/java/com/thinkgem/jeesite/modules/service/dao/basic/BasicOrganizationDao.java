@@ -26,8 +26,6 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
     //add by wyr验证E店编码
     List<BasicOrganization> getByECode(BasicOrganization organization);
 
-    void deleteCitysByOrgId(BasicOrganization basicOrganization);
-
     int getStationList(String id);
 
     List<BasicOrganization> getOrganizationListByJointEshopCode(BasicOrganization organizationSerch);

@@ -232,11 +232,6 @@
 			AND id &lt;&gt; #{id}
 		</if>
 	</select>
-	<update id="deleteCitysByOrgId">
-		UPDATE basic_service_city SET
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE org_id = #{id}
-	</update>
 
 	<select id="getStationList" resultType="int">
 		SELECT count(1) FROM basic_service_station a

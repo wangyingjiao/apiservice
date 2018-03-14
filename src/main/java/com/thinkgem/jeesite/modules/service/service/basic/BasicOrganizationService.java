@@ -85,10 +85,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 
 	@Transactional(readOnly = false)
 	public void save(BasicOrganization basicOrganization) {
-		if(StringUtils.isNotBlank(basicOrganization.getId())){
-			//更新
-			deleteCitysByOrgId(basicOrganization);
-		}
+
         //修改时，如平台选为请选择时，执行删除
         if (basicOrganization.getIsNewRecord()) {
 		    basicOrganization.preInsert();
@@ -131,10 +128,6 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 				basicServiceCityService.save(city);
 			}
 		}*/
-	}
-
-	private void deleteCitysByOrgId(BasicOrganization basicOrganization) {
-		dao.deleteCitysByOrgId(basicOrganization);
 	}
 
 	public BasicOrganization get(String id) {
