@@ -166,13 +166,13 @@ public class SerItemInfoController extends BaseController {
         return doSendItem(map);
     }*/
 
-    @ResponseBody
+    /*@ResponseBody
     @RequestMapping(value = "sendData", method = {RequestMethod.POST})
     @ApiOperation("对接")
     public Result sendData(@RequestBody SerItemInfo serItemInfo) {
         HashMap<String,Object> map =  serItemInfoService.sendItemData(serItemInfo);
         return doSendItem(map);
-    }
+    }*/
     public Result doSendItem(HashMap<String,Object> map){
         SerItemInfo serItemInfo = (SerItemInfo) map.get("item");
         try {

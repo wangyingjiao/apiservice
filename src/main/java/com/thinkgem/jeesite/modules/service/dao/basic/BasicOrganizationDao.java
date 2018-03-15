@@ -28,7 +28,7 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
 
     int getStationList(String id);
 
-    List<BasicOrganization> getOrganizationListByJointEshopCode(BasicOrganization organizationSerch);
+    List<BasicOrganization> getOrganizationListByJointEshopCode(String eshop_code);
 
     List<Dict> getPlatform();
 

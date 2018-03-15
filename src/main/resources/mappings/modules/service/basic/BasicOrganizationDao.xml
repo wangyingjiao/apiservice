@@ -247,10 +247,11 @@
 			a.work_start_time AS workStartTime,
 			a.work_end_time AS workEndTime
 		from basic_organization a
-		WHERE <!--a.joint_eshop_code = #{jointEshopCode}-->
-		a.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_organization_eshop b on a.id = b.org_id
+		WHERE
+		b.eshop_code = #{eshopCode}
+		a.del_flag = '0'
 	</select>
-
 	<select id="getPlatform" resultType="Dict">
 		SELECT
 			a.id,

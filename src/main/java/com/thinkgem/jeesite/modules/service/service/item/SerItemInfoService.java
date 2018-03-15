@@ -304,7 +304,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	public int checkDataName(SerItemInfo serItemInfo) {
 		return dao.checkDataName(serItemInfo);
 	}
-
+/*
 	@Transactional(readOnly = false)
 	public HashMap<String, Object> updateSerItemPicNum(SerItemInfo serItemInfo) {
 		List<String> pictureDetails = serItemInfo.getPictureDetails();
@@ -379,7 +379,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			map.put("item", serItemInfo);
 		}
 		return map;
-	}
+	}*/
 
 	public SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo) {
 		return dao.getSerItemInfoPic(serItemInfo);
@@ -394,7 +394,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		serItemCommodityDao.updateJointGoodsCode(goods);
 	}
 
-	public HashMap<String, Object> sendItemData(SerItemInfo serItemInfo) {
+	/*public HashMap<String, Object> sendItemData(SerItemInfo serItemInfo) {
 		serItemInfo = dao.get(serItemInfo);
 		// 对接商品信息
 		String jointEshopCode = "";
@@ -459,7 +459,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			map.put("item", serItemInfo);
 		}
 		return map;
-	}
+	}*/
 
 	@Transactional(readOnly = false)
 	public void updateJointStatus(SerItemInfo serItemInfo) {
@@ -472,7 +472,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	 * @param serItemCommodity
 	 * @return
 	 */
-	public HashMap<String, Object> getDeleteGoodsSendInfo(SerItemCommodity serItemCommodity) {
+	/*public HashMap<String, Object> getDeleteGoodsSendInfo(SerItemCommodity serItemCommodity) {
 		SerItemInfo serItemInfo = dao.getItemInfoByCommodityId(serItemCommodity);
 		// 对接商品信息
 		String jointEshopCode = "";
@@ -501,14 +501,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			map.put("info", sendItem);
 		}
 		return map;
-	}
+	}*/
 
 	@Transactional(readOnly = false)
 	public void deleteGoodsInfo(SerItemCommodity serItemCommodity) {
 		serItemCommodityDao.delete(serItemCommodity);
 	}
 
-	public HashMap<String, Object> getDeleteGoodsSendList(SerItemInfo serItemInfo) {
+	/*public HashMap<String, Object> getDeleteGoodsSendList(SerItemInfo serItemInfo) {
 		serItemInfo = dao.get(serItemInfo);
 		// 对接商品信息
 		String jointEshopCode = "";
@@ -554,7 +554,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			map.put("noSendGoodsList", noSendGoodsList);
 		}
 		return map;
-	}
+	}*/
 
 	public List<SerItemCommodity> getListByInfoId(SerItemInfo info) {
 		return serItemCommodityDao.getSerItemCommodityByItem(info);

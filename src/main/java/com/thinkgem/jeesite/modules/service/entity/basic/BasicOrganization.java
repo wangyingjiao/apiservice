@@ -37,7 +37,7 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	private String tel400;		// 机构400电话
 	private Date workStartTime;//工作开始时间
 	private Date workEndTime;//工作结束时间
-	private String jointEshopCode;//对接方E店CODE
+
 	private String remark;		// 备注信息
 	private String dockType;   //平台
 	private List<BasicOrganizationEshop> basicOrganizationEshops; //E店集合
@@ -47,10 +47,19 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	public String getEshopCode() {
 		return eshopCode;
 	}
-
 	public void setEshopCode(String eshopCode) {
 		this.eshopCode = eshopCode;
 	}
+
+	/*private String jointEshopCode;//对接方E店CODE
+	public String getJointEshopCode() {
+		return jointEshopCode;
+	}
+
+	public void setJointEshopCode(String jointEshopCode) {
+		this.jointEshopCode = jointEshopCode;
+	}
+*/
 
 	public String getEshopNames() {
 		return eshopNames;
@@ -209,14 +218,6 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 
 	public void setWorkEndTime(Date workEndTime) {
 		this.workEndTime = workEndTime;
-	}
-
-	public String getJointEshopCode() {
-		return jointEshopCode;
-	}
-
-	public void setJointEshopCode(String jointEshopCode) {
-		this.jointEshopCode = jointEshopCode;
 	}
 
 	@Length(min=0, max=255, message="备注信息长度必须介于 0 和 255 之间")

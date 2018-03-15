@@ -172,9 +172,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 
 		//通过对接方E店CODE获取机构
-		BasicOrganization organizationSerch = new BasicOrganization();
-		organizationSerch.setJointEshopCode(eshop_code);
-		List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(organizationSerch);
+		List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(eshop_code);
 		String orgId = "";
 		Date orgWorkStartTime;//工作开始时间
 		Date orgWorkEndTime;//工作结束时间
@@ -969,9 +967,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             throw new ServiceException("E店编码不能为空");
         }
         //通过对接方E店CODE获取机构
-        BasicOrganization organizationSerch = new BasicOrganization();
-        organizationSerch.setJointEshopCode(eshop_code);
-        List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(organizationSerch);
+        List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(eshop_code);
         String orgId = "";
         if(null != organization && organization.size() > 0){
             orgId = organization.get(0).getId();
