@@ -167,6 +167,10 @@ public class BasicOrganizationController extends BaseController {
 	public Result deleteEshop(@RequestBody BasicOrganization basicOrganization) {
 		if (basicOrganization!=null&&!basicOrganization.getEshopCode().equals("")){
 			basicOrganizationService.deleteEshop(basicOrganization);
+			int i = basicOrganizationService.getOrgEShopList(basicOrganization);
+			if (i==0){
+				basicOrganizationService.updDockType(basicOrganization);
+			}
 		}
 		return new SuccResult("删除成功");
 	}

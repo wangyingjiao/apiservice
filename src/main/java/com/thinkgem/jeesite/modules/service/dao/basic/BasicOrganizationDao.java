@@ -50,5 +50,9 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
 
     void deleteEshopGoodsByEshopCode(BasicOrganization basicOrganization);
 
-    List<SerItemCommodityEshop> getJointGoodsCodes(BasicOrganization basicOrganization);
+    List<String> getJointGoodsCodes(BasicOrganization basicOrganization);
+
+    int getOrgEShopList(BasicOrganization basicOrganization);
+
+    void updDockType(BasicOrganization basicOrganization);
 }

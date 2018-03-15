@@ -100,7 +100,20 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
             dao.insert(basicOrganization);
         }else {
             if (basicOrganization.getDockType().equals("")) {
-                basicOrganizationDao.deleteEcode(basicOrganization);
+				List<BasicOrganizationEshop> list=basicOrganizationDao.findListByOrgId(basicOrganization);
+				if (list.size()>0) {
+                    for (BasicOrganizationEshop basicOrganizationEshop : list){
+                        BasicOrganization b = new BasicOrganization();
+                        b.setEshopCode(basicOrganizationEshop.getEshopCode());
+                        basicOrganizationDao.deleteEshopGoodsByEshopCode(b);
+                        String eshopCode = basicOrganization.getEshopCode();
+                        List<String> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(b);
+                        if (jointGoodsCodes.size()>0) {
+                            OpenSendUtil.delGoodsByOrgEshop(eshopCode, jointGoodsCodes);
+                        }
+                    }
+                    basicOrganizationDao.deleteEcode(basicOrganization);
+                }
             }else {
                 List<BasicOrganizationEshop> eshopList=basicOrganization.getBasicOrganizationEshops();
                 for (BasicOrganizationEshop boe : eshopList){
@@ -196,9 +209,17 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
         //basicOrganizationDao.updEshopGoods(basicOrganization);
         basicOrganizationDao.deleteEshopGoodsByEshopCode(basicOrganization);
         String eshopCode = basicOrganization.getEshopCode();
-        List<SerItemCommodityEshop> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(basicOrganization);
+        List<String> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(basicOrganization);
         if (jointGoodsCodes.size()>0) {
-            //OpenSendUtil.delGoodsByOrgEshop(eshopCode, jointGoodsCodes);
+            OpenSendUtil.delGoodsByOrgEshop(eshopCode, jointGoodsCodes);
         }
+	}
+
+	public int getOrgEShopList(BasicOrganization basicOrganization) {
+		return basicOrganizationDao.getOrgEShopList(basicOrganization);
+	}
+
+	public void updDockType(BasicOrganization basicOrganization) {
+		basicOrganizationDao.updDockType(basicOrganization);
 	}
 }

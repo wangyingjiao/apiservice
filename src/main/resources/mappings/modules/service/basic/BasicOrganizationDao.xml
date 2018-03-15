@@ -316,7 +316,15 @@
         DELETE FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode}
     </delete>
 
-    <select id="getJointGoodsCodes" resultType="SerItemCommodityEshop">
+    <select id="getJointGoodsCodes" resultType="String">
         SELECT joint_goods_code FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode}
     </select>
+
+	<select id="getOrgEShopList" resultType="int">
+		SELECT COUNT(1)  FROM basic_organization_eshop WHERE org_id = #{id}
+	</select>
+
+	<update id="updDockType">
+		UPDATE basic_organization SET dock_type = '' WHERE id = #{id}
+	</update>
 </mapper>
