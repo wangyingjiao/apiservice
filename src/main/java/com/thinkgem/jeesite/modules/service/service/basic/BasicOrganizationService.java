@@ -219,6 +219,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		return basicOrganizationDao.getOrgEShopList(basicOrganization);
 	}
 
+	@Transactional(readOnly = false)
 	public void updDockType(BasicOrganization basicOrganization) {
 		basicOrganizationDao.updDockType(basicOrganization);
 	}
