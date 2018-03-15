@@ -3,25 +3,18 @@
  */
 package com.thinkgem.jeesite.modules.service.service.order;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.BeanUtils;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
-import com.thinkgem.jeesite.modules.service.dao.order.*;
-import com.thinkgem.jeesite.common.utils.map.GaoDeMapUtil;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
+import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
@@ -40,12 +33,15 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.open.entity.OpenCreateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.service.CrudService;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 子订单Service
@@ -107,8 +103,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		orderInfo.setNowId(info.getNowId());
 		OrderGoods goodsInfo = new OrderGoods();
+		//获取服务项目的id集合
 		List<String> ids = new ArrayList<>();
-		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
+		List<OrderGoods> goodsInfoList = dao.appGetOrderGoodsList(info);    //服务信息
 		List<OrderGoods> tem=new ArrayList<OrderGoods>();
 		if(goodsInfoList != null && goodsInfoList.size() > 0){
 			//获取服务项目id集合
@@ -117,8 +114,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					ids.add(goodsInfoList.get(i).getItemId());
 				}
 			}
-			//循环 id
+			//循环 ids
 			for(String id:ids){
+				//根据id获取服务项目的名称 图片 服务时间
 				OrderGoods orderGoods = serItemInfoDao.getById(id);
 				List<OrderGoods> orderGoodsList1 = new ArrayList<>();
 				for (int i=0;i<goodsInfoList.size();i++) {

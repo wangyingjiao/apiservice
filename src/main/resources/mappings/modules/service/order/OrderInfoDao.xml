@@ -512,7 +512,28 @@ origin_price,
 			good2.start_per_num AS "startPerNum",
 			good2.capping_per_num AS "cappingPerNum",
 			good2.joint_goods_code AS "jointGoodsCode"
-
+		FROM
+		order_info a
+		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id
+		WHERE
+		a.id = #{id}
+	</select>
+	<!--app订单详情获取服务信息-->
+	<select id="appGetOrderGoodsList" resultType="OrderGoods">
+		SELECT
+		a.service_time AS "serviceTime",
+		good.sort_id AS "sortId",
+		good.item_id AS "itemId",
+		good.item_name AS "itemName",
+		good.goods_id AS "goodsId",
+		good.goods_name AS "goodsName",
+		good.goods_num AS "goodsNum",
+		good.goods_unit AS "goodsUnit",
+		good.pay_price AS "payPrice",
+		good2.convert_hours AS "convertHours",
+		good2.start_per_num AS "startPerNum",
+		good2.capping_per_num AS "cappingPerNum"
 		FROM
 		order_info a
 		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
