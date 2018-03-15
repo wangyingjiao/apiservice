@@ -150,6 +150,7 @@ public class SerItemInfoController extends BaseController {
         }
 
         int i = serItemInfoService.saveItem(serItemInfo);
+
         if (i==1){
             return new SuccResult("修改成功");
         }else {
@@ -502,5 +503,16 @@ public class SerItemInfoController extends BaseController {
             return new FailResult("删除失败，第三方不允许删除此商品");
         }
     }*/
+
+    @ResponseBody
+    @RequestMapping(value = "getEshopGoods", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("根据商品ID查找已对接E店")
+    public Result getEshopGoods(@RequestBody SerItemCommodity serItemCommodity) {
+        if (StringUtils.isNotBlank(serItemCommodity.getId())) {
+            SerItemCommodity sc = serItemInfoService.getEshopGoods(serItemCommodity);
+            return new SuccResult(sc);
+        }
+        return new FailResult("该商品没有相关数据");
+    }
 
 }

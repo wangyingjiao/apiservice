@@ -30,4 +30,8 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     void updateJointGoodsCode(SerItemCommodity goods);
 
     List<SerItemCommodityEshop> getEshopGoodsList();
+
+    List<SerItemCommodityEshop> getEshopGoods(SerItemCommodity serItemCommodity);
+
+    SerItemCommodity getGoods(SerItemCommodity serItemCommodity);
 }

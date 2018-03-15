@@ -218,4 +218,23 @@
 			WHERE a.goods_id = #{id}
 			AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
+
+    <select id="getGoods" resultType="SerItemCommodity">
+        SELECT
+              id,
+              name,
+              sort_id AS sortId
+              FROM ser_item_info_goods
+              WHERE id = #{id}
+              AND del_flag = #{DEL_FLAG_NORMAL}
+
+    </select>
+
+	<select id="getEshopGoods" resultType="SerItemCommodityEshop">
+		SELECT
+			b.name AS eshopName,
+			a.joint_goods_code AS jointGoodsCode
+			FROM ser_item_info_goods_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
+			WHERE a.goods_id = #{id}
+	</select>
 </mapper>

@@ -18,6 +18,16 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
     private String jointGoodsCode;      //对接方商品CODE
     private String jointStatus;         //对接状态（"butt_butt": "对接中", "butt_success": "对接成功", butt_fail:对接失败, "remove_fail": "解除失败"）
 
+    private String eshopName;  //E店名称
+
+    public String getEshopName() {
+        return eshopName;
+    }
+
+    public void setEshopName(String eshopName) {
+        this.eshopName = eshopName;
+    }
+
     public String getOrgId() {
         return orgId;
     }

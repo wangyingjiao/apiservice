@@ -102,17 +102,9 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                 for (SerItemCommodity commodity : commoditys) {
                     commodity.setItemId(serItemInfo.getId());
                     commodity.setSortId(serItemInfo.getSortId());
-
                     commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
-                                                                                                                // '1'
-                                                                                                                // '起购数量',
                     commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
-                                                                                                                // '1'
-                                                                                                                // '起步人数（第一个4小时时长派人数量）',
                     commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
-                                                                                                                        // '30'
-                                                                                                                        // '封项人数',
-
                     serItemCommodityService.save(commodity);
 
                     // 对接商品信息
@@ -132,6 +124,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                                                                                                                             // ID
                     sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
                     sendGoodsList.add(sendGoods);*/
+
                 }
             }
 
@@ -563,4 +556,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	public List<SerItemCommodityEshop> getEshopGoodsList(SerItemCommodity serItemCommodity) {
 		return serItemCommodityDao.getEshopGoodsList();
 	}
+
+    public SerItemCommodity getEshopGoods(SerItemCommodity serItemCommodity) {
+        SerItemCommodity sc = serItemCommodityDao.getGoods(serItemCommodity);
+        sc.setJointCode(sc.getSortId()+Global.getConfig("openSendPath_goods_split")+sc.getId());
+
+        List<SerItemCommodityEshop> siceList = serItemCommodityDao.getEshopGoods(serItemCommodity);
+        sc.setCommodityEshops(siceList);
+
+        return sc;
+    }
 }
