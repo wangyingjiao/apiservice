@@ -105,7 +105,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		OrderGoods goodsInfo = new OrderGoods();
 		//获取服务项目的id集合
 		List<String> ids = new ArrayList<>();
-		List<OrderGoods> goodsInfoList = dao.appGetOrderGoodsList(info);    //服务信息
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
 		List<OrderGoods> tem=new ArrayList<OrderGoods>();
 		if(goodsInfoList != null && goodsInfoList.size() > 0){
 			//获取服务项目id集合

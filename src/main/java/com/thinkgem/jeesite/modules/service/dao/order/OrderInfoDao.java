@@ -28,10 +28,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<BasicOrganization> findOrganizationList(BasicOrganization organization);
 
     OrderInfo formData(OrderInfo info);
-
+    //获取订单详情的服务信息
     List<OrderGoods> getOrderGoodsList(OrderInfo info);
-    //APP获取订单详情的服务信息
-    List<OrderGoods> appGetOrderGoodsList(OrderInfo info);
 
     List<OrderDispatch> getOrderDispatchList(OrderInfo info);
     //app改派根据订单id技师id获取改派表
