@@ -24,6 +24,9 @@ public class BasicGasqEshop extends DataEntity<BasicGasqEshop> {
     private String isSupportOpenPlatform;  //no' COMMENT '是否开通对接开放平台
     private String openPlatformKey;   //对接开放平台的秘钥
 
+    private String businessModelId;//业务模式ID
+    private String operationBaseStatus;//运营基本信息审核状态：no未审核；submit审核中；fail审核未通过；yes审核通过'
+
     public String getName() {
         return name;
     }
@@ -126,5 +129,21 @@ public class BasicGasqEshop extends DataEntity<BasicGasqEshop> {
 
     public void setOpenPlatformKey(String openPlatformKey) {
         this.openPlatformKey = openPlatformKey;
+    }
+
+    public String getBusinessModelId() {
+        return businessModelId;
+    }
+
+    public void setBusinessModelId(String businessModelId) {
+        this.businessModelId = businessModelId;
+    }
+
+    public String getOperationBaseStatus() {
+        return operationBaseStatus;
+    }
+
+    public void setOperationBaseStatus(String operationBaseStatus) {
+        this.operationBaseStatus = operationBaseStatus;
     }
 }

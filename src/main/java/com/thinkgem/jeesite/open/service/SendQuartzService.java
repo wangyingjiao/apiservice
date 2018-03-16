@@ -233,6 +233,10 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 					}catch (Exception e){
 						e.printStackTrace();
 					}
+				}else{
+
+					//删除待执行表
+					OpenWaitUtils.delSendWait(info);
 				}
 			}
 		}
