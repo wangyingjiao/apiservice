@@ -545,4 +545,19 @@ public class SerItemInfoController extends BaseController {
         Page<SerItemCommodityEshop> goodsList = serItemInfoService.getGoodsList(page, serItemCommodity);
         return new SuccResult(goodsList);
     }
+
+    /**
+     * 解除对接 list<jointGoodsCode>  eshopCode
+     * @param serItemCommodity
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "deleteGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("解除对接")
+    @RequiresPermissions("project_view")
+    public Result deleteGoodsCode(@RequestBody(required = false) SerItemCommodityEshop serItemCommodity) {
+        List<String> jointGoodsCodes = serItemCommodity.getJointGoodsCodes();
+        OpenSendUtil.openSendDeleteItem(jointGoodsCodes,serItemCommodity.getEshopCode());
+        return new SuccResult("解除成功，请耐心等待交互结果");
+    }
 }

@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.service.entity.item;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
  * 服务项目商品E店Entity
  * @author a
@@ -22,13 +24,22 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
     private String eshopName;  //E店名称
     private String itemName;    //服务项目名称
     private String newName;        //拼接后的商品名称
-    private String goodsName;
+    private String goodsName;      //商品名称
     private String sortId;    //所属服务分类id
     private String sortName;    //所属服务分类名称
     private SerItemCommodity serItemCommodity; //服务项目商品信息
 
     private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
     private String univalence; //单价
+    private List<String> jointGoodsCodes;//解除对接需要
+
+    public List<String> getJointGoodsCodes() {
+        return jointGoodsCodes;
+    }
+
+    public void setJointGoodsCodes(List<String> jointGoodsCodes) {
+        this.jointGoodsCodes = jointGoodsCodes;
+    }
 
     public String getUnivalence() {
         return univalence;

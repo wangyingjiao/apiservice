@@ -256,7 +256,7 @@
 		d.id AS sortId,
 		d.name AS sortName,
 		CONCAT(c.id,'_',d.id) AS selfCode,
-		d.major_sort AS majorSort,
+		d.name AS sortName,
 		a.id AS id,
 		a.org_id AS orgId,
 		a.eshop_code ASeshopCode,
