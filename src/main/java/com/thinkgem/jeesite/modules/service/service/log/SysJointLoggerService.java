@@ -6,10 +6,7 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.Base64Encoder;
 import com.thinkgem.jeesite.common.utils.MD5Util;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
-import com.thinkgem.jeesite.modules.sys.dao.SysJointWaitDao;
 import com.thinkgem.jeesite.modules.sys.entity.SysJointLog;
-import com.thinkgem.jeesite.modules.sys.entity.SysJointWait;
 import com.thinkgem.jeesite.modules.sys.utils.OpenLogUtils;
 import com.thinkgem.jeesite.modules.sys.utils.OpenWaitUtils;
 import com.thinkgem.jeesite.open.entity.OpenSendDeleteItemRequest;
@@ -44,8 +41,6 @@ import java.util.Map;
 public class SysJointLoggerService extends CrudService<SysJointLoggerDao, SysJointLogger> {
     @Autowired
     private SysJointLoggerDao sysJointLoggerDao;
-    @Autowired
-    SysJointWaitDao sysJointWaitDao;
 
     public Page<SysJointLogger> findPage(Page<SysJointLogger> page, SysJointLogger sysJointLogger) {
         //serviceLog.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "a"));
@@ -58,7 +53,7 @@ public class SysJointLoggerService extends CrudService<SysJointLoggerDao, SysJoi
                 info.setSendFlag("no");
             }
         }
-        return page;
+        return sysJointLoggerPage;
     }
 
 

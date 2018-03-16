@@ -37,6 +37,7 @@ public class OpenLogUtils {
 		String requestContent = "";
 		String responseContent = "";
 		String responseCode = "";
+		String responseSendType="";
 		if(null!= request.getAttribute("openJson")){
 			requestContent = request.getAttribute("openJson").toString();
 		}
@@ -47,6 +48,12 @@ public class OpenLogUtils {
 			responseCode = request.getAttribute("openResponseCode").toString();
 		}
 
+		if(null!= request.getAttribute("openResponseSendType")){
+			responseSendType = request.getAttribute("openResponseSendType").toString();
+		}
+
+		log.setSendType(responseSendType);
+		log.setSource("gasq");
 		log.setIsSuccess("1".equals(responseCode) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 		log.setRequestContent(requestContent);
 		log.setResponseContent(responseContent);

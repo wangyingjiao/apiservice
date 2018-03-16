@@ -58,6 +58,7 @@ public class OpenController extends BaseController {
 			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","1");
+			request.setAttribute("openResponseSendType","");
 			return result;
 		}catch (ServiceException ex){
 			OpenFailResult result =  new OpenFailResult(ex.getMessage());
