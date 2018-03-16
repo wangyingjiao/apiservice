@@ -28,6 +28,15 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
     private SerItemCommodity serItemCommodity; //服务项目商品信息
 
     private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
+    private String univalence; //单价
+
+    public String getUnivalence() {
+        return univalence;
+    }
+
+    public void setUnivalence(String univalence) {
+        this.univalence = univalence;
+    }
 
     public String getGoodsName() {
         return goodsName;

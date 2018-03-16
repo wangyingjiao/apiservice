@@ -255,7 +255,14 @@
 		c.id AS goodsId,
 		d.id AS sortId,
 		d.name AS sortName,
-		CONCAT(c.id,'_',d.id) AS selfCode
+		CONCAT(c.id,'_',d.id) AS selfCode,
+		d.major_sort AS majorSort,
+		a.id AS id,
+		a.org_id AS orgId,
+		a.eshop_code ASeshopCode,
+		a.item_id AS itemId,
+		a.joint_goods_code AS jointGoodsCode,
+		a.joint_status AS jointStatus
 		FROM ser_item_info_goods_eshop a
 		LEFT JOIN basic_gasq_eshop e on a.eshop_code=e.code AND e.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN ser_item_info b on a.item_id=b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
@@ -286,5 +293,14 @@
 			</otherwise>
 		</choose>
 	</select>
+
+	<!--根据id 获取服务项目商品信息-->
+	<select id="getSerItemCommodity" resultType="SerItemCommodity">
+		SELECT
+		<include refid="serItemCommodityColumns"/>
+		FROM ser_item_info_goods a
+		WHERE a.id = #{id}
+	</select>
+
 
 </mapper>
