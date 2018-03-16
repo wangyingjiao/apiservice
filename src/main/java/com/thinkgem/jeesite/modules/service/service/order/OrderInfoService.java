@@ -365,7 +365,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//修改订单表中支付状态
 		//服务状态为已上门后，才可以支付
 		if (StringUtils.isBlank(serviceStatus) || !"started".equals(serviceStatus)){
-			throw new ServiceException("订单状态不是已上门");
+			throw new ServiceException("订单状态不正确，不可支付");
 		}
 		//订单状态必须为未支付
 		if (StringUtils.isBlank(payStatus) || "payed".equals(payStatus)){

@@ -588,19 +588,25 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		serItemCommodityEshop.setPage(page);
 		//将对接编码通过_截取 赋值给商品id
 		String selfCode = serItemCommodityEshop.getSelfCode();
-		String[] split = selfCode.split("_");
-		String goodsId = split[1];
-		serItemCommodityEshop.setGoodsId(goodsId);
+		if (selfCode != null) {
+			String[] split = selfCode.split("_");
+			if (split.length>1) {
+				String goodsId = split[1];
+				serItemCommodityEshop.setGoodsId(goodsId);
+			}
+		}
 		List<SerItemCommodityEshop> goodsCode = serItemCommodityDao.getGoodsList(serItemCommodityEshop);
-		for (SerItemCommodityEshop shop:goodsCode) {
-			//根据商品id获取商品
-			SerItemCommodity serItemCommodity = serItemCommodityDao.getSerItemCommodity(shop.getGoodsId());
-			//拼接 商品名称
-			shop.setNewName(shop.getItemName()+"("+serItemCommodity.getName()+")");
-			//拼接 价格/单位
-			shop.setUnivalence(serItemCommodity.getPrice()+"/"+serItemCommodity.getUnit());
-			//拼接对接编码
-			shop.setSelfCode(serItemCommodity.getSortId()+"_"+serItemCommodity.getId());
+		if (goodsCode !=null && goodsCode.size()>0) {
+			for (SerItemCommodityEshop shop : goodsCode) {
+				//根据商品id获取商品
+				SerItemCommodity serItemCommodity = serItemCommodityDao.getSerItemCommodity(shop.getGoodsId());
+				//拼接 商品名称
+				shop.setNewName(shop.getItemName() + "(" + serItemCommodity.getName() + ")");
+				//拼接 价格/单位
+				shop.setUnivalence(serItemCommodity.getPrice() + "/" + serItemCommodity.getUnit());
+				//拼接对接编码
+				shop.setSelfCode(serItemCommodity.getSortId() + "_" + serItemCommodity.getId());
+			}
 		}
 		page.setList(goodsCode);
 		return page;

@@ -20,6 +20,7 @@ public class BasicGasqEshop extends DataEntity<BasicGasqEshop> {
     private String createUserId; //创建人ID
     private String updateUserId;  //更新人ID
     private String code;          //编号
+    private String eshopCode;     //编号
     private String thirdPart;    //XMGJ 小马管家，selfService 自营服务， 空为请选择
     private String isSupportOpenPlatform;  //no' COMMENT '是否开通对接开放平台
     private String openPlatformKey;   //对接开放平台的秘钥
@@ -29,6 +30,14 @@ public class BasicGasqEshop extends DataEntity<BasicGasqEshop> {
 
     public String getName() {
         return name;
+    }
+
+    public String getEshopCode() {
+        return eshopCode;
+    }
+
+    public void setEshopCode(String eshopCode) {
+        this.eshopCode = eshopCode;
     }
 
     public void setName(String name) {

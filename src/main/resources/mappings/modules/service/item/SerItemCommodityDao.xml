@@ -241,7 +241,7 @@
 		SELECT
 		a.id,
 		a.name,
-		a.code
+		a.code AS eshopCode
 		FROM basic_gasq_eshop a
 		LEFT JOIN basic_organization_eshop b on a.code=b.eshop_code
 		WHERE b.org_id=#{orgId}
@@ -256,21 +256,18 @@
 		d.id AS sortId,
 		d.name AS sortName,
 		CONCAT(c.id,'_',d.id) AS selfCode,
-		d.name AS sortName,
 		a.id AS id,
 		a.org_id AS orgId,
 		a.eshop_code ASeshopCode,
-		a.item_id AS itemId,
 		a.joint_goods_code AS jointGoodsCode,
 		a.joint_status AS jointStatus
 		FROM ser_item_info_goods_eshop a
-		LEFT JOIN basic_gasq_eshop e on a.eshop_code=e.code AND e.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_gasq_eshop e on a.eshop_code=e.code
 		LEFT JOIN ser_item_info b on a.item_id=b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN ser_item_info_goods c on a.goods_id=c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN ser_sort_info d on c.sort_id=d.id AND d.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
-			e.code=#{},
-			AND a.del_flag = #{DEL_FLAG_NORMAL}
+			e.code=#{eshopCode}
 			<if test="majorSort != null and majorSort != ''">
 				AND d.major_sort=#{majorSort}
 			</if>
@@ -289,7 +286,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date DESC
+				ORDER BY c.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
