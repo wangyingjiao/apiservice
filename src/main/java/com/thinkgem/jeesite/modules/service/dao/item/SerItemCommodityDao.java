@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.item;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
@@ -34,4 +35,6 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     List<SerItemCommodityEshop> getEshopGoods(SerItemCommodity serItemCommodity);
 
     SerItemCommodity getGoods(SerItemCommodity serItemCommodity);
+    //根据登录用户的机构id查询出对应E店名称
+    List<BasicGasqEshop> getGoodsCode(String orgId);
 }

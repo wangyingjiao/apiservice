@@ -168,8 +168,6 @@
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-
-
 	<select id="findListByItemId" resultType="SerItemCommodity">
 		SELECT
 		<include refid="serItemGoodsColumns"/>
@@ -237,4 +235,49 @@
 			FROM ser_item_info_goods_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
 			WHERE a.goods_id = #{id}
 	</select>
+
+	<!--根据登录用户的机构id查询出对应E店名称-->
+	<select id="getGoodsCode" resultType="BasicGasqEshop">
+		SELECT
+		a.id,
+		a.name,
+		a.code
+		FROM basic_gasq_eshop a
+		LEFT JOIN basic_organization_eshop b on a.code=b.eshop_code
+		WHERE b.org_id=#{orgId}
+	</select>
+
+	<!--根据E店id 查询出对应E店下的商品信息-->
+	<select id="getGoodsCode" resultType="BasicGasqEshop">
+		SELECT
+		b.id AS itemId,
+		b.name AS itemName,
+		c.id AS goodsId,
+		d.id AS sortId,
+		d.name AS sortName,
+		CONCAT(c.id,'_',d.id)
+		c.id ||'_'|| d.id AS selfCode
+		FROM ser_item_info_goods_eshop a
+		LEFT JOIN basic_gasq_eshop e on a.eshop_code=e.code AND e.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info b on a.item_id=b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info_goods c on a.goods_id=c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN  ser_sort_info d on c.sort_id=d.id AND d.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE e.id=#{}
+		<where>
+			e.id=#{},
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%',#{name},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
 </mapper>

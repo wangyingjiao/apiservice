@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
@@ -566,4 +567,23 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 
         return sc;
     }
+
+	/**
+	 * 根据登录用户的机构id查询出对应E店名称
+	 * @param orgId
+	 * @return
+	 */
+	public List<BasicGasqEshop> getGoodsCode(String orgId) {
+		//根据机构id查询出 E店名称的集合
+		List<BasicGasqEshop> goodsCode = serItemCommodityDao.getGoodsCode(orgId);
+		return goodsCode;
+	}
+
+
+	public List<BasicGasqEshop> getGoodsList(String orgId) {
+		//根据机构id查询出 E店名称的集合
+		List<BasicGasqEshop> goodsCode = serItemCommodityDao.getGoodsCode(orgId);
+		return goodsCode;
+	}
+
 }

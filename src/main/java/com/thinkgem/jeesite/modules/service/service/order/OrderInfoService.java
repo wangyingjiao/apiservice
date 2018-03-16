@@ -207,33 +207,41 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		customerInfo.setCustomerRemarkPic(ll);
 		orderInfo.setCustomerInfo(customerInfo);
-		//业务人员信息
-		BusinessInfo bus=new BusinessInfo();
-		bus.setBusinessName(orderInfo.getBusinessName());
-		bus.setBusinessPhone(orderInfo.getBusinessPhone());
-		bus.setBusinessRemark(orderInfo.getBusinessRemark());
-		List<String> bp=new ArrayList<String>();
-		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
-		if(StringUtils.isNotBlank(businessRemarkPic)){
-			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
-			orderInfo.setBusinessRemarkPics(pictureDetails);
-			if (pictureDetails.size()>0){
-				for (String pic:pictureDetails){
-					String url=ossHost+pic;
-					bp.add(url);
-				}
+		String orderSource = orderInfo.getOrderSource();
+		if (StringUtils.isNotBlank(orderSource)) {
+			if (orderSource.equals("own")) {
+				orderInfo.setOrderSourceName("本机构");
+			} else if (orderSource.equals("gasq")) {
+				orderInfo.setOrderSourceName("国安社区");
 			}
 		}
-		bus.setBusinessRemarkPic(bp);
-		orderInfo.setBusinessInfo(bus);
-
-		//门店信息
-		ShopInfo shop=new ShopInfo();
-		shop.setId(orderInfo.getStationId());
-		shop.setShopName(orderInfo.getShopName());
-		shop.setShopPhone(orderInfo.getShopPhone());
-		shop.setShopAddress(orderInfo.getShopAddr());
-		shop.setShopRemark(orderInfo.getShopRemark());
+		//业务人员信息 订单来源是国安社区的展示
+		if ("gasq".equals(orderSource)) {
+			BusinessInfo bus = new BusinessInfo();
+			bus.setBusinessName(orderInfo.getBusinessName());
+			bus.setBusinessPhone(orderInfo.getBusinessPhone());
+			bus.setBusinessRemark(orderInfo.getBusinessRemark());
+			List<String> bp = new ArrayList<String>();
+			String businessRemarkPic = orderInfo.getBusinessRemarkPic();
+			if (StringUtils.isNotBlank(businessRemarkPic)) {
+				List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic, ArrayList.class);
+				orderInfo.setBusinessRemarkPics(pictureDetails);
+				if (pictureDetails.size() > 0) {
+					for (String pic : pictureDetails) {
+						String url = ossHost + pic;
+						bp.add(url);
+					}
+				}
+			}
+			bus.setBusinessRemarkPic(bp);
+			orderInfo.setBusinessInfo(bus);
+		//门店信息 订单来源是国安社区的展示
+			ShopInfo shop = new ShopInfo();
+			shop.setId(orderInfo.getStationId());
+			shop.setShopName(orderInfo.getShopName());
+			shop.setShopPhone(orderInfo.getShopPhone());
+			shop.setShopAddress(orderInfo.getShopAddr());
+			shop.setShopRemark(orderInfo.getShopRemark());
 		/*
 		门店备注图片暂时不展示
 		List<String> ls=new ArrayList<String>();
@@ -249,14 +257,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderInfo.setShopRemarkPics(pictureDetails);
 		}
 		shop.setShopRemarkPic(ls);*/
-		orderInfo.setShopInfo(shop);
-		String orderSource = orderInfo.getOrderSource();
-		if (StringUtils.isNotBlank(orderSource)) {
-			if (orderSource.equals("own")) {
-				orderInfo.setOrderSourceName("本机构");
-			} else if (orderSource.equals("gasq")) {
-				orderInfo.setOrderSourceName("国安社区");
-			}
+			orderInfo.setShopInfo(shop);
 		}
 		String serviceStatus = orderInfo.getServiceStatus();
 		if (StringUtils.isNotBlank(serviceStatus)) {

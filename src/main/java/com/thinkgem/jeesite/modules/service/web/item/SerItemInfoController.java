@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
@@ -515,4 +516,29 @@ public class SerItemInfoController extends BaseController {
         return new FailResult("该商品没有相关数据");
     }
 
+    /**
+     *根据登录用户的机构id查询出对应E店名称
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("获取E店名称")
+    @RequiresPermissions("project_view")
+    public Result getGoodsCode() {
+        User user = UserUtils.getUser();
+        String orgId = user.getOrganization().getId();
+        List<BasicGasqEshop> basicGasqEshop = serItemInfoService.getGoodsCode(orgId);
+        return new SuccResult(basicGasqEshop);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("获取E店名称")
+    @RequiresPermissions("project_view")
+    public Result getGoodsList() {
+        User user = UserUtils.getUser();
+        String orgId = user.getOrganization().getId();
+        List<BasicGasqEshop> basicGasqEshop = serItemInfoService.getGoodsList(orgId);
+        return new SuccResult(basicGasqEshop);
+    }
 }
