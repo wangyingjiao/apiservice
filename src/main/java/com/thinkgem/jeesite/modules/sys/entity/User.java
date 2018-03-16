@@ -65,6 +65,14 @@ public class User extends DataEntity<User> {
     private String oldLoginIp;    // 上次登陆IP
     private Date oldLoginDate;    // 上次登陆日期
 
+    public String updateOwnFlag;//是否编辑自己
+    public String getUpdateOwnFlag() {
+        return updateOwnFlag;
+    }
+    public void setUpdateOwnFlag(String updateOwnFlag) {
+        this.updateOwnFlag = updateOwnFlag;
+    }
+
     private Role role;    // 根据角色查询用户条件
 
     private List<Role> roleList = Lists.newArrayList(); // 拥有角色列表

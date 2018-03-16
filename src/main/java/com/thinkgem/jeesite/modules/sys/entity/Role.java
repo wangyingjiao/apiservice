@@ -49,6 +49,14 @@ public class Role<T> extends DataEntity<Role> {
 	
 	private User user;		// 根据用户ID查询角色列表
 
+	public String updateOwnFlag;//是否编辑自己
+	public String getUpdateOwnFlag() {
+		return updateOwnFlag;
+	}
+	public void setUpdateOwnFlag(String updateOwnFlag) {
+		this.updateOwnFlag = updateOwnFlag;
+	}
+
 //	private List<User> userList = Lists.newArrayList(); // 拥有用户列表
 	private List<Menu> menuList = Lists.newArrayList(); // 拥有菜单列表
 	private List<BasicOrganization> officeList = Lists.newArrayList(); // 按明细设置数据范围

@@ -51,6 +51,21 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 		this.eshopCode = eshopCode;
 	}
 
+	public String updateOwnFlag;//是否编辑自己
+	public String getUpdateOwnFlag() {
+		return updateOwnFlag;
+	}
+	public void setUpdateOwnFlag(String updateOwnFlag) {
+		this.updateOwnFlag = updateOwnFlag;
+	}
+	public String allPlatformFlag;//是否全平台
+	public String getAllPlatformFlag() {
+		return allPlatformFlag;
+	}
+	public void setAllPlatformFlag(String allPlatformFlag) {
+		this.allPlatformFlag = allPlatformFlag;
+	}
+
 	/*private String jointEshopCode;//对接方E店CODE
 	public String getJointEshopCode() {
 		return jointEshopCode;

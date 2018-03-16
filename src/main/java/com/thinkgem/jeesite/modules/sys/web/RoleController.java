@@ -611,6 +611,12 @@ public class RoleController extends BaseController {
 		 */
 
 		if (role != null) {
+			if(id.equals(user.getRole().getId())){
+				role.setUpdateOwnFlag("yes");
+			}else{
+				role.setUpdateOwnFlag("no");
+			}
+
 			return new SuccResult(role);
 		}
 		return new FailResult("岗位信息未找到");

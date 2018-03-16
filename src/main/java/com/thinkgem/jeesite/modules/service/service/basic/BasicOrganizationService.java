@@ -179,6 +179,17 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		List<BasicOrganizationEshop> boeList = basicOrganizationDao.findListByOrgId(basicOrganizationRe);
 		basicOrganizationRe.setBasicOrganizationEshops(boeList);
 
+		String ownOrgId = UserUtils.getUser().getOrganization().getId();
+		if(basicOrganization.getId().equals(ownOrgId)){
+			basicOrganizationRe.setUpdateOwnFlag("yes");
+		}else{
+			basicOrganizationRe.setUpdateOwnFlag("no");
+		}
+		if("0".equals(ownOrgId)){
+			basicOrganizationRe.setAllPlatformFlag("yes");
+		}else{
+			basicOrganizationRe.setAllPlatformFlag("no");
+		}
 		return basicOrganizationRe;
 	}
 

@@ -530,6 +530,17 @@ public class SystemService extends BaseService implements InitializingBean {
 	        return roleDao.getRoleUnion(id,type);
 	    }
 
+    public User getUserFormData(User user) {
+        User userRe = userDao.get(user);
+        userRe.setRoleList(roleDao.findList(new Role(userRe)));
+        if(user.getId().equals(UserUtils.getUser().getId())){
+            userRe.setUpdateOwnFlag("yes");
+        }else{
+            userRe.setUpdateOwnFlag("no");
+        }
+       return userRe;
+    }
+
 //	public Page<Role> findRolePage(Page){
 //
 //	}

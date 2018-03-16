@@ -460,4 +460,13 @@ public class UserController extends BaseController {
         UserUtils.getUser(user.getId());
         return new SuccResult(user);
     }
+
+    @ResponseBody
+    @RequestMapping(value = "formData", method = {RequestMethod.POST})
+    @ApiOperation(value = "用户详情")
+    public Result formData(@RequestBody User user) {
+        User userRe = systemService.getUserFormData(user);
+        return new SuccResult<>(userRe);
+    }
+
 }
