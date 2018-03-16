@@ -10,6 +10,8 @@
 		a.request_content AS requestContent,
 		a.response_content AS responseContent,
 		a.create_date AS createDate,
+		a.source AS source,
+		a.send_type AS sendType,
 		a.is_success AS isSuccess
 		FROM
 		sys_joint_log a

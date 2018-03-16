@@ -10,6 +10,9 @@ public class SysJointLogger extends DataEntity<SysJointLogger>{
 	private String requestContent;
 	private String responseContent;
 	private String isSuccess; 	// 请求结果  yes:成功  no:失败
+	private String source;
+	private String sendType;
+	private String sendFlag;
 
 	public static final String IS_SUCCESS_YES = "yes";
 	public static final String IS_SUCCESS_NO = "no";
@@ -51,9 +54,28 @@ public class SysJointLogger extends DataEntity<SysJointLogger>{
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
-	
-	
-	
 
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getSendType() {
+		return sendType;
+	}
+
+	public void setSendType(String sendType) {
+		this.sendType = sendType;
+	}
+
+	public String getSendFlag() {
+		return sendFlag;
+	}
+
+	public void setSendFlag(String sendFlag) {
+		this.sendFlag = sendFlag;
+	}
 }

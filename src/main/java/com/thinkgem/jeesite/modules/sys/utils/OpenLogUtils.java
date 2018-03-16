@@ -56,9 +56,13 @@ public class OpenLogUtils {
 
 
 	public static void saveSendLog(SysJointLog log){
-
 		// 异步保存日志
 		new SaveLogThread(log, null, null).start();
+	}
+
+	public static void updateSendLog(SysJointLog log) {
+		// 异步保存日志
+		new UpdateLogThread(log, null, null).start();
 	}
 
 	/**
@@ -79,15 +83,29 @@ public class OpenLogUtils {
 		
 		@Override
 		public void run() {
-			// 如果有异常，设置异常信息
-			//log.setException(Exceptions.getStackTraceAsString(ex));
-			/*// 如果无异常日志，则不保存信息
-			if ( StringUtils.isBlank(log.getException())){
-				return;
-			}*/
 			// 保存日志信息
 			log.preInsert();
 			sysJointLogDao.insert(log);
+		}
+	}
+
+
+	public static class UpdateLogThread extends Thread{
+		private SysJointLog log;
+		private Object handler;
+		private Exception ex;
+		public UpdateLogThread(SysJointLog log, Object handler, Exception ex){
+			super(UpdateLogThread.class.getSimpleName());
+			this.log = log;
+			this.handler = handler;
+			this.ex = ex;
+		}
+
+		@Override
+		public void run() {
+			// 保存日志信息
+			log.preInsert();
+			sysJointLogDao.update(log);
 		}
 	}
 

@@ -7,6 +7,8 @@
 		INSERT INTO sys_joint_log(
 			id, 
 			url,
+			send_type,
+			source,
 			request_content,
 			response_content,
 			is_success,
@@ -14,6 +16,8 @@
 		) VALUES (
 			#{id}, 
 			#{url},
+			#{sendType},
+			#{source},
 			#{requestContent},
 			#{responseContent},
 			#{isSuccess},
