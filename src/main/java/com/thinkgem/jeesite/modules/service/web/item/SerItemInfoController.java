@@ -517,13 +517,13 @@ public class SerItemInfoController extends BaseController {
     }
 
     /**
+     * 下拉列表
      *根据登录用户的机构id查询出对应E店名称
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "getGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取E店名称")
-    @RequiresPermissions("project_view")
     public Result getGoodsCode() {
         User user = UserUtils.getUser();
         String orgId = user.getOrganization().getId();
@@ -531,14 +531,18 @@ public class SerItemInfoController extends BaseController {
         return new SuccResult(basicGasqEshop);
     }
 
+    /**
+     * 根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息
+     * @param serItemCommodity
+     * @return
+     */
     @ResponseBody
-    @RequestMapping(value = "getGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
-    @ApiOperation("获取E店名称")
+    @RequestMapping(value = "getGoodsList", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("根据E店id获取商品信息")
     @RequiresPermissions("project_view")
-    public Result getGoodsList() {
-        User user = UserUtils.getUser();
-        String orgId = user.getOrganization().getId();
-        List<BasicGasqEshop> basicGasqEshop = serItemInfoService.getGoodsList(orgId);
-        return new SuccResult(basicGasqEshop);
+    public Result getGoodsList(@RequestBody(required = false) SerItemCommodityEshop serItemCommodity, HttpServletRequest request, HttpServletResponse response) {
+        Page<SerItemCommodityEshop> page = new Page<>(request, response);
+        Page<SerItemCommodityEshop> goodsList = serItemInfoService.getGoodsList(page, serItemCommodity);
+        return new SuccResult(goodsList);
     }
 }

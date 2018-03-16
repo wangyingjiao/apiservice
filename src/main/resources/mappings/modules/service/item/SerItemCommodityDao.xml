@@ -236,7 +236,7 @@
 			WHERE a.goods_id = #{id}
 	</select>
 
-	<!--根据登录用户的机构id查询出对应E店名称-->
+	<!--下拉列表 根据登录用户的机构id查询出对应E店名称-->
 	<select id="getGoodsCode" resultType="BasicGasqEshop">
 		SELECT
 		a.id,
@@ -247,27 +247,34 @@
 		WHERE b.org_id=#{orgId}
 	</select>
 
-	<!--根据E店id 查询出对应E店下的商品信息-->
-	<select id="getGoodsCode" resultType="BasicGasqEshop">
+	<!--根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息-->
+	<select id="getGoodsList" resultType="SerItemCommodityEshop">
 		SELECT
 		b.id AS itemId,
 		b.name AS itemName,
 		c.id AS goodsId,
 		d.id AS sortId,
 		d.name AS sortName,
-		CONCAT(c.id,'_',d.id)
-		c.id ||'_'|| d.id AS selfCode
+		CONCAT(c.id,'_',d.id) AS selfCode
 		FROM ser_item_info_goods_eshop a
 		LEFT JOIN basic_gasq_eshop e on a.eshop_code=e.code AND e.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN ser_item_info b on a.item_id=b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN ser_item_info_goods c on a.goods_id=c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN  ser_sort_info d on c.sort_id=d.id AND d.del_flag = #{DEL_FLAG_NORMAL}
-		WHERE e.id=#{}
+		LEFT JOIN ser_sort_info d on c.sort_id=d.id AND d.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
-			e.id=#{},
+			e.code=#{},
 			AND a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE concat('%',#{name},'%')
+			<if test="majorSort != null and majorSort != ''">
+				AND d.major_sort=#{majorSort}
+			</if>
+			<if test="sortId != null and sortId != ''">
+				AND d.id=#{sortId}
+			</if>
+			<if test="goodsName != null and goodsName != ''">
+				AND c.name LIKE concat('%',#{goodsName},'%')
+			</if>
+			<if test="goodsId != null and goodsId != ''">
+				AND c.id=#{goodsId}
 			</if>
 		</where>
 		<choose>

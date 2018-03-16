@@ -35,6 +35,9 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     List<SerItemCommodityEshop> getEshopGoods(SerItemCommodity serItemCommodity);
 
     SerItemCommodity getGoods(SerItemCommodity serItemCommodity);
-    //根据登录用户的机构id查询出对应E店名称
+    //下拉列表 根据登录用户的机构id查询出对应E店名称
     List<BasicGasqEshop> getGoodsCode(String orgId);
+
+    //根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息
+    List<SerItemCommodityEshop> getGoodsList(SerItemCommodityEshop serItemCommodityEshop);
 }

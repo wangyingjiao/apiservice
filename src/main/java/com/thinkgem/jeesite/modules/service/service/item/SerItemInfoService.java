@@ -568,22 +568,30 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
         return sc;
     }
 
-	/**
-	 * 根据登录用户的机构id查询出对应E店名称
-	 * @param orgId
-	 * @return
-	 */
+	 //下拉列表 根据登录用户的机构id查询出对应E店名称
 	public List<BasicGasqEshop> getGoodsCode(String orgId) {
 		//根据机构id查询出 E店名称的集合
 		List<BasicGasqEshop> goodsCode = serItemCommodityDao.getGoodsCode(orgId);
 		return goodsCode;
 	}
 
-
-	public List<BasicGasqEshop> getGoodsList(String orgId) {
+	//根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息
+	public Page<SerItemCommodityEshop> getGoodsList(Page<SerItemCommodityEshop> page,SerItemCommodityEshop serItemCommodityEshop) {
 		//根据机构id查询出 E店名称的集合
-		List<BasicGasqEshop> goodsCode = serItemCommodityDao.getGoodsCode(orgId);
-		return goodsCode;
+		serItemCommodityEshop.setPage(page);
+		//将对接编码通过_截取 赋值给商品id
+		String selfCode = serItemCommodityEshop.getSelfCode();
+		String[] split = selfCode.split("_");
+		String goodsId = split[1];
+		serItemCommodityEshop.setGoodsId(goodsId);
+		List<SerItemCommodityEshop> goodsCode = serItemCommodityDao.getGoodsList(serItemCommodityEshop);
+		//根据商品id获取商品
+
+		//拼接 商品名称
+
+
+		page.setList(goodsCode);
+		return page;
 	}
 
 }
