@@ -35,9 +35,18 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private String sortName;//分类名
 	private String itemName; //项目名
 	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
+	private String eshopCode;
 
 	private List<SerItemCommodityEshop> commodityEshops;
 	private String jointCode;
+
+	public String getEshopCode() {
+		return eshopCode;
+	}
+
+	public void setEshopCode(String eshopCode) {
+		this.eshopCode = eshopCode;
+	}
 
 	public String getJointCode() {
 		return jointCode;

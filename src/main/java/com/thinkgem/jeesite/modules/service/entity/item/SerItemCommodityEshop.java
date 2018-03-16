@@ -21,10 +21,29 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
     private String selfCode;  //对接编码
     private String eshopName;  //E店名称
     private String itemName;    //服务项目名称
-    private String name;        //拼接后的商品名称
+    private String newName;        //拼接后的商品名称
+    private String goodsName;
     private String sortId;    //所属服务分类id
     private String sortName;    //所属服务分类名称
     private SerItemCommodity serItemCommodity; //服务项目商品信息
+
+    private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public String getMajorSort() {
+        return majorSort;
+    }
+
+    public void setMajorSort(String majorSort) {
+        this.majorSort = majorSort;
+    }
 
     public String getSelfCode() {
         return selfCode;
@@ -42,12 +61,12 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
         this.itemName = itemName;
     }
 
-    public String getName() {
-        return name;
+    public String getNewName() {
+        return newName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNewName(String newName) {
+        this.newName = newName;
     }
 
     public String getSortId() {
