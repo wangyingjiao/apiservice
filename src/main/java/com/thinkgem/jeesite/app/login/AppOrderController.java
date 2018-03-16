@@ -151,12 +151,13 @@ public class AppOrderController extends BaseController {
 						orderInfo.setOrderRemarkPics(strings);
 					}
 					sendOrder.setOrderRemarkPics(orderInfo.getOrderRemarkPics());
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					OpenSendUtil.openSendSaveOrder(sendOrder);
+					/*OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						return new AppFailResult(-1, null, "对接失败N");
 					} else if (sendResponse.getCode() != 0) {
 						return new AppFailResult(-1, null, sendResponse.getMessage());
-					}
+					}*/
 					// }
 				}
 				return new AppSuccResult(0,null,"添加备注成功");
@@ -272,12 +273,13 @@ public class AppOrderController extends BaseController {
 					//sendOrder.setId(orderInfo.getId());
 					List<OrderDispatch> orderDispatchList = orderInfoService.getOrderDispatchList(info);
 					sendOrder.setTechList(orderDispatchList);
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					OpenSendUtil.openSendSaveOrder(sendOrder);
+					/*OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						return new AppFailResult(-1, null, "对接失败N");
 					} else if (sendResponse.getCode() != 0) {
 						return new AppFailResult(-1, null, sendResponse.getMessage());
-					}
+					}*/
 					// }
 				}
 				return new AppSuccResult(0,null,"改派成功");

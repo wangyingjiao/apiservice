@@ -16,8 +16,14 @@ public class SysJointWait extends DataEntity<SysJointWait> {
 	private static final long serialVersionUID = 1L;
 
 	private String url; 	// 请求URL
-	private String sendType;
+	private String sendType; //对接类型 "save_order": "更新订单信息","del_goods": "删除商品","save_goods": "保存商品",org_del_goods:机构删除E店关联商品
 	private String requestContent; 		// 请求内容
+	private String orderNumber;  // 对接ID
+	private String eshopCode;
+	private String jointGoodsCodes;
+
+	private String many;  //是否多次请求
+	private int num;  //请求次数
 
 	public SysJointWait(){
 		super();
@@ -45,5 +51,45 @@ public class SysJointWait extends DataEntity<SysJointWait> {
 
 	public void setRequestContent(String requestContent) {
 		this.requestContent = requestContent;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
+	public String getMany() {
+		return many;
+	}
+
+	public void setMany(String many) {
+		this.many = many;
+	}
+
+	public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
+	}
+
+	public String getEshopCode() {
+		return eshopCode;
+	}
+
+	public void setEshopCode(String eshopCode) {
+		this.eshopCode = eshopCode;
+	}
+
+	public String getJointGoodsCodes() {
+		return jointGoodsCodes;
+	}
+
+	public void setJointGoodsCodes(String jointGoodsCodes) {
+		this.jointGoodsCodes = jointGoodsCodes;
 	}
 }

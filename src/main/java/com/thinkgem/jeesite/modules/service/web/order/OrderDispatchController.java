@@ -116,9 +116,7 @@ public class OrderDispatchController extends BaseController {
 
 			try {
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
-				if(StringUtils.isNotEmpty(map.get("jointGoodsCodes").toString()) &&
-						StringUtils.isNotEmpty(map.get("jointEshopCode").toString()) &&
-						!"own".equals(map.get("orderSource").toString())){
+				if(!"own".equals(map.get("orderSource").toString())){
 					OrderInfo sendOrder = new OrderInfo();
 
 					String orderSn = orderInfoService.getOrderSnById(map.get("orderId").toString());
@@ -126,12 +124,13 @@ public class OrderDispatchController extends BaseController {
 
 					//sendOrder.setId(map.get("orderId").toString());//订单ID
 					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
-					OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
+					OpenSendUtil.openSendSaveOrder(sendOrder);
+					/*OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						logger.error("技师改派保存-对接失败-返回值为空");
 					} else if (sendResponse.getCode() != 0) {
 						logger.error("技师改派保存-对接失败-"+sendResponse.getMessage());
-					}
+					}*/
 				}
 			}catch (Exception e){
 				logger.error("技师改派保存-对接失败-系统异常");
