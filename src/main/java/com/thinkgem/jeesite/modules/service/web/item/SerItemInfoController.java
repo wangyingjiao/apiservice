@@ -560,4 +560,25 @@ public class SerItemInfoController extends BaseController {
         OpenSendUtil.openSendDeleteItem(jointGoodsCodes,serItemCommodity.getEshopCode());
         return new SuccResult("解除成功，请耐心等待交互结果");
     }
+
+
+    //=========HMJ
+    @ResponseBody
+    //@RequiresPermissions("skill_view")
+    @RequestMapping(value = "getNotJonitGoods", method = { RequestMethod.POST, RequestMethod.GET })
+    @ApiOperation("获取未对接商品列表")
+    public Result getNotJonitGoods(@RequestBody(required = false) SerItemCommodity serItemCommodity, HttpServletRequest request, HttpServletResponse response) {
+        if (serItemCommodity == null) {
+            serItemCommodity = new SerItemCommodity();
+        }
+        Page<SerItemCommodity> serItemCommodityPage = new Page<>(request, response);
+        Page<SerItemCommodity> page = serItemCommodityService.findCommodityPage(serItemCommodityPage, serItemCommodity);
+        String eshopStatus = serItemCommodityService.getEshop(serItemCommodity);
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("page",page);
+        map.put("eshopStatus",eshopStatus);
+        return new SuccResult(map);
+    }
+
+
 }

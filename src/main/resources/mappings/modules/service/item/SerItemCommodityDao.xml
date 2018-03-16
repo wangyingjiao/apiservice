@@ -294,6 +294,36 @@
 		</choose>
 	</select>
 
+	<select id="findCommodityList" resultType="SerItemCommodity">
+		SELECT
+			i.name AS itemName,
+			g.id,
+			g.name,
+            s.id AS sortId,
+			s.name AS sortName,
+			s.major_sort AS majorSort,
+			g.price,
+			g.unit
+			FROM ser_item_info i RIGHT JOIN ser_item_info_goods g ON i.id = g.item_id AND i.del_flag = #{DEL_FLAG_NORMAL}
+			LEFT JOIN ser_sort_info s ON g.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
+			WHERE g.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="majorSort != null and majorSort != ''">
+                AND s.major_sort = #{majorSort}
+                AND s.majorSort LIKE concat('%',#{name},'%')
+            </if>
+            <if test="sortId != null and sortId != ''">
+                AND s.id = #{sortId}
+            </if>
+            <if test="name != null and name != ''">
+                AND g.name LIKE concat('%',#{name},'%')
+            </if>
+			AND g.id NOT  IN (SELECT goods_id FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode})
+			ORDER BY g.create_date DESC
+	</select>
+
+	<select id="getEshop" resultType="int">
+		SELECT COUNT(1) FROM basic_gasq_eshop WHERE code = #{eshopCode} AND status = 0 AND third_part = 'selfService'
+	</select>
 	<!--根据id 获取服务项目商品信息-->
 	<select id="getSerItemCommodity" resultType="SerItemCommodity">
 		SELECT

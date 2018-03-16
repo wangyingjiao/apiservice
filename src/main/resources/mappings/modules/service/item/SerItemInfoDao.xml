@@ -327,4 +327,8 @@
 		WHERE
 		a.id = #{id}
 	</select>
+
+	<select id="getEshopGoods" resultType="SerItemCommodityEshop">
+		SELECT eshop_code FROM ser_item_info_goods_eshop WHERE goods_id = #{id}
+	</select>
 </mapper>

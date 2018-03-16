@@ -74,6 +74,10 @@ public class AppVersionController extends BaseController {
                 return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
             }
         }*/
+        AppVersion newest = appVersionService.getNewest();
+        if (appVersion.getBuild().compareTo(newest.getBuild()) != 1){
+            return new FailResult("build号不得小于等于当前版本");
+        }
         appVersion.setCreateBy(UserUtils.getUser());
         appVersion.setCreateDate(new Date());
         appVersionService.save(appVersion);

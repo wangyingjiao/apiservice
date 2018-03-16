@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -101,35 +102,41 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			if (commoditys != null) {
                 // 批量插入商品信息
                 for (SerItemCommodity commodity : commoditys) {
-                    commodity.setItemId(serItemInfo.getId());
-                    commodity.setSortId(serItemInfo.getSortId());
-                    commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
-                    commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
-                    commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
-                    serItemCommodityService.save(commodity);
+					commodity.setItemId(serItemInfo.getId());
+					commodity.setSortId(serItemInfo.getSortId());
+					commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
+					commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
+					commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
+					serItemCommodityService.save(commodity);
 
-                    // 对接商品信息
-                    /*SerItemCommodity sendGoods = new SerItemCommodity();
+					List<SerItemCommodityEshop> siceList = serItemInfoDao.getEshopGoods(commodity);
+
+					if (siceList.size() > 0) {
+
+						// 对接商品信息
+                    SerItemCommodity sendGoods = new SerItemCommodity();
                     sendGoods.setName(commodity.getName());// 商品名称格式：项目名称（商品名）
                     sendGoods.setPrice(commodity.getPrice());// 商品价格
                     sendGoods.setUnit(commodity.getUnit());// 商品单位格式：次/个/间
-                    sendGoods.setJointGoodsCode("");
-                    if (StringUtils.isNotBlank(commodity.getId())) {
+                    //sendGoods.setJointGoodsCode("");
+                    /*if (StringUtils.isNotBlank(commodity.getId())) {
                         SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
                         if (commodityForJoin != null && StringUtils.isNotEmpty(commodityForJoin.getJointGoodsCode())) {
                             sendGoods.setJointGoodsCode(commodityForJoin.getJointGoodsCode());
                         }
-                    }
+                    }*/
                     sendGoods.setSelfCode(
                             serItemInfo.getSortId() + Global.getConfig("openSendPath_goods_split") + commodity.getId()); // 自营平台商品code
                                                                                                                             // ID
                     sendGoods.setMinPurchase(commodity.getMinPurchase());// 最小购买数量，起购数量
-                    sendGoodsList.add(sendGoods);*/
+					sendGoods.setCommodityEshops(siceList);
+                    sendGoodsList.add(sendGoods);
 
-                }
+					}
+				}
             }
 
-		/*serItemInfo = dao.get(serItemInfo);
+		serItemInfo = dao.get(serItemInfo);
 		String pictureDetail = serItemInfo.getPictureDetail();
 		if (null != pictureDetail) {
 			List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail, ArrayList.class);
@@ -150,14 +157,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		sendItem.setCusTags(serItemInfo.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
 		// sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
 		sendItem.setCommoditys(sendGoodsList);
-
-		String jointEshopCode = "";
+		OpenSendUtil.openSendSaveItemList(sendItem);
+		/*String jointEshopCode = "";
 		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
 		if (organization != null) {
 			jointEshopCode = organization.getJointEshopCode();
-		}
+		}*/
 
-		HashMap<String, Object> map = new HashMap<>();
+		/*HashMap<String, Object> map = new HashMap<>();
 		map.put("info", sendItem);
 		map.put("jointEshopCode", jointEshopCode);
 		map.put("item", serItemInfo);

@@ -47,4 +47,24 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	public void delete(SerItemCommodity serItemCommodity) {
 		super.delete(serItemCommodity);
 	}
+
+	public Page<SerItemCommodity> findCommodityPage(Page<SerItemCommodity> serItemCommodityPage, SerItemCommodity serItemCommodity) {
+		serItemCommodity.setPage(serItemCommodityPage);
+		List<SerItemCommodity> list = serItemCommodityDao.findCommodityList(serItemCommodity);
+		for (SerItemCommodity sic : list){
+		    sic.setItemGoodName(sic.getItemName()+"("+sic.getName()+")");
+		    sic.setPriceUnit(sic.getPrice()+"元/"+sic.getUnit());
+        }
+		serItemCommodityPage.setList(list);
+		return serItemCommodityPage;
+	}
+
+	public String getEshop(SerItemCommodity serItemCommodity) {
+		int i = serItemCommodityDao.getEshop(serItemCommodity);
+		if (i>0){
+			return "yes";
+		}else {
+			return "no";
+		}
+	}
 }
