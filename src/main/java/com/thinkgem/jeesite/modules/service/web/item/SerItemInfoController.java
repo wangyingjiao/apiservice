@@ -573,7 +573,7 @@ public class SerItemInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "deleteGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("解除对接")
-    @RequiresPermissions("project_view")
+    @RequiresPermissions("project_remove")
     public Result deleteGoodsCode(@RequestBody(required = false) SerItemCommodityEshop serItemCommodity) {
         List<String> jointGoodsCodes = serItemCommodity.getJointGoodsCodes();
         OpenSendUtil.openSendDeleteItem(jointGoodsCodes,serItemCommodity.getEshopCode());

@@ -588,7 +588,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		serItemCommodityEshop.setPage(page);
 		//将对接编码通过_截取 赋值给商品id
 		String selfCode = serItemCommodityEshop.getSelfCode();
-		if (selfCode != null) {
+		if (StringUtils.isNotBlank(selfCode)) {
 			String[] split = selfCode.split("_");
 			if (split.length>1) {
 				String goodsId = split[1];
