@@ -5,8 +5,11 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.AppSuccResult;
 import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.utils.*;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
+import com.thinkgem.jeesite.modules.service.service.appVersion.AppVersionService;
+import com.thinkgem.jeesite.modules.service.web.appVersion.AppVersionController;
 import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +39,9 @@ public class AppAop {
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private AppVersionService appVersionService;
+
     @Pointcut("execution(* com.thinkgem.jeesite.app.login..*.*(..))")
     public void point() {
     }
@@ -52,6 +58,9 @@ public class AppAop {
         //取build号比较redis中的build 一致就不管 不一致是否强更
         String header = request.getHeader("appBuild");
         AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
+        if (appVersion == null) {
+            appVersion = appVersionService.getNewest();
+        }
         if (appVersion !=null && !header.equals(appVersion.getBuild().toString())){
             String forcedUpdate = appVersion.getForcedUpdate();
             if ("yes".equals(forcedUpdate)){
