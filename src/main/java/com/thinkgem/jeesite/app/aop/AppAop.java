@@ -52,8 +52,7 @@ public class AppAop {
         //取build号比较redis中的build 一致就不管 不一致是否强更
         String header = request.getHeader("appBuild");
         AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
-        String build = appVersion.getBuild().toString();
-        if (!header.equals(build)){
+        if (appVersion !=null && !header.equals(appVersion.getBuild().toString())){
             String forcedUpdate = appVersion.getForcedUpdate();
             if ("yes".equals(forcedUpdate)){
                 return new AppSuccResult(300,appVersion,"版本更新");

@@ -1887,7 +1887,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 				//订单来源为本机构的 完成服务后，同时将订单的状态改为已成功
 				if ("own".equals(info.getOrderSource())){
-					info.setOrderStatus("finish");
+					info.setOrderStatus("success");
 				}
 				Date finishTime = info.getFinishTime();
 				Date date=new Date();
