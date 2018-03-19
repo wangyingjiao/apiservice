@@ -384,7 +384,7 @@ origin_price,
 	<!--app订单支付 修改支付状态-->
 	<update id="appUpdatePay">
 		UPDATE order_info SET
-		pay_status = #{payStatus}
+		pay_status = #{payStatus},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}

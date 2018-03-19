@@ -9,6 +9,8 @@ import java.util.List;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
@@ -582,6 +584,31 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		return goodsCode;
 	}
 
+	//据id 获取服务项目商品信息
+	public List<String> getGoodEshop(List<String> goodIds) {
+		List<String> list=new ArrayList<String>();
+		if (goodIds != null && goodIds.size()>0) {
+			for (String s : goodIds) {
+				SerItemCommodityEshop serItemCommodityEshop =new SerItemCommodityEshop();
+				serItemCommodityEshop.setId(s);
+				//去数据库中查询对应的SerItemCommodityEshop表
+				SerItemCommodityEshop goodEshop = serItemCommodityDao.getGoodEshop(serItemCommodityEshop);
+				//如果jointGoodsCode为空 将状态改为no
+				if (goodEshop!=null) {
+					if (StringUtils.isBlank(goodEshop.getJointGoodsCode())) {
+						goodEshop.setEnabledSatus("no");
+						goodEshop.preUpdate();
+						serItemCommodityDao.updateEshop(goodEshop);
+					} else {
+						list.add(s);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+
 	//根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息
 	public Page<SerItemCommodityEshop> getGoodsList(Page<SerItemCommodityEshop> page,SerItemCommodityEshop serItemCommodityEshop) {
 		//根据机构id查询出 E店名称的集合
@@ -600,12 +627,15 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			for (SerItemCommodityEshop shop : goodsCode) {
 				//根据商品id获取商品
 				SerItemCommodity serItemCommodity = serItemCommodityDao.getSerItemCommodity(shop.getGoodsId());
-				//拼接 商品名称
-				shop.setNewName(shop.getItemName() + "(" + serItemCommodity.getName() + ")");
-				//拼接 价格/单位
-				shop.setUnivalence(serItemCommodity.getPrice() + "/" + serItemCommodity.getUnit());
-				//拼接对接编码
-				shop.setSelfCode(serItemCommodity.getSortId() + "_" + serItemCommodity.getId());
+				if (serItemCommodity == null) {
+					throw  new ServiceException("错误，没有商品");
+				}
+                //拼接 商品名称
+                shop.setNewName(shop.getItemName() + "(" + serItemCommodity.getName() + ")");
+                //拼接 价格/单位
+                shop.setUnivalence(serItemCommodity.getPrice() + "/" + serItemCommodity.getUnit());
+                //拼接对接编码
+                shop.setSelfCode(serItemCommodity.getSortId() + "_" + serItemCommodity.getId());
 			}
 		}
 		page.setList(goodsCode);

@@ -245,7 +245,33 @@
 		WHERE b.org_id=#{orgId}
 	</select>
 
-	<!--根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息-->
+	<!--根据id获取商品-E店信息-->
+	<select id="getGoodEshop" resultType="SerItemCommodityEshop">
+		SELECT
+			id AS id,
+			org_id AS orgId,
+			eshop_code AS eshopCode,
+			item_id AS itemId,
+			goods_id AS goodsId,
+			joint_goods_code AS jointGoodsCode,
+			joint_status AS jointStatus,
+			enabled_status AS enabledSatus
+		FROM ser_item_info_goods
+		WHERE id = #{id}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<!--修改SerItemCommodityEshop中的状态-->
+	<update id="updateEshop">
+		UPDATE ser_item_info_goods_eshop SET
+		enabled_status = #{enabledSatus},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+
+	<!--根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息  获取对接商品-->
 	<select id="getGoodsList" resultType="SerItemCommodityEshop">
 		SELECT
 		b.id AS itemId,

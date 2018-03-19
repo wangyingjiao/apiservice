@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -561,8 +562,12 @@ public class SerItemInfoController extends BaseController {
     @RequiresPermissions("project_send")
     public Result getGoodsList(@RequestBody(required = false) SerItemCommodityEshop serItemCommodity, HttpServletRequest request, HttpServletResponse response) {
         Page<SerItemCommodityEshop> page = new Page<>(request, response);
-        Page<SerItemCommodityEshop> goodsList = serItemInfoService.getGoodsList(page, serItemCommodity);
-        return new SuccResult(goodsList);
+        try {
+            Page<SerItemCommodityEshop> goodsList = serItemInfoService.getGoodsList(page, serItemCommodity);
+            return new SuccResult(goodsList);
+        }catch (ServiceException e){
+            return new FailResult(e.getMessage());
+        }
     }
 
     /**
@@ -574,9 +579,14 @@ public class SerItemInfoController extends BaseController {
     @RequestMapping(value = "deleteGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("解除对接")
     @RequiresPermissions("project_remove")
-    public Result deleteGoodsCode(@RequestBody(required = false) SerItemCommodityEshop serItemCommodity) {
-        List<String> jointGoodsCodes = serItemCommodity.getJointGoodsCodes();
-        OpenSendUtil.openSendDeleteItem(jointGoodsCodes,serItemCommodity.getEshopCode());
+    public Result deleteGoodsCode(@RequestBody(required = false) SerItemCommodity serItemCommodity) {
+        if (serItemCommodity == null){
+            return new FailResult("系统异常");
+        }
+        //goodIds中存的是SerItemCommodityEshop的id
+        List<String> goodIds = serItemCommodity.getGoodIds();
+        List<String> list = serItemInfoService.getGoodEshop(goodIds);
+        OpenSendUtil.openSendDeleteItem(list,serItemCommodity.getEshopCode());
         return new SuccResult("解除成功，请耐心等待交互结果");
     }
 

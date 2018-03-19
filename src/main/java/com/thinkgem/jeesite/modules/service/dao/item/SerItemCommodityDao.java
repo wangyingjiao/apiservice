@@ -47,6 +47,11 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
 
     //根据id 获取服务项目商品信息
     SerItemCommodity getSerItemCommodity(String id);
+    //根据id查出对应的ser_item_info_goods_eshop
+    SerItemCommodityEshop getGoodEshop(SerItemCommodityEshop serItemCommodity);
+
+    //修改ser_item_info_goods_eshop表的状态 改为不可用
+    int updateEshop(SerItemCommodityEshop serItemCommodity);
 
     int getGoodsEshop(SerItemCommodity serItemCommodity);
 
