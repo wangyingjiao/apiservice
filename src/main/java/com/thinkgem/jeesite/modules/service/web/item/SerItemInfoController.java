@@ -624,6 +624,38 @@ public class SerItemInfoController extends BaseController {
                 sice.setGoodsId(sic.getId());
                 sice.setJointStatus("butt_butt");
                 serItemCommodityService.insertGoodsEshop(sice);
+                //对接商品
+                SerItemCommodity sendGoods = new SerItemCommodity();
+                sendGoods.setName(sic.getName());// 商品名称格式：项目名称（商品名）
+                sendGoods.setPrice(sic.getPrice());// 商品价格
+                sendGoods.setUnit(sic.getUnit());// 商品单位格式：次/个/间
+                sendGoods.setSelfCode(
+                        sii.getSortId() + Global.getConfig("openSendPath_goods_split") + sic.getId()); // 自营平台商品code
+                // ID
+                sendGoods.setMinPurchase(sic.getMinPurchase());// 最小购买数量，起购数量
+                List<SerItemCommodity> list = new ArrayList<SerItemCommodity>();
+                list.add(sendGoods);
+
+                String pictureDetail = sii.getPictureDetail();
+                if (null != pictureDetail) {
+                    List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail, ArrayList.class);
+                    sii.setPictureDetails(pictureDetailsa);
+                }
+                String picture = sii.getPicture();
+                if (null != picture) {
+                    List<String> pictures1 = (List<String>) JsonMapper.fromJsonString(picture, ArrayList.class);
+                    sii.setPictures(pictures1);
+                }
+                // 对接项目信息
+                SerItemInfo sendItem = new SerItemInfo();
+                sendItem.setPictures(sii.getPictures());
+                sendItem.setPictureDetails(sii.getPictureDetails());
+                sendItem.setName(sii.getName());
+                sendItem.setTags(sii.getTags());// 系统标签格式：系统标签1,系统标签2,系统标签3,
+                sendItem.setCusTags(sii.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
+                // sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
+                sendItem.setCommoditys(list);
+                OpenSendUtil.openSendSaveItem(sendItem,serItemCommodity.getEshopCode());
             }
         }
 
