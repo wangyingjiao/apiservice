@@ -557,8 +557,8 @@ public class SerItemInfoController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "getGoodsList", method = {RequestMethod.POST, RequestMethod.GET})
-    @ApiOperation("根据E店id获取商品信息")
-    @RequiresPermissions("project_view")
+    @ApiOperation("获取已对接商品信息")
+    @RequiresPermissions("project_send")
     public Result getGoodsList(@RequestBody(required = false) SerItemCommodityEshop serItemCommodity, HttpServletRequest request, HttpServletResponse response) {
         Page<SerItemCommodityEshop> page = new Page<>(request, response);
         Page<SerItemCommodityEshop> goodsList = serItemInfoService.getGoodsList(page, serItemCommodity);

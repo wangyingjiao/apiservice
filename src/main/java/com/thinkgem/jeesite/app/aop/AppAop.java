@@ -3,10 +3,13 @@ package com.thinkgem.jeesite.app.aop;
 import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.AppFailResult;
+import com.thinkgem.jeesite.common.result.AppSuccResult;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.utils.AESCrypt;
 import com.thinkgem.jeesite.common.utils.Base64Decoder;
 import com.thinkgem.jeesite.common.utils.Base64Encoder;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
+import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -19,6 +22,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
+import java.math.BigDecimal;
+
+import static com.thinkgem.jeesite.modules.service.service.appVersion.AppVersionService.CACHE_NEWEST_VERSION;
 
 /**
  * @author x
@@ -45,9 +51,18 @@ public class AppAop {
     @Around("point()")
     public Object around(ProceedingJoinPoint jp) throws Throwable {
         logger.info("==>app aop环绕处理");
+        //取build号比较redis中的build 一致就不管 不一致是否强更
+        String header = request.getHeader("appBuid");
+        AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
+        String build = appVersion.getBuild().toString();
+        if (!header.equals(build)){
+            String forcedUpdate = appVersion.getForcedUpdate();
+            if ("yes".equals(forcedUpdate)){
+                return new AppSuccResult(300,appVersion,"版本更新");
+            }
+        }
         String token = request.getHeader("token");
         String md5 = request.getHeader("md5");
-        String header = request.getHeader("appBuid");
         BufferedReader reader = request.getReader();
         String str;
         StringBuilder sb = new StringBuilder();
