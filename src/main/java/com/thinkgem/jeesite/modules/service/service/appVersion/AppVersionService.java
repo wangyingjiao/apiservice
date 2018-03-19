@@ -6,6 +6,8 @@ import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.dao.appVersion.AppVersionDao;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
+import com.thinkgem.jeesite.modules.sys.dao.VersionInfoDao;
+import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import java.util.Date;
 public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     @Autowired
     private AppVersionDao appVersionDao;
+    @Autowired
+    private VersionInfoDao versionInfoDao;
 
     public static final String CACHE_NEWEST_VERSION = "newestVersion";
 
@@ -37,6 +41,10 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
             appVersion.setUpdateDate(new Date());
             super.save(appVersion);
         AppVersion newest = appVersionDao.getNewestVersion();
+        VersionInfo app = new VersionInfo();
+        app.setForcedUpdate("yes");
+        VersionInfo vi= versionInfoDao.getByTime(app);
+        newest.setForcedAppVersion(vi);
         CacheUtils.put(CACHE_NEWEST_VERSION,newest);
     }
 
@@ -49,6 +57,10 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     public void delete(AppVersion appVersion) {
         super.delete(appVersion);
         AppVersion newest = appVersionDao.getNewestVersion();
+        VersionInfo app = new VersionInfo();
+        app.setForcedUpdate("yes");
+        VersionInfo vi= versionInfoDao.getByTime(app);
+        newest.setForcedAppVersion(vi);
         CacheUtils.put(CACHE_NEWEST_VERSION,newest);
     }
 

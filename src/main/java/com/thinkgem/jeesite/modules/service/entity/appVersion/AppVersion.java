@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.service.entity.appVersion;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
 
 import java.math.BigDecimal;
 
@@ -19,6 +20,16 @@ public class AppVersion extends DataEntity<AppVersion> {
     private String refreshAddress; //更新地址
     private String startTime;
     private String endTime;
+
+    private VersionInfo forcedAppVersion;
+
+    public VersionInfo getForcedAppVersion() {
+        return forcedAppVersion;
+    }
+
+    public void setForcedAppVersion(VersionInfo forcedAppVersion) {
+        this.forcedAppVersion = forcedAppVersion;
+    }
 
     public String getStartTime() {
         return startTime;
