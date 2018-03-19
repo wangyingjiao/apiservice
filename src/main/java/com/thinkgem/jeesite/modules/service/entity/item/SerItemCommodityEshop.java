@@ -29,7 +29,7 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
     private String sortId;    //所属服务分类id
     private String sortName;    //所属服务分类名称
     private SerItemCommodity serItemCommodity; //服务项目商品信息
-
+    private String enabledSatus;//是否可用 yes,no
     private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
     private String univalence; //单价
     private List<String> jointGoodsCodes;//解除对接需要
@@ -38,6 +38,14 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
 
     public BigDecimal getPrice() {
         return price;
+    }
+
+    public String getEnabledSatus() {
+        return enabledSatus;
+    }
+
+    public void setEnabledSatus(String enabledSatus) {
+        this.enabledSatus = enabledSatus;
     }
 
     public void setPrice(BigDecimal price) {

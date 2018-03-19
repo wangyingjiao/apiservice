@@ -266,6 +266,7 @@
 		LEFT JOIN ser_sort_info d on c.sort_id=d.id AND d.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			e.code=#{eshopCode}
+			AND a.enabled_status='yes'
 			<if test="majorSort != null and majorSort != ''">
 				AND d.major_sort=#{majorSort}
 			</if>

@@ -5,11 +5,9 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.AppSuccResult;
 import com.thinkgem.jeesite.common.result.FailResult;
-import com.thinkgem.jeesite.common.utils.AESCrypt;
-import com.thinkgem.jeesite.common.utils.Base64Decoder;
-import com.thinkgem.jeesite.common.utils.Base64Encoder;
-import com.thinkgem.jeesite.common.utils.CacheUtils;
+import com.thinkgem.jeesite.common.utils.*;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
+import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -59,6 +57,22 @@ public class AppAop {
             String forcedUpdate = appVersion.getForcedUpdate();
             if ("yes".equals(forcedUpdate)){
                 return new AppSuccResult(300,appVersion,"版本更新");
+            }else{
+                //比较最新一版强更build与本版本的build
+                VersionInfo forcedAppVersion = appVersion.getForcedAppVersion();
+                if (forcedAppVersion != null) {
+                    BigDecimal build1 = forcedAppVersion.getBuild();
+                    String s = build1.toPlainString();
+                    //强更版本的build号
+                    Long forceBuild = Long.valueOf(s);
+                    //收到的build号
+                    Long receviceBuild = Long.valueOf(header);
+                    //如果强更版本的build大 将最新的版本变为强更版本返回给前端
+                    if (forceBuild>receviceBuild){
+                        appVersion.setForcedUpdate("yes");
+                        return new AppSuccResult(300,appVersion,"版本更新");
+                    }
+                }
             }
         }
         String token = request.getHeader("token");
