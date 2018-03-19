@@ -292,9 +292,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		String payStatus = orderInfo.getPayStatus();
 		if (StringUtils.isNotBlank(payStatus)) {
-			if (payStatus.equals("waitpay")) {
+			if ("waitpay".equals(payStatus)) {
 				orderInfo.setPayStatusName("待支付");
-			} else if (payStatus.equals("payed")) {
+			} else if ("payed".equals(payStatus)) {
 				orderInfo.setPayStatusName("已支付");
 			}
 		}
@@ -325,21 +325,24 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		orderInfo.setOrderRemarkPics(orp);
-        //订单详情中对应的支付信息表
-        String masterId = orderInfo.getMasterId();
-        if ("own".equals(orderInfo.getOrderSource())) {
-			//如果主订单ID为空
-			if (StringUtils.isBlank(masterId)) {
-				throw new ServiceException("主订单ID不可为空");
+		//订单详情中对应的支付信息表
+		String masterId = orderInfo.getMasterId();
+		//如果是已支付的显示支付方式
+		if ("payed".equals(payStatus)) {
+			if ("own".equals(orderInfo.getOrderSource())) {
+				//如果主订单ID为空
+				if (StringUtils.isBlank(masterId)) {
+					throw new ServiceException("主订单ID不可为空");
+				}
+				OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
+				if (byMasterId == null) {
+					throw new ServiceException("支付信息为空");
+				}
+				if ("cash".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("现金");
+				}
+				orderInfo.setOrderPayInfo(byMasterId);
 			}
-			OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
-			if (byMasterId == null) {
-				throw new ServiceException("支付信息为空");
-			}
-			if ("cash".equals(byMasterId.getPayPlatform())){
-				byMasterId.setPayPlatform("现金");
-			}
-			orderInfo.setOrderPayInfo(byMasterId);
 		}
 		return orderInfo;
 	}
@@ -405,6 +408,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				byMasterId.setPayTime(new Date());
 				byMasterId.setPayTech(info.getNowId());
 				byMasterId.setPayStatus("payed");
+				byMasterId.appPreUpdate();
 				i = orderPayInfoDao.update(byMasterId);
 			}
 		}else {
