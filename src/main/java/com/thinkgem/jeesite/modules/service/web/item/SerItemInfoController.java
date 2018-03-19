@@ -583,7 +583,7 @@ public class SerItemInfoController extends BaseController {
 
     //=========HMJ
     @ResponseBody
-    //@RequiresPermissions("skill_view")
+    @RequiresPermissions("project_send")
     @RequestMapping(value = "getNotJonitGoods", method = { RequestMethod.POST, RequestMethod.GET })
     @ApiOperation("获取未对接商品列表")
     public Result getNotJonitGoods(@RequestBody(required = false) SerItemCommodityEshop serItemCommodityEshop, HttpServletRequest request, HttpServletResponse response) {
@@ -600,7 +600,7 @@ public class SerItemInfoController extends BaseController {
     }
 
     @ResponseBody
-    //@RequiresPermissions("skill_view")
+    @RequiresPermissions("project_butt")
     @RequestMapping(value = "JonitGoods", method = { RequestMethod.POST, RequestMethod.GET })
     @ApiOperation("对接未对接商品")
     public Result JonitGoods(@RequestBody(required = false) SerItemCommodity serItemCommodity, HttpServletRequest request, HttpServletResponse response) {
