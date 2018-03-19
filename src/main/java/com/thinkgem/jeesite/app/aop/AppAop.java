@@ -52,7 +52,7 @@ public class AppAop {
     public Object around(ProceedingJoinPoint jp) throws Throwable {
         logger.info("==>app aop环绕处理");
         //取build号比较redis中的build 一致就不管 不一致是否强更
-        String header = request.getHeader("appBuid");
+        String header = request.getHeader("appBuild");
         AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
         String build = appVersion.getBuild().toString();
         if (!header.equals(build)){

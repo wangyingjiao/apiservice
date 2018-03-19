@@ -29,6 +29,7 @@ import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianI
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.open.entity.OpenCreateResponse;
@@ -297,6 +298,20 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderInfo.setPayStatusName("已支付");
 			}
 		}
+		//订单取消原因  如果不为空
+		String cancelReason = orderInfo.getCancelReason();
+		if (StringUtils.isNotBlank(cancelReason)){
+			if ("other".equals(cancelReason)){
+				orderInfo.setCancelReasonName("其它原因");
+			}
+			if ("tech".equals(cancelReason)){
+				orderInfo.setCancelReasonName("无可派技师");
+			}
+			if ("customer".equals(cancelReason)){
+				orderInfo.setCancelReasonName("客户来电取消");
+			}
+		}
+
 		//订单备注 数据库中的json 存的是list
 		String orderRemarkPic = orderInfo.getOrderRemarkPic();
 		List<String> orp=new ArrayList<String>();
