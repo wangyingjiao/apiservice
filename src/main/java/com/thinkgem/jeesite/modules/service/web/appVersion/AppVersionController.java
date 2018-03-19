@@ -78,6 +78,10 @@ public class AppVersionController extends BaseController {
         if (appVersion.getBuild().compareTo(newest.getBuild()) != 1){
             return new FailResult("build号不得小于等于当前版本");
         }
+        int count = appVersionService.getVersionNumber(appVersion);
+        if (count>0){
+            return new FailResult("版本号不可与历史版本重复");
+        }
         appVersion.setCreateBy(UserUtils.getUser());
         appVersion.setCreateDate(new Date());
         appVersionService.save(appVersion);

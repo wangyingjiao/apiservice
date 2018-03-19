@@ -68,4 +68,8 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
         AppVersion newest = appVersionDao.getNewestVersion();
         return newest;
     }
+
+    public int getVersionNumber(AppVersion appVersion) {
+        return appVersionDao.getVersionNumber(appVersion);
+    }
 }

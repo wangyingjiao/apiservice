@@ -74,6 +74,15 @@
 		WHERE a.id = #{id}
 		AND a.del_flag = 0
 	</select>
+
+	<select id="getVersionNumber" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM sys_app_version
+		WHERE version_number = #{versionNumber}
+		AND del_flag = 0
+	</select>
+
 	<!--修改APP发版信息-->
 	<update id="update">
 		UPDATE sys_app_version SET
