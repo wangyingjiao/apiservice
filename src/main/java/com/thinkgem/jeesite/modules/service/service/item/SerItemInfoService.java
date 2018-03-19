@@ -585,6 +585,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 
 	//据id 获取服务项目商品信息
+	@Transactional(readOnly = false)
 	public List<String> getGoodEshop(List<String> goodIds) {
 		List<String> list=new ArrayList<String>();
 		if (goodIds != null && goodIds.size()>0) {
@@ -597,7 +598,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 				if (goodEshop!=null) {
 					if (StringUtils.isBlank(goodEshop.getJointGoodsCode())) {
 						goodEshop.setEnabledSatus("no");
-						goodEshop.preUpdate();
 						serItemCommodityDao.updateEshop(goodEshop);
 					} else {
 						list.add(goodEshop.getJointGoodsCode());

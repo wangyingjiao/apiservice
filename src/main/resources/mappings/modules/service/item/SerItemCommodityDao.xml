@@ -256,17 +256,14 @@
 			joint_goods_code AS jointGoodsCode,
 			joint_status AS jointStatus,
 			enabled_status AS enabledSatus
-		FROM ser_item_info_goods
+		FROM ser_item_info_goods_eshop
 		WHERE id = #{id}
-		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<!--修改SerItemCommodityEshop中的状态-->
 	<update id="updateEshop">
 		UPDATE ser_item_info_goods_eshop SET
-		enabled_status = #{enabledSatus},
-		update_by = #{updateBy.id},
-		update_date = #{updateDate}
+		enabled_status = #{enabledSatus}
 		WHERE id = #{id}
 	</update>
 
