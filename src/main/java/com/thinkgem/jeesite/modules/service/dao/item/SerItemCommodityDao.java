@@ -30,7 +30,7 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
 
     void updateJointGoodsCode(SerItemCommodity goods);
 
-    List<SerItemCommodityEshop> getEshopGoodsList();
+    List<SerItemCommodityEshop> getEshopGoodsList(SerItemCommodity serItemCommodity);
 
     List<SerItemCommodityEshop> getEshopGoods(SerItemCommodity serItemCommodity);
 
@@ -38,13 +38,17 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     //根据登录用户的机构id查询出对应E店名称
     List<BasicGasqEshop> getGoodsCode(String orgId);
 
-    List<SerItemCommodity> findCommodityList(SerItemCommodity serItemCommodity);
+    List<SerItemCommodityEshop> findCommodityList(SerItemCommodityEshop serItemCommodityEshop);
 
-    int getEshop(SerItemCommodity serItemCommodity);
+    int getEshop(SerItemCommodityEshop serItemCommodityEshop);
 
     //根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息
     List<SerItemCommodityEshop> getGoodsList(SerItemCommodityEshop serItemCommodityEshop);
 
     //根据id 获取服务项目商品信息
     SerItemCommodity getSerItemCommodity(String id);
+
+    int getGoodsEshop(SerItemCommodity serItemCommodity);
+
+    void insertGoodsEshop(SerItemCommodityEshop sice);
 }

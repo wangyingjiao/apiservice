@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.service.entity.item;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -32,6 +33,24 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
     private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
     private String univalence; //单价
     private List<String> jointGoodsCodes;//解除对接需要
+    private BigDecimal price;		// 价格
+    private String unit;		// 商品单位
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
     public List<String> getJointGoodsCodes() {
         return jointGoodsCodes;

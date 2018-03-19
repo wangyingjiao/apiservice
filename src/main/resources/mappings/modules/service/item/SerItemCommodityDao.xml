@@ -154,7 +154,7 @@
 		WHERE id = #{id}
 	</update>
 
-	<select id="getSerItemCommodityByItem">
+	<select id="getSerItemCommodityByItem" resultType="SerItemCommodity">
 		SELECT id
 		FROM ser_item_info_goods
 		WHERE item_id = #{id}
@@ -207,14 +207,12 @@
 			a.id,
 			a.org_id AS orgId,
 			a.eshop_code AS eshopCode,
-			a.status,
 			a.item_id AS itemId,
 			a.goods_id AS goodsId,
 			<!--a.joint_goods_code AS jointGoodsCode,-->
 			a.joint_status AS jointStatus
-			FROM ser_item_info_goods_eshop
+			FROM ser_item_info_goods_eshop a
 			WHERE a.goods_id = #{id}
-			AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
     <select id="getGoods" resultType="SerItemCommodity">
@@ -291,11 +289,11 @@
 		</choose>
 	</select>
 
-	<select id="findCommodityList" resultType="SerItemCommodity">
+	<select id="findCommodityList" resultType="SerItemCommodityEshop">
 		SELECT
 			i.name AS itemName,
 			g.id,
-			g.name,
+			g.name AS goodsName,
             s.id AS sortId,
 			s.name AS sortName,
 			s.major_sort AS majorSort,
@@ -306,13 +304,12 @@
 			WHERE g.del_flag = #{DEL_FLAG_NORMAL}
             <if test="majorSort != null and majorSort != ''">
                 AND s.major_sort = #{majorSort}
-                AND s.majorSort LIKE concat('%',#{name},'%')
             </if>
             <if test="sortId != null and sortId != ''">
                 AND s.id = #{sortId}
             </if>
-            <if test="name != null and name != ''">
-                AND g.name LIKE concat('%',#{name},'%')
+            <if test="goodsName != null and goodsName != ''">
+                AND g.name LIKE concat('%',#{goodsName},'%')
             </if>
 			AND g.id NOT  IN (SELECT goods_id FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode})
 			ORDER BY g.create_date DESC
@@ -329,5 +326,25 @@
 		WHERE a.id = #{id}
 	</select>
 
+    <select id="getGoodsEshop" resultType="int">
+        SELECT COUNT(1) FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+    </select>
 
+    <insert id="insertGoodsEshop">
+        INSERT INTO ser_item_info_goods_eshop (
+              id,
+              org_id,
+              eshop_code,
+              item_id,
+              goods_id,
+              joint_status
+        )VALUES (
+              #{id},
+              #{orgId},
+              #{eshopCode},
+              #{itemId},
+              #{goodsId},
+              #{jointStatus}
+        )
+    </insert>
 </mapper>

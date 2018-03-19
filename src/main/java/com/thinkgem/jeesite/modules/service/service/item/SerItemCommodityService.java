@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.item;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,23 +49,31 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		super.delete(serItemCommodity);
 	}
 
-	public Page<SerItemCommodity> findCommodityPage(Page<SerItemCommodity> serItemCommodityPage, SerItemCommodity serItemCommodity) {
-		serItemCommodity.setPage(serItemCommodityPage);
-		List<SerItemCommodity> list = serItemCommodityDao.findCommodityList(serItemCommodity);
-		for (SerItemCommodity sic : list){
-		    sic.setItemGoodName(sic.getItemName()+"("+sic.getName()+")");
-		    sic.setPriceUnit(sic.getPrice()+"元/"+sic.getUnit());
+	public Page<SerItemCommodityEshop> findCommodityPage(Page<SerItemCommodityEshop> serItemCommodityEshopPage, SerItemCommodityEshop serItemCommodityEshop) {
+		serItemCommodityEshop.setPage(serItemCommodityEshopPage);
+		List<SerItemCommodityEshop> list = serItemCommodityDao.findCommodityList(serItemCommodityEshop);
+		for (SerItemCommodityEshop sic : list){
+		    sic.setNewName(sic.getItemName()+"("+sic.getGoodsName()+")");
+		    sic.setUnivalence(sic.getPrice()+"元/"+sic.getUnit());
         }
-		serItemCommodityPage.setList(list);
-		return serItemCommodityPage;
+		serItemCommodityEshopPage.setList(list);
+		return serItemCommodityEshopPage;
 	}
 
-	public String getEshop(SerItemCommodity serItemCommodity) {
-		int i = serItemCommodityDao.getEshop(serItemCommodity);
+	public String getEshop(SerItemCommodityEshop serItemCommodityEshop) {
+		int i = serItemCommodityDao.getEshop(serItemCommodityEshop);
 		if (i>0){
 			return "yes";
 		}else {
 			return "no";
 		}
+	}
+
+	public int getGoodsEshop(SerItemCommodity serItemCommodity) {
+		return serItemCommodityDao.getGoodsEshop(serItemCommodity);
+	}
+
+	public void insertGoodsEshop(SerItemCommodityEshop sice) {
+		serItemCommodityDao.insertGoodsEshop(sice);
 	}
 }

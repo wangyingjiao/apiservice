@@ -37,12 +37,21 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
 	private String eshopCode; //E店code
     private String itemGoodName;  //拼接后的名字
-    private String priceUnit;
+    private String priceUnit;		//拼接后的单价
+	private List<String> goodIds;
 
 	private List<SerItemCommodityEshop> commodityEshops;
 	private String jointCode;
 
-    public String getPriceUnit() {
+	public List<String> getGoodIds() {
+		return goodIds;
+	}
+
+	public void setGoodIds(List<String> goodIds) {
+		this.goodIds = goodIds;
+	}
+
+	public String getPriceUnit() {
         return priceUnit;
     }
 

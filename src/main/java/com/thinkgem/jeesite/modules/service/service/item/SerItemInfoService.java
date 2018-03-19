@@ -562,7 +562,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	}
 
 	public List<SerItemCommodityEshop> getEshopGoodsList(SerItemCommodity serItemCommodity) {
-		return serItemCommodityDao.getEshopGoodsList();
+		return serItemCommodityDao.getEshopGoodsList(serItemCommodity);
 	}
 
     public SerItemCommodity getEshopGoods(SerItemCommodity serItemCommodity) {

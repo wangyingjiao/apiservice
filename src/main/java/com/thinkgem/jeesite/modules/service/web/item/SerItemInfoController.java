@@ -11,9 +11,11 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
@@ -234,9 +236,20 @@ public class SerItemInfoController extends BaseController {
         if(null == serItemInfo){
             serItemInfo = new SerItemInfo();
         }
+        String orgStatus = null;
+        HashMap<String,Object> map = new HashMap<String,Object>();
+        String orgId =  UserUtils.getUser().getOrganization().getId();
+        List<BasicGasqEshop> basicGasqEshop = serItemInfoService.getGoodsCode(orgId);
+        if (basicGasqEshop.size()>0){
+            orgStatus = "yes";
+        }else {
+            orgStatus = "no";
+        }
+        map.put("orgStatus",orgStatus);
         Page<SerItemInfo> serItemInfoPage = new Page<>(request, response);
         Page<SerItemInfo> page = serItemInfoService.findPage(serItemInfoPage, serItemInfo);
-        return new SuccResult(page);
+        map.put("page",page);
+        return new SuccResult(map);
     }
 
     @ResponseBody
@@ -431,6 +444,12 @@ public class SerItemInfoController extends BaseController {
         List<SerItemCommodityEshop> commodityEshopList = serItemInfoService.getEshopGoodsList(serItemCommodity);
         if (commodityEshopList.size()==0){
             serItemCommodityService.delete(serItemCommodity);
+            SerItemInfo info = new SerItemInfo();
+            info.setId(serItemCommodity.getItemId());
+            List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
+            if (scLists.size() == 0) {
+                serItemInfoService.deleteSerItemInfo(info);
+            }
             return new SuccResult("删除成功");
         }else {
             return new FailResult("商品已对接，不可删除");
@@ -567,18 +586,47 @@ public class SerItemInfoController extends BaseController {
     //@RequiresPermissions("skill_view")
     @RequestMapping(value = "getNotJonitGoods", method = { RequestMethod.POST, RequestMethod.GET })
     @ApiOperation("获取未对接商品列表")
-    public Result getNotJonitGoods(@RequestBody(required = false) SerItemCommodity serItemCommodity, HttpServletRequest request, HttpServletResponse response) {
-        if (serItemCommodity == null) {
-            serItemCommodity = new SerItemCommodity();
+    public Result getNotJonitGoods(@RequestBody(required = false) SerItemCommodityEshop serItemCommodityEshop, HttpServletRequest request, HttpServletResponse response) {
+        if (serItemCommodityEshop == null) {
+            serItemCommodityEshop = new SerItemCommodityEshop();
         }
-        Page<SerItemCommodity> serItemCommodityPage = new Page<>(request, response);
-        Page<SerItemCommodity> page = serItemCommodityService.findCommodityPage(serItemCommodityPage, serItemCommodity);
-        String eshopStatus = serItemCommodityService.getEshop(serItemCommodity);
         HashMap<String,Object> map = new HashMap<>();
-        map.put("page",page);
+        String eshopStatus = serItemCommodityService.getEshop(serItemCommodityEshop);
         map.put("eshopStatus",eshopStatus);
+        Page<SerItemCommodityEshop> serItemCommodityEshopPage = new Page<>(request, response);
+        Page<SerItemCommodityEshop> page = serItemCommodityService.findCommodityPage(serItemCommodityEshopPage, serItemCommodityEshop);
+        map.put("page",page);
         return new SuccResult(map);
     }
 
+    @ResponseBody
+    //@RequiresPermissions("skill_view")
+    @RequestMapping(value = "JonitGoods", method = { RequestMethod.POST, RequestMethod.GET })
+    @ApiOperation("对接未对接商品")
+    public Result JonitGoods(@RequestBody(required = false) SerItemCommodity serItemCommodity, HttpServletRequest request, HttpServletResponse response) {
+        if (serItemCommodity == null){
+            return new FailResult("系统异常");
+        }
+        List<String> goodids = serItemCommodity.getGoodIds();
+        for (String goodId : goodids){
+            serItemCommodity.setId(goodId);
+            int i = serItemCommodityService.getGoodsEshop(serItemCommodity);
+            if (i == 0){
+                SerItemCommodity sic = serItemCommodityService.get(serItemCommodity);
+                SerItemInfo sii = new SerItemInfo();
+                sii.setId(sic.getItemId());
+                sii = serItemInfoService.get(sii);
+                SerItemCommodityEshop sice = new SerItemCommodityEshop();
+                sice.setId(IdGen.uuid());
+                sice.setOrgId(sii.getOrgId());
+                sice.setEshopCode(sic.getEshopCode());
+                sice.setItemId(sii.getId());
+                sice.setGoodsId(sic.getId());
+                sice.setJointStatus("butt_butt");
+                serItemCommodityService.insertGoodsEshop(sice);
+            }
+        }
 
+        return new SuccResult("对接成功，请耐心等待");
+    }
 }
