@@ -66,6 +66,10 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
 
     public AppVersion getNewest() {
         AppVersion newest = appVersionDao.getNewestVersion();
+        VersionInfo app = new VersionInfo();
+        app.setForcedUpdate("yes");
+        VersionInfo vi= versionInfoDao.getByTime(app);
+        newest.setForcedAppVersion(vi);
         return newest;
     }
 

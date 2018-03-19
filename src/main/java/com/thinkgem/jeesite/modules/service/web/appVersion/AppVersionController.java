@@ -137,6 +137,7 @@ public class AppVersionController extends BaseController {
         Object cache = CacheUtils.get(CACHE_NEWEST_VERSION);
         if (cache==null){
             cache = appVersionService.getNewest();
+            CacheUtils.put(CACHE_NEWEST_VERSION,cache);
         }
         return new SuccResult(cache);
     }
