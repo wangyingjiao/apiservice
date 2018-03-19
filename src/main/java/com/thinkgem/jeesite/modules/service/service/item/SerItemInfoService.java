@@ -600,7 +600,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 						goodEshop.preUpdate();
 						serItemCommodityDao.updateEshop(goodEshop);
 					} else {
-						list.add(s);
+						list.add(goodEshop.getJointGoodsCode());
 					}
 				}
 			}
