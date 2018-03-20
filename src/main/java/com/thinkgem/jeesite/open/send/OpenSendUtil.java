@@ -44,80 +44,6 @@ import java.util.*;
 public class OpenSendUtil {
 
 	/**
-	 *  国安社区开放接口 - 服务机构E店Code是否有效
-	 * @param eshopCode E店编码
-	 * @return
-	 */
-	/*public static OpenSendSaveItemResponse openSendCheckEshopCode(String eshopCode) {
-		if (StringUtils.isEmpty(eshopCode)) {
-			OpenSendSaveItemResponse responseRe = new OpenSendSaveItemResponse();
-			responseRe.setCode(1);
-			responseRe.setMessage("对接验证信息失败-E店编码为空");
-			return responseRe;
-		}
-
-		//--SEND------------------------------------------------------------------
-		OpenSendSaveItemRequest request = new OpenSendSaveItemRequest();
-		request.setEshop_code(eshopCode);
-
-		request.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
-		request.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
-		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
-		request.setRequestTimestamp(new Date());
-		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
-		request.setApp_com(Global.getConfig("openSendPath_gasq_php_eshopCode_appCom"));
-		request.setTask(Global.getConfig("openSendPath_gasq_php_eshopCode_task"));
-
-		String json = JsonMapper.toJsonString(request);
-		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
-		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
-
-		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
-
-		try {
-			Map<String, String> params = new HashMap<>();
-			params.put("md5",md5Content);
-			params.put("appid", "selfService");
-
-			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-			OpenSendSaveItemResponse response = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
-
-
-			SysJointLog log = new SysJointLog();
-			log.setUrl(url);
-			if(response != null) {
-				log.setIsSuccess(0 == response.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
-				log.setResponseContent(JsonMapper.toJsonString(response));
-			}else{
-				log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
-			}
-			log.setRequestContent(json);
-			OpenLogUtils.saveSendLog(log);
-
-
-			return response;
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		OpenSendSaveItemResponse failRe = new OpenSendSaveItemResponse();
-		failRe.setMessage("对接验证信息失败-系统异常");
-		failRe.setCode(1);
-
-	*//*	SysJointLog log = new SysJointLog();
-		log.setUrl(url);
-		if(failRe != null) {
-			log.setIsSuccess(0 == failRe.getCode() ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
-			log.setResponseContent(JsonMapper.toJsonString(failRe));
-		}else{
-			log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
-		}
-		log.setRequestContent(json);
-		OpenLogUtils.saveSendLog(log);*//*
-
-		return failRe;
-	}*/
-
-	/**
 	 *  国安社区开放接口 - 服务项目保存
 	 * @param serItemInfo
 	 * @return
@@ -315,39 +241,6 @@ public class OpenSendUtil {
 	}
 
 	/**
-	 *  国安社区开放接口 - 删除服务项目保存
-	 * @param jointGoodsCodes
-	 * @param eshopCode eshopCode
-	 * @return
-	 */
-	public static void openSendDeleteItem(List<String> jointGoodsCodes, String eshopCode) {
-		//--SEND------------------------------------------------------------------
-		OpenSendDeleteItemRequest request = new OpenSendDeleteItemRequest();
-		request.setEshop_code(eshopCode);
-		request.setId(jointGoodsCodes);
-		request.setMaster_id(jointGoodsCodes);
-		request.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
-		request.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
-		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
-		request.setRequestTimestamp(new Date());
-		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
-		request.setApp_com(Global.getConfig("openSendPath_gasq_php_goods_appCom"));
-		request.setTask(Global.getConfig("openSendPath_gasq_php_goodsDel_task"));
-
-		String json = JsonMapper.toJsonString(request);
-		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
-		SysJointWait waitInfo = new SysJointWait();
-		waitInfo.setSendType("del_goods");
-		waitInfo.setEshopCode(eshopCode);
-		waitInfo.setJointGoodsCodes(JsonMapper.toJsonString(jointGoodsCodes));
-		waitInfo.setUrl(url);
-		waitInfo.setMany("yes");
-		waitInfo.setNum(0);
-		waitInfo.setRequestContent(json);
-		OpenWaitUtils.saveSendWait(waitInfo);
-	}
-
-	/**
 	 *  国安社区开放接口 - 更新订单信息
 	 *  更新服务时间、改派服务人员、服务人员端备注
 	 * @param info
@@ -400,20 +293,39 @@ public class OpenSendUtil {
 	}
 
     /***
-     * 编辑机构删除关联E店
+     * 编辑机构删除关联E店,或对接平台为请选择
      * 机构E店表已经删除
-     * 商品E店表已经删除
+     * 商品E店表已改
      *
      * 删除E店对接商品信息
      * 成功失败都不进行任何操作
-     * @param eshopCode E店code
-     * @param jointGoodsCodes 关联商品Code
      */
-	public static void delGoodsByOrgEshop(String eshopCode,List<String> jointGoodsCodes){
-		OpenSendDeleteItemRequest request = new OpenSendDeleteItemRequest();
-		request.setEshop_code(eshopCode);
-		request.setId(jointGoodsCodes);
-		request.setMaster_id(jointGoodsCodes);
+	public static void removeJointGoodsCodeByOrg(SerItemInfo serItemInfo){
+		OpenSendRemoveJointGoodsRequest request = new OpenSendRemoveJointGoodsRequest();
+		List<String> eshop_code = new ArrayList<>();
+		HashMap<String,Object> product = new HashMap<>();
+
+		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();//商品信息
+
+		for(SerItemCommodity serItemCommodity :commoditys){
+			List<SerItemCommodityEshop> commodityEshops = serItemCommodity.getCommodityEshops();
+
+			HashMap<String,String> eidGid = new HashMap<>();
+			for(SerItemCommodityEshop serItemCommodityEshop : commodityEshops){
+				eidGid.put(serItemCommodityEshop.getEshopCode(),serItemCommodityEshop.getJointGoodsCode());
+
+				if(!eshop_code.contains(serItemCommodityEshop.getEshopCode())){
+					eshop_code.add(serItemCommodityEshop.getEshopCode());
+				}
+			}
+			if(eidGid.size()>0) {
+				product.put(serItemCommodity.getId(), eidGid);
+			}
+		}
+
+		request.setProduct(product);
+		request.setEshop_code(eshop_code);
+
 		request.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
 		request.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
 		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
@@ -423,14 +335,77 @@ public class OpenSendUtil {
 		request.setTask(Global.getConfig("openSendPath_gasq_php_goodsDel_task"));
 		String json = JsonMapper.toJsonString(request);
 		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
+
 		SysJointWait waitInfo = new SysJointWait();
-		waitInfo.setSendType("org_del_goods");
-		waitInfo.setEshopCode(eshopCode);
-		waitInfo.setJointGoodsCodes(JsonMapper.toJsonString(jointGoodsCodes));
+		waitInfo.setSendType("del_goods");
 		waitInfo.setUrl(url);
 		waitInfo.setMany("no");
 		waitInfo.setNum(0);
 		waitInfo.setRequestContent(json);
 		OpenWaitUtils.saveSendWait(waitInfo);
+	}
+
+	/**
+	 * 解除对接
+	 * @param serItemInfo
+	 */
+	public static void removeJointGoodsCode(SerItemInfo serItemInfo){
+		OpenSendRemoveJointGoodsRequest request = new OpenSendRemoveJointGoodsRequest();
+		List<String> eshop_code = new ArrayList<>();
+		HashMap<String,Object> product = new HashMap<>();
+
+		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();//商品信息
+
+		for(SerItemCommodity serItemCommodity :commoditys){
+			List<SerItemCommodityEshop> commodityEshops = serItemCommodity.getCommodityEshops();
+
+			HashMap<String,String> eidGid = new HashMap<>();
+			for(SerItemCommodityEshop serItemCommodityEshop : commodityEshops){
+				eidGid.put(serItemCommodityEshop.getEshopCode(),serItemCommodityEshop.getJointGoodsCode());
+
+				if(!eshop_code.contains(serItemCommodityEshop.getEshopCode())){
+					eshop_code.add(serItemCommodityEshop.getEshopCode());
+				}
+			}
+			if(eidGid.size()>0) {
+				product.put(serItemCommodity.getId(), eidGid);
+			}
+		}
+
+		request.setProduct(product);
+		request.setEshop_code(eshop_code);
+
+		request.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
+		request.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
+		request.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
+		request.setRequestTimestamp(new Date());
+		request.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
+		request.setApp_com(Global.getConfig("openSendPath_gasq_php_goods_appCom"));
+		request.setTask(Global.getConfig("openSendPath_gasq_php_goodsDel_task"));
+		String json = JsonMapper.toJsonString(request);
+		String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
+
+		SysJointWait waitInfo = new SysJointWait();
+		waitInfo.setSendType("del_goods");
+		waitInfo.setUrl(url);
+		waitInfo.setMany("yes");
+		waitInfo.setNum(0);
+		waitInfo.setRequestContent(json);
+		OpenWaitUtils.saveSendWait(waitInfo);
+	}
+
+
+	public static void insertJointGoodsCode(List<SerItemInfo> serItemList){
+
+	}
+
+	public static void updateJointGoodsCode(SerItemInfo serItemInfo){
+
+	}
+
+	public static void delGoodsByOrgEshop(String eshopCode, List<String> jointGoodsCodes) {
+	}
+
+	public static void openSendDeleteItem(List<String> jointGoodsCodes, String eshopCode) {
 	}
 }

@@ -162,6 +162,24 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 						String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
 						OpenSendSaveItemResponse response = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
 
+						if(response != null && response.getCode() == 0) {
+							Map<String, Object> responseData = (Map<String, Object>) JsonMapper.fromJsonString(response.getData().toString(), Map.class);
+							Iterator iter = responseData.entrySet().iterator();
+							while (iter.hasNext()) {
+								Map.Entry entry = (Map.Entry) iter.next();
+								SerItemCommodity goods = new SerItemCommodity();
+								String key = entry.getKey().toString();
+								String goodsId = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
+								goods.setId(goodsId);
+								goods.setJointGoodsCode(entry.getValue().toString());
+								User user = new User();
+								user.setId("gasq001");
+								goods.setUpdateBy(user);
+								goods.setUpdateDate(new Date());
+								//serItemInfoService.updateCommodityJointCode(goods);
+							}
+						}
+
 						//保存对接日志表
 						SysJointLog log = new SysJointLog();
 						log.setUrl(url);
