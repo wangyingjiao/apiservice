@@ -51,14 +51,22 @@ public class AppAop {
         logger.info("==>app aop环绕处理");
         //取build号比较redis中的build 一致就不管 不一致是否强更
         String header = request.getHeader("appBuild");
+        //收到的build号
+        Long receviceBuild = Long.valueOf(header);
         AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
         if (appVersion == null) {
             appVersion = appVersionService.getNewest();
         }
-        if (appVersion !=null && !header.equals(appVersion.getBuild().toString())){
+        String s1 = appVersion.getBuild().toString();
+        boolean equals = header.equals(s1);
+        //两个版本的build不同
+        if (appVersion !=null && !equals){
+            Long forceBuild1 = Long.valueOf(s1);
             String forcedUpdate = appVersion.getForcedUpdate();
             if ("yes".equals(forcedUpdate)){
-                return new AppSuccResult(300,appVersion,"版本更新");
+                if (forceBuild1>receviceBuild) {
+                    return new AppSuccResult(300, appVersion, "版本更新");
+                }
             }else{
                 //比较最新一版强更build与本版本的build
                 VersionInfo forcedAppVersion = appVersion.getForcedAppVersion();
@@ -67,8 +75,6 @@ public class AppAop {
                     String s = build1.toPlainString();
                     //强更版本的build号
                     Long forceBuild = Long.valueOf(s);
-                    //收到的build号
-                    Long receviceBuild = Long.valueOf(header);
                     //如果强更版本的build大 将最新的版本变为强更版本返回给前端
                     if (forceBuild>receviceBuild){
                         appVersion.setForcedUpdate("yes");

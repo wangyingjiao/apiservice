@@ -115,6 +115,14 @@
 
 
 	<select id="getNewestVersion" resultType="AppVersion">
-		SELECT id,build,forced_update AS forcedUpdate,refresh_address AS refreshAddress FROM sys_app_version WHERE del_flag = 0 ORDER BY create_date DESC limit 1
+		SELECT
+		id,
+		build,
+		forced_update AS forcedUpdate,
+		refresh_address AS refreshAddress,
+		upgrade_content AS upgradeContent
+		FROM sys_app_version
+		WHERE del_flag = 0
+		ORDER BY create_date DESC limit 1
 	</select>
 </mapper>

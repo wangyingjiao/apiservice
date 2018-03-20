@@ -406,7 +406,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				byMasterId.setPayPlatform("cash");
 				byMasterId.setPayMethod("offline");
 				byMasterId.setPayTime(new Date());
-				byMasterId.setPayTech(info.getNowId());
+				byMasterId.setPayTech(nowId);
 				byMasterId.setPayStatus("payed");
 				byMasterId.appPreUpdate();
 				i = orderPayInfoDao.update(byMasterId);
