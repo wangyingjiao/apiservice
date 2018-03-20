@@ -646,6 +646,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 				serItemCommodityEshop.setGoodsId(goodsId);
 			}
 		}
+		serItemCommodityEshop.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 		List<SerItemCommodityEshop> goodsCode = serItemCommodityDao.getGoodsList(serItemCommodityEshop);
 		if (goodsCode !=null && goodsCode.size()>0) {
 			for (SerItemCommodityEshop shop : goodsCode) {

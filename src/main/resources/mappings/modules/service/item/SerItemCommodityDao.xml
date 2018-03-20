@@ -4,6 +4,7 @@
     
 	<sql id="serItemCommodityColumns">
 		a.id AS "id",
+		a.sort_id AS "sortId",
 		a.item_id AS "itemId",
 		a.name AS "name",
 		a.unit AS "unit",
@@ -304,6 +305,7 @@
 			<if test="goodsId != null and goodsId != ''">
 				AND c.id=#{goodsId}
 			</if>
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
