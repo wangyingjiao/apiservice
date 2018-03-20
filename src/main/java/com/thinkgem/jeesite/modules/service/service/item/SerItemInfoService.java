@@ -596,8 +596,16 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 
 	//据id 获取服务项目商品信息
 	@Transactional(readOnly = false)
-	public List<String> getGoodEshop(List<String> goodIds) {
+	public SerItemInfo getGoodEshop(SerItemCommodity serItemCommodity) {
+		//goodIds中存的是SerItemCommodityEshop的id
+		List<String> goodIds = serItemCommodity.getGoodIds();
 		List<String> list=new ArrayList<String>();
+		SerItemInfo serItemInfo=new SerItemInfo();
+		//获取eshopCode 存入eshop对象中再放入商品属性中
+		String eshopCode = serItemCommodity.getEshopCode();
+		List<SerItemCommodityEshop> commodityEshops =new ArrayList<SerItemCommodityEshop>();
+		List<SerItemCommodity> commoditys=new ArrayList<SerItemCommodity>();
+		//获取商品id的集合
 		if (goodIds != null && goodIds.size()>0) {
 			for (String s : goodIds) {
 				SerItemCommodityEshop serItemCommodityEshop =new SerItemCommodityEshop();
@@ -610,12 +618,18 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 						goodEshop.setEnabledSatus("no");
 						serItemCommodityDao.updateEshop(goodEshop);
 					} else {
-						list.add(goodEshop.getJointGoodsCode());
+						commodityEshops.add(goodEshop);
+						//根据商品的id去获取商品信息  加入到服务项目中
+						SerItemCommodity serItemCommodity1 = serItemCommodityDao.get(goodEshop.getGoodsId());
+						serItemCommodity1.setSelfCode(serItemCommodity1.getSortId()+"_"+serItemCommodity1.getId());
+						serItemCommodity1.setCommodityEshops(commodityEshops);
+						commoditys.add(serItemCommodity1);
 					}
 				}
 			}
+			serItemInfo.setCommoditys(commoditys);
 		}
-		return list;
+		return serItemInfo;
 	}
 
 

@@ -585,10 +585,8 @@ public class SerItemInfoController extends BaseController {
         if (serItemCommodity == null){
             return new FailResult("系统异常");
         }
-        //goodIds中存的是SerItemCommodityEshop的id
-        List<String> goodIds = serItemCommodity.getGoodIds();
-        List<String> list = serItemInfoService.getGoodEshop(goodIds);
-        OpenSendUtil.openSendDeleteItem(list,serItemCommodity.getEshopCode());
+        SerItemInfo serItemInfo = serItemInfoService.getGoodEshop(serItemCommodity);
+        OpenSendUtil.removeJointGoodsCode(serItemInfo);
         return new SuccResult("解除成功，请耐心等待交互结果");
     }
 
