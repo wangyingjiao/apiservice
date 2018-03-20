@@ -81,7 +81,7 @@
 	</update>
 	<update id="updateGoodsEshopJointStatusAndCode">
 		UPDATE ser_item_info_goods_eshop SET
-		enabled_status = #{enabledStatus},
+		joint_status = #{jointStatus},
 		joint_goods_code = #{jointGoodsCode}
 		WHERE eshop_code = #{eshopCode}
 		AND goods_id = #{goodsId}

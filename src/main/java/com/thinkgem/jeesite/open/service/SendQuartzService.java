@@ -141,7 +141,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 											goodsEshop.setGoodsId(goodsId);
 											goodsEshop.setEshopCode(eshopCode);
 											goodsEshop.setJointGoodsCode(jointGoodsCode);
-											goodsEshop.setEnabledSatus("no");
+											goodsEshop.setEnabledStatus("no");
 											goodsEshopList.add(goodsEshop);
 										}
 									}

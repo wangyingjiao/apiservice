@@ -257,7 +257,7 @@
 			goods_id AS goodsId,
 			joint_goods_code AS jointGoodsCode,
 			joint_status AS jointStatus,
-			enabled_status AS enabledSatus
+			enabled_status AS enabledStatus
 		FROM ser_item_info_goods_eshop
 
 		WHERE id = #{id}
@@ -266,7 +266,7 @@
 	<!--修改SerItemCommodityEshop中的状态-->
 	<update id="updateEshop">
 		UPDATE ser_item_info_goods_eshop SET
-		enabled_status = #{enabledSatus}
+		enabled_status = #{enabledStatus}
 		WHERE id = #{id}
 	</update>
 

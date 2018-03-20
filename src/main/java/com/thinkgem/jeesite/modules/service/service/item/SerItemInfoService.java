@@ -615,7 +615,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 				//如果jointGoodsCode为空 将状态改为no
 				if (goodEshop!=null) {
 					if (StringUtils.isBlank(goodEshop.getJointGoodsCode())) {
-						goodEshop.setEnabledSatus("no");
+						goodEshop.setEnabledStatus("no");
 						serItemCommodityDao.updateEshop(goodEshop);
 					} else {
 						commodityEshops.add(goodEshop);
