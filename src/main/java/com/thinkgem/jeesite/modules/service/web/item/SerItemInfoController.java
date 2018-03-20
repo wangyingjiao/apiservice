@@ -178,7 +178,7 @@ public class SerItemInfoController extends BaseController {
         HashMap<String,Object> map =  serItemInfoService.sendItemData(serItemInfo);
         return doSendItem(map);
     }*/
-    public Result doSendItem(HashMap<String,Object> map){
+   /* public Result doSendItem(HashMap<String,Object> map){
         SerItemInfo serItemInfo = (SerItemInfo) map.get("item");
         try {
             // 机构有对接方E店CODE
@@ -228,7 +228,7 @@ public class SerItemInfoController extends BaseController {
 
         return new SuccResult("保存成功");
     }
-
+*/
     @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务项目列表")

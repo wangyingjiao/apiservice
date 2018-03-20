@@ -15,15 +15,14 @@ import java.util.List;
 public class OpenSendSaveItemRequest {
 
     private HashMap<String,Object> product;
-    private String eshop_code;// ESHOP_CODE
-    private HashMap<String,Object> attachments;
+    private List<String> eshop_code;
 
-    public HashMap<String, Object> getAttachments() {
-        return attachments;
+    public List<String> getEshop_code() {
+        return eshop_code;
     }
 
-    public void setAttachments(HashMap<String, Object> attachments) {
-        this.attachments = attachments;
+    public void setEshop_code(List<String> eshop_code) {
+        this.eshop_code = eshop_code;
     }
 
     public HashMap<String, Object> getProduct() {
@@ -34,13 +33,6 @@ public class OpenSendSaveItemRequest {
         this.product = product;
     }
 
-    public String getEshop_code() {
-        return eshop_code;
-    }
-
-    public void setEshop_code(String eshop_code) {
-        this.eshop_code = eshop_code;
-    }
 
     private String com;
     private String client;

@@ -23,5 +23,9 @@ public interface SysJointWaitDao extends CrudDao<SysJointWait> {
 
     void deleteGoodsEshop(SerItemCommodityEshop goodsEshop);
 
-    void updateGoodsEshop(SerItemCommodityEshop goodsEshop);
+    void updateGoodsEshopJointStatus(SerItemCommodityEshop goodsEshop);
+
+    void updateGoodsEshopEnabledStatus(SerItemCommodityEshop goodsEshop);
+
+    void updateGoodsEshopJointStatusAndCode(SerItemCommodityEshop goodsEshop);
 }

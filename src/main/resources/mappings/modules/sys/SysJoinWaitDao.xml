@@ -33,9 +33,6 @@
 	<insert id="insert">
 		INSERT INTO sys_joint_wait(
 			id,
-			order_number,
-			eshop_code,
-			joint_goods_codes,
 			url,
 			request_content,
 			many,
@@ -44,9 +41,6 @@
 			create_date
 		) VALUES (
 			#{id},
-			#{orderNumber},
-			#{eshopCode},
-			#{jointGoodsCodes},
 			#{url},
 			#{requestContent},
 			#{many},
@@ -73,10 +67,24 @@
 		AND joint_goods_code = #{jointGoodsCode}
 	</delete>
 
-	<update id="updateGoodsEshop">
+	<update id="updateGoodsEshopJointStatus">
 		UPDATE ser_item_info_goods_eshop SET
 		joint_status = #{jointStatus}
 		WHERE eshop_code = #{eshopCode}
-		AND joint_goods_code = #{jointGoodsCode}
+		AND goods_id = #{goodsId}
 	</update>
+	<update id="updateGoodsEshopEnabledStatus">
+		UPDATE ser_item_info_goods_eshop SET
+		enabled_status = #{enabledStatus}
+		WHERE eshop_code = #{eshopCode}
+		AND goods_id = #{goodsId}
+	</update>
+	<update id="updateGoodsEshopJointStatusAndCode">
+		UPDATE ser_item_info_goods_eshop SET
+		enabled_status = #{enabledStatus},
+		joint_goods_code = #{jointGoodsCode}
+		WHERE eshop_code = #{eshopCode}
+		AND goods_id = #{goodsId}
+	</update>
+
 </mapper>

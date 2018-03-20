@@ -43,15 +43,26 @@ public class OpenWaitUtils {
 		}
 	}
 
-	public static void updateGoodsEshopJointStatus(String eshopCode, List<String> jointGoodsCodes, String remove_fail) {
-		if(null != jointGoodsCodes){
-			SerItemCommodityEshop goodsEshop = new SerItemCommodityEshop();
-			for(String code : jointGoodsCodes){
-				goodsEshop = new SerItemCommodityEshop();
-				goodsEshop.setEshopCode(eshopCode);
-				goodsEshop.setJointGoodsCode(code);
-				goodsEshop.setJointStatus(remove_fail);
-				new UpdateGoodsEshopThread(goodsEshop, null, null).start();
+	public static void updateGoodsEshopJointStatus(List<SerItemCommodityEshop> goodsEshopList) {
+		if(null != goodsEshopList){
+			for(SerItemCommodityEshop goodsEshop : goodsEshopList){
+				new UpdateGoodsEshopJointStatusThread(goodsEshop, null, null).start();
+			}
+		}
+	}
+
+	public static void updateGoodsEshopEnabledStatus(List<SerItemCommodityEshop> goodsEshopList) {
+		if(null != goodsEshopList){
+			for(SerItemCommodityEshop goodsEshop : goodsEshopList){
+				new UpdateGoodsEshopEnabledStatusThread(goodsEshop, null, null).start();
+			}
+		}
+	}
+
+	public static void updateGoodsEshopJointStatusAndCode(List<SerItemCommodityEshop> goodsEshopList) {
+		if(null != goodsEshopList){
+			for(SerItemCommodityEshop goodsEshop : goodsEshopList){
+				new UpdateGoodsEshopJointStatusAndCodeThread(goodsEshop, null, null).start();
 			}
 		}
 	}
@@ -122,19 +133,49 @@ public class OpenWaitUtils {
 		}
 	}
 
-	public static class UpdateGoodsEshopThread extends Thread{
+	public static class UpdateGoodsEshopJointStatusThread extends Thread{
 		private SerItemCommodityEshop goodsEshop;
 		private Object handler;
 		private Exception ex;
-		public UpdateGoodsEshopThread(SerItemCommodityEshop goodsEshop, Object handler, Exception ex){
-			super(UpdateGoodsEshopThread.class.getSimpleName());
+		public UpdateGoodsEshopJointStatusThread(SerItemCommodityEshop goodsEshop, Object handler, Exception ex){
+			super(UpdateGoodsEshopJointStatusThread.class.getSimpleName());
 			this.goodsEshop = goodsEshop;
 			this.handler = handler;
 			this.ex = ex;
 		}
 		@Override
 		public void run() {
-			sysJointWaitDao.updateGoodsEshop(goodsEshop);
+			sysJointWaitDao.updateGoodsEshopJointStatus(goodsEshop);
+		}
+	}
+	public static class UpdateGoodsEshopEnabledStatusThread extends Thread{
+		private SerItemCommodityEshop goodsEshop;
+		private Object handler;
+		private Exception ex;
+		public UpdateGoodsEshopEnabledStatusThread(SerItemCommodityEshop goodsEshop, Object handler, Exception ex){
+			super(UpdateGoodsEshopEnabledStatusThread.class.getSimpleName());
+			this.goodsEshop = goodsEshop;
+			this.handler = handler;
+			this.ex = ex;
+		}
+		@Override
+		public void run() {
+			sysJointWaitDao.updateGoodsEshopEnabledStatus(goodsEshop);
+		}
+	}
+	public static class UpdateGoodsEshopJointStatusAndCodeThread extends Thread{
+		private SerItemCommodityEshop goodsEshop;
+		private Object handler;
+		private Exception ex;
+		public UpdateGoodsEshopJointStatusAndCodeThread(SerItemCommodityEshop goodsEshop, Object handler, Exception ex){
+			super(UpdateGoodsEshopJointStatusAndCodeThread.class.getSimpleName());
+			this.goodsEshop = goodsEshop;
+			this.handler = handler;
+			this.ex = ex;
+		}
+		@Override
+		public void run() {
+			sysJointWaitDao.updateGoodsEshopJointStatusAndCode(goodsEshop);
 		}
 	}
 }
