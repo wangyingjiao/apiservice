@@ -6,11 +6,14 @@ package com.thinkgem.jeesite.modules.service.service.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
@@ -107,9 +110,22 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
                         b.setEshopCode(basicOrganizationEshop.getEshopCode());
                         basicOrganizationDao.deleteEshopGoodsByEshopCode(b);
                         String eshopCode = basicOrganization.getEshopCode();
-                        List<String> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(b);
+                        List<SerItemCommodity> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(b);
                         if (jointGoodsCodes.size()>0) {
-                            OpenSendUtil.delGoodsByOrgEshop(eshopCode, jointGoodsCodes);
+							SerItemInfo sii = new SerItemInfo();
+							List<SerItemCommodity> sicList = new ArrayList<SerItemCommodity>();
+							for (SerItemCommodity sic : jointGoodsCodes){
+								List<SerItemCommodityEshop> siceList = new ArrayList<SerItemCommodityEshop>();
+								SerItemCommodityEshop sice = new SerItemCommodityEshop();
+								sice.setEshopCode(eshopCode);
+								sice.setJointGoodsCode(sic.getJointGoodsCode());
+								siceList.add(sice);
+								sic.setCommodityEshops(siceList);
+								sic.setSelfCode(sic.getSortId()+ Global.getConfig("openSendPath_goods_split")+sic.getId());
+								sicList.add(sic);
+							}
+							sii.setCommoditys(sicList);
+							OpenSendUtil.removeJointGoodsCodeByOrg(sii);
                         }
                     }
                     basicOrganizationDao.deleteEcode(basicOrganization);
@@ -220,9 +236,22 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
         //basicOrganizationDao.updEshopGoods(basicOrganization);
         basicOrganizationDao.deleteEshopGoodsByEshopCode(basicOrganization);
         String eshopCode = basicOrganization.getEshopCode();
-        List<String> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(basicOrganization);
+        List<SerItemCommodity> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(basicOrganization);
         if (jointGoodsCodes.size()>0) {
-            OpenSendUtil.delGoodsByOrgEshop(eshopCode, jointGoodsCodes);
+			SerItemInfo sii = new SerItemInfo();
+        	List<SerItemCommodity> sicList = new ArrayList<SerItemCommodity>();
+        	for (SerItemCommodity sic : jointGoodsCodes){
+        		List<SerItemCommodityEshop> siceList = new ArrayList<SerItemCommodityEshop>();
+        		SerItemCommodityEshop sice = new SerItemCommodityEshop();
+        		sice.setEshopCode(eshopCode);
+        		sice.setJointGoodsCode(sic.getJointGoodsCode());
+        		siceList.add(sice);
+        		sic.setCommodityEshops(siceList);
+        		sic.setSelfCode(sic.getSortId()+ Global.getConfig("openSendPath_goods_split")+sic.getId());
+        		sicList.add(sic);
+			}
+			sii.setCommoditys(sicList);
+			OpenSendUtil.removeJointGoodsCodeByOrg(sii);
         }
 	}
 

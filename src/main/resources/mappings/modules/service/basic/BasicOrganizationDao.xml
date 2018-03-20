@@ -317,8 +317,12 @@
         UPDATE ser_item_info_goods_eshop SET enabled_status = 'no' WHERE eshop_code = #{eshopCode}
     </delete>
 
-    <select id="getJointGoodsCodes" resultType="String">
-        SELECT joint_goods_code FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode}
+    <select id="getJointGoodsCodes" resultType="SerItemCommodity">
+        SELECT a.joint_goods_code AS jointGoodsCode,
+			b.sort_id AS sortId,
+			b.id
+         	FROM ser_item_info_goods_eshop a LEFT JOIN ser_item_info_goods b ON a.goods_id = b.id
+         	WHERE a.eshop_code = #{eshopCode}
     </select>
 
 	<select id="getOrgEShopList" resultType="int">

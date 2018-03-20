@@ -258,6 +258,7 @@
 			joint_status AS jointStatus,
 			enabled_status AS enabledSatus
 		FROM ser_item_info_goods_eshop
+
 		WHERE id = #{id}
 	</select>
 

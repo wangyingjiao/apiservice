@@ -618,6 +618,7 @@ public class SerItemInfoController extends BaseController {
             return new FailResult("系统异常");
         }
         List<String> goodids = serItemCommodity.getGoodIds();
+        List<SerItemInfo> siiList = new ArrayList<SerItemInfo>();
         for (String goodId : goodids){
             serItemCommodity.setId(goodId);
             int i = serItemCommodityService.getGoodsEshop(serItemCommodity);
@@ -626,6 +627,7 @@ public class SerItemInfoController extends BaseController {
             sii.setId(sic.getItemId());
             sii = serItemInfoService.get(sii);
             SerItemCommodityEshop sice = new SerItemCommodityEshop();
+            SerItemInfo sendItem = new SerItemInfo();
             if (i == 0){
                 sice.setId(IdGen.uuid());
                 sice.setOrgId(sii.getOrgId());
@@ -638,9 +640,12 @@ public class SerItemInfoController extends BaseController {
                 serItemCommodityService.updateGoodEshop(serItemCommodity);
             }
             //对接商品
+            List<SerItemCommodityEshop> siceList = new ArrayList<SerItemCommodityEshop>();
+            siceList.add(sice);
             SerItemCommodity sendGoods = new SerItemCommodity();
             sendGoods.setName(sic.getName());// 商品名称格式：项目名称（商品名）
             sendGoods.setPrice(sic.getPrice());// 商品价格
+            sendGoods.setCommodityEshops(siceList);
             sendGoods.setUnit(sic.getUnit());// 商品单位格式：次/个/间
             sendGoods.setSelfCode(
                     sii.getSortId() + Global.getConfig("openSendPath_goods_split") + sic.getId()); // 自营平台商品code
@@ -660,7 +665,7 @@ public class SerItemInfoController extends BaseController {
                 sii.setPictures(pictures1);
             }
             // 对接项目信息
-            SerItemInfo sendItem = new SerItemInfo();
+
             sendItem.setPictures(sii.getPictures());
             sendItem.setPictureDetails(sii.getPictureDetails());
             sendItem.setName(sii.getName());
@@ -668,8 +673,9 @@ public class SerItemInfoController extends BaseController {
             sendItem.setCusTags(sii.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
             // sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
             sendItem.setCommoditys(list);
-            OpenSendUtil.openSendSaveItem(sendItem,serItemCommodity.getEshopCode());
+            siiList.add(sendItem);
         }
+        OpenSendUtil.insertJointGoodsCode(siiList);
 
         return new SuccResult("对接成功，请耐心等待");
     }

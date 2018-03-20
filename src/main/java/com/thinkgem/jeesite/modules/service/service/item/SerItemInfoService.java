@@ -169,7 +169,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		sendItem.setCusTags(serItemInfo.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
 		// sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
 		sendItem.setCommoditys(sendGoodsList);
-		OpenSendUtil.openSendSaveItemList(sendItem);
+		OpenSendUtil.updateJointGoodsCode(sendItem);
 		/*String jointEshopCode = "";
 		BasicOrganization organization = dao.getBasicOrganizationByOrgId(serItemInfo);
 		if (organization != null) {
