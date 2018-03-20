@@ -241,6 +241,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
                 SerSkillTechnician serSkillTechnician = new SerSkillTechnician();
                 serSkillTechnician.setSkillId(skillId);
                 serSkillTechnician.setTechId(serviceTechnicianInfo.getId());
+                serSkillTechnician.setTechStationId(serviceTechnicianInfo.getStationId());
                 serSkillTechnician.preInsert();
                 serSkillTechnicianDao.insert(serSkillTechnician);
 
