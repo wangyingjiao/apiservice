@@ -314,7 +314,7 @@
     </update>
 
     <delete id="deleteEshopGoodsByEshopCode">
-        DELETE FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode}
+        UPDATE ser_item_info_goods_eshop SET enabled_status = 'no' WHERE eshop_code = #{eshopCode}
     </delete>
 
     <select id="getJointGoodsCodes" resultType="String">

@@ -56,4 +56,6 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     int getGoodsEshop(SerItemCommodity serItemCommodity);
 
     void insertGoodsEshop(SerItemCommodityEshop sice);
+
+    void updateGoodEshop(SerItemCommodity serItemCommodity);
 }

@@ -213,6 +213,7 @@
 			a.joint_status AS jointStatus
 			FROM ser_item_info_goods_eshop a
 			WHERE a.goods_id = #{id}
+			AND enabled_status = 'yes'
 	</select>
 
     <select id="getGoods" resultType="SerItemCommodity">
@@ -231,7 +232,7 @@
 			b.name AS eshopName,
 			a.joint_goods_code AS jointGoodsCode
 			FROM ser_item_info_goods_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
-			WHERE a.goods_id = #{id}
+			WHERE a.goods_id = #{id} AND a.enabled_status = 'yes'
 	</select>
 
 	<!--下拉列表 根据登录用户的机构id查询出对应E店名称-->
@@ -335,7 +336,7 @@
             <if test="goodsName != null and goodsName != ''">
                 AND g.name LIKE concat('%',#{goodsName},'%')
             </if>
-			AND g.id NOT  IN (SELECT goods_id FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode})
+			AND g.id NOT  IN (SELECT goods_id FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode} AND enabled_status = 'yes')
 			ORDER BY g.create_date DESC
 	</select>
 
@@ -371,4 +372,8 @@
               #{jointStatus}
         )
     </insert>
+
+	<update id="updateGoodEshop">
+		UPDATE ser_item_info_goods_eshop SET enabled_status = 'yes' WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+	</update>
 </mapper>

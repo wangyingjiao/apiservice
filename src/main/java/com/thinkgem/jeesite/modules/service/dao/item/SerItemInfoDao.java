@@ -46,4 +46,6 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
     SerItemInfo getItemInfoByCommodityId(SerItemCommodity serItemCommodity);
 
     List<SerItemCommodityEshop> getEshopGoods(SerItemCommodity commodity);
+
+    int getEshop(SerItemCommodityEshop sice);
 }

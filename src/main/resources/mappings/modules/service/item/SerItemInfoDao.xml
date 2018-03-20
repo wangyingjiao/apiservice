@@ -329,6 +329,10 @@
 	</select>
 
 	<select id="getEshopGoods" resultType="SerItemCommodityEshop">
-		SELECT eshop_code FROM ser_item_info_goods_eshop WHERE goods_id = #{id}
+		SELECT eshop_code AS eshopCode,enabled_status AS enabledStatus FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND enabled_status = 'yes'
+	</select>
+
+	<select id="getEshop" resultType="int">
+		SELECT COUNT(1) FROM basic_gasq_eshop WHERE status = '0' AND third_part = 'selfService' AND code = #{eshopCode}
 	</select>
 </mapper>

@@ -73,7 +73,13 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		return serItemCommodityDao.getGoodsEshop(serItemCommodity);
 	}
 
+	@Transactional(readOnly = false)
 	public void insertGoodsEshop(SerItemCommodityEshop sice) {
 		serItemCommodityDao.insertGoodsEshop(sice);
+	}
+
+    @Transactional(readOnly = false)
+	public void updateGoodEshop(SerItemCommodity serItemCommodity) {
+		serItemCommodityDao.updateGoodEshop(serItemCommodity);
 	}
 }
