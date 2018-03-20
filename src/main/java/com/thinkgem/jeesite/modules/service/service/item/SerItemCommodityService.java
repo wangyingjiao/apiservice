@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,7 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	}
 
 	public Page<SerItemCommodityEshop> findCommodityPage(Page<SerItemCommodityEshop> serItemCommodityEshopPage, SerItemCommodityEshop serItemCommodityEshop) {
+		serItemCommodityEshop.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "i"));
 		serItemCommodityEshop.setPage(serItemCommodityEshopPage);
 		List<SerItemCommodityEshop> list = serItemCommodityDao.findCommodityList(serItemCommodityEshop);
 		for (SerItemCommodityEshop sic : list){

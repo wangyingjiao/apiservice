@@ -340,6 +340,7 @@
                 AND g.name LIKE concat('%',#{goodsName},'%')
             </if>
 			AND g.id NOT  IN (SELECT goods_id FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode} AND enabled_status = 'yes')
+			${sqlMap.dsf}
 			ORDER BY g.create_date DESC
 	</select>
 
