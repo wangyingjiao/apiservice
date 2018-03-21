@@ -48,11 +48,11 @@ public class OpenLogUtils {
 			responseCode = request.getAttribute("openResponseCode").toString();
 		}
 
-		if(null!= request.getAttribute("openResponseSendType")){
+		/*if(null!= request.getAttribute("openResponseSendType")){
 			responseSendType = request.getAttribute("openResponseSendType").toString();
-		}
+		}*/
 
-		log.setSendType(responseSendType);
+		log.setSendType("gasq");
 		log.setSource("gasq");
 		log.setIsSuccess("1".equals(responseCode) ? SysJointLog.IS_SUCCESS_YES : SysJointLog.IS_SUCCESS_NO);
 		log.setRequestContent(requestContent);
