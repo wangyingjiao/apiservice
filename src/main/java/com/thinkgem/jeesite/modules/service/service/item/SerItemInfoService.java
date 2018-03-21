@@ -70,14 +70,26 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		try {
 			List<String> pictures = serItemInfo.getPictures();
 			if (null != pictures) {
-                String picture = JsonMapper.toJsonString(pictures);
-                serItemInfo.setPicture(picture);
+                List<String> picturesList = new ArrayList<String>();
+			    for (String picture : pictures){
+			        if (picture != null && !picture.equals("")){
+			            picturesList.add(picture);
+                    }
+                }
+                String picture1 = JsonMapper.toJsonString(picturesList);
+                serItemInfo.setPicture(picture1);
             }
 			// add by wyr 保存服务项目图文详情 saveData方法里的 pictureDetails属性
 			List<String> pictureDetails = serItemInfo.getPictureDetails();
 			if (null != pictureDetails) {
-                String pictureDetail = JsonMapper.toJsonString(pictureDetails);
-                serItemInfo.setPictureDetail(pictureDetail);
+                List<String> pictureDetailsList = new ArrayList<String>();
+                for (String pictureDetail : pictureDetails){
+                    if (pictureDetail != null && !pictureDetail.equals("")){
+                        pictureDetailsList.add(pictureDetail);
+                    }
+                }
+                String pictureDetail1 = JsonMapper.toJsonString(pictureDetailsList);
+                serItemInfo.setPictureDetail(pictureDetail1);
             }
 			serItemInfo.preUpdate();
 
@@ -105,6 +117,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                 // 批量插入商品信息
                 for (SerItemCommodity commodity : commoditys) {
 					commodity.setItemId(serItemInfo.getId());
+					commodity.setItemGoodName(serItemInfo.getName()+"("+commodity.getName()+")");
 					commodity.setSortId(serItemInfo.getSortId());
 					commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
 					commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT

@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.sort_id AS "sortId",
 		a.item_id AS "itemId",
+        a.joint_name AS itemGoodName,
 		a.name AS "name",
 		a.unit AS "unit",
 		a.type AS "type",
@@ -73,6 +74,7 @@
 			sort_id,
 			item_id,
 			name,
+			joint_name,
 			unit,
 			type,
 			price,
@@ -91,6 +93,7 @@
 			#{sortId},
 			#{itemId},
 			#{name},
+			#{itemGoodName},
 			#{unit},
 			#{type},
 			#{price},
@@ -111,6 +114,9 @@
 		UPDATE ser_item_info_goods SET 	
 			<if test="name != null and name != ''">
 				name = #{name},
+			</if>
+			<if test="itemGoodName != null and itemGoodName != ''">
+				joint_name = #{itemGoodName},
 			</if>
 			<if test="unit != null and unit != ''">
 				unit = #{unit},
@@ -337,7 +343,7 @@
                 AND s.id = #{sortId}
             </if>
             <if test="goodsName != null and goodsName != ''">
-                AND g.name LIKE concat('%',#{goodsName},'%')
+                AND g.joint_name LIKE concat('%',#{goodsName},'%')
             </if>
 			AND g.id NOT  IN (SELECT goods_id FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode} AND enabled_status = 'yes')
 			${sqlMap.dsf}
