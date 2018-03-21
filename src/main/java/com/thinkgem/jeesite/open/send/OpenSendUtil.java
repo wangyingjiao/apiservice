@@ -6,11 +6,13 @@ package com.thinkgem.jeesite.open.send;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.sys.dao.SysJointWaitDao;
 import com.thinkgem.jeesite.modules.sys.entity.SysJointWait;
 import com.thinkgem.jeesite.modules.sys.utils.OpenWaitUtils;
 import com.thinkgem.jeesite.open.entity.*;
@@ -23,6 +25,8 @@ import java.util.*;
  */
 
 public class OpenSendUtil {
+	private static SysJointWaitDao sysJointWaitDao = SpringContextHolder.getBean(SysJointWaitDao.class);
+
 	/**
 	 *  国安社区开放接口 - 更新订单信息
 	 *  更新服务时间、改派服务人员、服务人员端备注
@@ -66,7 +70,9 @@ public class OpenSendUtil {
 		waitInfo.setMany("yes");
 		waitInfo.setNum(0);
 		waitInfo.setRequestContent(json);
-		OpenWaitUtils.saveSendWait(waitInfo);
+		//OpenWaitUtils.saveSendWait(waitInfo);
+		waitInfo.preInsert();
+		sysJointWaitDao.insert(waitInfo);
 	}
 
     /***
@@ -119,7 +125,9 @@ public class OpenSendUtil {
 		waitInfo.setMany("no");
 		waitInfo.setNum(0);
 		waitInfo.setRequestContent(json);
-		OpenWaitUtils.saveSendWait(waitInfo);
+		//OpenWaitUtils.saveSendWait(waitInfo);
+		waitInfo.preInsert();
+		sysJointWaitDao.insert(waitInfo);
 	}
 
 	/**
@@ -168,7 +176,9 @@ public class OpenSendUtil {
 		waitInfo.setMany("yes");
 		waitInfo.setNum(0);
 		waitInfo.setRequestContent(json);
-		OpenWaitUtils.saveSendWait(waitInfo);
+		//OpenWaitUtils.saveSendWait(waitInfo);
+		waitInfo.preInsert();
+		sysJointWaitDao.insert(waitInfo);
 	}
 
 	/**
@@ -293,7 +303,9 @@ public class OpenSendUtil {
 		waitInfo.setMany("yes");
 		waitInfo.setNum(0);
 		waitInfo.setRequestContent(json);
-		OpenWaitUtils.saveSendWait(waitInfo);
+		//OpenWaitUtils.saveSendWait(waitInfo);
+		waitInfo.preInsert();
+		sysJointWaitDao.insert(waitInfo);
 	}
 
 	/**
@@ -416,7 +428,9 @@ public class OpenSendUtil {
 		waitInfo.setMany("yes");
 		waitInfo.setNum(0);
 		waitInfo.setRequestContent(json);
-		OpenWaitUtils.saveSendWait(waitInfo);
+		//OpenWaitUtils.saveSendWait(waitInfo);
+		waitInfo.preInsert();
+		sysJointWaitDao.insert(waitInfo);
 	}
 
 }

@@ -60,6 +60,21 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			System.out.println("无待执行对接数据");
 		}else{
 			for(SysJointWait info : list){
+				if(StringUtils.isBlank(info.getRequestContent())){
+					//保存对接日志表
+					SysJointLog log = new SysJointLog();
+					log.setUrl(info.getUrl());
+					log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+					log.setSendType(info.getSendType());
+					log.setSource("own");
+					log.setRequestContent(info.getRequestContent());
+					OpenLogUtils.saveSendLog(log);
+
+					//删除待执行表
+					OpenWaitUtils.delSendWait(info);
+					continue;
+				}
+
 				if("org_del_goods".equals(info.getSendType())){
 					String json = info.getRequestContent();
 					String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
