@@ -329,7 +329,7 @@
 	</select>
 
 	<select id="getEshopGoods" resultType="SerItemCommodityEshop">
-		SELECT eshop_code AS eshopCode,enabled_status AS enabledStatus FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND enabled_status = 'yes'
+		SELECT eshop_code AS eshopCode,joint_goods_code AS jointGoodsCode, enabled_status AS enabledStatus FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND enabled_status = 'yes'
 	</select>
 
 	<select id="getEshop" resultType="int">

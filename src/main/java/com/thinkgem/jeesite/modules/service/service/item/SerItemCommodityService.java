@@ -56,7 +56,7 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		List<SerItemCommodityEshop> list = serItemCommodityDao.findCommodityList(serItemCommodityEshop);
 		for (SerItemCommodityEshop sic : list){
 		    sic.setNewName(sic.getItemName()+"("+sic.getGoodsName()+")");
-		    sic.setUnivalence(sic.getPrice()+"/"+sic.getUnit());
+		    sic.setUnivalence(sic.getPrice()+"元/"+sic.getUnit());
         }
 		serItemCommodityEshopPage.setList(list);
 		return serItemCommodityEshopPage;
