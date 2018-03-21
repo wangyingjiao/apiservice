@@ -61,7 +61,7 @@ public class OpenSendUtil {
 
 		SysJointWait waitInfo = new SysJointWait();
 		waitInfo.setSendType("save_order");
-		waitInfo.setOrderNumber(order_sn);
+		//waitInfo.setOrderNumber(order_sn);
 		waitInfo.setUrl(url);
 		waitInfo.setMany("yes");
 		waitInfo.setNum(0);
