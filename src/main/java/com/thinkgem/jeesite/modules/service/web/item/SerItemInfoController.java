@@ -313,11 +313,17 @@ public class SerItemInfoController extends BaseController {
                 return new FailResult("商品已对接，不可删除");
             }
         }else {
+            int i = 0;
             for (SerItemCommodity serItemCommodity : scList) {
                 List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(serItemCommodity);
                 if (siceList.size() == 0) {
                     serItemCommodityService.delete(serItemCommodity);
+                }else {
+                    i++;
                 }
+            }
+            if (scList.size() == i){
+                return new FailResult("删除失败");
             }
             List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
             if (scLists.size() == 0) {
