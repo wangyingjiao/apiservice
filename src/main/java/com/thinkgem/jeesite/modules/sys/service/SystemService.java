@@ -541,6 +541,10 @@ public class SystemService extends BaseService implements InitializingBean {
        return userRe;
     }
 
+    public String getUserRole(String principalId) {
+        return roleDao.getRoleIdByUserId(principalId);
+    }
+
 //	public Page<Role> findRolePage(Page){
 //
 //	}

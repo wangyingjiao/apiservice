@@ -25,6 +25,9 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,10 +44,7 @@ import static com.thinkgem.jeesite.modules.sys.utils.UserUtils.genTreeMenu;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 角色Controller
@@ -448,6 +448,18 @@ public class RoleController extends BaseController {
 			return new FailResult("岗位名称重复");
 		}
 		systemService.saveRole(role);
+
+		//删除当前岗位下的登陆用户
+		Collection<Session> sessions =  systemService.getSessionDao().getActiveSessions();
+		Iterator sessionsIt =sessions.iterator();
+		while(sessionsIt.hasNext()){
+			Session session = (Session)sessionsIt.next();
+			String principalId = session.getAttribute("principalId").toString();
+			String sessionUserRoleId = systemService.getUserRole(principalId);
+			if(role.getId().equals(sessionUserRoleId)){
+				systemService.getSessionDao().delete(session);
+			}
+		}
 
 		return new SuccResult(role);
 

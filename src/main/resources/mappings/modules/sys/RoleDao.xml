@@ -337,4 +337,14 @@
         </if>
 		
 	</select>
+
+
+
+	<select id="getRoleIdByUserId" resultType="String">
+		SELECT
+		a.role_id
+		FROM sys_user_role a
+		WHERE a.user_id = #{id}
+	</select>
+
 </mapper>

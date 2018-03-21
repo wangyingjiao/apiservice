@@ -24,6 +24,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +32,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.thinkgem.jeesite.modules.sys.utils.UserUtils.genTreeMenu;
 
@@ -370,6 +369,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "upData", method = RequestMethod.POST)
     @ApiOperation(value = "保存用户！")
     public Result upData(@RequestBody User user) {
+        User olduser = systemService.getUser(user.getId());
 
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
         user.setOrganization(organizationService.get(user.getOfficeId()));
@@ -458,6 +458,22 @@ public class UserController extends BaseController {
             UserUtils.clearCache();
         }
         UserUtils.getUser(user.getId());
+
+        //删除当前编辑用户session
+        Collection<Session> sessions =  systemService.getSessionDao().getActiveSessions();
+        Iterator sessionsIt =sessions.iterator();
+        while(sessionsIt.hasNext()){
+            Session session = (Session)sessionsIt.next();
+            String principalId = session.getAttribute("principalId").toString();
+            if(olduser.getId().equals(principalId) ){
+                if(!olduser.getStation().getId().equals(user.getStation().getId())
+                        || !olduser.getRole().getId().equals(user.getRoleList().get(0).getId())
+                        || !olduser.getUseable().equals(user.getUseable())) {
+                    systemService.getSessionDao().delete(session);
+                }
+            }
+        }
+
         return new SuccResult(user);
     }
 
