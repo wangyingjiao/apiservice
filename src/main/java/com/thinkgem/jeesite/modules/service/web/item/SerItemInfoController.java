@@ -677,6 +677,6 @@ public class SerItemInfoController extends BaseController {
         }
         OpenSendUtil.insertJointGoodsCode(siiList);
 
-        return new SuccResult("对接成功，请耐心等待");
+        return new SuccResult("对接成功");
     }
 }
