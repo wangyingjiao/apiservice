@@ -609,13 +609,12 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		List<String> goodIds = serItemCommodity.getGoodIds();
 		List<String> list=new ArrayList<String>();
 		SerItemInfo serItemInfo=new SerItemInfo();
-		//获取eshopCode 存入eshop对象中再放入商品属性中
-		String eshopCode = serItemCommodity.getEshopCode();
-		List<SerItemCommodityEshop> commodityEshops =new ArrayList<SerItemCommodityEshop>();
 		List<SerItemCommodity> commoditys=new ArrayList<SerItemCommodity>();
 		//获取商品id的集合
 		if (goodIds != null && goodIds.size()>0) {
 			for (String s : goodIds) {
+				//获取eshopCode 存入eshop对象中再放入商品属性中
+				List<SerItemCommodityEshop> commodityEshops =new ArrayList<SerItemCommodityEshop>();
 				SerItemCommodityEshop serItemCommodityEshop =new SerItemCommodityEshop();
 				serItemCommodityEshop.setId(s);
 				//去数据库中查询对应的SerItemCommodityEshop表
