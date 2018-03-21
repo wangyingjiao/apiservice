@@ -17,7 +17,7 @@
 
     <bean id="cronTrigger_1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail_1"/>
-        <property name="cronExpression" value="0/15 * * * * ?"/>
+        <property name="cronExpression" value="15 0/1 * * * ?"/>
     </bean>
 
     <bean id="jobFactory" class="com.thinkgem.jeesite.common.quartz.JobFactory"></bean>
