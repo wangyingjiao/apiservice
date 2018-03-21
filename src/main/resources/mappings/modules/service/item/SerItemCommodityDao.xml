@@ -300,7 +300,7 @@
 				AND d.id=#{sortId}
 			</if>
 			<if test="goodsName != null and goodsName != ''">
-				AND c.name LIKE concat('%',#{goodsName},'%')
+				AND c.joint_name LIKE concat('%',#{goodsName},'%')
 			</if>
 			<if test="goodsId != null and goodsId != ''">
 				AND c.id=#{goodsId}
