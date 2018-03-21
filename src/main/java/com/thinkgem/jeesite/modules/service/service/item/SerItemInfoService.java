@@ -678,7 +678,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                 //拼接 商品名称
                 shop.setNewName(shop.getItemName() + "(" + serItemCommodity.getName() + ")");
                 //拼接 价格/单位
-                shop.setUnivalence(serItemCommodity.getPrice() + "/" + serItemCommodity.getUnit());
+                shop.setUnivalence(serItemCommodity.getPrice() + "元/" + serItemCommodity.getUnit());
                 //拼接对接编码
                 shop.setSelfCode(serItemCommodity.getSortId() + "_" + serItemCommodity.getId());
 			}
