@@ -43,6 +43,16 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private List<SerItemCommodityEshop> commodityEshops;
 	private String jointCode;
 
+	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
+
+	public String getJointEshopFlag() {
+		return jointEshopFlag;
+	}
+
+	public void setJointEshopFlag(String jointEshopFlag) {
+		this.jointEshopFlag = jointEshopFlag;
+	}
+
 	public List<String> getGoodIds() {
 		return goodIds;
 	}

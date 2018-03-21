@@ -220,6 +220,14 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		if (list.size() != 0 && null != list) {//返回查询条件对应的服务分类的商品集合
 			for (SerItemInfo itemInfo : list) {
 				List<SerItemCommodity> findListByItemId = serItemCommodityDao.findListByItemId(itemInfo);
+				for (SerItemCommodity sic : findListByItemId){
+					List<SerItemCommodityEshop> siceList = serItemCommodityDao.getEshopGoods(sic);
+					if (siceList.size()>0){
+					    sic.setJointEshopFlag("yes");
+                    }else {
+					    sic.setJointEshopFlag("no");
+                    }
+				}
 				itemInfo.setCommoditys(findListByItemId);
 			}
 		}
