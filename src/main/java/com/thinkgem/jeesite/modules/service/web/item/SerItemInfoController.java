@@ -628,10 +628,10 @@ public class SerItemInfoController extends BaseController {
             sii = serItemInfoService.get(sii);
             SerItemCommodityEshop sice = new SerItemCommodityEshop();
             SerItemInfo sendItem = new SerItemInfo();
+            sice.setEshopCode(serItemCommodity.getEshopCode());
             if (i == 0){
                 sice.setId(IdGen.uuid());
                 sice.setOrgId(sii.getOrgId());
-                sice.setEshopCode(serItemCommodity.getEshopCode());
                 sice.setItemId(sii.getId());
                 sice.setGoodsId(sic.getId());
                 sice.setJointStatus("butt_butt");

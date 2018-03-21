@@ -378,6 +378,10 @@
     </insert>
 
 	<update id="updateGoodEshop">
-		UPDATE ser_item_info_goods_eshop SET enabled_status = 'yes' WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+		UPDATE ser_item_info_goods_eshop SET
+			enabled_status = 'yes',
+			joint_goods_code = '',
+			joint_status = 'butt_butt'
+			WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
 	</update>
 </mapper>

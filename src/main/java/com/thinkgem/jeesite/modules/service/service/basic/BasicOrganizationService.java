@@ -103,17 +103,17 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
             dao.insert(basicOrganization);
         }else {
             if (basicOrganization.getDockType().equals("")) {
-				List<BasicOrganizationEshop> list=basicOrganizationDao.findListByOrgId(basicOrganization);
+				List<BasicOrganizationEshop> list=basicOrganizationDao.findListByOrgId(basicOrganization);//查询机构下所有已对接E店
 				if (list.size()>0) {
+					SerItemInfo sii = new SerItemInfo();
+					List<SerItemCommodity> sicList = new ArrayList<SerItemCommodity>();
                     for (BasicOrganizationEshop basicOrganizationEshop : list){
                         BasicOrganization b = new BasicOrganization();
                         b.setEshopCode(basicOrganizationEshop.getEshopCode());
                         basicOrganizationDao.deleteEshopGoodsByEshopCode(b);
-                        String eshopCode = basicOrganization.getEshopCode();
+                        String eshopCode = b.getEshopCode();
                         List<SerItemCommodity> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(b);
                         if (jointGoodsCodes.size()>0) {
-							SerItemInfo sii = new SerItemInfo();
-							List<SerItemCommodity> sicList = new ArrayList<SerItemCommodity>();
 							for (SerItemCommodity sic : jointGoodsCodes){
 								List<SerItemCommodityEshop> siceList = new ArrayList<SerItemCommodityEshop>();
 								SerItemCommodityEshop sice = new SerItemCommodityEshop();
@@ -124,10 +124,10 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 								sic.setSelfCode(sic.getSortId()+ Global.getConfig("openSendPath_goods_split")+sic.getId());
 								sicList.add(sic);
 							}
-							sii.setCommoditys(sicList);
-							OpenSendUtil.removeJointGoodsCodeByOrg(sii);
                         }
                     }
+					sii.setCommoditys(sicList);
+					OpenSendUtil.removeJointGoodsCodeByOrg(sii);
                     basicOrganizationDao.deleteEcode(basicOrganization);
                 }
             }else {
