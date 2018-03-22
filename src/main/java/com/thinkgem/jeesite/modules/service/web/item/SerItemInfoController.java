@@ -623,66 +623,73 @@ public class SerItemInfoController extends BaseController {
         if (serItemCommodity == null){
             return new FailResult("系统异常");
         }
-        List<String> goodids = serItemCommodity.getGoodIds();
-        List<SerItemInfo> siiList = new ArrayList<SerItemInfo>();
-        for (String goodId : goodids){
-            serItemCommodity.setId(goodId);
-            int i = serItemCommodityService.getGoodsEshop(serItemCommodity);
-            SerItemCommodity sic = serItemCommodityService.get(serItemCommodity);
-            SerItemInfo sii = new SerItemInfo();
-            sii.setId(sic.getItemId());
-            sii = serItemInfoService.get(sii);
-            SerItemCommodityEshop sice = new SerItemCommodityEshop();
-            SerItemInfo sendItem = new SerItemInfo();
-            sice.setEshopCode(serItemCommodity.getEshopCode());
-            if (i == 0){
-                sice.setId(IdGen.uuid());
-                sice.setOrgId(sii.getOrgId());
-                sice.setItemId(sii.getId());
-                sice.setGoodsId(sic.getId());
-                sice.setJointStatus("butt_butt");
-                serItemCommodityService.insertGoodsEshop(sice);
-            }else {
-                serItemCommodityService.updateGoodEshop(serItemCommodity);
-            }
-            //对接商品
-            List<SerItemCommodityEshop> siceList = new ArrayList<SerItemCommodityEshop>();
-            siceList.add(sice);
-            SerItemCommodity sendGoods = new SerItemCommodity();
-            sendGoods.setName(sic.getName());// 商品名称格式：项目名称（商品名）
-            sendGoods.setPrice(sic.getPrice());// 商品价格
-            sendGoods.setCommodityEshops(siceList);
-            sendGoods.setUnit(sic.getUnit());// 商品单位格式：次/个/间
-            sendGoods.setSelfCode(
-                    sii.getSortId() + Global.getConfig("openSendPath_goods_split") + sic.getId()); // 自营平台商品code
-            // ID
-            sendGoods.setMinPurchase(sic.getMinPurchase());// 最小购买数量，起购数量
-            List<SerItemCommodity> list = new ArrayList<SerItemCommodity>();
-            list.add(sendGoods);
+        SerItemCommodityEshop serItemCommodityEshop = new SerItemCommodityEshop();
+        serItemCommodityEshop.setEshopCode(serItemCommodity.getEshopCode());
+        String eshopStatus = serItemCommodityService.getEshop(serItemCommodityEshop);
+        if (eshopStatus.equals("yes")) {
+            List<String> goodids = serItemCommodity.getGoodIds();
+            List<SerItemInfo> siiList = new ArrayList<SerItemInfo>();
+            for (String goodId : goodids) {
+                serItemCommodity.setId(goodId);
+                int i = serItemCommodityService.getGoodsEshop(serItemCommodity);
+                SerItemCommodity sic = serItemCommodityService.get(serItemCommodity);
+                SerItemInfo sii = new SerItemInfo();
+                sii.setId(sic.getItemId());
+                sii = serItemInfoService.get(sii);
+                SerItemCommodityEshop sice = new SerItemCommodityEshop();
+                SerItemInfo sendItem = new SerItemInfo();
+                sice.setEshopCode(serItemCommodity.getEshopCode());
+                if (i == 0) {
+                    sice.setId(IdGen.uuid());
+                    sice.setOrgId(sii.getOrgId());
+                    sice.setItemId(sii.getId());
+                    sice.setGoodsId(sic.getId());
+                    sice.setJointStatus("butt_butt");
+                    serItemCommodityService.insertGoodsEshop(sice);
+                } else {
+                    serItemCommodityService.updateGoodEshop(serItemCommodity);
+                }
+                //对接商品
+                List<SerItemCommodityEshop> siceList = new ArrayList<SerItemCommodityEshop>();
+                siceList.add(sice);
+                SerItemCommodity sendGoods = new SerItemCommodity();
+                sendGoods.setName(sic.getName());// 商品名称格式：项目名称（商品名）
+                sendGoods.setPrice(sic.getPrice());// 商品价格
+                sendGoods.setCommodityEshops(siceList);
+                sendGoods.setUnit(sic.getUnit());// 商品单位格式：次/个/间
+                sendGoods.setSelfCode(
+                        sii.getSortId() + Global.getConfig("openSendPath_goods_split") + sic.getId()); // 自营平台商品code
+                // ID
+                sendGoods.setMinPurchase(sic.getMinPurchase());// 最小购买数量，起购数量
+                List<SerItemCommodity> list = new ArrayList<SerItemCommodity>();
+                list.add(sendGoods);
 
-            String pictureDetail = sii.getPictureDetail();
-            if (null != pictureDetail) {
-                List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail, ArrayList.class);
-                sii.setPictureDetails(pictureDetailsa);
-            }
-            String picture = sii.getPicture();
-            if (null != picture) {
-                List<String> pictures1 = (List<String>) JsonMapper.fromJsonString(picture, ArrayList.class);
-                sii.setPictures(pictures1);
-            }
-            // 对接项目信息
+                String pictureDetail = sii.getPictureDetail();
+                if (null != pictureDetail) {
+                    List<String> pictureDetailsa = (List<String>) JsonMapper.fromJsonString(pictureDetail, ArrayList.class);
+                    sii.setPictureDetails(pictureDetailsa);
+                }
+                String picture = sii.getPicture();
+                if (null != picture) {
+                    List<String> pictures1 = (List<String>) JsonMapper.fromJsonString(picture, ArrayList.class);
+                    sii.setPictures(pictures1);
+                }
+                // 对接项目信息
 
-            sendItem.setPictures(sii.getPictures());
-            sendItem.setPictureDetails(sii.getPictureDetails());
-            sendItem.setName(sii.getName());
-            sendItem.setTags(sii.getTags());// 系统标签格式：系统标签1,系统标签2,系统标签3,
-            sendItem.setCusTags(sii.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
-            // sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
-            sendItem.setCommoditys(list);
-            siiList.add(sendItem);
+                sendItem.setPictures(sii.getPictures());
+                sendItem.setPictureDetails(sii.getPictureDetails());
+                sendItem.setName(sii.getName());
+                sendItem.setTags(sii.getTags());// 系统标签格式：系统标签1,系统标签2,系统标签3,
+                sendItem.setCusTags(sii.getCusTags());// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
+                // sendItem.setSale(serItemInfo.getSale());//上架 下架 on off
+                sendItem.setCommoditys(list);
+                siiList.add(sendItem);
+            }
+            OpenSendUtil.insertJointGoodsCode(siiList);
+
+            return new SuccResult("对接成功");
+        }else {
+            return new FailResult("对接失败");
         }
-        OpenSendUtil.insertJointGoodsCode(siiList);
-
-        return new SuccResult("对接成功");
     }
 }
