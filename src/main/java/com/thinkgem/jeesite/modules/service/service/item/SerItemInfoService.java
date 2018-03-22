@@ -684,6 +684,12 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			}
 		}
 		serItemCommodityEshop.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
+		//判断输入的名字是否为空 不为空 再转换为半角
+		String goodsName = serItemCommodityEshop.getGoodsName();
+		if (StringUtils.isNotBlank(goodsName)){
+			String s = changeChar(goodsName);
+			serItemCommodityEshop.setGoodsName(s);
+		}
 		List<SerItemCommodityEshop> goodsCode = serItemCommodityDao.getGoodsList(serItemCommodityEshop);
 		if (goodsCode !=null && goodsCode.size()>0) {
 			for (SerItemCommodityEshop shop : goodsCode) {
@@ -702,6 +708,22 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		}
 		page.setList(goodsCode);
 		return page;
+	}
+
+	//判断是否是全角 是全角则转换为半角
+	public static String changeChar(String str){
+		char[] chars_test1 = str.toCharArray();
+		String temp =null;
+		for (int i = 0; i < chars_test1.length; i++) {
+			temp = String.valueOf(chars_test1[i]);
+			// 判断是全角字符
+			if (temp.matches("[^\\x00-\\xff]")) {
+				// System.out.println("全角   " + temp);
+				return temp;
+			}
+			// 判断是半角字符 不操作直接返回
+		}
+		return temp;
 	}
 
 }
