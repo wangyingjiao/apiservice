@@ -13,6 +13,7 @@
         <property name="targetObject" ref="quartzUtil" />
         <!-- 要执行的方法名称 -->
         <property name="targetMethod" value="doJointWait" />
+        <property name="concurrent" value="false" />
     </bean>
 
     <bean id="cronTrigger_1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
