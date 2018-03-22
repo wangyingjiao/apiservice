@@ -635,7 +635,7 @@ public class SerItemInfoController extends BaseController {
         }
         BasicOrganizationEshop basicOrganizationEshop = new BasicOrganizationEshop();
         basicOrganizationEshop.setEshopCode(serItemCommodity.getEshopCode());
-        basicOrganizationEshop.setOrgId(UserUtils.getUser().getOrgId());
+        basicOrganizationEshop.setOrgId(UserUtils.getUser().getOrganization().getId());
         int count = basicOrganizationService.getOrgEShop(basicOrganizationEshop);
         if (count>0) {
             List<String> goodids = serItemCommodity.getGoodIds();
