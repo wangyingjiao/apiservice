@@ -24,5 +24,11 @@
 			#{createDate}
 		)
 	</insert>
-	
+
+	<update id="update">
+		UPDATE sys_joint_log SET
+		is_success = #{isSuccess},
+		response_content = #{responseContent}
+		WHERE id = #{id}
+	</update>
 </mapper>
