@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
 import com.thinkgem.jeesite.modules.service.service.item.SerItemCommodityService;
 import com.thinkgem.jeesite.modules.service.service.item.SerItemInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
@@ -54,6 +55,8 @@ public class SerItemInfoController extends BaseController {
     private SerItemInfoService serItemInfoService;
     @Autowired
     private SerItemCommodityService serItemCommodityService;
+    @Autowired
+    private BasicOrganizationService basicOrganizationService;
 
     @ModelAttribute
     public SerItemInfo get(@RequestParam(required = false) String id) {
@@ -629,10 +632,10 @@ public class SerItemInfoController extends BaseController {
         if (serItemCommodity == null){
             return new FailResult("系统异常");
         }
-        SerItemCommodityEshop serItemCommodityEshop = new SerItemCommodityEshop();
-        serItemCommodityEshop.setEshopCode(serItemCommodity.getEshopCode());
-        String eshopStatus = serItemCommodityService.getEshop(serItemCommodityEshop);
-        if (eshopStatus.equals("yes")) {
+        BasicGasqEshop basicGasqEshop = new BasicGasqEshop();
+        basicGasqEshop.setCode(serItemCommodity.getEshopCode());
+        int count = basicOrganizationService.getOrgEShopByCode(basicGasqEshop);
+        if (count>0) {
             List<String> goodids = serItemCommodity.getGoodIds();
             List<SerItemInfo> siiList = new ArrayList<SerItemInfo>();
             for (String goodId : goodids) {
