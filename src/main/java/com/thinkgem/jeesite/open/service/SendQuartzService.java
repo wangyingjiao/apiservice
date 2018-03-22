@@ -70,6 +70,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			System.out.println("无待执行对接数据");
 		}else{
 			for(SysJointWait info : list){
+				System.out.println("-- SendQuartzService---doJointWait---" + info.toString());
 				if(StringUtils.isBlank(info.getRequestContent())){// 请求参数为空
 					this.doJointWaitNull(info);
 					continue;
@@ -110,9 +111,11 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 		log.setSendType(info.getSendType());
 		log.setSource(SOURCE_OWN);
 		log.setRequestContent(info.getRequestContent());
+		System.out.println("-- SendQuartzService---doJointWaitNull---" + log.toString());
 		OpenLogUtils.saveSendLog(log);
 
 		//删除待执行表
+		System.out.println("-- SendQuartzService---doJointWaitNull---" + info.toString());
 		OpenWaitUtils.delSendWait(info);
 	}
 
@@ -143,6 +146,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 				log.setSendType(SEND_TYPE_SAVE_ORDER);
 				log.setSource(SOURCE_OWN);
 				log.setRequestContent(json);
+				System.out.println("-- SendQuartzService---doJointWaitSaveOrder---1---" + log.toString());
 				OpenLogUtils.saveSendLog(log);
 
 				//删除待执行表
@@ -162,6 +166,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 					log.setSendType(SEND_TYPE_SAVE_ORDER);
 					log.setSource(SOURCE_OWN);
 					log.setRequestContent(json);
+					System.out.println("-- SendQuartzService---doJointWaitSaveOrder---2---" + log.toString());
 					OpenLogUtils.saveSendLog(log);
 
 					//删除待执行表
@@ -201,6 +206,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 				log.setSendType(SEND_TYPE_SAVE_GOODS);
 				log.setSource(SOURCE_OWN);
 				log.setRequestContent(json);
+				System.out.println("-- SendQuartzService---doJointWaitSaveGoods---1---" + log.toString());
 				OpenLogUtils.saveSendLog(log);
 
 				//删除待执行表
@@ -251,6 +257,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 					log.setSendType(SEND_TYPE_SAVE_GOODS);
 					log.setSource(SOURCE_OWN);
 					log.setRequestContent(json);
+					System.out.println("-- SendQuartzService---doJointWaitSaveGoods---2---" + log.toString());
 					OpenLogUtils.saveSendLog(log);
 
 					//删除待执行表
@@ -317,6 +324,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 				log.setSendType(SEND_TYPE_DEL_GOODS);
 				log.setSource(SOURCE_OWN);
 				log.setRequestContent(json);
+				System.out.println("-- SendQuartzService---doJointWaitDelGoods---1---" + log.toString());
 				OpenLogUtils.saveSendLog(log);
 
 				//删除待执行表
@@ -366,6 +374,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 					log.setSendType(SEND_TYPE_DEL_GOODS);
 					log.setSource(SOURCE_OWN);
 					log.setRequestContent(json);
+					System.out.println("-- SendQuartzService---doJointWaitDelGoods---2---" + log.toString());
 					OpenLogUtils.saveSendLog(log);
 
 					//删除待执行表
@@ -435,6 +444,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			log.setSendType(SEND_TYPE_ORG_DEL_GOODS);
 			log.setSource(SOURCE_OWN);
 			log.setRequestContent(json);
+			System.out.println("-- SendQuartzService---doJointWaitOrgDelGoods---" + log.toString());
 			OpenLogUtils.saveSendLog(log);
 
 			//删除待执行表

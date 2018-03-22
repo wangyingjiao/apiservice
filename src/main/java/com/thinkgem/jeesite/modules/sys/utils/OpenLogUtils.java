@@ -58,17 +58,20 @@ public class OpenLogUtils {
 		log.setRequestContent(requestContent);
 		log.setResponseContent(responseContent);
 		// 异步保存日志
+        System.out.println("-- OpenLogUtils---saveLog---" + log.toString());
 		new SaveLogThread(log, handler, ex).start();
 	}
 
 
 	public static void saveSendLog(SysJointLog log){
 		// 异步保存日志
+        System.out.println("-- OpenLogUtils---saveSendLog---" + log.toString());
 		new SaveOwnLogThread(log, null, null).start();
 	}
 
 	public static void updateSendLog(SysJointLog log) {
 		// 异步保存日志
+        System.out.println("-- OpenLogUtils---updateSendLog---" + log.toString());
 		new UpdateLogThread(log, null, null).start();
 	}
 
@@ -89,6 +92,7 @@ public class OpenLogUtils {
 		public void run() {
 			// 保存日志信息
 			log.preInsert();
+            System.out.println("-- OpenLogUtils---SaveLogThread---run---" + log.toString());
 			sysJointLogDao.insert(log);
 		}
 	}
@@ -107,6 +111,7 @@ public class OpenLogUtils {
 		public void run() {
 			// 保存日志信息
 			log.preInsert();
+            System.out.println("-- OpenLogUtils---SaveOwnLogThread---run---" + log.toString());
 			sysJointLogDao.insert(log);
 		}
 	}
@@ -125,6 +130,7 @@ public class OpenLogUtils {
 		public void run() {
 			// 保存日志信息
 			log.preUpdate();
+            System.out.println("-- OpenLogUtils---UpdateLogThread---run---" + log.toString());
 			sysJointLogDao.update(log);
 		}
 	}

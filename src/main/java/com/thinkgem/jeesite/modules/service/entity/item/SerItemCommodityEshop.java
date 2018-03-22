@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.service.entity.item;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -202,5 +203,10 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
 
     public void setJointStatus(String jointStatus) {
         this.jointStatus = jointStatus;
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
     }
 }

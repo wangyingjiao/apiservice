@@ -20,32 +20,24 @@ public class OpenWaitUtils {
 	private static SysJointWaitDao sysJointWaitDao = SpringContextHolder.getBean(SysJointWaitDao.class);
 
 	public static void saveSendWait(SysJointWait wait){
+		System.out.println("-- OpenWaitUtils---saveSendWait---" + wait.toString());
 		new SaveWaitThread(wait, null, null).start();
 	}
 
 	public static void delSendWait(SysJointWait wait){
+		System.out.println("-- OpenWaitUtils---delSendWait---" + wait.toString());
 		new DelWaitThread(wait, null, null).start();
 	}
 
 	public static void updateNumSendWait(SysJointWait wait) {
+		System.out.println("-- OpenWaitUtils---updateNumSendWait---" + wait.toString());
 		new UpdateWaitThread(wait, null, null).start();
-	}
-
-	public static void delGoodsEshop(String eshopCode, List<String> jointGoodsCodes) {
-		if(null != jointGoodsCodes){
-			SerItemCommodityEshop goodsEshop = new SerItemCommodityEshop();
-			for(String code : jointGoodsCodes){
-				goodsEshop = new SerItemCommodityEshop();
-				goodsEshop.setEshopCode(eshopCode);
-				goodsEshop.setJointGoodsCode(code);
-				new DelGoodsEshopThread(goodsEshop, null, null).start();
-			}
-		}
 	}
 
 	public static void updateGoodsEshopJointStatus(List<SerItemCommodityEshop> goodsEshopList) {
 		if(null != goodsEshopList){
 			for(SerItemCommodityEshop goodsEshop : goodsEshopList){
+				System.out.println("-- OpenWaitUtils---updateGoodsEshopJointStatus---" + goodsEshop.toString());
 				new UpdateGoodsEshopJointStatusThread(goodsEshop, null, null).start();
 			}
 		}
@@ -54,6 +46,7 @@ public class OpenWaitUtils {
 	public static void updateGoodsEshopEnabledStatus(List<SerItemCommodityEshop> goodsEshopList) {
 		if(null != goodsEshopList){
 			for(SerItemCommodityEshop goodsEshop : goodsEshopList){
+				System.out.println("-- OpenWaitUtils---updateGoodsEshopEnabledStatus---" + goodsEshop.toString());
 				new UpdateGoodsEshopEnabledStatusThread(goodsEshop, null, null).start();
 			}
 		}
@@ -62,6 +55,7 @@ public class OpenWaitUtils {
 	public static void updateGoodsEshopJointStatusAndCode(List<SerItemCommodityEshop> goodsEshopList) {
 		if(null != goodsEshopList){
 			for(SerItemCommodityEshop goodsEshop : goodsEshopList){
+				System.out.println("-- OpenWaitUtils---updateGoodsEshopJointStatusAndCode---" + goodsEshop.toString());
 				new UpdateGoodsEshopJointStatusAndCodeThread(goodsEshop, null, null).start();
 			}
 		}
@@ -80,6 +74,7 @@ public class OpenWaitUtils {
 		@Override
 		public void run() {
 			wait.preInsert();
+			System.out.println("-- OpenWaitUtils---SaveWaitThread---run---" + wait.toString());
 			sysJointWaitDao.insert(wait);
 		}
 	}
@@ -96,6 +91,7 @@ public class OpenWaitUtils {
 		}
 		@Override
 		public void run() {
+			System.out.println("-- OpenWaitUtils---DelWaitThread---run---" + wait.toString());
 			sysJointWaitDao.delete(wait);
 		}
 	}
@@ -113,23 +109,8 @@ public class OpenWaitUtils {
 		@Override
 		public void run() {
 			wait.preUpdate();
+			System.out.println("-- OpenWaitUtils---UpdateWaitThread---run---" + wait.toString());
 			sysJointWaitDao.update(wait);
-		}
-	}
-
-	public static class DelGoodsEshopThread extends Thread{
-		private SerItemCommodityEshop goodsEshop;
-		private Object handler;
-		private Exception ex;
-		public DelGoodsEshopThread(SerItemCommodityEshop goodsEshop, Object handler, Exception ex){
-			super(DelGoodsEshopThread.class.getSimpleName());
-			this.goodsEshop = goodsEshop;
-			this.handler = handler;
-			this.ex = ex;
-		}
-		@Override
-		public void run() {
-			sysJointWaitDao.deleteGoodsEshop(goodsEshop);
 		}
 	}
 
@@ -145,6 +126,7 @@ public class OpenWaitUtils {
 		}
 		@Override
 		public void run() {
+			System.out.println("-- OpenWaitUtils---UpdateGoodsEshopJointStatusThread---run---" + goodsEshop.toString());
 			sysJointWaitDao.updateGoodsEshopJointStatus(goodsEshop);
 		}
 	}
@@ -160,6 +142,7 @@ public class OpenWaitUtils {
 		}
 		@Override
 		public void run() {
+			System.out.println("-- OpenWaitUtils---UpdateGoodsEshopEnabledStatusThread---run---" + goodsEshop.toString());
 			sysJointWaitDao.updateGoodsEshopEnabledStatus(goodsEshop);
 		}
 	}
@@ -175,6 +158,7 @@ public class OpenWaitUtils {
 		}
 		@Override
 		public void run() {
+			System.out.println("-- OpenWaitUtils---UpdateGoodsEshopJointStatusAndCodeThread---run---" + goodsEshop.toString());
 			sysJointWaitDao.updateGoodsEshopJointStatusAndCode(goodsEshop);
 		}
 	}

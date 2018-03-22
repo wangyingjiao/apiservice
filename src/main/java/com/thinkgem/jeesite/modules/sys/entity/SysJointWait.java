@@ -66,4 +66,8 @@ public class SysJointWait extends DataEntity<SysJointWait> {
 		this.num = num;
 	}
 
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
+	}
 }

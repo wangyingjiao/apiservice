@@ -72,6 +72,7 @@ public class OpenSendUtil {
 		waitInfo.setRequestContent(json);
 		//OpenWaitUtils.saveSendWait(waitInfo);
 		waitInfo.preInsert();
+		System.out.println("-- OpenSendUtil---openSendSaveOrder---" + waitInfo.toString());
 		sysJointWaitDao.insert(waitInfo);
 	}
 
@@ -127,6 +128,7 @@ public class OpenSendUtil {
 		waitInfo.setRequestContent(json);
 		//OpenWaitUtils.saveSendWait(waitInfo);
 		waitInfo.preInsert();
+		System.out.println("-- OpenSendUtil---removeJointGoodsCodeByOrg---" + waitInfo.toString());
 		sysJointWaitDao.insert(waitInfo);
 	}
 
@@ -178,6 +180,7 @@ public class OpenSendUtil {
 		waitInfo.setRequestContent(json);
 		//OpenWaitUtils.saveSendWait(waitInfo);
 		waitInfo.preInsert();
+		System.out.println("-- OpenSendUtil---removeJointGoodsCode---" + waitInfo.toString());
 		sysJointWaitDao.insert(waitInfo);
 	}
 
@@ -305,6 +308,7 @@ public class OpenSendUtil {
 		waitInfo.setRequestContent(json);
 		//OpenWaitUtils.saveSendWait(waitInfo);
 		waitInfo.preInsert();
+		System.out.println("-- OpenSendUtil---insertJointGoodsCode---" + waitInfo.toString());
 		sysJointWaitDao.insert(waitInfo);
 	}
 
@@ -430,6 +434,7 @@ public class OpenSendUtil {
 		waitInfo.setRequestContent(json);
 		//OpenWaitUtils.saveSendWait(waitInfo);
 		waitInfo.preInsert();
+		System.out.println("-- OpenSendUtil---updateJointGoodsCode---" + waitInfo.toString());
 		sysJointWaitDao.insert(waitInfo);
 	}
 
