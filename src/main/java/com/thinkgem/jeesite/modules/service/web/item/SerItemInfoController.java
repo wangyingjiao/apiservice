@@ -609,6 +609,12 @@ public class SerItemInfoController extends BaseController {
         HashMap<String,Object> map = new HashMap<>();
         String eshopStatus = serItemCommodityService.getEshop(serItemCommodityEshop);
         map.put("eshopStatus",eshopStatus);
+        if (serItemCommodityEshop.getGoodsName().contains("（")) {
+            serItemCommodityEshop.setGoodsName(serItemCommodityEshop.getGoodsName().replace("（", "("));
+        }
+        if (serItemCommodityEshop.getGoodsName().contains("）")) {
+            serItemCommodityEshop.setGoodsName(serItemCommodityEshop.getGoodsName().replace("）", ")"));
+        }
         Page<SerItemCommodityEshop> serItemCommodityEshopPage = new Page<>(request, response);
         Page<SerItemCommodityEshop> page = serItemCommodityService.findCommodityPage(serItemCommodityEshopPage, serItemCommodityEshop);
         map.put("page",page);
