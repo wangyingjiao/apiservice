@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
@@ -632,9 +633,10 @@ public class SerItemInfoController extends BaseController {
         if (serItemCommodity == null){
             return new FailResult("系统异常");
         }
-        BasicGasqEshop basicGasqEshop = new BasicGasqEshop();
-        basicGasqEshop.setCode(serItemCommodity.getEshopCode());
-        int count = basicOrganizationService.getOrgEShopByCode(basicGasqEshop);
+        BasicOrganizationEshop basicOrganizationEshop = new BasicOrganizationEshop();
+        basicOrganizationEshop.setEshopCode(serItemCommodity.getEshopCode());
+        basicOrganizationEshop.setOrgId(UserUtils.getUser().getOrgId());
+        int count = basicOrganizationService.getOrgEShop(basicOrganizationEshop);
         if (count>0) {
             List<String> goodids = serItemCommodity.getGoodIds();
             List<SerItemInfo> siiList = new ArrayList<SerItemInfo>();
@@ -648,7 +650,6 @@ public class SerItemInfoController extends BaseController {
                 SerItemCommodityEshop sice = new SerItemCommodityEshop();
                 SerItemInfo sendItem = new SerItemInfo();
                 sice.setEshopCode(serItemCommodity.getEshopCode());
-                sice.setJointGoodsCode(serItemCommodityEshop1.getJointGoodsCode());
                 if (serItemCommodityEshop1 == null) {
                     sice.setId(IdGen.uuid());
                     sice.setOrgId(sii.getOrgId());
@@ -657,6 +658,7 @@ public class SerItemInfoController extends BaseController {
                     sice.setJointStatus("butt_butt");
                     serItemCommodityService.insertGoodsEshop(sice);
                 } else {
+                    sice.setJointGoodsCode(serItemCommodityEshop1.getJointGoodsCode());
                     //serItemCommodity.setJointGoodsCode(serItemCommodityEshop1.getJointGoodsCode());
                     serItemCommodityService.updateGoodEshop(serItemCommodity);
                 }

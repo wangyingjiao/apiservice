@@ -263,4 +263,8 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 	public void updDockType(BasicOrganization basicOrganization) {
 		basicOrganizationDao.updDockType(basicOrganization);
 	}
+
+	public int getOrgEShop(BasicOrganizationEshop basicOrganizationEshop) {
+		return basicOrganizationDao.getOrgEShop(basicOrganizationEshop);
+	}
 }

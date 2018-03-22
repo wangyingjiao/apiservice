@@ -280,6 +280,13 @@
             FROM basic_organization_eshop
             WHERE eshop_code = #{code}
     </select>
+
+	<select id="getOrgEShop" resultType="int">
+		SELECT
+		count(1)
+		FROM basic_organization_eshop
+		WHERE eshop_code = #{code} AND org_id = #{orgId}
+	</select>
 	
 	<delete id="deleteEcode">
 		DELETE FROM basic_organization_eshop WHERE org_id = #{id}

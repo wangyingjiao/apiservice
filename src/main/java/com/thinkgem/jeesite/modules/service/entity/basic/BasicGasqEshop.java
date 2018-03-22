@@ -28,6 +28,16 @@ public class BasicGasqEshop extends DataEntity<BasicGasqEshop> {
     private String businessModelId;//业务模式ID
     private String operationBaseStatus;//运营基本信息审核状态：no未审核；submit审核中；fail审核未通过；yes审核通过'
 
+    private String orgId;
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
     public String getName() {
         return name;
     }

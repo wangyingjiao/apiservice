@@ -56,4 +56,6 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
     int getOrgEShopList(BasicOrganization basicOrganization);
 
     void updDockType(BasicOrganization basicOrganization);
+
+    int getOrgEShop(BasicOrganizationEshop basicOrganizationEshop);
 }
