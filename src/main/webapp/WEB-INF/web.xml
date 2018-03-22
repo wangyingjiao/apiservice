@@ -17,7 +17,10 @@
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
-
+    <!--解决quartz不能正常关闭的监听器-->
+    <listener>
+        <listener-class>com.thinkgem.jeesite.common.quartz.ShutDownQuartz</listener-class>
+    </listener>
     <!--<filter>-->
     <!--<filter-name>CORS</filter-name>-->
     <!--<filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>-->
