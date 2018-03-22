@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service.service.item;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -246,6 +247,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			for (SerItemInfo itemInfo : list) {
 				List<SerItemCommodity> findListByItemId = serItemCommodityDao.findListByItemId(itemInfo);
 				for (SerItemCommodity sic : findListByItemId){
+                    sic.setDoublePrice(sic.getPrice().toString());
 					List<SerItemCommodityEshop> siceList = serItemCommodityDao.getEshopGoods(sic);
 					if (siceList.size()>0){
 					    sic.setJointEshopFlag("yes");
@@ -321,6 +323,9 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		SerItemInfo serItemInfo = super.get(id);
 
 		List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+		for (SerItemCommodity sic : commoditys){
+		    sic.setDoublePrice(sic.getPrice().toString());
+        }
 		serItemInfo.setCommoditys(commoditys);
 
 		return serItemInfo;
