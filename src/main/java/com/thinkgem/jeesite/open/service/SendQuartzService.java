@@ -23,6 +23,7 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
+import com.thinkgem.jeesite.modules.sys.dao.SysJointLogDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysJointWaitDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.SysJointLog;
@@ -59,8 +60,10 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 	OrderInfoDao orderInfoDao;
 	@Autowired
 	SysJointWaitDao sysJointWaitDao;
+	@Autowired
+    SysJointLogDao sysJointLogDao;
 
-	/**
+    /**
 	 * 待执行对接数据
 	 */
 	@Transactional(readOnly = false)
@@ -112,11 +115,14 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 		log.setSource(SOURCE_OWN);
 		log.setRequestContent(info.getRequestContent());
 		System.out.println("-- SendQuartzService---doJointWaitNull---" + log.toString());
-		OpenLogUtils.saveSendLog(log);
+		//OpenLogUtils.saveSendLog(log);
+        log.preInsert();
+        sysJointLogDao.insert(log);
 
 		//删除待执行表
 		System.out.println("-- SendQuartzService---doJointWaitNull---" + info.toString());
-		OpenWaitUtils.delSendWait(info);
+		//OpenWaitUtils.delSendWait(info);
+        sysJointWaitDao.delete(info);
 	}
 
 	/**
@@ -147,14 +153,18 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 				log.setSource(SOURCE_OWN);
 				log.setRequestContent(json);
 				System.out.println("-- SendQuartzService---doJointWaitSaveOrder---1---" + log.toString());
-				OpenLogUtils.saveSendLog(log);
+                //OpenLogUtils.saveSendLog(log);
+                log.preInsert();
+                sysJointLogDao.insert(log);
 
 				//删除待执行表
-				OpenWaitUtils.delSendWait(info);
+                //OpenWaitUtils.delSendWait(info);
+                sysJointWaitDao.delete(info);
 			}else{
 				if(MANY_YES.equals(info.getMany()) && (info.getNum() < MANY_MAX_NUM)){//多次请求，且5次之内
 					//次数加1
-					OpenWaitUtils.updateNumSendWait(info);
+                    //OpenWaitUtils.updateNumSendWait(info);
+                    sysJointWaitDao.update(info);
 				}else{//执行失败
 					//保存对接日志表
 					SysJointLog log = new SysJointLog();
@@ -167,10 +177,13 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 					log.setSource(SOURCE_OWN);
 					log.setRequestContent(json);
 					System.out.println("-- SendQuartzService---doJointWaitSaveOrder---2---" + log.toString());
-					OpenLogUtils.saveSendLog(log);
+                    //OpenLogUtils.saveSendLog(log);
+                    log.preInsert();
+                    sysJointLogDao.insert(log);
 
 					//删除待执行表
-					OpenWaitUtils.delSendWait(info);
+                    //OpenWaitUtils.delSendWait(info);
+                    sysJointWaitDao.delete(info);
 				}
 			}
 		}catch (Exception e){
@@ -207,10 +220,13 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 				log.setSource(SOURCE_OWN);
 				log.setRequestContent(json);
 				System.out.println("-- SendQuartzService---doJointWaitSaveGoods---1---" + log.toString());
-				OpenLogUtils.saveSendLog(log);
+                //OpenLogUtils.saveSendLog(log);
+                log.preInsert();
+                sysJointLogDao.insert(log);
 
 				//删除待执行表
-				OpenWaitUtils.delSendWait(info);
+                //OpenWaitUtils.delSendWait(info);
+                sysJointWaitDao.delete(info);
 
 				//商品E店关联表不可用
 				List<SerItemCommodityEshop> goodsEshopList = new ArrayList<>();
@@ -235,17 +251,18 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 								goodsEshop.setEshopCode(eshopCode);
 								goodsEshop.setJointGoodsCode(jointGoodsCode);
 								goodsEshop.setJointStatus("butt_success");
-								goodsEshopList.add(goodsEshop);
+								//goodsEshopList.add(goodsEshop);
+                                sysJointWaitDao.updateGoodsEshopJointStatusAndCode(goodsEshop);
 							}
 						}
 					}
 				}
-
-				OpenWaitUtils.updateGoodsEshopJointStatusAndCode(goodsEshopList);
+				//OpenWaitUtils.updateGoodsEshopJointStatusAndCode(goodsEshopList);
 			}else{
 				if(MANY_YES.equals(info.getMany()) && (info.getNum() < MANY_MAX_NUM)){//多次请求，且5次之内
 					//次数加1
-					OpenWaitUtils.updateNumSendWait(info);
+					//OpenWaitUtils.updateNumSendWait(info);
+                    sysJointWaitDao.update(info);
 				}else{//执行失败
 					//保存对接日志表
 					SysJointLog log = new SysJointLog();
@@ -258,10 +275,14 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 					log.setSource(SOURCE_OWN);
 					log.setRequestContent(json);
 					System.out.println("-- SendQuartzService---doJointWaitSaveGoods---2---" + log.toString());
-					OpenLogUtils.saveSendLog(log);
+                    //OpenLogUtils.saveSendLog(log);
+                    log.preInsert();
+                    sysJointLogDao.insert(log);
 
 					//删除待执行表
-					OpenWaitUtils.delSendWait(info);
+                    //OpenWaitUtils.delSendWait(info);
+                    sysJointWaitDao.delete(info);
+
 					//更新商品E店关联表状态-对接失败
 					List<SerItemCommodityEshop> goodsEshopList = new ArrayList<>();
 					SerItemCommodityEshop goodsEshop = new SerItemCommodityEshop();
@@ -286,12 +307,13 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 									goodsEshop.setEshopCode(eshopCode);
 									goodsEshop.setJointGoodsCode(jointGoodsCode);
 									goodsEshop.setJointStatus("butt_fail");
-									goodsEshopList.add(goodsEshop);
+									//goodsEshopList.add(goodsEshop);
+                                    sysJointWaitDao.updateGoodsEshopJointStatus(goodsEshop);
 								}
 							}
 						}
 					}
-					OpenWaitUtils.updateGoodsEshopJointStatus(goodsEshopList);
+					//OpenWaitUtils.updateGoodsEshopJointStatus(goodsEshopList);
 				}
 			}
 		}catch (Exception e){
@@ -325,10 +347,13 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 				log.setSource(SOURCE_OWN);
 				log.setRequestContent(json);
 				System.out.println("-- SendQuartzService---doJointWaitDelGoods---1---" + log.toString());
-				OpenLogUtils.saveSendLog(log);
+                //OpenLogUtils.saveSendLog(log);
+                log.preInsert();
+                sysJointLogDao.insert(log);
 
 				//删除待执行表
-				OpenWaitUtils.delSendWait(info);
+                //OpenWaitUtils.delSendWait(info);
+                sysJointWaitDao.delete(info);
 
 				//商品E店关联表不可用
 				List<SerItemCommodityEshop> goodsEshopList = new ArrayList<>();
@@ -353,16 +378,18 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 								goodsEshop.setEshopCode(eshopCode);
 								goodsEshop.setJointGoodsCode(jointGoodsCode);
 								goodsEshop.setEnabledStatus("no");
-								goodsEshopList.add(goodsEshop);
+								//goodsEshopList.add(goodsEshop);
+                                sysJointWaitDao.updateGoodsEshopEnabledStatus(goodsEshop);
 							}
 						}
 					}
 				}
-				OpenWaitUtils.updateGoodsEshopEnabledStatus(goodsEshopList);
+				//OpenWaitUtils.updateGoodsEshopEnabledStatus(goodsEshopList);
 			}else{
 				if(MANY_YES.equals(info.getMany()) && (info.getNum() < MANY_MAX_NUM)){//多次请求，且5次之内
 					//次数加1
-					OpenWaitUtils.updateNumSendWait(info);
+                    //OpenWaitUtils.updateNumSendWait(info);
+                    sysJointWaitDao.update(info);
 				}else{//执行失败
 					//保存对接日志表
 					SysJointLog log = new SysJointLog();
@@ -375,10 +402,14 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 					log.setSource(SOURCE_OWN);
 					log.setRequestContent(json);
 					System.out.println("-- SendQuartzService---doJointWaitDelGoods---2---" + log.toString());
-					OpenLogUtils.saveSendLog(log);
+                    //OpenLogUtils.saveSendLog(log);
+                    log.preInsert();
+                    sysJointLogDao.insert(log);
 
 					//删除待执行表
-					OpenWaitUtils.delSendWait(info);
+                    //OpenWaitUtils.delSendWait(info);
+                    sysJointWaitDao.delete(info);
+
 					//更新商品E店关联表状态-解除失败
 					List<SerItemCommodityEshop> goodsEshopList = new ArrayList<>();
 					SerItemCommodityEshop goodsEshop = new SerItemCommodityEshop();
@@ -402,12 +433,13 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 									goodsEshop.setEshopCode(eshopCode);
 									goodsEshop.setJointGoodsCode(jointGoodsCode);
 									goodsEshop.setJointStatus("remove_fail");
-									goodsEshopList.add(goodsEshop);
+									//goodsEshopList.add(goodsEshop);
+                                    sysJointWaitDao.updateGoodsEshopJointStatus(goodsEshop);
 								}
 							}
 						}
 					}
-					OpenWaitUtils.updateGoodsEshopJointStatus(goodsEshopList);
+					//OpenWaitUtils.updateGoodsEshopJointStatus(goodsEshopList);
 				}
 			}
 		}catch (Exception e){
@@ -445,10 +477,13 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			log.setSource(SOURCE_OWN);
 			log.setRequestContent(json);
 			System.out.println("-- SendQuartzService---doJointWaitOrgDelGoods---" + log.toString());
-			OpenLogUtils.saveSendLog(log);
+            //OpenLogUtils.saveSendLog(log);
+            log.preInsert();
+            sysJointLogDao.insert(log);
 
 			//删除待执行表
-			OpenWaitUtils.delSendWait(info);
+            //OpenWaitUtils.delSendWait(info);
+            sysJointWaitDao.delete(info);
 		}catch (Exception e){
 			e.printStackTrace();
 		}
