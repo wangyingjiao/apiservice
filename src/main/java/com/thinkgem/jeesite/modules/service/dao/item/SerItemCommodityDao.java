@@ -53,7 +53,7 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     //修改ser_item_info_goods_eshop表的状态 改为不可用
     int updateEshop(SerItemCommodityEshop serItemCommodity);
 
-    int getGoodsEshop(SerItemCommodity serItemCommodity);
+    SerItemCommodityEshop getGoodsEshop(SerItemCommodity serItemCommodity);
 
     void insertGoodsEshop(SerItemCommodityEshop sice);
 

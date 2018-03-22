@@ -361,8 +361,8 @@
 		WHERE a.id = #{id}
 	</select>
 
-    <select id="getGoodsEshop" resultType="int">
-        SELECT COUNT(1) FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+    <select id="getGoodsEshop" resultType="SerItemCommodityEshop">
+        SELECT joint_goods_code AS jointGoodsCode FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
     </select>
 
     <insert id="insertGoodsEshop">
@@ -386,7 +386,7 @@
 	<update id="updateGoodEshop">
 		UPDATE ser_item_info_goods_eshop SET
 			enabled_status = 'yes',
-			joint_goods_code = '',
+			joint_goods_code = #{jointGoodsCode},
 			joint_status = 'butt_butt'
 			WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
 	</update>

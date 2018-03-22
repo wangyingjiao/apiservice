@@ -71,7 +71,7 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		}
 	}
 
-	public int getGoodsEshop(SerItemCommodity serItemCommodity) {
+	public SerItemCommodityEshop getGoodsEshop(SerItemCommodity serItemCommodity) {
 		return serItemCommodityDao.getGoodsEshop(serItemCommodity);
 	}
 

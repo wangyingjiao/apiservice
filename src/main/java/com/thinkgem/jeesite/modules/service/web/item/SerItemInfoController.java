@@ -637,7 +637,7 @@ public class SerItemInfoController extends BaseController {
             List<SerItemInfo> siiList = new ArrayList<SerItemInfo>();
             for (String goodId : goodids) {
                 serItemCommodity.setId(goodId);
-                int i = serItemCommodityService.getGoodsEshop(serItemCommodity);
+                SerItemCommodityEshop serItemCommodityEshop1 = serItemCommodityService.getGoodsEshop(serItemCommodity);
                 SerItemCommodity sic = serItemCommodityService.get(serItemCommodity);
                 SerItemInfo sii = new SerItemInfo();
                 sii.setId(sic.getItemId());
@@ -645,7 +645,7 @@ public class SerItemInfoController extends BaseController {
                 SerItemCommodityEshop sice = new SerItemCommodityEshop();
                 SerItemInfo sendItem = new SerItemInfo();
                 sice.setEshopCode(serItemCommodity.getEshopCode());
-                if (i == 0) {
+                if (serItemCommodityEshop1 == null) {
                     sice.setId(IdGen.uuid());
                     sice.setOrgId(sii.getOrgId());
                     sice.setItemId(sii.getId());
@@ -653,6 +653,7 @@ public class SerItemInfoController extends BaseController {
                     sice.setJointStatus("butt_butt");
                     serItemCommodityService.insertGoodsEshop(sice);
                 } else {
+                    serItemCommodity.setJointGoodsCode(serItemCommodityEshop1.getJointGoodsCode());
                     serItemCommodityService.updateGoodEshop(serItemCommodity);
                 }
                 //对接商品
