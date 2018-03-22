@@ -310,7 +310,7 @@ public class SerItemInfoController extends BaseController {
                 serItemInfoService.delete(info);
                 return new SuccResult("删除成功");
             }else {
-                return new FailResult("商品已对接，不可删除");
+                return new FailResult("项目中有已对接的商品，不可删除");
             }
         }else {
             int i = 0;
@@ -323,7 +323,7 @@ public class SerItemInfoController extends BaseController {
                 }
             }
             if (scList.size() == i){
-                return new FailResult("删除失败");
+                return new FailResult("项目中有已对接的商品，不可删除");
             }
             List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
             if (scLists.size() == 0) {
@@ -645,6 +645,7 @@ public class SerItemInfoController extends BaseController {
                 SerItemCommodityEshop sice = new SerItemCommodityEshop();
                 SerItemInfo sendItem = new SerItemInfo();
                 sice.setEshopCode(serItemCommodity.getEshopCode());
+                sice.setJointGoodsCode(serItemCommodityEshop1.getJointGoodsCode());
                 if (serItemCommodityEshop1 == null) {
                     sice.setId(IdGen.uuid());
                     sice.setOrgId(sii.getOrgId());
@@ -653,7 +654,7 @@ public class SerItemInfoController extends BaseController {
                     sice.setJointStatus("butt_butt");
                     serItemCommodityService.insertGoodsEshop(sice);
                 } else {
-                    serItemCommodity.setJointGoodsCode(serItemCommodityEshop1.getJointGoodsCode());
+                    //serItemCommodity.setJointGoodsCode(serItemCommodityEshop1.getJointGoodsCode());
                     serItemCommodityService.updateGoodEshop(serItemCommodity);
                 }
                 //对接商品
