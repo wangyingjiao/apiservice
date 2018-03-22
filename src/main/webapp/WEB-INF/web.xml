@@ -9,7 +9,7 @@
     <!-- Context ConfigLocation -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:/spring-context*.xml</param-value>
+        <param-value>classpath*:/spring-context*.xml,classpath*:/applicationContext-quartz.xml</param-value>
     </context-param>
     <listener>
         <listener-class>com.thinkgem.jeesite.modules.sys.listener.WebContextListener</listener-class>
