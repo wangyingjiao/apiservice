@@ -26,6 +26,7 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private String unit;		// 商品单位
 	private String type;		// 计量方式(num：按数量 area：按面积 house：按居室)
 	private BigDecimal price;		// 价格
+	private String doublePrice;
 	private Double convertHours;		// 折算时长
 	private int minPurchase;		// 起购数量
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
@@ -44,6 +45,14 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private String jointCode;
 
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
+
+	public String getDoublePrice() {
+		return doublePrice;
+	}
+
+	public void setDoublePrice(String doublePrice) {
+		this.doublePrice = doublePrice;
+	}
 
 	public String getJointEshopFlag() {
 		return jointEshopFlag;
