@@ -285,7 +285,7 @@
 		SELECT
 		count(1)
 		FROM basic_organization_eshop
-		WHERE eshop_code = #{code} AND org_id = #{orgId}
+		WHERE eshop_code = #{eshopCode} AND org_id = #{orgId}
 	</select>
 	
 	<delete id="deleteEcode">
