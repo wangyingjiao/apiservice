@@ -84,4 +84,10 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	public void updateGoodEshop(SerItemCommodity serItemCommodity) {
 		serItemCommodityDao.updateGoodEshop(serItemCommodity);
 	}
+
+	public int getEshopCount(SerItemCommodity serItemCommodity) {
+		SerItemCommodityEshop serItemCommodityEshop = new SerItemCommodityEshop();
+		serItemCommodityEshop.setEshopCode(serItemCommodity.getEshopCode());
+		return serItemCommodityDao.getEshop(serItemCommodityEshop);
+	}
 }

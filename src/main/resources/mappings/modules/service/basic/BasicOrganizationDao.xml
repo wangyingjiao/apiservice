@@ -306,6 +306,7 @@
 			  b.name
 			  FROM basic_organization_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
 			  WHERE a.org_id = #{id}
+			  ORDER BY b.create_date DESC
 	</select>
 
     <delete id="deleteEshop">
