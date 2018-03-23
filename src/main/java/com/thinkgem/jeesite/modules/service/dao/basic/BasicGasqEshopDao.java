@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.basic;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
+import com.thinkgem.jeesite.open.entity.OpenEshopInfoRequest;
 
 /**
  * E店DAO接口
@@ -15,4 +16,5 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 @MyBatisDao
 public interface BasicGasqEshopDao extends CrudDao<BasicGasqEshop> {
 
+    BasicGasqEshop getInfoByEshopCode(OpenEshopInfoRequest info);
 }

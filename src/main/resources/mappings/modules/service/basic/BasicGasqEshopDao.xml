@@ -6,44 +6,47 @@
 		INSERT INTO basic_gasq_eshop(
 			id,
 			name,
+			business_model_id,
 			seller_id,
 			publish,
 			status,
-			freeze_status,
-			business_status,
-			version,
 			code,
+			operation_base_status,
 			third_part,
-			is_support_open_platform,
-			open_platform_key
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
 		) VALUES (
 			#{id},
 			#{name},
+			#{businessModelId},
 			#{sellerId},
 			#{publish},
 			#{status},
-			#{freezeStatus},
-			#{businessStatus},
-			#{version},
 			#{code},
+			#{operationBaseStatus},
 			#{thirdPart},
-			#{isSupportOpenPlatform},
-			#{openPlatformKey}
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
 		)
 	</insert>
 	
 	<update id="update">
 		UPDATE basic_gasq_eshop SET
 			name = #{name},
+			business_model_id = #{businessModelId},
 			seller_id = #{sellerId},
 			publish = #{publish},
 			status = #{status},
-			freeze_status = #{freezeStatus},
-			business_status = #{businessStatus},
-			version = #{version},
+			operation_base_status = #{operationBaseStatus},
 			third_part = #{thirdPart},
-			is_support_open_platform = #{isSupportOpenPlatform},
-			open_platform_key = #{openPlatformKey}
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
 		WHERE code = #{code}
 	</update>
 	
@@ -53,4 +56,8 @@
 		WHERE code = #{code}
 	</update>
 
+	<select id="getInfoByEshopCode" resultType="BasicGasqEshop">
+		SELECT * from basic_gasq_eshop
+		WHERE code = #{eshopCode}
+	</select>
 </mapper>
