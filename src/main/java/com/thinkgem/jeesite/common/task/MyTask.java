@@ -18,6 +18,7 @@ public class MyTask{
     public MyTask(){
         System.out.println("*****************************定时器初始化*******************************************");
     }
+/*
 
     @Autowired
     SendQuartzService sendQuartzService;
@@ -32,4 +33,6 @@ public class MyTask{
         }
         sendQuartzService.doJointWait();
     }
+*/
+
 }

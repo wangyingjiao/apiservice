@@ -14,7 +14,7 @@ public class QuartzUtil {
 
     public void doJointWait(){
         System.out.println("定时任务对接开始");
-        //sendQuartzService.doJointWait();
+        sendQuartzService.doJointWait();
     }
 
 }
