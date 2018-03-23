@@ -125,11 +125,11 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                     if (commodity.getId() != null && !commodity.getId().equals("")){
                         goodsFlag = true;
                     }
-					String s = ToDBC(commodity.getName());
-					commodity.setName(s);
 					commodity.setItemId(serItemInfo.getId());
                     commodity.setItemGoodName(serItemInfo.getName() + "(" + commodity.getName() + ")");
-                    commodity.setSortId(serItemInfo.getSortId());
+					String s = ToDBC(commodity.getItemGoodName());
+					commodity.setItemGoodName(s);
+					commodity.setSortId(serItemInfo.getSortId());
                     commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
                     commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
                     commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
