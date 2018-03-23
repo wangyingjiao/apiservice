@@ -309,8 +309,8 @@
 			<if test="goodsName != null and goodsName != ''">
 				AND c.joint_name LIKE concat('%',#{goodsName},'%')
 			</if>
-			<if test="selfCode != null and selfCode != ''">
-				AND c.id=#{selfCode}
+			<if test="goodsId != null and goodsId != ''">
+				AND c.id=#{goodsId}
 			</if>
 			${sqlMap.dsf}
 		</where>
