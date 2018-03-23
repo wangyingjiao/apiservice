@@ -262,6 +262,18 @@ public class UserController extends BaseController {
 //            System.out.println(basicServiceStation.getEmployees()+"*************************************");
 //            serviceStationService.update(basicServiceStation);
             systemService.deleteUser(user);
+
+
+            //删除当前编辑用户session
+            Collection<Session> sessions =  systemService.getSessionDao().getActiveSessions();
+            Iterator sessionsIt =sessions.iterator();
+            while(sessionsIt.hasNext()){
+                Session session = (Session)sessionsIt.next();
+                String principalId = session.getAttribute("principalId").toString();
+                if(user.getId().equals(principalId) ){
+                    systemService.getSessionDao().delete(session);
+                }
+            }
             return new SuccResult("删除用户成功");
         }
     }
