@@ -251,6 +251,7 @@
 		FROM basic_gasq_eshop a
 		LEFT JOIN basic_organization_eshop b on a.code=b.eshop_code
 		WHERE b.org_id=#{orgId}
+		ORDER BY a.create_date DESC
 	</select>
 
 	<!--根据id获取商品-E店信息-->
