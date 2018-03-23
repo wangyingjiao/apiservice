@@ -13,8 +13,7 @@
         <param-value>
             classpath*:/spring-context.xml,
             classpath*:/spring-context-jedis.xml,
-            classpath*:/spring-context-shiro.xml,
-            classpath*:/applicationContext-quartz.xml</param-value>
+            classpath*:/spring-context-shiro.xml</param-value>
     </context-param>
 
     <listener>
@@ -202,6 +201,11 @@
         <url-pattern>/act/service/*</url-pattern>
     </filter-mapping> -->
 
+    <servlet>
+        <servlet-name>QuartzServlet</servlet-name>
+        <servlet-class>com.thinkgem.jeesite.common.quartz.QuartzServlet</servlet-class>
+        <load-on-startup>5</load-on-startup>
+    </servlet>
     <!-- DruidStatView -->
     <servlet>
         <servlet-name>DruidStatView</servlet-name>

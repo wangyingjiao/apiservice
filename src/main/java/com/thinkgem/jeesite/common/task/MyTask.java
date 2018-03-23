@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Lazy(false)
 public class MyTask{
     public MyTask(){
-        System.out.println("*****************************定时器初始化*******************************************");
+        //System.out.println("*****************************定时器初始化*******************************************");
     }
 /*
 
