@@ -22,6 +22,11 @@ public class MyTask{
     @Scheduled(cron="10 0/1 *  * * ? ")
     public void aTask(){
         System.out.println("*********定时任务对接开始");
+        try {
+            Thread.sleep(3*1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         sendQuartzService.doJointWait();
     }
 }

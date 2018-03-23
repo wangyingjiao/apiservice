@@ -369,7 +369,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "upData", method = RequestMethod.POST)
     @ApiOperation(value = "保存用户！")
     public Result upData(@RequestBody User user) {
-        User olduser = systemService.getUser(user.getId());
+        User olduser = systemService.getUserById(user.getId());
 
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
         user.setOrganization(organizationService.get(user.getOfficeId()));
