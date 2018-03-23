@@ -682,7 +682,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			if (selfCode.contains("_")) {
 				String[] split = selfCode.split("_");
 				if (split.length > 1) {
-					String goodsId = split[1];
+					String goodsId = split[split.length-1];
 					serItemCommodityEshop.setGoodsId(goodsId);
 				}
 			}else {
