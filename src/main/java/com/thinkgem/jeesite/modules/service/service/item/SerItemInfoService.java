@@ -125,7 +125,9 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                     if (commodity.getId() != null && !commodity.getId().equals("")){
                         goodsFlag = true;
                     }
-                    commodity.setItemId(serItemInfo.getId());
+					String s = ToDBC(commodity.getName());
+					commodity.setName(s);
+					commodity.setItemId(serItemInfo.getId());
                     commodity.setItemGoodName(serItemInfo.getName() + "(" + commodity.getName() + ")");
                     commodity.setSortId(serItemInfo.getSortId());
                     commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
@@ -685,13 +687,10 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		}
 		serItemCommodityEshop.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
 		//判断输入的名字是否为空 不为空 再转换为半角
-		if (StringUtils.isNotBlank(serItemCommodityEshop.getGoodsName())){
-			if (serItemCommodityEshop.getGoodsName().contains("（")) {
-				serItemCommodityEshop.setGoodsName(serItemCommodityEshop.getGoodsName().replace("（", "("));
-			}
-			if (serItemCommodityEshop.getGoodsName().contains("）")) {
-				serItemCommodityEshop.setGoodsName(serItemCommodityEshop.getGoodsName().replace("）", ")"));
-			}
+		String goodsName = serItemCommodityEshop.getGoodsName();
+		if (StringUtils.isNotBlank(goodsName)){
+			String s = ToDBC(goodsName);
+			serItemCommodityEshop.setGoodsName(s);
 		}
 		List<SerItemCommodityEshop> goodsCode = serItemCommodityDao.getGoodsList(serItemCommodityEshop);
 		if (goodsCode !=null && goodsCode.size()>0) {
@@ -713,20 +712,19 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		return page;
 	}
 
-	//判断是否是全角 是全角则转换为半角  不能用 只能单个字符串进行转换
-	// public static String changeChar(String str){
-	// 	char[] chars_test1 = str.toCharArray();
-	// 	String temp =null;
-	// 	for (int i = 0; i < chars_test1.length; i++) {
-	// 		temp = String.valueOf(chars_test1[i]);
-	// 		// 判断是全角字符
-	// 		if (temp.matches("[^\\x00-\\xff]")) {
-	// 			// System.out.println("全角   " + temp);
-	// 			return temp;
-	// 		}
-	// 		// 判断是半角字符 不操作直接返回
-	// 	}
-	// 	return temp;
-	// }
+	//判断是否是全角 是全角则转换为半角
+	public static String ToDBC(String input) {
+		char c[] = input.toCharArray();
+		for (int i = 0; i < c.length; i++) {
+			if (c[i] == '\u3000') {
+				c[i] = ' ';
+			} else if (c[i] > '\uFF00' && c[i] < '\uFF5F') {
+				c[i] = (char) (c[i] - 65248);
+			}
+		}
+		String returnString = new String(c);
+		return returnString;
+	}
+
 
 }
