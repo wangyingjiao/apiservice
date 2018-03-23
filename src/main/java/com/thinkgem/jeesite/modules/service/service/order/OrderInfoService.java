@@ -387,7 +387,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		//订单状态必须为未支付
 		if (StringUtils.isBlank(payStatus) || "payed".equals(payStatus)){
-			throw new ServiceException("订单已支付");
+			throw new ServiceException("订单已经支付，无需再次支付");
 		}
 		info.appPreUpdate();
 		info.setPayStatus("payed");
