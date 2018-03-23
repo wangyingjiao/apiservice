@@ -12,16 +12,19 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Component
 @Lazy(false)
 public class MyTask{
+    public MyTask(){
+        System.out.println("*****************************定时器初始化*******************************************");
+    }
 
     @Autowired
     SendQuartzService sendQuartzService;
 
-    @Scheduled(cron="10 0/1 *  * * ? ")
+    @Scheduled(cron="15 0/1 *  * * ? ")
     public void aTask(){
-        System.out.println("*********定时任务对接开始");
+        System.out.println("*********定时任务对接开始*********");
         try {
             Thread.sleep(3*1000);
         } catch (InterruptedException e) {
