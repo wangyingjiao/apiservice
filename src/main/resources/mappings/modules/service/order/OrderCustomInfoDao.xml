@@ -10,6 +10,7 @@
 		a.province_code AS "provinceCode",
 		a.city_code AS "cityCode",
 		a.area_code AS "areaCode",
+		a.placename AS "placename",
 		a.address AS "address",
 		a.addr_longitude AS "addrLongitude",
 		a.addr_latitude AS "addrLatitude",
@@ -57,7 +58,7 @@
 			a.name AS "name",
 			a.sex AS "sex",
 			a.phone AS "phone",
-			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),a.address) AS "address",
+			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(a.placename,''),IFNULL(a.address,'')) AS "address",
 			a.addr_longitude AS "addrLongitude",
 			a.addr_latitude AS "addrLatitude",
 			a.org_id AS "orgId",
@@ -120,6 +121,7 @@
 			province_code,
 			city_code,
 			area_code,
+			placename,
 			address,
 			addr_longitude,
 			addr_latitude,
@@ -140,6 +142,7 @@
 			#{provinceCode},
 			#{cityCode},
 			#{areaCode},
+			#{placename},
 			#{address},
 			#{addrLongitude},
 			#{addrLatitude},
@@ -163,6 +166,7 @@
 		<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
 		<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
 		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
+		<if test="placename !=null and placename != ''">placename = #{placename},</if>
 		<if test="address !=null and address != ''">address = #{address},</if>
 		<if test="addrLongitude !=null and addrLongitude != ''">addr_longitude = #{addrLongitude},</if>
 		<if test="addrLatitude !=null and addrLatitude != ''">addr_latitude = #{addrLatitude},</if>
@@ -211,6 +215,7 @@
 			a.province_code AS "provinceCode",
 			a.city_code AS "cityCode",
 			a.area_code AS "areaCode",
+			a.placename AS "placename",
 			a.address AS "address",
 			a.service_point AS "servicePoint"
 		FROM basic_service_station a
@@ -228,7 +233,7 @@
 			a.province_code AS "provinceCode",
 			a.city_code AS "cityCode",
 			a.area_code AS "areaCode",
-			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),a.address) AS "address",
+			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(a.placename,''),IFNULL(a.address,'')) AS "address",
 			a.addr_longitude AS "addrLongitude",
 			a.addr_latitude AS "addrLatitude",
 			a.email AS "email",
@@ -253,7 +258,7 @@
 		a.province_code AS "provinceCode",
 		a.city_code AS "cityCode",
 		a.area_code AS "areaCode",
-		CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),a.address) AS "address",
+		CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(a.placename,''),IFNULL(a.address,'')) AS "address",
 		a.addr_longitude AS "addrLongitude",
 		a.addr_latitude AS "addrLatitude",
 		a.email AS "email",

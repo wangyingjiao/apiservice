@@ -26,7 +26,8 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	private String provinceCode;		// 省_区号
 	private String cityCode;		// 市_区号
 	private String areaCode;		// 区_区号
-	private String address;		// 详细地址
+	private String placename;//小区
+	private String address;		// 详细地址 门牌号
 	private String addrLongitude;		// 经度
 	private String addrLatitude;		// 纬度
 	private String email;		// 客户邮箱
@@ -199,5 +200,13 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 
 	public void setStationList(List<OrderDropdownInfo> stationList) {
 		this.stationList = stationList;
+	}
+
+	public String getPlacename() {
+		return placename;
+	}
+
+	public void setPlacename(String placename) {
+		this.placename = placename;
 	}
 }

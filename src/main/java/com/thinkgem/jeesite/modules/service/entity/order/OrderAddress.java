@@ -21,7 +21,8 @@ public class OrderAddress extends DataEntity<OrderAddress> {
 	private String provinceCode;		// 省_区号
 	private String cityCode;		// 市_区号
 	private String areaCode;		// 区_区号
-	private String detailAddress;		// 详细地址
+	private String placename;//服务地址：小区
+	private String detailAddress;		// 详细地址 门牌号
 	private String address;		// 收货人完整地址
 
 	private String orgId;//所属服务机构ID 新增订单用
@@ -139,5 +140,13 @@ public class OrderAddress extends DataEntity<OrderAddress> {
 
 	public void setAddrLatitude(String addrLatitude) {
 		this.addrLatitude = addrLatitude;
+	}
+
+	public String getPlacename() {
+		return placename;
+	}
+
+	public void setPlacename(String placename) {
+		this.placename = placename;
 	}
 }

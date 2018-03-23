@@ -957,7 +957,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
         String province_code = info.getProvince_code();//省CODE
         String city_code = info.getCity_code();//市CODE
         String area_code = info.getArea_code();//区CODE
-        String detailAddress = info.getAddress();//服务地址：小区+详细地址
+        //String detailAddress = info.getAddress();//服务地址：小区+详细地址
+		String placename = info.getPlacename();////服务地址：小区
+		String detailAddress = info.getDetail_address();//服务地址：门牌号
 
         String latitude = info.getLatitude();//服务地址：纬度
         String longitude = info.getLongitude();//服务地址：经度
@@ -982,6 +984,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
         orderCustomInfo.setProvinceCode(province_code);//省_区号
         orderCustomInfo.setCityCode(city_code);//市_区号
         orderCustomInfo.setAreaCode(area_code);//区_区号
+		orderCustomInfo.setPlacename(placename);//小区
         orderCustomInfo.setAddress(detailAddress);//详细地址
         orderCustomInfo.setAddrLatitude(latitude);//服务地址：纬度
         orderCustomInfo.setAddrLongitude(longitude);//服务地址：经度
@@ -1011,7 +1014,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String province_code = info.getProvince_code();//省CODE
 		String city_code = info.getCity_code();//市CODE
 		String area_code = info.getArea_code();//区CODE
-		String detailAddress = info.getAddress();//服务地址：小区+详细地址
+		String placename = info.getPlacename();////服务地址：小区
+		String detailAddress = info.getDetail_address();//服务地址：门牌号
 
 		//省名称
 		String provinceName = "";
@@ -1040,7 +1044,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		String address = "";
 		if(StringUtils.isNotBlank(provinceName) && StringUtils.isNotBlank(cityName) && StringUtils.isNotBlank(areaName)){
-			address = provinceName + cityName + areaName + detailAddress;
+			address = provinceName + cityName + areaName + placename + detailAddress;
 		}
 
 		//--------------------------------------
@@ -1051,6 +1055,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderAddress.setProvinceCode(province_code);//省_区号
 		orderAddress.setCityCode(city_code);//市_区号
 		orderAddress.setAreaCode(area_code);//区_区号
+		orderAddress.setPlacename(placename);//小区
 		orderAddress.setDetailAddress(detailAddress);//详细地址
 		orderAddress.setAddress(address);//收货人完整地址
 
