@@ -13,7 +13,9 @@
         <param-value>
             classpath*:/spring-context.xml,
             classpath*:/spring-context-jedis.xml,
-            classpath*:/spring-context-shiro.xml</param-value>
+            classpath*:/spring-context-shiro.xml,
+            classpath*:/spring-context-quartz.xml
+        </param-value>
     </context-param>
 
     <listener>
@@ -25,6 +27,9 @@
     <!--解决quartz不能正常关闭的监听器-->
     <listener>
         <listener-class>com.thinkgem.jeesite.common.quartz.ShutDownQuartz</listener-class>
+    </listener>
+    <listener>
+        <listener-class>com.thinkgem.jeesite.common.task.QuartzListener</listener-class>
     </listener>
     <!--<filter>-->
     <!--<filter-name>CORS</filter-name>-->
@@ -201,11 +206,12 @@
         <url-pattern>/act/service/*</url-pattern>
     </filter-mapping> -->
 
-    <servlet>
+<!--    <servlet>
         <servlet-name>QuartzServlet</servlet-name>
         <servlet-class>com.thinkgem.jeesite.common.quartz.QuartzServlet</servlet-class>
+        <
         <load-on-startup>5</load-on-startup>
-    </servlet>
+    </servlet>-->
     <!-- DruidStatView -->
     <servlet>
         <servlet-name>DruidStatView</servlet-name>
