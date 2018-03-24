@@ -1886,7 +1886,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 			//完成服务  如果未支付 不能点击
 			if ("finish".equals(orderInfo.getServiceStatus())){
-				if (StringUtils.isBlank(info.getPayStatus()) || "waitpay".equals(info.getPayStatus())){
+				if (StringUtils.isBlank(info.getPayStatus())){
+					throw new ServiceException("订单服务状态不可为空");
+				}
+				//本机构的订单未支付不可点击完成 国安社区的可以
+				if ("own".equals(info.getOrderSource()) && "waitpay".equals(info.getPayStatus())){
 					throw new ServiceException("订单尚未支付，请完成支付");
 				}
 				//订单来源为本机构的 完成服务后，同时将订单的状态改为已成功
