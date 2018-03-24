@@ -58,6 +58,6 @@
 
 	<select id="getInfoByEshopCode" resultType="BasicGasqEshop">
 		SELECT * from basic_gasq_eshop
-		WHERE code = #{eshopCode}
+		WHERE code = #{eshop_code}
 	</select>
 </mapper>
