@@ -330,7 +330,7 @@
 			b.sort_id AS sortId,
 			b.id
          	FROM ser_item_info_goods_eshop a LEFT JOIN ser_item_info_goods b ON a.goods_id = b.id
-         	WHERE a.eshop_code = #{eshopCode}
+         	WHERE a.eshop_code = #{eshopCode} AND a.enabled_status = 'yes' AND joint_status = 'butt_success'
     </select>
 
 	<select id="getOrgEShopList" resultType="int">

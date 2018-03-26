@@ -234,7 +234,6 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 	public void deleteEshop(BasicOrganization basicOrganization) {
     	basicOrganizationDao.deleteEshop(basicOrganization);
         //basicOrganizationDao.updEshopGoods(basicOrganization);
-        basicOrganizationDao.deleteEshopGoodsByEshopCode(basicOrganization);
         String eshopCode = basicOrganization.getEshopCode();
         List<SerItemCommodity> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(basicOrganization);
         if (jointGoodsCodes.size()>0) {
@@ -253,6 +252,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 			sii.setCommoditys(sicList);
 			OpenSendUtil.removeJointGoodsCodeByOrg(sii);
         }
+		basicOrganizationDao.deleteEshopGoodsByEshopCode(basicOrganization);
 	}
 
 	public int getOrgEShopList(BasicOrganization basicOrganization) {
