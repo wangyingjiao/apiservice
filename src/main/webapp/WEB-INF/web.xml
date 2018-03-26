@@ -113,22 +113,15 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <filter>
-        <filter-name>HttpServletRequestReplacedFilter</filter-name>
-        <filter-class>com.thinkgem.jeesite.common.filter.DefaultServletRequestFilter</filter-class>
-        <!--         <init-param>   -->
-        <!--             <param-name>encoding</param-name>   -->
-        <!--             <param-value>utf-8</param-value>   -->
-        <!--         </init-param>   -->
+   <!-- <filter>
+        <filter-name>AHttpServletRequestReplacedFilter</filter-name>
+        <filter-class>com.thinkgem.jeesite.common.filter.HttpServletRequestReplacedFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>HttpServletRequestReplacedFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    <!--     <filter-mapping>   -->
-    <!--         <filter-name>CORS</filter-name>   -->
-    <!--         <url-pattern>/*</url-pattern>   -->
-    <!--    </filter-mapping> -->
+        <filter-name>AHttpServletRequestReplacedFilter</filter-name>
+        <url-pattern>/${adminPath}/*</url-pattern>
+    </filter-mapping>-->
+
 
     <filter>
         <filter-name>CORS</filter-name>
