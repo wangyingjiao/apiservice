@@ -355,7 +355,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
                 //OpenWaitUtils.delSendWait(info);
                 sysJointWaitDao.delete(info);
 
-				//商品E店关联表不可用
+				/*//商品E店关联表不可用
 				List<SerItemCommodityEshop> goodsEshopList = new ArrayList<>();
 				SerItemCommodityEshop goodsEshop = new SerItemCommodityEshop();
 				OpenSendRemoveJointGoodsRequest request = (OpenSendRemoveJointGoodsRequest) JsonMapper.fromJsonString(json, OpenSendRemoveJointGoodsRequest.class);
@@ -383,7 +383,7 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 							}
 						}
 					}
-				}
+				}*/
 				//OpenWaitUtils.updateGoodsEshopEnabledStatus(goodsEshopList);
 			}else{
 				if(MANY_YES.equals(info.getMany()) && (info.getNum() < MANY_MAX_NUM)){//多次请求，且5次之内
@@ -432,9 +432,10 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 									goodsEshop.setGoodsId(goodsId);
 									goodsEshop.setEshopCode(eshopCode);
 									goodsEshop.setJointGoodsCode(jointGoodsCode);
+									goodsEshop.setEnabledStatus("yes");
 									goodsEshop.setJointStatus("remove_fail");
 									//goodsEshopList.add(goodsEshop);
-                                    sysJointWaitDao.updateGoodsEshopJointStatus(goodsEshop);
+                                    sysJointWaitDao.updateGoodsEshopJointStatusAndCode(goodsEshop);
 								}
 							}
 						}
