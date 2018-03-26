@@ -3,7 +3,7 @@ package com.thinkgem.jeesite.common.filter;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-
+//网上找的方法 重复调用request.getReader())及request.getInputStream()
 public class HttpServletRequestReplacedFilter implements Filter {
 
     @Override
@@ -18,10 +18,10 @@ public class HttpServletRequestReplacedFilter implements Filter {
         ServletRequest requestWrapper = null;
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-            System.out.println(httpServletRequest.getContentType());
-            System.out.println(httpServletRequest.getContextPath());
-            System.out.println(httpServletRequest.getRemoteHost());
-            System.out.println(httpServletRequest.getMethod());
+            // System.out.println(httpServletRequest.getContentType());
+            // System.out.println(httpServletRequest.getContextPath());
+            // System.out.println(httpServletRequest.getRemoteHost());
+            // System.out.println(httpServletRequest.getMethod());
             if ("POST".equals(httpServletRequest.getMethod().toUpperCase())
                     ) {
                 //&& httpServletRequest.getContentType().equalsIgnoreCase(

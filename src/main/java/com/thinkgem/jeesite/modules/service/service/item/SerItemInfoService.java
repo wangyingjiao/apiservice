@@ -663,6 +663,8 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 						serItemCommodity1.setSelfCode(serItemCommodity1.getSortId()+"_"+serItemCommodity1.getId());
 						serItemCommodity1.setCommodityEshops(commodityEshops);
 						commoditys.add(serItemCommodity1);
+						goodEshop.setEnabledStatus("no");
+						serItemCommodityDao.updateEshop(goodEshop);
 					}
 				}
 			}

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-
+////网上找的方法 重复调用request.getReader())及request.getInputStream()
 public class HttpHelper {
     /**
      * 获取请求Body

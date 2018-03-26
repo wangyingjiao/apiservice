@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
-
+////网上找的方法 重复调用request.getReader())及request.getInputStream()
 public class BodyReaderHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     private final byte[] body;
