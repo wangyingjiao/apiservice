@@ -84,6 +84,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.tech_id=#{techId}
+			AND a.review_status=#{reviewStatus}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
