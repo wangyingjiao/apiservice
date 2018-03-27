@@ -47,7 +47,8 @@
 			request_uri, 
 			method, 
 			params, 
-			exception
+			exception,
+			request_content
 		) VALUES (
 			#{id}, 
 			#{type}, 
@@ -59,7 +60,8 @@
 			#{requestUri}, 
 			#{method}, 
 			#{params}, 
-			#{exception}
+			#{exception},
+			#{requestContent}
 		)
 	</insert>
 	

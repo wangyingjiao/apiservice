@@ -58,6 +58,12 @@ public class LogUtils {
 			log.setRequestUri(request.getRequestURI());
 			log.setParams(request.getParameterMap());
 			log.setMethod(request.getMethod());
+			String requestContent = "";
+			if(null!= request.getAttribute("readerJson")){
+				requestContent = request.getAttribute("readerJson").toString();
+			}
+			log.setRequestContent(requestContent);
+
 			// 异步保存日志
 			new SaveLogThread(log, handler, ex).start();
 		}

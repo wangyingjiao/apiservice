@@ -55,6 +55,7 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
             }
             if (StringUtils.isNotBlank(json)) {
                 JSONObject jsonObject = JSONObject.parseObject(json);
+                request.setAttribute("readerJson",jsonObject);
                 logger.info(jsonObject.toJSONString());
             }
         } else {
