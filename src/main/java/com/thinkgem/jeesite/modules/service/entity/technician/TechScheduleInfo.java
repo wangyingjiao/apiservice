@@ -4,6 +4,9 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 import java.util.Date;
 
+/**
+ * 服务技师排期表
+ */
 public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
 
 
@@ -16,6 +19,15 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
     private String typeId;		// 休假ID或订单ID
     private String type;        //holiday：休假  order：订单
     private String remark;      //备注信息
+    private String reviewStatus;      //app新增休假时使用 参数传递使用
+
+    public String getReviewStatus() {
+        return reviewStatus;
+    }
+
+    public void setReviewStatus(String reviewStatus) {
+        this.reviewStatus = reviewStatus;
+    }
 
     public TechScheduleInfo() {
         super();

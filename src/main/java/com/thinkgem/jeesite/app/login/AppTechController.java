@@ -164,7 +164,7 @@ public class AppTechController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/insertTech",method = {RequestMethod.POST})
 	@ApiOperation(value = "新增休假", notes = "技师休假")
-	public AppResult insertTech(ServiceTechnicianHoliday info,HttpServletRequest request, HttpServletResponse response) {
+	public AppResult insertTech(TechScheduleInfo info,HttpServletRequest request, HttpServletResponse response) {
 
 		//不是上班时间不能请假
 		List<String> errList = errors(info, SavePersonalGroup.class);
