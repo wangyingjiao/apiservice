@@ -113,14 +113,14 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-   <!-- <filter>
-        <filter-name>AHttpServletRequestReplacedFilter</filter-name>
-        <filter-class>com.thinkgem.jeesite.common.filter.HttpServletRequestReplacedFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>AHttpServletRequestReplacedFilter</filter-name>
-        <url-pattern>/${adminPath}/*</url-pattern>
-    </filter-mapping>-->
+    <!--  <filter>
+           <filter-name>abc</filter-name>
+           <filter-class>com.thinkgem.jeesite.common.filter.HttpServletRequestReplacedFilter</filter-class>
+       </filter>
+       <filter-mapping>
+           <filter-name>abc</filter-name>
+           <url-pattern>/${adminPath}/*</url-pattern>
+       </filter-mapping>-->
 
 
     <filter>

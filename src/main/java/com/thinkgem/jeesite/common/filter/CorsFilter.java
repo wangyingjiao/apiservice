@@ -22,6 +22,9 @@ public class CorsFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+            ServletRequest requestWrapper = null;
+            requestWrapper = new BodyReaderHttpServletRequestWrapper(
+                    (HttpServletRequest) request);
             // 跨域
             String origin = httpRequest.getHeader("Origin");
             logger.info("域：" + origin);
@@ -37,7 +40,12 @@ public class CorsFilter implements Filter {
                 httpResponse.setStatus(HttpServletResponse.SC_OK);
                 return;
             }
-            chain.doFilter(request, response);
+
+            if (requestWrapper == null) {
+                chain.doFilter(request, response);
+            } else {
+                chain.doFilter(requestWrapper, response);
+            }
         } catch (Exception e) {
             throw e;
         }
