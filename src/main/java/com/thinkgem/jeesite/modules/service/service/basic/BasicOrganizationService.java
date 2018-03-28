@@ -110,7 +110,6 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
                     for (BasicOrganizationEshop basicOrganizationEshop : list){
                         BasicOrganization b = new BasicOrganization();
                         b.setEshopCode(basicOrganizationEshop.getEshopCode());
-                        basicOrganizationDao.deleteEshopGoodsByEshopCode(b);
                         String eshopCode = b.getEshopCode();
                         List<SerItemCommodity> jointGoodsCodes = basicOrganizationDao.getJointGoodsCodes(b);
                         if (jointGoodsCodes.size()>0) {
@@ -125,9 +124,12 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 								sicList.add(sic);
 							}
                         }
+						basicOrganizationDao.deleteEshopGoodsByEshopCode(b);
                     }
 					sii.setCommoditys(sicList);
-					OpenSendUtil.removeJointGoodsCodeByOrg(sii);
+                    if (sii.getCommoditys().size() > 0) {
+						OpenSendUtil.removeJointGoodsCodeByOrg(sii);
+					}
                     basicOrganizationDao.deleteEcode(basicOrganization);
                 }
             }else {
