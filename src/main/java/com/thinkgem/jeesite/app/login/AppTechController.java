@@ -194,11 +194,15 @@ public class AppTechController extends BaseController {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		serviceTechnicianHoliday.setTechId(token.getTechId());
-		int delete = holidayService.delete1(serviceTechnicianHoliday);
-		if (delete > 0){
-			return new AppSuccResult(0,null,"删除休假成功");
+		try {
+			int delete = holidayService.appDelete(serviceTechnicianHoliday);
+			if (delete > 0){
+				return new AppSuccResult(0,null,"删除休假成功");
+			}
+			return new AppFailResult(-1,null,"删除休假失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,e.getMessage(),"删除休假失败");
 		}
-		return new AppFailResult(-1,null,"删除休假失败");
 	}
 
 	//修改休假
@@ -211,11 +215,15 @@ public class AppTechController extends BaseController {
 		Token token = (Token) request.getAttribute("token");
 		serviceTechnicianHoliday.setTechId(token.getTechId());
 		//只有审核未通过的休假可以修改，修改后，清空不通过原因，并将审核状态修改为待审核
-		int delete = holidayService.saveHoliday(serviceTechnicianHoliday);
-		if (delete > 0){
-			return new AppSuccResult(0,null,"删除休假成功");
+		try {
+			int delete = holidayService.saveHoliday(serviceTechnicianHoliday);
+			if (delete > 0){
+				return new AppSuccResult(0,null,"删除休假成功");
+			}
+			return new AppFailResult(-1,null,"删除休假失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,e.getMessage(),"删除休假失败");
 		}
-		return new AppFailResult(-1,null,"删除休假失败");
 	}
 
 	//技师改密码

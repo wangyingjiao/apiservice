@@ -7,6 +7,9 @@
 		a.tech_id AS "techId",
 		a.start_time AS "startTime",
 		a.end_time AS "endTime",
+		a.review_status AS "reviewStatus",
+		a.fail_reason AS "failReason",
+		a.source AS "source",
 		a.remark AS "remark",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -41,6 +44,9 @@
 		LEFT JOIN basic_service_station c ON c.id = b.station_id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="reviewStatus != null and reviewStatus != ''">
+				AND a.review_status = #{reviewStatus}
+			</if>
 			<if test="techName != null and techName != ''">
 				AND b.name LIKE concat('%',#{techName},'%')
 			</if>
@@ -154,10 +160,21 @@
 			remark = #{remark}
 		WHERE id = #{id}
 	</update>
-	
+
+	<!--审核app的休假-->
+	<update id="update">
+		UPDATE tech_holiday SET
+		review_status = #{reviewStatus},
+		<if test="failReason !=null and failReason != ''">fail_reason = #{failReason},</if>
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<!--删除休假  app用到了-->
 	<update id="delete">
 		UPDATE tech_holiday SET 
-			del_flag = #{DEL_FLAG_DELETE}
+			del_flag = '1'
 		WHERE id = #{id}
 	</update>
 

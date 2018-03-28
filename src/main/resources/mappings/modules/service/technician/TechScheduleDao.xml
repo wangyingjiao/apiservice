@@ -19,13 +19,30 @@
 		a.del_flag AS "delFlag"
 	</sql>
 
+	<!--根据typeId查询排期表-->
 	<select id="getScheduleByTechId" resultType="TechScheduleInfo">
 		SELECT
 		<include refid="serviceTechnicianInfoColumns"/>
-		FROM tech_info a
+		FROM tech_schedule a
+		WHERE a.type_id = #{typeId}
+		AND a.del_flag=#{delFlag}
+	</select>
+
+	<!--根据技师id 开始时间 结束时间 获取排期表集合-->
+	<select id="getScheduleByTechId" resultType="TechScheduleInfo">
+		SELECT
+		<include refid="serviceTechnicianInfoColumns"/>
+		FROM tech_schedule a
 		WHERE a.tech_id = #{techId}
 		AND ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
 		AND a.del_flag=#{delFlag}
 	</select>
+
+	<!--删除排期表-->
+	<update id="delete">
+		UPDATE tech_schedule SET
+		del_flag = '1'
+		WHERE id = #{id}
+	</update>
 
 </mapper>

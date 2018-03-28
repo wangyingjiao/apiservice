@@ -9,8 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -40,6 +42,10 @@ public class ServiceTechnicianHolidayController extends BaseController {
 
 	@Autowired
 	private ServiceTechnicianHolidayService serviceTechnicianHolidayService;
+
+	//消息的service
+	@Autowired
+	private MessageInfoService messageInfoService;
 	
 	@ModelAttribute
 	public ServiceTechnicianHoliday get(@RequestParam(required=false) String id) {
@@ -109,20 +115,27 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	/**
 	 * 审核app休假
 	 * @param serviceTechnicianHoliday
-	 * @param request
-	 * @param response
 	 * @return
 	 */
-//	@ResponseBody
-//	@RequiresPermissions("holiday_view")
-//	@RequestMapping(value = "/reviewedHoliday", method = {RequestMethod.POST, RequestMethod.GET})
-//	@ApiOperation("审核app休假")
-//	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday, HttpServletRequest request, HttpServletResponse response) {
-//		if(serviceTechnicianHoliday == null){
-//			serviceTechnicianHoliday = new ServiceTechnicianHoliday();
-//		}
-//		Page<ServiceTechnicianHoliday> serSortInfoPage = new Page<>(request, response);
-//		Page<ServiceTechnicianHoliday> page = serviceTechnicianHolidayService.findPage(serSortInfoPage, serviceTechnicianHoliday);
-//		return new SuccResult(page);
-//	}
+	@ResponseBody
+	@RequiresPermissions("holiday_view")
+	@RequestMapping(value = "/reviewedHoliday", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation("审核app休假")
+	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		//参数 id 状态 未通过原因
+		try {
+			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
+			if (i > 0){
+				//发消息
+
+				return new SuccResult("审核成功");
+			}else {
+				//发消息
+				return new FailResult("审核失败");
+			}
+		}catch (ServiceException e){
+			return new FailResult(e.getMessage());
+		}
+	}
+
 }
