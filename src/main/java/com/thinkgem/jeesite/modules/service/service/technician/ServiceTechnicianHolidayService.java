@@ -16,7 +16,9 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.DateUtilsEntity;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,9 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 
 	@Autowired
 	TechScheduleDao techScheduleDao;
+
+    @Autowired
+    private ServiceTechnicianInfoDao serviceTechnicianInfoDao;
 
 	public ServiceTechnicianHoliday get(String id) {
 		return super.get(id);
@@ -88,35 +93,37 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
         }
         serviceTechnicianHoliday.preUpdate();
         int i = dao.updateHoliday(serviceTechnicianHoliday);
+        //增加排期表
+        if (i > 0){
+            //查询数据库中休假
+            ServiceTechnicianHoliday holiday1 = dao.get(serviceTechnicianHoliday.getId());
+            //如果是审核通过 就增加排期表
+            if ("yes".equals(holiday1.getReviewStatus())) {
+                //getHolidaysList 方法传入开始和结束时间  返回一个list是两个时间中间的时间集合
+                List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(holiday1.getStartTime(), holiday1.getEndTime());
+                if (holidaysList != null && holidaysList.size() > 0) {
+                    for (ServiceTechnicianHoliday holiday : holidaysList) {
+                        int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
+                        TechScheduleInfo info = new TechScheduleInfo();
+                        info.setTechId(holiday1.getTechId());
+                        info.setScheduleWeek(weekDay);
+                        Date dateFirstTime = DateUtils.getDateFirstTime(holiday.getStartTime());
+                        info.setScheduleDate(dateFirstTime);
+                        info.setStartTime(holiday.getStartTime());
+                        info.setEndTime(holiday.getEndTime());
+                        info.setTypeId(holiday1.getId());
+                        info.setType("holiday");
+                        info.setRemark(holiday1.getRemark());
+                        info.preInsert();
+                        i = techScheduleDao.insertSchedule(info);
+                    }
+                }
+            }
+        }
         return i;
     }
 
-    //增加排期表
-	@Transactional(readOnly = false)
-	public int insertSchedule(ServiceTechnicianHoliday serviceTechnicianHoliday){
-		int i =0;
-		//getHolidaysList 方法传入开始和结束时间  返回一个list是两个时间中间的时间集合
-		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
-		if (holidaysList != null && holidaysList.size() > 0) {
-			for (ServiceTechnicianHoliday holiday : holidaysList) {
-				// int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
-				TechScheduleInfo info = new TechScheduleInfo();
-				info.setTechId(serviceTechnicianHoliday.getTechId());
-				info.setScheduleWeek(holiday.getHoliday());
-				holiday.getStartTime();
-				// DateUtils
-				// DateUtils.getWeekNum()
-				info.setTypeId(serviceTechnicianHoliday.getId());
-				info.setType("holiday");
-				info.setRemark(serviceTechnicianHoliday.getRemark());
-				info.preInsert();
-				 i = techScheduleDao.insertSchedule(info);
-			}
-		}
-		return i;
-	}
-
-	@Transactional(readOnly = false)
+    @Transactional(readOnly = false)
 	public int savePc(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;
 		//最后休假日期List

@@ -131,7 +131,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		//参数 id 状态 未通过原因
 		try {
-		    //审核
+		    //审核  增加排期表
 			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
 			// 查询出技师的手机
             ServiceTechnicianHoliday serviceTechnicianHoliday1 = serviceTechnicianHolidayService.get(serviceTechnicianHoliday);
@@ -139,14 +139,14 @@ public class ServiceTechnicianHolidayController extends BaseController {
             ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(techId);
             serviceTechnicianHoliday1.setTechPhone(serviceTechnicianInfo.getPhone());
             if (i > 0){
-				//发消息
-                messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidaySuccess");
-                //增加排期表
-                int i1 = serviceTechnicianHolidayService.insertSchedule(serviceTechnicianHoliday1);
+				//发消息 如果是审核通过 带参数techHolidaySuccess 否则techHolidayFail
+				if ("yes".equals(serviceTechnicianHoliday1.getReviewStatus())){
+					messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidaySuccess");
+				}else {
+					messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidayFail");
+				}
                 return new SuccResult("审核成功");
 			}else {
-				//发消息
-                messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidayFail");
 				return new FailResult("审核失败");
 			}
 		}catch (ServiceException e){

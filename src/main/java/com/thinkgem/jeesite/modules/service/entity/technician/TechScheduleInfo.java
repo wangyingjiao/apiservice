@@ -13,7 +13,7 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
     private static final long serialVersionUID = 1L;
     private String techId;		// 技师ID
     private Date scheduleDate;		// 日期
-    private String scheduleWeek;		// 日期（周一，周二。。。1,2,3,4,5,6,7）
+    private int scheduleWeek;		// 日期（周一，周二。。。1,2,3,4,5,6,7）
     private Date startTime;		// 起始时段
     private Date endTime;		// 结束时段
     private String typeId;		// 休假ID或订单ID
@@ -53,11 +53,11 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
         this.scheduleDate = scheduleDate;
     }
 
-    public String getScheduleWeek() {
+    public int getScheduleWeek() {
         return scheduleWeek;
     }
 
-    public void setScheduleWeek(String scheduleWeek) {
+    public void setScheduleWeek(int scheduleWeek) {
         this.scheduleWeek = scheduleWeek;
     }
 
