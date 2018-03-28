@@ -397,14 +397,19 @@ public class SystemService extends BaseService implements InitializingBean {
     @Transactional(readOnly = false)
     public void saveMenu(Menu menu) {
 
-        // 获取父节点实体
-        menu.setParent(this.getMenu(menu.getParent().getId()));
-
         // 获取修改前的parentIds，用于更新子节点的parentIds
         String oldParentIds = menu.getParentIds();
 
-        // 设置新的父节点串
-        menu.setParentIds(menu.getParent().getParentIds() + menu.getParent().getId() + ",");
+        if("1".equals(menu.getParent().getId())){
+            // 设置新的父节点串
+            menu.setParentIds("0,1,");
+        }else{
+            // 获取父节点实体
+            menu.setParent(this.getMenu(menu.getParent().getId()));
+
+            // 设置新的父节点串
+            menu.setParentIds(menu.getParent().getParentIds() + menu.getParent().getId() + ",");
+        }
 
         // 保存或更新实体
         if (StringUtils.isBlank(menu.getId())) {
