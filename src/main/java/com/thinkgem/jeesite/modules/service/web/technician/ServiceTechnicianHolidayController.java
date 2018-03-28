@@ -10,7 +10,11 @@ import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
+import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -46,7 +50,10 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	//消息的service
 	@Autowired
 	private MessageInfoService messageInfoService;
-	
+
+	@Autowired
+    private ServiceTechnicianInfoService serviceTechnicianInfoService;
+
 	@ModelAttribute
 	public ServiceTechnicianHoliday get(@RequestParam(required=false) String id) {
 		ServiceTechnicianHoliday entity = null;
@@ -124,13 +131,22 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		//参数 id 状态 未通过原因
 		try {
+		    //审核
 			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
-			if (i > 0){
+			// 查询出技师的手机
+            ServiceTechnicianHoliday serviceTechnicianHoliday1 = serviceTechnicianHolidayService.get(serviceTechnicianHoliday);
+            String techId = serviceTechnicianHoliday1.getTechId();
+            ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(techId);
+            serviceTechnicianHoliday1.setTechPhone(serviceTechnicianInfo.getPhone());
+            if (i > 0){
 				//发消息
-
-				return new SuccResult("审核成功");
+                messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidaySuccess");
+                //增加排期表
+                int i1 = serviceTechnicianHolidayService.insertSchedule(serviceTechnicianHoliday1);
+                return new SuccResult("审核成功");
 			}else {
 				//发消息
+                messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidayFail");
 				return new FailResult("审核失败");
 			}
 		}catch (ServiceException e){

@@ -14,6 +14,7 @@ import java.util.List;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.DateUtilsEntity;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
@@ -89,6 +90,31 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
         int i = dao.updateHoliday(serviceTechnicianHoliday);
         return i;
     }
+
+    //增加排期表
+	@Transactional(readOnly = false)
+	public int insertSchedule(ServiceTechnicianHoliday serviceTechnicianHoliday){
+		int i =0;
+		//getHolidaysList 方法传入开始和结束时间  返回一个list是两个时间中间的时间集合
+		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		if (holidaysList != null && holidaysList.size() > 0) {
+			for (ServiceTechnicianHoliday holiday : holidaysList) {
+				// int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
+				TechScheduleInfo info = new TechScheduleInfo();
+				info.setTechId(serviceTechnicianHoliday.getTechId());
+				info.setScheduleWeek(holiday.getHoliday());
+				holiday.getStartTime();
+				// DateUtils
+				// DateUtils.getWeekNum()
+				info.setTypeId(serviceTechnicianHoliday.getId());
+				info.setType("holiday");
+				info.setRemark(serviceTechnicianHoliday.getRemark());
+				info.preInsert();
+				 i = techScheduleDao.insertSchedule(info);
+			}
+		}
+		return i;
+	}
 
 	@Transactional(readOnly = false)
 	public int savePc(ServiceTechnicianHoliday serviceTechnicianHoliday) {
@@ -359,16 +385,21 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	@Transactional(readOnly = false)
 	public int appDelete(ServiceTechnicianHoliday serviceTechnicianHoliday) {
         int delete =0;
+		ServiceTechnicianHoliday holiday = dao.get(serviceTechnicianHoliday.getId());
+		if (holiday == null){
+			throw new ServiceException("未找到该休假信息");
+		}
         TechScheduleInfo info = new TechScheduleInfo();
         info.setTypeId(serviceTechnicianHoliday.getId());
         TechScheduleInfo schedule = techScheduleDao.getSchedule(info);
         if (schedule == null){
             throw new ServiceException("未在排期表中找到该休假信息");
         }
-        //删除排期表（修改有效状态）
-        int i = techScheduleDao.deleteSchedule(info);
+        //删除休假表（修改有效状态）
+        int i =dao.delete(serviceTechnicianHoliday);
         if (i > 0){
-            delete = dao.delete(serviceTechnicianHoliday);
+        	//删除排期表（修改有效状态）
+            delete = techScheduleDao.deleteSchedule(info);
         }else {
             throw new ServiceException("删除排期表失败");
         }

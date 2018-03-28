@@ -33,12 +33,15 @@
 		SELECT
 			a.id AS "id",
 			a.tech_id AS "techId",
-			b.name AS "techName",
-			b.phone AS "techPhone",
-			c.name AS "techStationName",
 			a.start_time AS "startTime",
 			a.end_time AS "endTime",
-			a.remark AS "remark"
+			a.review_status AS "reviewStatus",
+			a.fail_reason AS "failReason",
+			a.source AS "source",
+			a.remark AS "remark",
+			b.name AS "techName",
+			b.phone AS "techPhone",
+			c.name AS "techStationName"
 		FROM tech_holiday a
 		LEFT JOIN tech_info b ON a.tech_id = b.id
 		LEFT JOIN basic_service_station c ON c.id = b.station_id
@@ -162,7 +165,7 @@
 	</update>
 
 	<!--审核app的休假-->
-	<update id="update">
+	<update id="updateHoliday">
 		UPDATE tech_holiday SET
 		review_status = #{reviewStatus},
 		<if test="failReason !=null and failReason != ''">fail_reason = #{failReason},</if>
