@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -32,6 +33,8 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.service.DictService;
 import springfox.documentation.annotations.ApiIgnore;
+
+import static com.thinkgem.jeesite.modules.service.service.appVersion.AppVersionService.CACHE_NEWEST_VERSION;
 
 /**
  * 字典Controller
@@ -246,6 +249,15 @@ public class DictController extends BaseController {
         }
         dictService.upData(dict);
         return new SuccResult<String>("修改字典成功");
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/getRedisValue", method = {RequestMethod.POST, RequestMethod.GET})
+    public Result getRedisValue(@RequestBody(required = false) Dict dict, HttpServletRequest request, HttpServletResponse response) {
+        Object cache = CacheUtils.get(dict.getValue());
+        return new SuccResult(cache);
     }
 
 }
