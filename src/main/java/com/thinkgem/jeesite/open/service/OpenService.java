@@ -52,6 +52,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	@Autowired
     OrderCustomInfoDao orderCustomInfoDao;
 	@Autowired
+	OrderCustomAddressDao orderCustomAddressDao;
+	@Autowired
 	OrderDispatchDao orderDispatchDao;
 	@Autowired
 	OrderGoodsDao orderGoodsDao;
@@ -981,13 +983,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
         orderCustomInfo.setName("");//姓名
         orderCustomInfo.setPhone(phone);//手机号
         orderCustomInfo.setEmail("");//邮编
-        orderCustomInfo.setProvinceCode(province_code);//省_区号
-        orderCustomInfo.setCityCode(city_code);//市_区号
-        orderCustomInfo.setAreaCode(area_code);//区_区号
-		orderCustomInfo.setPlacename(placename);//小区
-        orderCustomInfo.setAddress(detailAddress);//详细地址
-        orderCustomInfo.setAddrLatitude(latitude);//服务地址：纬度
-        orderCustomInfo.setAddrLongitude(longitude);//服务地址：经度
         orderCustomInfo.setSource("gasq");//来源   本机构:own    国安社区:gasq',
         orderCustomInfo.setOrgId(orgId);
 
@@ -1001,7 +996,24 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
         orderCustomInfoDao.insert(orderCustomInfo);
 
-        return orderCustomInfo;
+        // 客户地址表
+		OrderCustomAddress orderCustomAddress = new OrderCustomAddress();
+		orderCustomAddress.setCustomerId(orderCustomInfo.getId());
+		orderCustomAddress.setAddressName("");
+		orderCustomAddress.setAddressPhone(phone);
+		orderCustomAddress.setProvinceCode(province_code);//省_区号
+		orderCustomAddress.setCityCode(city_code);//市_区号
+		orderCustomAddress.setAreaCode(area_code);//区_区号
+		orderCustomAddress.setPlacename(placename);//小区
+		orderCustomAddress.setDetailAddress(detailAddress);//详细地址
+		orderCustomAddress.setAddrLatitude(latitude);//服务地址：纬度
+		orderCustomAddress.setAddrLongitude(longitude);//服务地址：经度
+		orderCustomAddress.setDefaultType("yes");
+		orderCustomAddressDao.insert(orderCustomAddress);
+		List<OrderCustomAddress> orderCustomAddressList = new ArrayList<>();
+		orderCustomAddressList.add(orderCustomAddress);
+		orderCustomInfo.setAddressList(orderCustomAddressList);
+		return orderCustomInfo;
     }
 
 	/**

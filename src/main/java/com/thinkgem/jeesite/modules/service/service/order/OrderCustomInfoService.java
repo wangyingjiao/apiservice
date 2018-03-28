@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.service.order;
 import java.util.List;
 
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,4 +75,9 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 		OrderCustomInfo info = super.get(orderCustomInfo.getId());
 		return info;
 	}
+
+    public List<OrderCustomAddress> listCustomAddress(OrderCustomAddress orderCustomInfo) {
+		List<OrderCustomAddress> list = null;
+		return list;
+    }
 }

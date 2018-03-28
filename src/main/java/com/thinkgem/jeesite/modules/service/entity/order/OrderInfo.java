@@ -47,6 +47,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String orderSourceName; // 订单来源 app中文
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
 	private String customerId;		// 客户ID
+	private String customerAddressId;		// 客户地址ID
 	private String customerRemark;		// 客户备注
 	private String customerRemarkPic;		// 客户备注图片
 	private List<String> customerRemarkPics;		// 客户备注图片
@@ -789,5 +790,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setServiceTimeEnd(Timestamp serviceTimeEnd) {
 		this.serviceTimeEnd = serviceTimeEnd;
+	}
+
+	public String getCustomerAddressId() {
+		return customerAddressId;
+	}
+
+	public void setCustomerAddressId(String customerAddressId) {
+		this.customerAddressId = customerAddressId;
 	}
 }

@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderCustomInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -158,5 +159,16 @@ public class OrderCustomInfoController extends BaseController {
 		}else {
 			return new FailResult("客户手机号不能重复！");
 		}
+	}
+
+
+
+
+	@ResponseBody
+	@RequestMapping(value = "listDataAddress", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequiresPermissions("customer_view")
+	public Result listDataAddress(@RequestBody(required=false) OrderCustomAddress orderCustomInfo, HttpServletRequest request, HttpServletResponse response) {
+		List<OrderCustomAddress> list = orderCustomInfoService.listCustomAddress(orderCustomInfo);
+		return new SuccResult(list);
 	}
 }

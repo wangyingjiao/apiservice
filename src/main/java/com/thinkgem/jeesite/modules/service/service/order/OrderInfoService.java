@@ -63,6 +63,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	@Autowired
 	OrderCustomInfoDao orderCustomInfoDao;
 	@Autowired
+	OrderCustomAddressDao orderCustomAddressDao;
+	@Autowired
 	OrderAddressDao orderAddressDao;
 	@Autowired
 	OrderDispatchDao orderDispatchDao;
@@ -2459,20 +2461,29 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	private OrderAddress openCreateForAddress(OrderInfo info) {
+		String customerAddressId = info.getCustomerAddressId();
 		String customerId = info.getCustomerId();
 		if(StringUtils.isBlank(customerId)){
 			throw new ServiceException("未找到客户信息");
 		}
-		OrderCustomInfo customInfo = orderCustomInfoDao.get(customerId);
+		if(StringUtils.isBlank(customerAddressId)){
+			throw new ServiceException("未找到客户信息");
+		}
+
+		OrderCustomInfo custom = orderCustomInfoDao.get(customerId);
+		if(null == custom){
+			throw new ServiceException("未找到客户信息");
+		}
+		OrderCustomAddress customInfo = orderCustomAddressDao.get(customerAddressId);
 		if(null == customInfo){
 			throw new ServiceException("未找到客户信息");
 		}
-		String name = customInfo.getName();
-		String phone = customInfo.getPhone();//用户电话
+		String name = customInfo.getAddressName();
+		String phone = customInfo.getAddressPhone();//用户电话
 		String province_code = customInfo.getProvinceCode();//省CODE
 		String city_code = customInfo.getCityCode();//市CODE
 		String area_code = customInfo.getAreaCode();//区CODE
-		String detailAddress = customInfo.getAddress();//服务地址：小区+详细地址
+		String detailAddress = customInfo.getDetailAddress();//服务地址：小区+详细地址
 
 		//省名称
 		String provinceName = "";
@@ -2517,7 +2528,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderAddress.preInsert();
 		orderAddressDao.insert(orderAddress);
 
-		orderAddress.setOrgId(customInfo.getOrgId());//客户所属机构
+		orderAddress.setOrgId(custom.getOrgId());//客户所属机构
 		//orderAddress.setStationId(customInfo.getStationId());//客户所属服务站
 		if(StringUtils.isNotBlank(customInfo.getAddrLatitude())){
 			orderAddress.setAddrLatitude(customInfo.getAddrLatitude());//纬度
