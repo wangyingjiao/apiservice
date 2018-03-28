@@ -3,8 +3,29 @@
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao">
     
 	<sql id="techScheduleColumns">
-
+		a.id AS "id",
+		a.tech_id AS "techId",
+		a.schedule_date AS "scheduleDate",
+		a.schedule_week AS "scheduleWeek",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.type_id AS "typeId",
+		a.type AS "type",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
 	</sql>
-	
+
+	<select id="getScheduleByTechId" resultType="TechScheduleInfo">
+		SELECT
+		<include refid="serviceTechnicianInfoColumns"/>
+		FROM tech_info a
+		WHERE a.tech_id = #{techId}
+		AND ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
+		AND a.del_flag=#{delFlag}
+	</select>
 
 </mapper>

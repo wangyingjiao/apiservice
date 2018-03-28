@@ -116,12 +116,22 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	}
 	//app新增休假
 	@Transactional(readOnly = false)
-	public int appSave(TechScheduleInfo techScheduleInfo) {
+	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i = 0;
-
+		//转存对象位排期表
+		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
+		techScheduleInfo.setStartTime(serviceTechnicianHoliday.getStartTime());
+		techScheduleInfo.setEndTime(serviceTechnicianHoliday.getEndTime());
 		//查询服务技师排期表 是否有数据  有则不可请假
 		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(techScheduleInfo);
-
+		if (scheduleByTechId != null && scheduleByTechId.size() > 0){
+			throw new ServiceException("服务人员有排期,不可请假");
+		}
+		//将假期插入数据库 app添加休假状态为submit
+		serviceTechnicianHoliday.setReviewStatus("submit");
+		serviceTechnicianHoliday.setSort("app");
+		i = super.saveAPP(serviceTechnicianHoliday);
 		//服务人员在请假时间内是否有未完成的订单
 		// int orderTechRelationHoliday = serviceTechnicianHolidayDao.getOrderTechRelationHoliday(serviceTechnicianHoliday);
 		// if (orderTechRelationHoliday > 0) {
@@ -344,8 +354,24 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		int i=0;
 		//去数据库中查询出这个休假
 		ServiceTechnicianHoliday holiday = dao.get(serviceTechnicianHoliday.getId());
+		if (holiday == null){
+			throw new ServiceException("未找到该休假信息");
+		}
 		String reviewStatus = holiday.getReviewStatus();
+		//转存对象位排期表
+		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
+		techScheduleInfo.setStartTime(serviceTechnicianHoliday.getStartTime());
+		techScheduleInfo.setEndTime(serviceTechnicianHoliday.getEndTime());
+
+		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(techScheduleInfo);
+		if (scheduleByTechId != null && scheduleByTechId.size() > 0){
+			throw new ServiceException("服务人员有排期,不可请假");
+		}
 		if (StringUtils.isNotBlank(reviewStatus) && "no".equals(reviewStatus)){
+			serviceTechnicianHoliday.setSort("app");
+			serviceTechnicianHoliday.setReviewStatus("submit");
+			serviceTechnicianHoliday.appPreUpdate();
 			i = dao.update(serviceTechnicianHoliday);
 		}
 		return i;
