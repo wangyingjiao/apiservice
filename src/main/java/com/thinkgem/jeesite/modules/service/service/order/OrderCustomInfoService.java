@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.dao.order.OrderCustomAddressDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
@@ -28,6 +29,8 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderCustomInfoDao;
 public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, OrderCustomInfo> {
 	@Autowired
 	private OrderCustomInfoDao orderCustomInfoDao;
+	@Autowired
+	private OrderCustomAddressDao orderCustomAddressDao;
 
 	public OrderCustomInfo get(String id) {
 		return super.get(id);
@@ -76,8 +79,38 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 		return info;
 	}
 
-    public List<OrderCustomAddress> listCustomAddress(OrderCustomAddress orderCustomInfo) {
-		List<OrderCustomAddress> list = null;
+    public List<OrderCustomAddress> listCustomAddress(OrderCustomAddress customAddress) {
+		List<OrderCustomAddress> list = orderCustomAddressDao.findList(customAddress);
 		return list;
     }
+
+	public void saveDataAddress(OrderCustomAddress customAddress) {
+		List<OrderCustomAddress> list = orderCustomAddressDao.findList(customAddress);
+		if(list!=null && list.size()>0){//默认将第一个添加的地址设为默认地址
+			customAddress.setDefaultType("no");
+		}else{
+			customAddress.setDefaultType("yes");
+		}
+		customAddress.preInsert();
+		orderCustomAddressDao.insert(customAddress);
+	}
+
+	public void upDataAddress(OrderCustomAddress customAddress) {
+		customAddress.preUpdate();
+		orderCustomAddressDao.update(customAddress);
+	}
+
+	public void deleteDataAddress(OrderCustomAddress customAddress) {
+		orderCustomAddressDao.delete(customAddress);
+	}
+
+	public OrderCustomAddress formDataAddress(OrderCustomAddress customAddress) {
+		return orderCustomAddressDao.get(customAddress);
+	}
+
+	public void setDefaultAddress(OrderCustomAddress customAddress) {
+		customAddress.preUpdate();
+		orderCustomAddressDao.updateDefaultNoByCustomer(customAddress);
+		orderCustomAddressDao.updateDefaultYesById(customAddress);
+	}
 }

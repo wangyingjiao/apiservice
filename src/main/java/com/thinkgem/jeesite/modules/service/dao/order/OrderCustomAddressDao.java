@@ -16,4 +16,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 @MyBatisDao
 public interface OrderCustomAddressDao extends CrudDao<OrderCustomAddress> {
 
+    void updateDefaultNoByCustomer(OrderCustomAddress customAddress);
+
+    void updateDefaultYesById(OrderCustomAddress customAddress);
 }

@@ -46,15 +46,12 @@
 			a.addr_latitude AS "addrLatitude",
 			a.default_type AS "defaultType"
 		FROM customer_address a
-		LEFT JOIN basic_organization b ON a.org_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN sys_area t1 ON a.province_code = t1.code
 		LEFT JOIN sys_area t2 ON a.city_code = t2.code
 		LEFT JOIN sys_area t3 ON a.area_code = t3.code
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.customer_id = #{customerId}
-			<!-- 数据范围过滤 -->
-			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -147,4 +144,20 @@
 		WHERE id = #{id}
 	</update>
 
+	<update id="updateDefaultNoByCustomer">
+		UPDATE customer_address SET
+		default_type = 'no',
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE customer_id = #{customerId}
+	</update>
+
+	<update id="updateDefaultYesById">
+		UPDATE customer_address SET
+		default_type = 'yes',
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+		AND customer_id = #{customerId}
+	</update>
 </mapper>

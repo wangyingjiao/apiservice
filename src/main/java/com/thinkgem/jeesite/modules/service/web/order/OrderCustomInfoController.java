@@ -167,8 +167,43 @@ public class OrderCustomInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "listDataAddress", method = {RequestMethod.POST, RequestMethod.GET})
 	@RequiresPermissions("customer_view")
-	public Result listDataAddress(@RequestBody(required=false) OrderCustomAddress orderCustomInfo, HttpServletRequest request, HttpServletResponse response) {
-		List<OrderCustomAddress> list = orderCustomInfoService.listCustomAddress(orderCustomInfo);
+	public Result listDataAddress(@RequestBody(required=false) OrderCustomAddress customAddress, HttpServletRequest request, HttpServletResponse response) {
+		List<OrderCustomAddress> list = orderCustomInfoService.listCustomAddress(customAddress);
 		return new SuccResult(list);
 	}
+	@ResponseBody
+	@RequestMapping(value = "saveDataAddress", method = {RequestMethod.POST})
+	@RequiresPermissions("customer_view")
+	public Result saveDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.saveDataAddress(customAddress);
+		return new SuccResult("保存成功");
+	}
+	@ResponseBody
+	@RequestMapping(value = "formDataAddress", method = {RequestMethod.POST})
+	public Result formDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		OrderCustomAddress entity = orderCustomInfoService.formDataAddress(customAddress);
+		return new SuccResult(entity);
+	}
+	@ResponseBody
+	@RequestMapping(value = "upDataAddress", method = {RequestMethod.POST})
+	@RequiresPermissions("customer_view")
+	public Result upDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.upDataAddress(customAddress);
+		return new SuccResult("保存成功");
+	}
+	@ResponseBody
+	@RequiresPermissions("customer_view")
+	@RequestMapping(value = "deleteDataAddress", method = {RequestMethod.POST})
+	public Result deleteDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.deleteDataAddress(customAddress);
+		return new SuccResult("删除成功");
+	}
+	@ResponseBody
+	@RequestMapping(value = "setDefaultAddress", method = {RequestMethod.POST})
+	@RequiresPermissions("customer_view")
+	public Result setDefaultAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.setDefaultAddress(customAddress);
+		return new SuccResult("保存成功");
+	}
+
 }
