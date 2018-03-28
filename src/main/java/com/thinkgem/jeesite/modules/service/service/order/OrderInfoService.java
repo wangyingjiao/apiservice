@@ -1416,7 +1416,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
 						//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
-						List<String> holidays = DateUtils.getHeafHourTimeList(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
 						while (it1.hasNext()) {
 							String work = (String) it1.next();
@@ -2887,7 +2887,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				if (holidayList != null && holidayList.size() != 0) {
 					for (ServiceTechnicianHoliday holiday : holidayList) {
 						//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
-						List<String> holidays = DateUtils.getHeafHourTimeList(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
+						List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
 						while (it1.hasNext()) {
 							String work = (String) it1.next();
