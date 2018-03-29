@@ -440,7 +440,7 @@ public class SerItemInfoController extends BaseController {
     }*/
 
     @ResponseBody
-    @RequiresPermissions("goods_delete")
+    @RequiresPermissions("project_delete")
     @RequestMapping(value = "deleteGoodsData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("单个删除服务项目商品")
     public Result deleteGoodsData(@RequestBody SerItemCommodity serItemCommodity) {
