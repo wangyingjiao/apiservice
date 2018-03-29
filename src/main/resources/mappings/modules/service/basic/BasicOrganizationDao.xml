@@ -272,6 +272,8 @@
             WHERE a.code = #{code}
             AND a.status = 0
             AND a.third_part = 'selfService'
+            AND a.business_model_id != ''
+            AND a.operation_base_status = 'yes'
     </select>
 
     <select id="getOrgEShopByCode" resultType="int">
