@@ -326,6 +326,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	//app删除休假
 	@Transactional(readOnly = false)
 	public int delete1(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		serviceTechnicianHoliday.preUpdate();
 		return dao.delete(serviceTechnicianHoliday);
 	}
 	//修改中
