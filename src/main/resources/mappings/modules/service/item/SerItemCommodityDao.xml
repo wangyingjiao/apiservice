@@ -124,7 +124,7 @@
 			<if test="type != null and type != ''">
 				type = #{type},
 			</if>
-			<if test="price != null and price != ''">
+			<if test="price != null">
 				price = #{price},
 			</if>
 			<if test="convertHours != null and convertHours != ''">
