@@ -168,7 +168,9 @@
 	<update id="updateHoliday">
 		UPDATE tech_holiday SET
 		review_status = #{reviewStatus},
-		<if test="failReason !=null and failReason != ''">fail_reason = #{failReason},</if>
+		<if test="failReason !=null and failReason != ''">
+			fail_reason = #{failReason},
+		</if>
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}

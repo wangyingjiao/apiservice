@@ -226,6 +226,23 @@ public class AppTechController extends BaseController {
 		}
 	}
 
+	//根据id查询 单个休假信息  暂时用不到
+	// @ResponseBody
+	// @RequestMapping(value = "${appPath}/getHolidaty", method = {RequestMethod.POST})
+	// @ApiOperation(value = "休假详情", notes = "技师休假")
+	// public AppResult getHolidaty(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
+    //
+	// 	//获取登陆技师的信息  id
+	// 	Token token = (Token) request.getAttribute("token");
+	// 	serviceTechnicianHoliday.setTechId(token.getTechId());
+	// 	try {
+     //        ServiceTechnicianHoliday holidaty = holidayService.getHolidaty(serviceTechnicianHoliday);
+	// 		return new AppSuccResult(0,holidaty,"查询休假信息成功");
+	// 	}catch (ServiceException e){
+	// 		return new AppFailResult(-1,e.getMessage(),"查询休假信息失败");
+	// 	}
+	// }
+
 	//技师改密码
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/appChangePassword",method = {RequestMethod.POST})
