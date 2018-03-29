@@ -305,4 +305,17 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult("删除家庭成员成功");
     }
 
+
+    @ResponseBody
+    //@RequiresPermissions("skill_view")
+    @RequestMapping(value = "scheduleList", method = { RequestMethod.POST, RequestMethod.GET })
+    @ApiOperation("获取技能APP发版列表")
+    public Result scheduleList(@RequestBody(required = false) ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
+        if (serviceTechnicianInfo == null) {
+            serviceTechnicianInfo = new ServiceTechnicianInfo();
+        }
+        Page<ServiceTechnicianInfo> serSkillPage = new Page<>(request, response);
+        Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.scheduleList(serSkillPage, serviceTechnicianInfo);
+        return new SuccResult(page);
+    }
 }

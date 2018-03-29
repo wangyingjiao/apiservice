@@ -596,4 +596,12 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     public List<ServiceTechnicianFamilyMembers> findFamilyMembersListByTechId(ServiceTechnicianInfo info) {
         return dao.findFamilyMembersListByTechId(info);
     }
+
+    public Page<ServiceTechnicianInfo> scheduleList(Page<ServiceTechnicianInfo> schedulePage, ServiceTechnicianInfo serviceTechnicianInfo) {
+
+
+        serviceTechnicianInfo.setPage(schedulePage);
+        schedulePage.setList(dao.findList(serviceTechnicianInfo));
+        return schedulePage;
+    }
 }

@@ -68,7 +68,16 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String oldPassword;//app使用
     private String newPassword;//app使用
 
+    private List<ScheduleDateInfo> scheduleDateInfos;  //未来7天排期
 
+
+    public List<ScheduleDateInfo> getScheduleDateInfos() {
+        return scheduleDateInfos;
+    }
+
+    public void setScheduleDateInfos(List<ScheduleDateInfo> scheduleDateInfos) {
+        this.scheduleDateInfos = scheduleDateInfos;
+    }
 
     public ServiceTechnicianInfo() {
         super();
