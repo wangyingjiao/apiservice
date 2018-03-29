@@ -87,7 +87,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	private OrderPayInfo payInfo;       // 支付信息
 	//private OrderRefund refundInfo;    //退款信息
-	//private OrderAddress addressInfo;  //服务地址信息
+	private OrderAddress addressInfo;  //服务地址信息
 	private OrderGoods goodsInfo;     //服务信息
 	private List<OrderGoods> goodsInfoList;
 	private List<OrderDispatch> techList; //技师List
@@ -612,6 +612,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	public void setRefundInfo(OrderRefund refundInfo) {
 		this.refundInfo = refundInfo;
 	}
+	*/
 
 	public OrderAddress getAddressInfo() {
 		return addressInfo;
@@ -619,7 +620,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setAddressInfo(OrderAddress addressInfo) {
 		this.addressInfo = addressInfo;
-	}*/
+	}
 
 	public OrderGoods getGoodsInfo() {
 		return goodsInfo;

@@ -86,7 +86,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 
 
-
 	public OrderInfo get(String id) {
 		return super.get(id);
 	}
@@ -346,6 +345,22 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderInfo.setOrderPayInfo(byMasterId);
 			}
 		}
+
+		String addressId = orderInfo.getOrderAddressId();
+		OrderAddress orderAddress = orderAddressDao.get(addressId);
+		//如果是国安社区的 需要隐藏 本期没有联系人
+		if ("gasq".equals(orderSource)) {
+			//省市区
+			List<Area> province = areaDao.getNameByCode(orderAddress.getProvinceCode());
+			List<Area> city = areaDao.getNameByCode(orderAddress.getCityCode());
+			List<Area> area = areaDao.getNameByCode(orderAddress.getAreaCode());
+			String placename = orderAddress.getPlacename();
+			orderAddress.setAddress(province.get(0).getName()+city.get(0).getName()+area.get(0).getName()+placename+"***");
+			String phone = orderAddress.getPhone();
+			String phoneNumber = phone.substring(0, 3) + "****" + phone.substring(7, phone.length());
+			orderAddress.setPhone(phoneNumber);
+		}
+		orderInfo.setAddressInfo(orderAddress);
 		return orderInfo;
 	}
 
