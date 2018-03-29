@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.app.aop;
 
 import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.redis.JedisConstant;
 import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.AppSuccResult;
 import com.thinkgem.jeesite.common.utils.*;
@@ -19,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.math.BigDecimal;
 
-import static com.thinkgem.jeesite.modules.service.service.appVersion.AppVersionService.CACHE_NEWEST_VERSION;
 
 /**
  * @author x
@@ -53,7 +53,9 @@ public class AppAop {
         String header = request.getHeader("appBuild");
         //收到的build号
         Long receviceBuild = Long.valueOf(header);
-        AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
+        String cache = JedisUtils.get(JedisConstant.CACHE_NEWEST_VERSION);
+        AppVersion appVersion = JSON.parseObject(cache, AppVersion.class);
+        // AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
         if (appVersion == null) {
             appVersion = appVersionService.getNewest();
         }

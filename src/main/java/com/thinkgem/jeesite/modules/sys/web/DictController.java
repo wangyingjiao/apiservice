@@ -34,7 +34,6 @@ import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.service.DictService;
 import springfox.documentation.annotations.ApiIgnore;
 
-import static com.thinkgem.jeesite.modules.service.service.appVersion.AppVersionService.CACHE_NEWEST_VERSION;
 
 /**
  * 字典Controller

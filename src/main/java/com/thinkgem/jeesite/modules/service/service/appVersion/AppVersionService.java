@@ -1,9 +1,12 @@
 package com.thinkgem.jeesite.modules.service.service.appVersion;
 
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.redis.JedisConstant;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.JedisUtils;
 import com.thinkgem.jeesite.modules.service.dao.appVersion.AppVersionDao;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
 import com.thinkgem.jeesite.modules.sys.dao.VersionInfoDao;
@@ -28,7 +31,6 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     @Autowired
     private VersionInfoDao versionInfoDao;
 
-    public static final String CACHE_NEWEST_VERSION = "newestVersion";
 
     public Page<AppVersion> findPage(Page<AppVersion> page, AppVersion appVersion) {
         //appVersion.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
@@ -45,7 +47,9 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
         app.setForcedUpdate("yes");
         VersionInfo vi= versionInfoDao.getByTime(app);
         newest.setForcedAppVersion(vi);
-        CacheUtils.put(CACHE_NEWEST_VERSION,newest);
+        String json = JsonMapper.toJsonString(newest);
+        JedisUtils.set(JedisConstant.CACHE_NEWEST_VERSION,json,0);
+        // CacheUtils.put(CACHE_NEWEST_VERSION,newest);
     }
 
     public AppVersion getData(String id) {
@@ -61,7 +65,8 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
         app.setForcedUpdate("yes");
         VersionInfo vi= versionInfoDao.getByTime(app);
         newest.setForcedAppVersion(vi);
-        CacheUtils.put(CACHE_NEWEST_VERSION,newest);
+        String json = JsonMapper.toJsonString(newest);
+        JedisUtils.set(JedisConstant.CACHE_NEWEST_VERSION,json,0);
     }
 
     public AppVersion getNewest() {

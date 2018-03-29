@@ -1,11 +1,15 @@
 package com.thinkgem.jeesite.modules.service.web.appVersion;
 
+import com.alibaba.fastjson.JSON;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.redis.JedisConstant;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.JedisUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
@@ -27,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
-import static com.thinkgem.jeesite.modules.service.service.appVersion.AppVersionService.CACHE_NEWEST_VERSION;
 
 /**
  * APP发版管理Controller
@@ -134,11 +137,15 @@ public class AppVersionController extends BaseController {
     @RequestMapping(value = "getNewest", method = { RequestMethod.POST })
     @ApiOperation("获取最新APP版本")
     public Result getNewest() {
-        Object cache = CacheUtils.get(CACHE_NEWEST_VERSION);
-        if (cache==null){
-            cache = appVersionService.getNewest();
-            CacheUtils.put(CACHE_NEWEST_VERSION,cache);
+        AppVersion appVersion=null;
+        String cache = JedisUtils.get(JedisConstant.CACHE_NEWEST_VERSION);
+        if (StringUtils.isNotBlank(cache)) {
+            appVersion = JSON.parseObject(cache, AppVersion.class);
+        }else {
+            appVersion = appVersionService.getNewest();
+            String json = JsonMapper.toJsonString(appVersion);
+            JedisUtils.set(JedisConstant.CACHE_NEWEST_VERSION, json, 0);
         }
-        return new SuccResult(cache);
+        return new SuccResult(appVersion);
     }
 }
