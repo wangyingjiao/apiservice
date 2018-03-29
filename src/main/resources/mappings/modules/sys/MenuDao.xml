@@ -213,6 +213,8 @@
 
     <update id="delete">
         UPDATE sys_menu SET
+        <if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+        <if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
         del_flag = #{DEL_FLAG_DELETE}
         WHERE id = #{id} OR parent_ids LIKE
         <if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>

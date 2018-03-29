@@ -200,6 +200,7 @@ public class SystemService extends BaseService implements InitializingBean {
         BasicServiceStation station = stationDao.get(id);
         station.setEmployees(station.getEmployees() - 1);
         stationDao.update(station);
+        user.preUpdate();
         userDao.delete(user);
 
         UserUtils.clearCache(user);
@@ -348,6 +349,7 @@ public class SystemService extends BaseService implements InitializingBean {
 
     @Transactional(readOnly = false)
     public void deleteRole(Role role) {
+        role.preUpdate();
         roleDao.delete(role);
         // 同步到Activiti
         deleteActivitiGroup(role);
@@ -449,6 +451,7 @@ public class SystemService extends BaseService implements InitializingBean {
 
     @Transactional(readOnly = false)
     public void deleteMenu(Menu menu) {
+        menu.preUpdate();
         menuDao.delete(menu);
         // 清除用户菜单缓存
         UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);

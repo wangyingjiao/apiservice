@@ -215,6 +215,8 @@
 
 	<update id="delete">
 		UPDATE sys_role SET
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
