@@ -48,7 +48,7 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
         VersionInfo vi= versionInfoDao.getByTime(app);
         newest.setForcedAppVersion(vi);
         String json = JsonMapper.toJsonString(newest);
-        JedisUtils.set(JedisConstant.CACHE_NEWEST_VERSION,json,0);
+        JedisUtils.set(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION,json,0);
         // CacheUtils.put(CACHE_NEWEST_VERSION,newest);
     }
 
@@ -66,7 +66,7 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
         VersionInfo vi= versionInfoDao.getByTime(app);
         newest.setForcedAppVersion(vi);
         String json = JsonMapper.toJsonString(newest);
-        JedisUtils.set(JedisConstant.CACHE_NEWEST_VERSION,json,0);
+        JedisUtils.set(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION,json,0);
     }
 
     public AppVersion getNewest() {

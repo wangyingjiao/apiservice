@@ -138,13 +138,13 @@ public class AppVersionController extends BaseController {
     @ApiOperation("获取最新APP版本")
     public Result getNewest() {
         AppVersion appVersion=null;
-        String cache = JedisUtils.get(JedisConstant.CACHE_NEWEST_VERSION);
+        String cache = JedisUtils.get(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION);
         if (StringUtils.isNotBlank(cache)) {
             appVersion = JSON.parseObject(cache, AppVersion.class);
         }else {
             appVersion = appVersionService.getNewest();
             String json = JsonMapper.toJsonString(appVersion);
-            JedisUtils.set(JedisConstant.CACHE_NEWEST_VERSION, json, 0);
+            JedisUtils.set(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION, json, 0);
         }
         return new SuccResult(appVersion);
     }

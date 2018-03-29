@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(value = "${adminPath}/sys/redis")
 public class RedisController extends BaseController {
 
-    public static final String KEY_PREFIX = Global.getConfig("redis.keyPrefix");
+
 
     @ResponseBody
     @RequestMapping(value = "/checkPassword", method = {RequestMethod.POST, RequestMethod.GET})
@@ -38,7 +38,7 @@ public class RedisController extends BaseController {
             flag = true;
         }
 
-        String cache = JedisUtils.get(KEY_PREFIX + ":" + JedisConstant.REDIS_PASSWORD);
+        String cache = JedisUtils.get(JedisConstant.KEY_PREFIX + ":" + JedisConstant.REDIS_PASSWORD);
         if(cache != null){
             if(password.equals(cache.toString())){
                 flag = true;
@@ -60,12 +60,12 @@ public class RedisController extends BaseController {
     public Result saveRedisValue(@RequestBody(required = false) KeyValueEntity entity, HttpServletRequest request, HttpServletResponse response) {
         boolean flag = false;
         try {
-            JedisUtils.set(KEY_PREFIX + ":" + entity.getKey(),entity.getValue(),0);
+            JedisUtils.set(JedisConstant.KEY_PREFIX + ":" + entity.getKey(),entity.getValue(),0);
         }catch (Exception e){
             return new FailResult("保存失败");
         }
 
-        String cache = JedisUtils.get(KEY_PREFIX + ":" + entity.getKey());
+        String cache = JedisUtils.get(JedisConstant.KEY_PREFIX + ":" + entity.getKey());
         if(cache!=null){
             if(cache.toString().equals(entity.getValue())){
                 flag = true;
@@ -81,7 +81,7 @@ public class RedisController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getRedisValue", method = {RequestMethod.POST, RequestMethod.GET})
     public Result getRedisValue(@RequestBody(required = false) KeyValueEntity entity, HttpServletRequest request, HttpServletResponse response) {
-        String cache = JedisUtils.get(KEY_PREFIX + ":" + entity.getKey());
+        String cache = JedisUtils.get(JedisConstant.KEY_PREFIX + ":" + entity.getKey());
 
         KeyValueEntity info = new KeyValueEntity();
         info.setKey(entity.getKey());

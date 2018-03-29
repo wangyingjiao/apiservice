@@ -53,7 +53,7 @@ public class AppAop {
         String header = request.getHeader("appBuild");
         //收到的build号
         Long receviceBuild = Long.valueOf(header);
-        String cache = JedisUtils.get(JedisConstant.CACHE_NEWEST_VERSION);
+        String cache = JedisUtils.get(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION);
         AppVersion appVersion = JSON.parseObject(cache, AppVersion.class);
         // AppVersion appVersion = (AppVersion) CacheUtils.get(CACHE_NEWEST_VERSION);
         if (appVersion == null) {
