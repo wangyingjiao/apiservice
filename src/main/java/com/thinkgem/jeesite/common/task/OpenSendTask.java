@@ -30,7 +30,7 @@ public class OpenSendTask extends Thread
             ///////////////////////////////////////////////////////////////////////////////////////////////
             try
             {
-                sleep(1 * 60 * 1000);//每60秒执行一次
+                sleep(2 * 60 * 1000);//每60秒执行一次
             }
             catch (InterruptedException e)
             {
