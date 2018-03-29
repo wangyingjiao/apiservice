@@ -103,7 +103,19 @@ public class OpenSendUtil {
 				}
 			}
 			if(eidGid.size()>0) {
-				product.put(serItemCommodity.getSelfCode(), eidGid);
+				if(product.get(serItemCommodity.getSelfCode()) != null){
+					HashMap<String,String> eidGidOld = new HashMap<>();
+					eidGidOld = (HashMap<String,String>)product.get(serItemCommodity.getSelfCode());
+					Iterator iter = eidGidOld.entrySet().iterator();
+					while (iter.hasNext()) {
+						Map.Entry entry = (Map.Entry) iter.next();
+						eidGid.put(entry.getKey().toString(),entry.getValue().toString());
+					}
+
+					product.put(serItemCommodity.getSelfCode(), eidGid);
+				}else {
+					product.put(serItemCommodity.getSelfCode(), eidGid);
+				}
 			}
 		}
 
