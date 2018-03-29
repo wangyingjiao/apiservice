@@ -440,7 +440,6 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		if (StringUtils.isNotBlank(reviewStatus) && "no".equals(reviewStatus)){
 			serviceTechnicianHoliday.setSort("app");
 			serviceTechnicianHoliday.setReviewStatus("submit");
-            serviceTechnicianHoliday.setFailReason("");
 			serviceTechnicianHoliday.appPreUpdate();
 			i = dao.update(serviceTechnicianHoliday);
 		}
