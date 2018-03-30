@@ -22,6 +22,7 @@ public class ServiceLog extends DataEntity<ServiceLog> {
     private String exceptions;   //异常信息
     private String startTime;   //开始时间
     private String endTime;     //结束时间
+    private String requestContent;//参数值
 
 
     public String getStartTime() {
@@ -46,6 +47,14 @@ public class ServiceLog extends DataEntity<ServiceLog> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getRequestContent() {
+        return requestContent;
+    }
+
+    public void setRequestContent(String requestContent) {
+        this.requestContent = requestContent;
     }
 
     public String getTitle() {
