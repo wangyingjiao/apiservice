@@ -20,15 +20,24 @@
 	
 	<sql id="serviceTechnicianHolidayJoins">
 	</sql>
-    
+
 	<select id="get" resultType="ServiceTechnicianHoliday">
-		SELECT 
-			<include refid="serviceTechnicianHolidayColumns"/>
+		SELECT
+		<include refid="serviceTechnicianHolidayColumns"/>
 		FROM tech_holiday a
 		<include refid="serviceTechnicianHolidayJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
+	<!--审核未通过的休假详情-->
+	<select id="getHolidayById" resultType="ServiceTechnicianHoliday">
+		SELECT
+		<include refid="serviceTechnicianHolidayColumns"/>
+		FROM tech_holiday a
+		WHERE a.id = #{id}
+		AND a.review_status='no'
+	</select>
+
 	<select id="findList" resultType="ServiceTechnicianHoliday">
 		SELECT
 			a.id AS "id",

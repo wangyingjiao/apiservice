@@ -83,6 +83,13 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		return serviceTechnicianWorkTime;
 	}
 
+	//审核未通过的休假详情
+	public ServiceTechnicianHoliday getHolidayById(ServiceTechnicianHoliday serviceTechnicianHoliday){
+		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
+		return holidayById;
+	}
+
+
 	//审核app的休假
     @Transactional(readOnly = false)
     public int reviewedHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
@@ -95,10 +102,19 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
         int i = dao.updateHoliday(serviceTechnicianHoliday);
         //增加排期表
         if (i > 0){
-            //查询数据库中休假
+            //查询数据库中 排期表是否有限制
             ServiceTechnicianHoliday holiday1 = dao.get(serviceTechnicianHoliday.getId());
-            //如果是审核通过 就增加排期表
-            if ("yes".equals(holiday1.getReviewStatus())) {
+			//如果传过来的是审核通过 查排期表是否有订单有则抛异常  没有就增加排期表
+            if ("yes".equals(serviceTechnicianHoliday.getReviewStatus())) {
+            	//查询是否有排期表 有则
+				TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+				techScheduleInfo.setStartTime(holiday1.getStartTime());
+				techScheduleInfo.setEndTime(holiday1.getEndTime());
+				techScheduleInfo.setTechId(holiday1.getTechId());
+				List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(techScheduleInfo);
+				if (scheduleByTechId !=null && scheduleByTechId.size()>0){
+					throw new ServiceException("已有排期，不可休假");
+				}
                 //getHolidaysList 方法传入开始和结束时间  返回一个list是两个时间中间的时间集合
                 List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(holiday1.getStartTime(), holiday1.getEndTime());
                 if (holidaysList != null && holidaysList.size() > 0) {

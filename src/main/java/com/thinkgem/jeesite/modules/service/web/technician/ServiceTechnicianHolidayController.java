@@ -10,11 +10,13 @@ import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
+import com.thinkgem.jeesite.modules.service.service.technician.TechScheduleService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -53,6 +55,9 @@ public class ServiceTechnicianHolidayController extends BaseController {
 
 	@Autowired
     private ServiceTechnicianInfoService serviceTechnicianInfoService;
+
+	@Autowired
+	private TechScheduleService techScheduleService;
 
 	@ModelAttribute
 	public ServiceTechnicianHoliday get(@RequestParam(required=false) String id) {
@@ -125,16 +130,31 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequiresPermissions("holiday_view")
+	@RequiresPermissions("holiday_review")
 	@RequestMapping(value = "/reviewedHoliday", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("审核app休假")
 	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		//参数 id 状态 未通过原因
 		try {
-		    //审核  增加排期表
-			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
-			// 查询出技师的手机
+			int i=0;
+			//根据休假表去查排期表
             ServiceTechnicianHoliday serviceTechnicianHoliday1 = serviceTechnicianHolidayService.get(serviceTechnicianHoliday);
+			// TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+			// techScheduleInfo.setStartTime(serviceTechnicianHoliday1.getStartTime());
+			// techScheduleInfo.setEndTime(serviceTechnicianHoliday1.getEndTime());
+			// techScheduleInfo.setTechId(serviceTechnicianHoliday1.getTechId());
+			// List<TechScheduleInfo> scheduleByTechId = techScheduleService.getScheduleByTechId(techScheduleInfo);
+			// if (scheduleByTechId !=null && scheduleByTechId.size()>0){
+			// 	for (TechScheduleInfo scheduleInfo:scheduleByTechId){
+			// 		if ("order".equals(scheduleInfo.getType())){
+			// 			i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
+			// 		}
+			// 	}
+			// }else {
+				//审核  增加排期表
+			i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
+			// }
+			// 查询出技师的手机
             String techId = serviceTechnicianHoliday1.getTechId();
             ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(techId);
             serviceTechnicianHoliday1.setTechPhone(serviceTechnicianInfo.getPhone());
@@ -154,4 +174,18 @@ public class ServiceTechnicianHolidayController extends BaseController {
 		}
 	}
 
+	/**
+	 * 审核未通过的休假详情
+	 * @param serviceTechnicianHoliday
+	 * @return
+	 */
+	@ResponseBody
+	@RequiresPermissions("holiday_review")
+	@RequestMapping(value = "getHolidayById", method = {RequestMethod.POST})
+	@ApiOperation("未通过审核的休假详情")
+	public Result getHolidayById(@RequestBody ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayService.getHolidayById(serviceTechnicianHoliday);
+
+		return new SuccResult(1,holidayById);
+	}
 }

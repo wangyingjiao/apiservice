@@ -11,12 +11,7 @@
 		a.end_time AS "endTime",
 		a.type_id AS "typeId",
 		a.type AS "type",
-		a.remark AS "remark",
-		a.create_by AS "createBy.id",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		a.update_date AS "updateDate",
-		a.del_flag AS "delFlag"
+		a.remark AS "remark"
 	</sql>
 
 	<!--根据typeId查询排期表-->
