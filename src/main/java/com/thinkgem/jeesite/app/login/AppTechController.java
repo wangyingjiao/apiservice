@@ -95,16 +95,16 @@ public class AppTechController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/appGetFriendByStationId",method = {RequestMethod.POST})
 	@ApiOperation(value = "通讯录", notes = "通讯录")
-	public AppResult appGetFriendByStationId(Page page,HttpServletRequest request, HttpServletResponse response) {
+	public AppResult appGetFriendByStationId(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id 服务站id
 		Token token = (Token) request.getAttribute("token");
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setId(token.getTechId());
 		ServiceTechnicianInfo tech1 = techService.appFindTech(tech);
 		if (null == tech1){
 			return new AppSuccResult(1, null, "未找到该用户");
 		}
 		try {
+		    Page<AppServiceTechnicianInfo> page = new Page<>(request, response);
 			Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page, tech1);
 			long count = page.getCount();
 			int pageSize = page.getPageSize();
@@ -133,12 +133,12 @@ public class AppTechController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/restTechList",method = {RequestMethod.POST})
 	@ApiOperation(value = "技师休假列表", notes = "技师休假")
-	public AppResult restTechList(Page serSortInfoPage,HttpServletRequest request, HttpServletResponse response) {
+	public AppResult restTechList(ServiceTechnicianHoliday holiday,HttpServletRequest request, HttpServletResponse response) {
 		Token token = (Token) request.getAttribute("token");
 		//获取登陆技师的信息  id
-		ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
 		holiday.setTechId(token.getTechId());
-		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(serSortInfoPage, holiday);
+        Page<ServiceTechnicianHoliday> holidayPage = new Page<>(request, response);
+		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(holidayPage, holiday);
 		long count = page.getCount();
 		int pageSize = page.getPageSize();
 		long totalPage=0;
