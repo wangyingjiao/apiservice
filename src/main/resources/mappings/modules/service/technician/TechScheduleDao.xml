@@ -41,6 +41,14 @@
 		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
+	<update id="deleteScheduleByTypeId">
+		UPDATE tech_schedule SET
+		del_flag = '1',
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE type = #{type}
+		AND type_id = #{typeId}
+	</update>
 
 	<!--增加排期表-->
 	<insert id="insertSchedule">

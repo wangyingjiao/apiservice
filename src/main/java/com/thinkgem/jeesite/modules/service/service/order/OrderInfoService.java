@@ -3190,7 +3190,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.preUpdate();
 		dao.orderCancel(orderInfo);
 
+		// 删除排期
+        TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+        scheduleInfo.setType("order");
+        scheduleInfo.setTypeId(orderInfo.getId());
+        scheduleInfo.preUpdate();
+        techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+
 		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+
 		OrderInfo info = get(orderInfo.getId());
 		HashMap<String,Object> map = new HashMap<>();
 		if(techListRe==null || techListRe.size()==0){
