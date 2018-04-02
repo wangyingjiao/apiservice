@@ -1215,6 +1215,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				map.put("response",response);
 
 				if("cancel".equals(status) && !"finish".equals(checkInfoRe.getServiceStatus())){
+                    // 删除排期
+                    TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+                    scheduleInfo.setType("order");
+                    scheduleInfo.setTypeId(orderInfo.getId());
+                    User user = new User();
+                    user.setId("gasq001");
+                    scheduleInfo.setUpdateBy(user);
+                    scheduleInfo.setUpdateDate(new Date());
+                    techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+
 					//推送消息  取消订单时
 					//标题：订单已取消
 					//内容：编号为XXXXXXXXX的订单已取消，请点击查看
