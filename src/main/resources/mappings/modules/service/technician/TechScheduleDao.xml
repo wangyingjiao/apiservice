@@ -36,7 +36,9 @@
 	<!--删除排期表-->
 	<update id="deleteSchedule">
 		UPDATE tech_schedule SET
-		del_flag = '1'
+		del_flag = '1',
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 
