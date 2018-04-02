@@ -13,8 +13,10 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.service.service.basic.BasicOrganizationService;
+import com.thinkgem.jeesite.modules.service.service.station.ServiceStationService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
@@ -50,6 +52,8 @@ public class ServiceTechnicianInfoController extends BaseController {
     private BasicOrganizationService basicOrganizationService;
     @Autowired
     private SystemService systemService;
+    @Autowired
+    private ServiceStationService serviceStationService;
 
     @ModelAttribute
     public ServiceTechnicianInfo get(@RequestParam(required = false) String id) {
@@ -305,4 +309,61 @@ public class ServiceTechnicianInfoController extends BaseController {
         return new SuccResult("删除家庭成员成功");
     }
 
+
+    @ResponseBody
+    //@RequiresPermissions("skill_view")
+    @RequestMapping(value = "scheduleList", method = { RequestMethod.POST, RequestMethod.GET })
+    @ApiOperation("获取技师排期列表")
+    public Result scheduleList(@RequestBody(required = false) ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
+        if (serviceTechnicianInfo == null) {
+            serviceTechnicianInfo = new ServiceTechnicianInfo();
+        }
+        Page<ServiceTechnicianInfo> serSkillPage = new Page<>(request, response);
+        Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.scheduleList(serSkillPage, serviceTechnicianInfo);
+        return new SuccResult(page);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "orgList", method = {RequestMethod.POST, RequestMethod.GET})
+    //@RequiresPermissions("user")
+    @ApiOperation("根据登录用户机构ID查询服务站和技能下拉")
+    public Result orgList(HttpServletRequest request, HttpServletResponse response) {
+        BasicOrganization organization = UserUtils.getUser().getOrganization();
+        List<BasicOrganization> list0 = new ArrayList<>();
+        List<BasicServiceStation> list = new ArrayList<>();
+        List<SerSkillInfo> list1 = new ArrayList<>();
+        HashMap<String,Object> map = new HashMap<String,Object>();
+        if (StringUtils.isNotBlank(organization.getId())) {
+            BasicServiceStation serviceStation = new BasicServiceStation();
+            serviceStation.setOrgId(organization.getId());
+            list = serviceStationService.findList(serviceStation);
+            ServiceTechnicianInfo serviceTechnicianInfo = new ServiceTechnicianInfo();
+            serviceTechnicianInfo.setOrgId(organization.getId());
+            list1 = serviceTechnicianInfoService.findSkil(serviceTechnicianInfo);
+            list0.add(organization);
+            map.put("organizations",list0);
+            map.put("stations",list);
+            map.put("skils",list1);
+        }
+        return new SuccResult(map);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "listByOrgId", method = {RequestMethod.POST, RequestMethod.GET})
+    //@RequiresPermissions("user")
+    @ApiOperation("根据机构ID查询服务站和技能下拉")
+    public Result listByOrgId(@RequestBody(required = false) ServiceTechnicianInfo serviceTechnicianInfo, HttpServletRequest request, HttpServletResponse response) {
+        List<BasicServiceStation> list = new ArrayList<>();
+        List<SerSkillInfo> list1 = new ArrayList<>();
+        HashMap<String,Object> map = new HashMap<String,Object>();
+        if (StringUtils.isNotBlank(serviceTechnicianInfo.getOrgId())) {
+            BasicServiceStation serviceStation = new BasicServiceStation();
+            serviceStation.setOrgId(serviceTechnicianInfo.getOrgId());
+            list = serviceStationService.findList(serviceStation);
+            list1 = serviceTechnicianInfoService.findSkil(serviceTechnicianInfo);
+            map.put("stations",list);
+            map.put("skils",list1);
+        }
+        return new SuccResult(map);
+    }
 }

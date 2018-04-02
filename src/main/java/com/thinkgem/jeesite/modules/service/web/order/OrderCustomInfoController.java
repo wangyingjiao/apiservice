@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderCustomInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -159,4 +160,50 @@ public class OrderCustomInfoController extends BaseController {
 			return new FailResult("客户手机号不能重复！");
 		}
 	}
+
+
+
+
+	@ResponseBody
+	@RequestMapping(value = "listDataAddress", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequiresPermissions("customer_view")
+	public Result listDataAddress(@RequestBody(required=false) OrderCustomAddress customAddress, HttpServletRequest request, HttpServletResponse response) {
+		List<OrderCustomAddress> list = orderCustomInfoService.listCustomAddress(customAddress);
+		return new SuccResult(list);
+	}
+	@ResponseBody
+	@RequestMapping(value = "saveDataAddress", method = {RequestMethod.POST})
+	@RequiresPermissions("customer_view")
+	public Result saveDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.saveDataAddress(customAddress);
+		return new SuccResult("保存成功");
+	}
+	@ResponseBody
+	@RequestMapping(value = "formDataAddress", method = {RequestMethod.POST})
+	public Result formDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		OrderCustomAddress entity = orderCustomInfoService.formDataAddress(customAddress);
+		return new SuccResult(entity);
+	}
+	@ResponseBody
+	@RequestMapping(value = "upDataAddress", method = {RequestMethod.POST})
+	@RequiresPermissions("customer_view")
+	public Result upDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.upDataAddress(customAddress);
+		return new SuccResult("保存成功");
+	}
+	@ResponseBody
+	@RequiresPermissions("customer_view")
+	@RequestMapping(value = "deleteDataAddress", method = {RequestMethod.POST})
+	public Result deleteDataAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.deleteDataAddress(customAddress);
+		return new SuccResult("删除成功");
+	}
+	@ResponseBody
+	@RequestMapping(value = "setDefaultAddress", method = {RequestMethod.POST})
+	@RequiresPermissions("customer_view")
+	public Result setDefaultAddress(@RequestBody OrderCustomAddress customAddress) {
+		orderCustomInfoService.setDefaultAddress(customAddress);
+		return new SuccResult("保存成功");
+	}
+
 }

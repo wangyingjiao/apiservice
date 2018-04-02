@@ -11,8 +11,11 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.sys.dao.MessageInfoDao;
 import com.thinkgem.jeesite.modules.sys.entity.MessageInfo;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +64,54 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
     public int getCount(MessageInfo messageInfo){
         int count = messageInfoDao.getCount(messageInfo);
         return count;
+    }
+    //增加消息到数据库
+    @Transactional(readOnly = false)
+    public int insertHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday, String orderType){
+        MessageInfo messageInfo = new MessageInfo();
+        if (orderType.equals("techHolidaySuccess")){
+            messageInfo.setTitle("您的休假已通过审核");
+            messageInfo.setMessage("请点击查看");
+            messageInfo.setTargetType("holiday");
+            return insertAndPushHoliday(serviceTechnicianHoliday,messageInfo);
+        }
+        if (orderType.equals("techHolidayFail")){
+            messageInfo.setTitle("您的休假未通过审核");
+            messageInfo.setMessage("请点击查看");
+            messageInfo.setTargetType("holiday");
+            return insertAndPushHoliday(serviceTechnicianHoliday,messageInfo);
+        }
+        return 0;
+    }
+
+    @Transactional(readOnly = false)
+    public int insertAndPushHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday, MessageInfo messageInfo){
+
+        messageInfo.setId(IdGen.uuid());
+        messageInfo.setTechId(serviceTechnicianHoliday.getTechId());
+        //查询数据库 技师手机号
+        messageInfo.setReceivePhone(serviceTechnicianHoliday.getTechPhone());
+        messageInfo.setCreateDate(new Date());
+        User user = UserUtils.getUser();
+        messageInfo.setCreateBy(user);
+        messageInfo.setUpdateBy(user);
+        messageInfo.setPushTime(new Date());
+        messageInfo.setUpdateDate(new Date());
+        messageInfo.setPushTime(new Date());
+        messageInfoDao.insert(messageInfo);
+
+        messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());
+        messageInfo.setExtParameters("{\"type\":\"holiday\",\"relate\":\""+serviceTechnicianHoliday.getReviewStatus()+"\"}");
+        int flag = PushMessageUtil.pushMessage(messageInfo);
+        if (flag==1){
+            messageInfo.setPushTime(new Date());
+            messageInfo.setIsSuccess("yes");
+            messageInfoDao.updPushTime(messageInfo);
+        }else {
+            messageInfo.setIsSuccess("no");
+            messageInfoDao.updPushTime(messageInfo);
+        }
+    return 1;
     }
 
     @Transactional(readOnly = false)

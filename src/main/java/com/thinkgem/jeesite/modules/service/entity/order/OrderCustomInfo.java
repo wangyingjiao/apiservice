@@ -23,13 +23,6 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	private String name;		// 客户姓名
 	private String sex;		// 性别（male：男 female：女）
 	private String phone;		// 客户电话
-	private String provinceCode;		// 省_区号
-	private String cityCode;		// 市_区号
-	private String areaCode;		// 区_区号
-	private String placename;//小区
-	private String address;		// 详细地址 门牌号
-	private String addrLongitude;		// 经度
-	private String addrLatitude;		// 纬度
 	private String email;		// 客户邮箱
 	private String orgId;		// 所属服务机构ID
 	private String source;		// 来源   本机构:own    第三方:other
@@ -38,6 +31,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	private String orgName;
 	private String customerRemark;		//备注
 	private List<String> customerRemarkPic;		//备注 图片
+	private List<OrderCustomAddress> addressList;
 
 	public OrderCustomInfo() {
 		super();
@@ -75,64 +69,6 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	@NotBlank(message = "省不可为空")
-	@Length(min=0, max=20, message="省_区号长度必须介于 0 和 20 之间")
-	public String getProvinceCode() {
-		return provinceCode;
-	}
-
-	public void setProvinceCode(String provinceCode) {
-		this.provinceCode = provinceCode;
-	}
-
-	@NotBlank(message = "市不可为空")
-	@Length(min=0, max=20, message="市_区号长度必须介于 0 和 20 之间")
-	public String getCityCode() {
-		return cityCode;
-	}
-
-	public void setCityCode(String cityCode) {
-		this.cityCode = cityCode;
-	}
-
-	@NotBlank(message = "区不可为空")
-	@Length(min=0, max=20, message="区_区号长度必须介于 0 和 20 之间")
-	public String getAreaCode() {
-		return areaCode;
-	}
-
-	public void setAreaCode(String areaCode) {
-		this.areaCode = areaCode;
-	}
-
-	@NotBlank(message = "详细地址不可为空")
-	@Length(min=0, max=100, message="详细地址长度必须介于 0 和 100 之间")
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	@Length(min=0, max=64, message="经度长度必须介于 0 和 64 之间")
-	public String getAddrLongitude() {
-		return addrLongitude;
-	}
-
-	public void setAddrLongitude(String addrLongitude) {
-		this.addrLongitude = addrLongitude;
-	}
-
-	@Length(min=0, max=64, message="纬度长度必须介于 0 和 64 之间")
-	public String getAddrLatitude() {
-		return addrLatitude;
-	}
-
-	public void setAddrLatitude(String addrLatitude) {
-		this.addrLatitude = addrLatitude;
 	}
 
 	//@Pattern(regexp = RegexTool.REGEX_EMAIL,message = "邮箱格式不正确！")
@@ -202,11 +138,11 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 		this.stationList = stationList;
 	}
 
-	public String getPlacename() {
-		return placename;
+	public List<OrderCustomAddress> getAddressList() {
+		return addressList;
 	}
 
-	public void setPlacename(String placename) {
-		this.placename = placename;
+	public void setAddressList(List<OrderCustomAddress> addressList) {
+		this.addressList = addressList;
 	}
 }

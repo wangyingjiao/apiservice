@@ -63,6 +63,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	@Autowired
 	OrderCustomInfoDao orderCustomInfoDao;
 	@Autowired
+	OrderCustomAddressDao orderCustomAddressDao;
+	@Autowired
 	OrderAddressDao orderAddressDao;
 	@Autowired
 	OrderDispatchDao orderDispatchDao;
@@ -80,7 +82,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	BasicServiceStationDao basicServiceStationDao;
 	@Autowired
 	BasicStoreDao basicStoreDao;
-
 
 
 
@@ -344,6 +345,22 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderInfo.setOrderPayInfo(byMasterId);
 			}
 		}
+
+		String addressId = orderInfo.getOrderAddressId();
+		OrderAddress orderAddress = orderAddressDao.get(addressId);
+		//如果是国安社区的 需要隐藏 本期没有联系人
+		if ("gasq".equals(orderSource)) {
+			//省市区
+			List<Area> province = areaDao.getNameByCode(orderAddress.getProvinceCode());
+			List<Area> city = areaDao.getNameByCode(orderAddress.getCityCode());
+			List<Area> area = areaDao.getNameByCode(orderAddress.getAreaCode());
+			String placename = orderAddress.getPlacename();
+			orderAddress.setAddress(province.get(0).getName()+city.get(0).getName()+area.get(0).getName()+placename+"***");
+			String phone = orderAddress.getPhone();
+			String phoneNumber = phone.substring(0, 3) + "****" + phone.substring(7, phone.length());
+			orderAddress.setPhone(phoneNumber);
+		}
+		orderInfo.setAddressInfo(orderAddress);
 		return orderInfo;
 	}
 
@@ -2459,20 +2476,29 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	private OrderAddress openCreateForAddress(OrderInfo info) {
+		String customerAddressId = info.getCustomerAddressId();
 		String customerId = info.getCustomerId();
 		if(StringUtils.isBlank(customerId)){
 			throw new ServiceException("未找到客户信息");
 		}
-		OrderCustomInfo customInfo = orderCustomInfoDao.get(customerId);
+		if(StringUtils.isBlank(customerAddressId)){
+			throw new ServiceException("未找到客户信息");
+		}
+
+		OrderCustomInfo custom = orderCustomInfoDao.get(customerId);
+		if(null == custom){
+			throw new ServiceException("未找到客户信息");
+		}
+		OrderCustomAddress customInfo = orderCustomAddressDao.get(customerAddressId);
 		if(null == customInfo){
 			throw new ServiceException("未找到客户信息");
 		}
-		String name = customInfo.getName();
-		String phone = customInfo.getPhone();//用户电话
+		String name = customInfo.getAddressName();
+		String phone = customInfo.getAddressPhone();//用户电话
 		String province_code = customInfo.getProvinceCode();//省CODE
 		String city_code = customInfo.getCityCode();//市CODE
 		String area_code = customInfo.getAreaCode();//区CODE
-		String detailAddress = customInfo.getAddress();//服务地址：小区+详细地址
+		String detailAddress = customInfo.getDetailAddress();//服务地址：小区+详细地址
 
 		//省名称
 		String provinceName = "";
@@ -2517,7 +2543,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderAddress.preInsert();
 		orderAddressDao.insert(orderAddress);
 
-		orderAddress.setOrgId(customInfo.getOrgId());//客户所属机构
+		orderAddress.setOrgId(custom.getOrgId());//客户所属机构
 		//orderAddress.setStationId(customInfo.getStationId());//客户所属服务站
 		if(StringUtils.isNotBlank(customInfo.getAddrLatitude())){
 			orderAddress.setAddrLatitude(customInfo.getAddrLatitude());//纬度

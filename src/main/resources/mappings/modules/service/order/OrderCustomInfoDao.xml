@@ -7,13 +7,6 @@
 		a.name AS "name",
 		a.sex AS "sex",
 		a.phone AS "phone",
-		a.province_code AS "provinceCode",
-		a.city_code AS "cityCode",
-		a.area_code AS "areaCode",
-		a.placename AS "placename",
-		a.address AS "address",
-		a.addr_longitude AS "addrLongitude",
-		a.addr_latitude AS "addrLatitude",
 		a.email AS "email",
 		a.org_id AS "orgId",
 		a.source AS "source",
@@ -58,17 +51,11 @@
 			a.name AS "name",
 			a.sex AS "sex",
 			a.phone AS "phone",
-			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(a.placename,''),IFNULL(a.address,'')) AS "address",
-			a.addr_longitude AS "addrLongitude",
-			a.addr_latitude AS "addrLatitude",
 			a.org_id AS "orgId",
 			b.name AS "orgName",
 			a.source AS "source"
 		FROM customer_info a
 		LEFT JOIN basic_organization b ON a.org_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN sys_area t1 ON a.province_code = t1.code
-		LEFT JOIN sys_area t2 ON a.city_code = t2.code
-		LEFT JOIN sys_area t3 ON a.area_code = t3.code
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.source = 'own'
@@ -118,13 +105,6 @@
 			name,
 			sex,
 			phone,
-			province_code,
-			city_code,
-			area_code,
-			placename,
-			address,
-			addr_longitude,
-			addr_latitude,
 			email,
 			org_id,
 			source,
@@ -139,13 +119,6 @@
 			#{name},
 			#{sex},
 			#{phone},
-			#{provinceCode},
-			#{cityCode},
-			#{areaCode},
-			#{placename},
-			#{address},
-			#{addrLongitude},
-			#{addrLatitude},
 			#{email},
 			#{orgId},
 			#{source},
@@ -163,13 +136,6 @@
 		<if test="name !=null and name != ''">name = #{name},</if>
 		<if test="sex !=null and sex != ''">sex = #{sex},</if>
 		<if test="phone !=null and phone != ''">phone = #{phone},</if>
-		<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
-		<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
-		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
-		<if test="placename !=null and placename != ''">placename = #{placename},</if>
-		<if test="address !=null and address != ''">address = #{address},</if>
-		<if test="addrLongitude !=null and addrLongitude != ''">addr_longitude = #{addrLongitude},</if>
-		<if test="addrLatitude !=null and addrLatitude != ''">addr_latitude = #{addrLatitude},</if>
 		email = #{email},
 		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
 		<if test="source !=null and source != ''">source = #{source},</if>
@@ -226,7 +192,7 @@
 		AND a.is_useable = 'yes'
 	</select>
 
-	<select id="findCustomerByPhone" resultType="OrderCustomInfo">
+	<!--<select id="findCustomerByPhone" resultType="OrderCustomInfo">
 		SELECT
 			a.id AS "id",
 			a.name AS "name",
@@ -271,6 +237,35 @@
 		LEFT JOIN sys_area t1 ON a.province_code = t1.code
 		LEFT JOIN sys_area t2 ON a.city_code = t2.code
 		LEFT JOIN sys_area t3 ON a.area_code = t3.code
+		WHERE a.id = #{id}
+	</select>-->
+	<select id="findCustomerByPhone" resultType="OrderCustomInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.email AS "email",
+		a.org_id AS "orgId",
+		a.source AS "source",
+		a.station_id AS "stationId"
+		FROM customer_info a
+		WHERE a.phone = #{phone}
+		AND a.org_id = #{orgId}
+		AND a.source = #{source}
+		AND a.del_flag = '0'
+	</select>
+	<select id="findCustomerById" resultType="OrderCustomInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.email AS "email",
+		a.org_id AS "orgId",
+		a.source AS "source",
+		a.station_id AS "stationId"
+		FROM customer_info a
 		WHERE a.id = #{id}
 	</select>
 	<select id="findStationList" resultType="OrderDropdownInfo">

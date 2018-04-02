@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderCustomAddressDao">
+    
+	<sql id="orderCustomInfoColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.address_name AS "addressName",
+		a.address_phone AS "addressPhone",
+		a.province_code AS "provinceCode",
+		a.city_code AS "cityCode",
+		a.area_code AS "areaCode",
+		a.placename AS "placename",
+		a.detail_address AS "detailAddress",
+		a.addr_longitude AS "addrLongitude",
+		a.addr_latitude AS "addrLatitude",
+		a.default_type AS "defaultType",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orderCustomInfoJoins">
+	</sql>
+
+
+	<select id="get" resultType="OrderCustomInfo">
+		SELECT 
+			<include refid="orderCustomInfoColumns"/>
+		FROM customer_address a
+		<include refid="orderCustomInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrderCustomInfo">
+		SELECT
+			a.id AS "id",
+			a.customer_id AS "customerId",
+			a.address_name AS "addressName",
+			a.address_phone AS "addressPhone",
+			a.placename AS "placename",
+			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(a.placename,''),IFNULL(a.detail_address,'')) AS "detailAddress",
+			a.addr_longitude AS "addrLongitude",
+			a.addr_latitude AS "addrLatitude",
+			a.default_type AS "defaultType"
+		FROM customer_address a
+		LEFT JOIN sys_area t1 ON a.province_code = t1.code
+		LEFT JOIN sys_area t2 ON a.city_code = t2.code
+		LEFT JOIN sys_area t3 ON a.area_code = t3.code
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.customer_id = #{customerId}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderCustomInfo">
+		SELECT 
+			<include refid="orderCustomInfoColumns"/>
+		FROM customer_address a
+		<include refid="orderCustomInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO customer_address(
+			id,
+			customer_id,
+			address_name,
+			address_phone,
+			province_code,
+			city_code,
+			area_code,
+			placename,
+			detail_address,
+			addr_longitude,
+			addr_latitude,
+			default_type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{addressName},
+			#{addressPhone},
+			#{provinceCode},
+			#{cityCode},
+			#{areaCode},
+			#{placename},
+			#{detailAddress},
+			#{addrLongitude},
+			#{addrLatitude},
+			#{defaultType},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE customer_address SET
+		<if test="addressName !=null and addressName != ''">address_name = #{addressName},</if>
+		<if test="addressPhone !=null and addressPhone != ''">address_phone = #{addressPhone},</if>
+		<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
+		<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
+		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
+		<if test="placename !=null and placename != ''">placename = #{placename},</if>
+		<if test="detailAddress !=null and detailAddress != ''">detail_address = #{detailAddress},</if>
+		<if test="addrLongitude !=null and addrLongitude != ''">addr_longitude = #{addrLongitude},</if>
+		<if test="addrLatitude !=null and addrLatitude != ''">addr_latitude = #{addrLatitude},</if>
+		<if test="defaultType !=null and defaultType != ''">default_type = #{defaultType},</if>
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE customer_address SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateDefaultNoByCustomer">
+		UPDATE customer_address SET
+		default_type = 'no',
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE customer_id = #{customerId}
+	</update>
+
+	<update id="updateDefaultYesById">
+		UPDATE customer_address SET
+		default_type = 'yes',
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+		AND customer_id = #{customerId}
+	</update>
+</mapper>

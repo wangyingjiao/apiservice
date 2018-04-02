@@ -9,10 +9,7 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.office.OfficeSeviceAreaList;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
-import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianFamilyMembers;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.entity.LoginUser;
 
 import java.util.List;
@@ -84,4 +81,12 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     ServiceTechnicianInfo getByPhone(String phone);
 
     void savePass(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    List<SerSkillInfo> findSkil(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    List<ServiceTechnicianInfo> getTechList(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    ScheduleDateInfo getWorkTime(ServiceTechnicianInfo sti);
+
+    List<TechScheduleInfo> getScheduleList(ServiceTechnicianInfo sti);
 }

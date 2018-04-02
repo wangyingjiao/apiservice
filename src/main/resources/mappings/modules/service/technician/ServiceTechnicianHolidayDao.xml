@@ -7,6 +7,9 @@
 		a.tech_id AS "techId",
 		a.start_time AS "startTime",
 		a.end_time AS "endTime",
+		a.review_status AS "reviewStatus",
+		a.fail_reason AS "failReason",
+		a.source AS "source",
 		a.remark AS "remark",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -17,30 +20,45 @@
 	
 	<sql id="serviceTechnicianHolidayJoins">
 	</sql>
-    
+
 	<select id="get" resultType="ServiceTechnicianHoliday">
-		SELECT 
-			<include refid="serviceTechnicianHolidayColumns"/>
+		SELECT
+		<include refid="serviceTechnicianHolidayColumns"/>
 		FROM tech_holiday a
 		<include refid="serviceTechnicianHolidayJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
+	<!--审核未通过的休假详情-->
+	<select id="getHolidayById" resultType="ServiceTechnicianHoliday">
+		SELECT
+		<include refid="serviceTechnicianHolidayColumns"/>
+		FROM tech_holiday a
+		WHERE a.id = #{id}
+		AND a.review_status='no'
+	</select>
+
 	<select id="findList" resultType="ServiceTechnicianHoliday">
 		SELECT
 			a.id AS "id",
 			a.tech_id AS "techId",
-			b.name AS "techName",
-			b.phone AS "techPhone",
-			c.name AS "techStationName",
 			a.start_time AS "startTime",
 			a.end_time AS "endTime",
-			a.remark AS "remark"
+			a.review_status AS "reviewStatus",
+			a.fail_reason AS "failReason",
+			a.source AS "source",
+			a.remark AS "remark",
+			b.name AS "techName",
+			b.phone AS "techPhone",
+			c.name AS "techStationName"
 		FROM tech_holiday a
 		LEFT JOIN tech_info b ON a.tech_id = b.id
 		LEFT JOIN basic_service_station c ON c.id = b.station_id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="reviewStatus != null and reviewStatus != ''">
+				AND a.review_status = #{reviewStatus}
+			</if>
 			<if test="techName != null and techName != ''">
 				AND b.name LIKE concat('%',#{techName},'%')
 			</if>
@@ -84,6 +102,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.tech_id=#{techId}
+			AND a.review_status=#{reviewStatus}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -119,6 +138,8 @@
 			tech_id,
 			start_time,
 			end_time,
+			review_status,
+			source,
 			create_by,
 			create_date,
 			update_by,
@@ -130,6 +151,8 @@
 			#{techId},
 			#{startTime},
 			#{endTime},
+			#{reviewStatus},
+			#{source},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -140,21 +163,36 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE tech_holiday SET 	
-			tech_id = #{techId},
+		UPDATE tech_holiday SET
 			start_time = #{startTime},
 			end_time = #{endTime},
+			review_status = #{reviewStatus},
+			fail_reason='',
+			source=#{source},
+			remark=#{remark},
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remark = #{remark}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
-	
+
+	<!--审核app的休假-->
+	<update id="updateHoliday">
+		UPDATE tech_holiday SET
+		review_status = #{reviewStatus},
+		<if test="failReason !=null and failReason != ''">
+			fail_reason = #{failReason},
+		</if>
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<!--删除休假  app用到了-->
 	<update id="delete">
 		UPDATE tech_holiday SET
 		<if test="updateBy != null and updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
-			del_flag = #{DEL_FLAG_DELETE}
+			del_flag = '1'
 		WHERE id = #{id}
 	</update>
 
