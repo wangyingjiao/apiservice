@@ -2635,13 +2635,13 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				provinceName = provinceList.get(0).getName();
 			}
 		}
-		if(null == city_code) {
+		if(null != city_code) {
 			List<Area> cityList = areaDao.getNameByCode(city_code);
 			if (cityList != null && cityList.size() > 0) {
 				cityName = cityList.get(0).getName();
 			}
 		}
-		if(null == area_code) {
+		if(null != area_code) {
 			List<Area> areaList = areaDao.getNameByCode(area_code);
 			if (areaList != null && areaList.size() > 0) {
 				areaName = areaList.get(0).getName();
