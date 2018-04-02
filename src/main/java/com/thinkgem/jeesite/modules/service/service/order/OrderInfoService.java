@@ -18,15 +18,13 @@ import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
-import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
-import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
@@ -82,9 +80,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	BasicServiceStationDao basicServiceStationDao;
 	@Autowired
 	BasicStoreDao basicStoreDao;
-
-
-
+	@Autowired
+	TechScheduleDao techScheduleDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -319,10 +316,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if("gasq".equals(orderInfo.getOrderSource()) && "no".equals(orgVisable)){
 			if(addressInfo != null){
 				OrderAddress address = new OrderAddress();
-				if(StringUtils.isNotBlank(addressInfo.getName())){
-					address.setName(addressInfo.getName());
+				String name = addressInfo.getName();
+				if(StringUtils.isNotBlank(name) && name.length() > 0){
+					String newName = name.substring(0,1);
+					for(int i=1;i<name.length();i++){
+						newName = newName.concat("*");
+					}
+					address.setName(newName);
 				}else{
-					address.setName(addressInfo.getName());
+					address.setName(name);
 				}
 				String phone = addressInfo.getPhone();
 				if(StringUtils.isNotBlank(phone) && phone.length() == 12){
@@ -475,10 +477,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if("gasq".equals(orderInfo.getOrderSource()) && "no".equals(orgVisable)){
 			if(addressInfo != null){
 				OrderAddress address = new OrderAddress();
-				if(StringUtils.isNotBlank(addressInfo.getName())){
-					address.setName(addressInfo.getName());
+				String name = addressInfo.getName();
+				if(StringUtils.isNotBlank(name) && name.length() > 0){
+					String newName = name.substring(0,1);
+					for(int i=1;i<name.length();i++){
+						newName = newName.concat("*");
+					}
+					address.setName(newName);
 				}else{
-					address.setName(addressInfo.getName());
+					address.setName(name);
 				}
 				String phone = addressInfo.getPhone();
 				if(StringUtils.isNotBlank(phone) && phone.length() == 12){
@@ -2122,6 +2129,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("保存订单支付信息表失败!");
 		}
 
+		// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
+		try{
+			openCreateForTechSchedule( orderDispatches, orderInfo);
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("保存排期表失败!");
+		}
+
 		//------------------------------------------------------------------------------------------------
 		OpenCreateResponse response = new OpenCreateResponse();
 
@@ -2134,6 +2150,29 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		map.put("response",response);
 		map.put("orderInfoMsg",orderInfoMsg);
 		return map;
+	}
+
+	/**
+	 * 订单创建 - 排期表
+	 * @param orderDispatches
+	 * @param orderInfo
+	 */
+	private void openCreateForTechSchedule(List<OrderDispatch> orderDispatches, OrderInfo orderInfo) {
+		if(orderDispatches != null && orderDispatches.size() > 0){
+			for(OrderDispatch dispatch : orderDispatches){
+				TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+				techScheduleInfo.setTechId(dispatch.getTechId());//技师ID
+				techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+				int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+				techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+				techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+				techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
+				techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+				techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+				techScheduleInfo.preInsert();
+				techScheduleDao.insertSchedule(techScheduleInfo);
+			}
+		}
 	}
 
 	/**

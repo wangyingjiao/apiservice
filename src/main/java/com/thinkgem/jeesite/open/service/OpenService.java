@@ -14,6 +14,7 @@ import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
@@ -22,6 +23,7 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -67,7 +69,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	BasicServiceStationDao basicServiceStationDao;
 	@Autowired
 	BasicStoreDao basicStoreDao;
-
+	@Autowired
+	TechScheduleDao techScheduleDao;
 
 	/**
      * 对接接口 选择服务时间
@@ -516,6 +519,15 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("保存订单支付信息表失败!");
 		}
 
+		// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
+		try{
+			openCreateForTechSchedule( orderDispatches, orderInfo);
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("保存排期表失败!");
+		}
+
 		//------------------------------------------------------------------------------------------------
 		response = new OpenCreateResponse();
 		response.setSuccess(true);// 状态：true 成功；false 失败
@@ -530,6 +542,37 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		map.put("response",response);
 		map.put("orderInfoMsg",orderInfoMsg);
 		return map;
+	}
+
+	/**
+	 * 订单创建 - 排期表
+	 * @param orderDispatches
+	 * @param orderInfo
+	 */
+	private void openCreateForTechSchedule(List<OrderDispatch> orderDispatches, OrderInfo orderInfo) {
+		if(orderDispatches != null && orderDispatches.size() > 0){
+			for(OrderDispatch dispatch : orderDispatches){
+				TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+				techScheduleInfo.setTechId(dispatch.getTechId());//技师ID
+				techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+				int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+				techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+				techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+				techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
+				techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+				techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+
+				User user = new User();
+				user.setId("gasq001");
+				techScheduleInfo.setId(IdGen.uuid());
+				techScheduleInfo.setCreateBy(user);
+				techScheduleInfo.setCreateDate(new Date());
+				techScheduleInfo.setUpdateBy(user);
+				techScheduleInfo.setUpdateDate(techScheduleInfo.getCreateDate());
+
+				techScheduleDao.insertSchedule(techScheduleInfo);
+			}
+		}
 	}
 
     /**
