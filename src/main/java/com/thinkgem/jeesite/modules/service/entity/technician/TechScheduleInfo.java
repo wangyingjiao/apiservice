@@ -21,6 +21,34 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
     private String remark;      //备注信息
     private String reviewStatus;      //app新增休假时使用 参数传递使用
 
+    private String scheduleDateStr;  //日期展示用
+    private String startTimeStr;    //起始时间展示用
+    private String endTimeStr;      //结束时间展示用
+
+    public String getScheduleDateStr() {
+        return scheduleDateStr;
+    }
+
+    public void setScheduleDateStr(String scheduleDateStr) {
+        this.scheduleDateStr = scheduleDateStr;
+    }
+
+    public String getStartTimeStr() {
+        return startTimeStr;
+    }
+
+    public void setStartTimeStr(String startTimeStr) {
+        this.startTimeStr = startTimeStr;
+    }
+
+    public String getEndTimeStr() {
+        return endTimeStr;
+    }
+
+    public void setEndTimeStr(String endTimeStr) {
+        this.endTimeStr = endTimeStr;
+    }
+
     public String getReviewStatus() {
         return reviewStatus;
     }

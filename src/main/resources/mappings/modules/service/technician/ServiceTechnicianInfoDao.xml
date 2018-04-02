@@ -817,4 +817,60 @@
 			AND a.phone = #{phone}
 	</select>
 
+	<select id="findSkil" resultType="SerSkillInfo">
+		SELECT id,org_id AS orgId,name FROM ser_skill_info WHERE org_id = #{orgId} ORDER BY create_date DESC
+	</select>
+
+    <select id="getTechList" resultType="ServiceTechnicianInfo">
+        SELECT
+            a.id,
+            a.name,
+            a.phone,
+            b.name AS stationName
+            FROM ser_skill_tech d RIGHT JOIN tech_info a ON a.id = d.tech_id
+            LEFT JOIN basic_service_station b ON a.station_id = b.id
+            WHERE a.job_nature = 'full_time'
+            AND a.job_status = 'online'
+            AND a.del_flag = 0
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="stationId != null and stationId != ''">
+                AND a.station_id = #{stationId}
+            </if>
+            <if test="name != null and name !=''">
+                AND a.name LIKE concat('%',#{name},'%')
+            </if>
+            <if test="phone != null and phone !=''">
+                AND a.phone LIKE concat('%',#{phone},'%')
+            </if>
+            <if test="skilId != null and skilId != ''">
+                AND d.skill_id = #{skilId}
+            </if>
+            <if test="skilId != null and skilId != ''">
+                AND d.skill_id = #{skilId}
+            </if>
+    </select>
+
+    <select id="getWorkTime" resultType="ScheduleDateInfo">
+        SELECT start_time AS workBeginTime,end_time AS workEndTime FROM tech_work_time
+        WHERE week = #{weekNum} AND tech_id = #{id} AND del_flag = 0
+    </select>
+
+    <select id="getScheduleList" resultType="TechScheduleInfo">
+        SELECT a.id,
+            a.tech_id AS techId,
+            a.schedule_date AS scheduleDateStr,
+            a.schedule_week AS scheduleWeek,
+            a.start_time AS startTimeStr,
+            a.end_time AS endTimeStr,
+            a.type_id AS typeId,
+            a.type,
+            a.remark
+            FROM tech_schedule a
+            WHERE a.tech_id = #{id}
+            AND a.schedule_date &gt;= #{schedulebeginTime}
+            AND a.schedule_date &lt;= #{scheduleEndTime}
+            AND a.del_flag = 0
+    </select>
 </mapper>

@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -598,10 +600,52 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     }
 
     public Page<ServiceTechnicianInfo> scheduleList(Page<ServiceTechnicianInfo> schedulePage, ServiceTechnicianInfo serviceTechnicianInfo) {
-
-
         serviceTechnicianInfo.setPage(schedulePage);
-        schedulePage.setList(dao.findList(serviceTechnicianInfo));
+        List<ServiceTechnicianInfo> stiList = serviceTechnicianInfoDao.getTechList(serviceTechnicianInfo); //查出所有技师信息
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for (ServiceTechnicianInfo sti : stiList){  //循环技师
+            List<ScheduleDateInfo> sdiList = new ArrayList<ScheduleDateInfo>();
+            for (int i = 0;i < 7;i++){  //循环7天
+                ScheduleDateInfo sdi = new ScheduleDateInfo();
+                if (serviceTechnicianInfo.getBeginTime() == null){
+                    try {
+                        serviceTechnicianInfo.setBeginTime(sdf.parse(sdf.format(new Date())));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } //如果前台传入日期
+                sdi.setSevenDate(sdf.format(serviceTechnicianInfo.getBeginTime()));  //给七天日期赋值
+                int weekNum = DateUtils.getWeekNum(serviceTechnicianInfo.getBeginTime());  //判断当前循环的日期是周几
+                sti.setWeekNum(weekNum);
+                ScheduleDateInfo sdi1 = serviceTechnicianInfoDao.getWorkTime(sti);  //根据技师ID和周几查询技师工作时间
+                if (sdi1 != null){
+                    sdi.setWorkBeginTime(sdi1.getWorkBeginTime());  //赋值工作开始时间
+                    sdi.setWorkEndTime(sdi1.getWorkEndTime());    //赋值工作结束时间
+                }
+                Date dateFirstTime = DateUtils.getDateFirstTime(serviceTechnicianInfo.getBeginTime());  //将日期转换成带00:00:00
+                Date dateLastTime = DateUtils.getDateLastTime(serviceTechnicianInfo.getBeginTime());   //将日期转换成带23:59:59
+                sti.setSchedulebeginTime(dateFirstTime);
+                sti.setScheduleEndTime(dateLastTime);
+                List<TechScheduleInfo> tsiList = serviceTechnicianInfoDao.getScheduleList(sti);
+                if (tsiList.size() > 0){
+                    sdi.setTechScheduleInfos(tsiList);
+                }
+                Calendar c = Calendar.getInstance();
+                c.setTime(serviceTechnicianInfo.getBeginTime());
+                c.add(Calendar.DAY_OF_MONTH, 1);// 今天+1天
+                serviceTechnicianInfo.setBeginTime(c.getTime());
+                sdiList.add(sdi);
+            }
+            sti.setScheduleDateInfos(sdiList);
+        }
+
+
+        schedulePage.setList(stiList);
         return schedulePage;
     }
+
+    public List<SerSkillInfo> findSkil(ServiceTechnicianInfo serviceTechnicianInfo) {
+        return serviceTechnicianInfoDao.findSkil(serviceTechnicianInfo);
+    }
+
 }

@@ -69,7 +69,51 @@ public class ServiceTechnicianInfo extends DataEntity<ServiceTechnicianInfo> {
     private String newPassword;//app使用
 
     private List<ScheduleDateInfo> scheduleDateInfos;  //未来7天排期
+    private Date beginTime;    //排期开始时间
+    private String skilId;
+    private int weekNum;
+    private Date schedulebeginTime;
+    private Date scheduleEndTime;
 
+    public Date getSchedulebeginTime() {
+        return schedulebeginTime;
+    }
+
+    public void setSchedulebeginTime(Date schedulebeginTime) {
+        this.schedulebeginTime = schedulebeginTime;
+    }
+
+    public Date getScheduleEndTime() {
+        return scheduleEndTime;
+    }
+
+    public void setScheduleEndTime(Date scheduleEndTime) {
+        this.scheduleEndTime = scheduleEndTime;
+    }
+
+    public int getWeekNum() {
+        return weekNum;
+    }
+
+    public void setWeekNum(int weekNum) {
+        this.weekNum = weekNum;
+    }
+
+    public String getSkilId() {
+        return skilId;
+    }
+
+    public void setSkilId(String skilId) {
+        this.skilId = skilId;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
 
     public List<ScheduleDateInfo> getScheduleDateInfos() {
         return scheduleDateInfos;
