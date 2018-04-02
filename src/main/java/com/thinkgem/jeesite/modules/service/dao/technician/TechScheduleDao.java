@@ -27,4 +27,8 @@ public interface TechScheduleDao extends CrudDao<TechScheduleInfo> {
     int insertSchedule(TechScheduleInfo info);
     // 根据 type, typeId 删除排期表
     void deleteScheduleByTypeId(TechScheduleInfo scheduleInfo);
+    // 根据 type, typeId, techId 删除排期表
+    void deleteScheduleByTypeIdTechId(TechScheduleInfo scheduleInfo);
+    // 根据 type, typeId, techId 更新排期表
+    void updateScheduleByTypeIdTechId(TechScheduleInfo techScheduleInfo);
 }

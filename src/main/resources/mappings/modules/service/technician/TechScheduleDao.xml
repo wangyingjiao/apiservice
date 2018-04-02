@@ -48,6 +48,30 @@
 		update_date = #{updateDate}
 		WHERE type = #{type}
 		AND type_id = #{typeId}
+		AND del_flag = '0'
+	</update>
+	<update id="deleteScheduleByTypeIdTechId">
+		UPDATE tech_schedule SET
+			del_flag = '1',
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE type = #{type}
+			AND type_id = #{typeId}
+			AND tech_id = #{techId}
+			AND del_flag = '0'
+	</update>
+	<update id="updateScheduleByTypeIdTechId">
+		UPDATE tech_schedule SET
+			start_time = #{startTime},
+			end_time = #{endTime},
+			schedule_date = #{scheduleDate},
+			schedule_week = #{scheduleWeek},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE type = #{type}
+			AND type_id = #{typeId}
+			AND tech_id = #{techId}
+			AND del_flag = '0'
 	</update>
 
 	<!--增加排期表-->

@@ -844,7 +844,21 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(technicianInfo != null) {
 				orderDispatch.setTechPhone(technicianInfo.getPhone());
 			}
-			orderCreateMsgList.add(orderDispatch);
+
+            //排期
+            TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+            techScheduleInfo.setTechId(techId);//技师ID
+            techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+            int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+            techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+            techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+            techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
+            techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+            techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+            techScheduleInfo.preInsert();
+            techScheduleDao.insertSchedule(techScheduleInfo);
+
+            orderCreateMsgList.add(orderDispatch);
 		}
 
 		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
@@ -1132,7 +1146,16 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(technicianInfo != null) {
 			orderDispatchMsg.setTechPhone(technicianInfo.getPhone());
 		}
-		orderDispatchMsgList.add(orderDispatchMsg);
+        orderDispatchMsgList.add(orderDispatchMsg);
+
+        //排期
+        TechScheduleInfo techScheduleInfoDel = new TechScheduleInfo();
+        techScheduleInfoDel.setTechId(dispatchTechId);//技师ID
+        techScheduleInfoDel.setTypeId(orderInfo.getId());//休假ID或订单ID
+        techScheduleInfoDel.setType("order");//'holiday：休假  order：订单'
+        techScheduleInfoDel.preUpdate();
+        techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfoDel);
+
 		// 派单 原来没有，现在有
 		List<OrderDispatch> orderCreateMsgList = new ArrayList<>();
 		for(String techId : techIdList){//改派技师List  insert
@@ -1146,6 +1169,20 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(technicianInfoC != null) {
 				orderDispatch.setTechPhone(technicianInfoC.getPhone());
 			}
+
+            //排期
+            TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+            techScheduleInfo.setTechId(techId);//技师ID
+            techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+            int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+            techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+            techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+            techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
+            techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+            techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+            techScheduleInfo.preInsert();
+            techScheduleDao.insertSchedule(techScheduleInfo);
+
 			orderCreateMsgList.add(orderDispatch);
 		}
 		//return techList;
@@ -1781,12 +1818,46 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			for(OrderDispatch msgInfo : msgTechList){
 				if(newTechIds.contains(msgInfo.getTechId())){
 					orderCreateMsgList.add(msgInfo);// 派单 原来没有，现在有
+
+                    //排期
+                    TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+                    techScheduleInfo.setTechId(msgInfo.getTechId());//技师ID
+                    techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+                    int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+                    techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+                    techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+                    techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
+                    techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+                    techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+                    techScheduleInfo.preInsert();
+                    techScheduleDao.insertSchedule(techScheduleInfo);
 				}
 				if(delTechIds.contains(msgInfo.getTechId())){
 					orderDispatchMsgList.add(msgInfo);// 改派 原来有，现在没有
-				}
+
+                    //排期
+                    TechScheduleInfo techScheduleInfoDel = new TechScheduleInfo();
+                    techScheduleInfoDel.setTechId(msgInfo.getTechId());//技师ID
+                    techScheduleInfoDel.setTypeId(orderInfo.getId());//休假ID或订单ID
+                    techScheduleInfoDel.setType("order");//'holiday：休假  order：订单'
+                    techScheduleInfoDel.preUpdate();
+                    techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfoDel);
+                }
 				if(oldTechIds.contains(msgInfo.getTechId())) {
 					orderServiceTimeMsgList.add(msgInfo);// 时间变化 原来有，现在有
+
+                    //排期
+                    TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+                    techScheduleInfo.setTechId(msgInfo.getTechId());//技师ID
+                    techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+                    int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+                    techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+                    techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+                    techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
+                    techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+                    techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+                    techScheduleInfo.preUpdate();
+                    techScheduleDao.updateScheduleByTypeIdTechId(techScheduleInfo);
 				}
 			}
 
@@ -2644,6 +2715,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					}
 				}
 			}
+
+            if(customInfo.getAddress() == null){
+                customInfo.setAddress(new OrderCustomAddress());
+            }
 		}
 		return customInfo;
 	}
@@ -2670,6 +2745,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					}
 				}
 			}
+
+            if(customInfo.getAddress() == null){
+                customInfo.setAddress(new OrderCustomAddress());
+            }
 		}
 		return customInfo;
 	}
