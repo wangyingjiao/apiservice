@@ -83,7 +83,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         }
         return 0;
     }
-
+    //添加休假后发送给技师短信
     @Transactional(readOnly = false)
     public int insertAndPushHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday, MessageInfo messageInfo){
 
@@ -98,6 +98,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         messageInfo.setPushTime(new Date());
         messageInfo.setUpdateDate(new Date());
         messageInfo.setPushTime(new Date());
+        messageInfo.setIsRead("no");
         messageInfoDao.insert(messageInfo);
 
         messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());
@@ -129,6 +130,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             messageInfo.setPushTime(new Date());
             messageInfo.setUpdateDate(new Date());
             messageInfo.setPushTime(new Date());
+            messageInfo.setIsRead("no");
             messageInfoDao.insert(messageInfo);
 
             messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());

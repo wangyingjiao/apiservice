@@ -29,13 +29,15 @@
 		WHERE a.id = #{id}
 	</select>
 
-	<!--审核未通过的休假详情-->
+	<!--根据id获取休假详情  后台编辑休假的时候需要-->
 	<select id="getHolidayById" resultType="ServiceTechnicianHoliday">
 		SELECT
 		<include refid="serviceTechnicianHolidayColumns"/>
 		FROM tech_holiday a
 		WHERE a.id = #{id}
-		AND a.review_status='no'
+		<if test="reviewStatus != null and reviewStatus != ''">
+			AND a.review_status=#{reviewStatus}
+		</if>
 	</select>
 
 	<select id="findList" resultType="ServiceTechnicianHoliday">
@@ -186,7 +188,7 @@
 		WHERE id = #{id}
 	</update>
 
-	<!--删除休假  app用到了-->
+	<!--删除休假  app 后台都用到了-->
 	<update id="delete">
 		UPDATE tech_holiday SET
 		<if test="updateBy != null and updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>

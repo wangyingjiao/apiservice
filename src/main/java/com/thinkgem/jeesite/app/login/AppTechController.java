@@ -174,9 +174,8 @@ public class AppTechController extends BaseController {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		info.setTechId(token.getTechId());
-		int i ;
 		try{
-			i = holidayService.appSave(info);
+            int i = holidayService.appSave(info);
 			if (i>0){
 				return new AppSuccResult(0,null,"保存成功");
 			}

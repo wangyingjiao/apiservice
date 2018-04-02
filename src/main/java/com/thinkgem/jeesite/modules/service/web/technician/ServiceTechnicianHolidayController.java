@@ -88,10 +88,17 @@ public class ServiceTechnicianHolidayController extends BaseController {
 		}
 		try {
 			int i = serviceTechnicianHolidayService.savePc(info);
-			if (i<=0) {
-				return new FailResult("保存失败");
+			ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(info.getTechId());
+			//查询休假表
+			ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
+			holiday.setTechId(info.getTechId());
+			holiday.setTechPhone(serviceTechnicianInfo.getPhone());
+			if (i>0) {
+				messageInfoService.insertHoliday(holiday,"techHolidaySuccess");
+				return new SuccResult("保存成功");
+
 			}
-			return new SuccResult("保存成功");
+			return new FailResult("保存失败");
 		}catch (ServiceException e){
 			return new FailResult(e.getMessage());
 		}
@@ -115,7 +122,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	@RequestMapping(value = "delete", method = {RequestMethod.POST})
 	@ApiOperation("删除休假")
 	public Result delete(@RequestBody ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		serviceTechnicianHolidayService.delete(serviceTechnicianHoliday);
+		serviceTechnicianHolidayService.deleteHoliday(serviceTechnicianHoliday);
 		return new SuccResult("删除休假成功");
 	}
 
@@ -131,24 +138,10 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		//参数 id 状态 未通过原因
 		try {
-			int i=0;
-			//根据休假表去查排期表
-            ServiceTechnicianHoliday serviceTechnicianHoliday1 = serviceTechnicianHolidayService.get(serviceTechnicianHoliday);
-			// TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
-			// techScheduleInfo.setStartTime(serviceTechnicianHoliday1.getStartTime());
-			// techScheduleInfo.setEndTime(serviceTechnicianHoliday1.getEndTime());
-			// techScheduleInfo.setTechId(serviceTechnicianHoliday1.getTechId());
-			// List<TechScheduleInfo> scheduleByTechId = techScheduleService.getScheduleByTechId(techScheduleInfo);
-			// if (scheduleByTechId !=null && scheduleByTechId.size()>0){
-			// 	for (TechScheduleInfo scheduleInfo:scheduleByTechId){
-			// 		if ("order".equals(scheduleInfo.getType())){
-			// 			i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
-			// 		}
-			// 	}
-			// }else {
-				//审核  增加排期表
-			i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
-			// }
+			//审核  增加排期表
+			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
+			//查询休假表
+			ServiceTechnicianHoliday serviceTechnicianHoliday1 = serviceTechnicianHolidayService.get(serviceTechnicianHoliday);
 			// 查询出技师的手机
             String techId = serviceTechnicianHoliday1.getTechId();
             ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(techId);
