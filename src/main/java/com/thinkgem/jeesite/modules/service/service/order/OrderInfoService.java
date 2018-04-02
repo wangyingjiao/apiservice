@@ -143,29 +143,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("没有商品信息");
 		}
 		orderInfo.setGoodsInfoList(tem);
-		//商品图片
-//		List<String> picc = dao.appGetPics(orderInfo.getId());
-//		String pics=null;
-//		if (picc !=null && picc.size()>0){
-//			pics=picc.get(0);
-//		}
-//		if (StringUtils.isNotBlank(pics)){
-//			List<String> picl = (List<String>) JsonMapper.fromJsonString(pics, ArrayList.class);
-//			if (picl !=null && picl.size()>0){
-//				goodsInfo.setPicture(ossHost+picl.get(0));
-//			}
-//		}
 		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
 		if (techList==null || techList.size()==0){
 			throw new ServiceException("没有技师");
 		}
-//		for(OrderGoods orderGoods : goodsInfoList){
-//			String dj = orderGoods.getPayPrice();//商品单价
-//			int num = orderGoods.getGoodsNum();//商品数量
-//			BigDecimal price = new BigDecimal(dj).multiply(new BigDecimal(num));
-//			orderGoods.setPayPrice(price.toString());//总价
-//		}
 		orderInfo.setGoodsInfo(goodsInfo);
 		orderInfo.setTechList(techList);
 		List<String> idList=new ArrayList<String>();
@@ -244,21 +226,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			shop.setShopPhone(orderInfo.getShopPhone());
 			shop.setShopAddress(orderInfo.getShopAddr());
 			shop.setShopRemark(orderInfo.getShopRemark());
-		/*
-		门店备注图片暂时不展示
-		List<String> ls=new ArrayList<String>();
-		String shopRemarkPic = orderInfo.getShopRemarkPic();
-		if(StringUtils.isNotBlank(shopRemarkPic)){
-			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
-			if (pictureDetails.size()>0){
-				for (String pic:pictureDetails){
-					String url=ossHost+pic;
-					ls.add(url);
-				}
-			}
-			orderInfo.setShopRemarkPics(pictureDetails);
-		}
-		shop.setShopRemarkPic(ls);*/
 			orderInfo.setShopInfo(shop);
 		}
 		String serviceStatus = orderInfo.getServiceStatus();
@@ -346,21 +313,35 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 
-		String addressId = orderInfo.getOrderAddressId();
-		OrderAddress orderAddress = orderAddressDao.get(addressId);
-		//如果是国安社区的 需要隐藏 本期没有联系人
-		if ("gasq".equals(orderSource)) {
-			//省市区
-			List<Area> province = areaDao.getNameByCode(orderAddress.getProvinceCode());
-			List<Area> city = areaDao.getNameByCode(orderAddress.getCityCode());
-			List<Area> area = areaDao.getNameByCode(orderAddress.getAreaCode());
-			String placename = orderAddress.getPlacename();
-			orderAddress.setAddress(province.get(0).getName()+city.get(0).getName()+area.get(0).getName()+placename+"***");
-			String phone = orderAddress.getPhone();
-			String phoneNumber = phone.substring(0, 3) + "****" + phone.substring(7, phone.length());
-			orderAddress.setPhone(phoneNumber);
+		String orgVisable = orderInfo.getOrgVisable();
+		OrderAddress addressInfo = orderInfo.getAddressInfo();
+
+		if("gasq".equals(orderInfo.getOrderSource()) && "no".equals(orgVisable)){
+			if(addressInfo != null){
+				OrderAddress address = new OrderAddress();
+				if(StringUtils.isNotBlank(addressInfo.getName())){
+					address.setName(addressInfo.getName());
+				}else{
+					address.setName(addressInfo.getName());
+				}
+				String phone = addressInfo.getPhone();
+				if(StringUtils.isNotBlank(phone) && phone.length() == 12){
+					address.setPhone(phone.substring(0, 3) + "****" + phone.substring(7, phone.length()));
+				}else{
+					address.setPhone(phone);
+				}
+				address.setDetailAddress(addressInfo.getPlacename() + "***");
+				orderInfo.setAddressInfo(address);
+			}
+		}else{
+			if(addressInfo != null){
+				OrderAddress address = new OrderAddress();
+				address.setName(addressInfo.getName());
+				address.setPhone(addressInfo.getPhone());
+				address.setDetailAddress(addressInfo.getAddress());
+				orderInfo.setAddressInfo(address);
+			}
 		}
-		orderInfo.setAddressInfo(orderAddress);
 		return orderInfo;
 	}
 

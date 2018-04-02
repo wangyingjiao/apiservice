@@ -86,21 +86,16 @@ public class ServiceTechnicianHolidayController extends BaseController {
 		if (errList != null && errList.size() > 0) {
 			return new FailResult(errList);
 		}
-		//服务人员在请假时间内是否有未完成的订单
-		if(serviceTechnicianHolidayService.getOrderTechRelationHoliday(info) > 0){
-			return new FailResult("服务人员有未完成订单,不可请假.");
+		try {
+			int i = serviceTechnicianHolidayService.savePc(info);
+			if (i<=0) {
+				return new FailResult("保存失败");
+			}
+			return new SuccResult("保存成功");
+		}catch (ServiceException e){
+			return new FailResult(e.getMessage());
 		}
-		//服务人员在请假时间内是否有请假
-		if(serviceTechnicianHolidayService.getHolidayHistory(info) > 0){
-			return new FailResult("请假时间冲突");
-		}
-
-		int i = serviceTechnicianHolidayService.savePc(info);
-		if (i==0) {
-			return new FailResult("设置的时间不在工作时间内");
-		}
-		return new SuccResult("保存成功");
-	}
+}
 
 	@ResponseBody
 	@RequiresPermissions("holiday_view")

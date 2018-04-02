@@ -99,11 +99,10 @@
 		a.source AS source
 		FROM tech_holiday a
 		LEFT JOIN tech_info b ON a.tech_id = b.id
-		<where>
+		where
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.tech_id=#{techId}
 			AND a.review_status=#{reviewStatus}
-		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}

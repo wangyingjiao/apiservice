@@ -425,9 +425,7 @@ origin_price,
 			org.visable AS "orgVisable",
 			a.station_id AS "stationId",
 			sta.name AS "stationName",
-
 			a.joint_order_id AS "jointOrderId",
-
 			a.pay_price AS payPrice,
 			a.pay_status AS "payStatus",
 			pay.pay_number AS "payInfo.payNumber",
@@ -446,7 +444,6 @@ origin_price,
 			a.service_time AS "serviceTime",
 			a.finish_time AS "finishTime",
 			a.service_hour AS "serviceHour",
-
 			a.customer_remark AS "customerRemark",
 			a.customer_remark_pic AS "customerRemarkPic",
 			a.order_remark AS "orderRemark",
