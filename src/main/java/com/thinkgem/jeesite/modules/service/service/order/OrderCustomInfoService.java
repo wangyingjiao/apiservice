@@ -84,6 +84,7 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 		return list;
     }
 
+	@Transactional(readOnly = false)
 	public void saveDataAddress(OrderCustomAddress customAddress) {
 		List<OrderCustomAddress> list = orderCustomAddressDao.findList(customAddress);
 		if(list!=null && list.size()>0){//默认将第一个添加的地址设为默认地址
@@ -95,11 +96,13 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 		orderCustomAddressDao.insert(customAddress);
 	}
 
+	@Transactional(readOnly = false)
 	public void upDataAddress(OrderCustomAddress customAddress) {
 		customAddress.preUpdate();
 		orderCustomAddressDao.update(customAddress);
 	}
 
+	@Transactional(readOnly = false)
 	public void deleteDataAddress(OrderCustomAddress customAddress) {
 		orderCustomAddressDao.delete(customAddress);
 	}
@@ -108,6 +111,7 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 		return orderCustomAddressDao.get(customAddress);
 	}
 
+	@Transactional(readOnly = false)
 	public void setDefaultAddress(OrderCustomAddress customAddress) {
 		customAddress.preUpdate();
 		orderCustomAddressDao.updateDefaultNoByCustomer(customAddress);

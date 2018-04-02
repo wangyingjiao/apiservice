@@ -487,6 +487,36 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			orderInfo.setOrderRemarkPics(pictureDetails);
 		}
 
+		// 地址模糊显示
+		String orgVisable = orderInfo.getOrgVisable();
+		OrderAddress addressInfo = orderInfo.getAddressInfo();
+
+		if("gasq".equals(orderInfo.getOrderSource()) && "no".equals(orgVisable)){
+			if(addressInfo != null){
+				OrderAddress address = new OrderAddress();
+				if(StringUtils.isNotBlank(addressInfo.getName())){
+					address.setName(addressInfo.getName());
+				}else{
+					address.setName(addressInfo.getName());
+				}
+				String phone = addressInfo.getPhone();
+				if(StringUtils.isNotBlank(phone) && phone.length() == 12){
+					address.setPhone(phone.substring(0, 3) + "****" + phone.substring(7, phone.length()));
+				}else{
+					address.setPhone(phone);
+				}
+				address.setDetailAddress(addressInfo.getPlacename() + "***");
+				orderInfo.setAddressInfo(address);
+			}
+		}else{
+			if(addressInfo != null){
+				OrderAddress address = new OrderAddress();
+				address.setName(addressInfo.getName());
+				address.setPhone(addressInfo.getPhone());
+				address.setDetailAddress(addressInfo.getAddress());
+				orderInfo.setAddressInfo(address);
+			}
+		}
 		return orderInfo;
 	}
 
@@ -2498,6 +2528,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String province_code = customInfo.getProvinceCode();//省CODE
 		String city_code = customInfo.getCityCode();//市CODE
 		String area_code = customInfo.getAreaCode();//区CODE
+		String placename = customInfo.getPlacename();//区CODE
 		String detailAddress = customInfo.getDetailAddress();//服务地址：小区+详细地址
 
 		//省名称
@@ -2527,7 +2558,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		String address = "";
 		if(StringUtils.isNotBlank(provinceName) && StringUtils.isNotBlank(cityName) && StringUtils.isNotBlank(areaName)){
-			address = provinceName + cityName + areaName + detailAddress;
+			address = provinceName + cityName + areaName + placename + detailAddress;
 		}
 
 		//--------------------------------------
@@ -2538,6 +2569,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderAddress.setProvinceCode(province_code);//省_区号
 		orderAddress.setCityCode(city_code);//市_区号
 		orderAddress.setAreaCode(area_code);//区_区号
+		orderAddress.setPlacename(placename);
 		orderAddress.setDetailAddress(detailAddress);//详细地址
 		orderAddress.setAddress(address);//收货人完整地址
 		orderAddress.preInsert();

@@ -79,6 +79,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String customerPhone;         //客户电话
 	private OrderCustomInfo customerInfo;
 	private String orgName;         //机构
+	private String orgVisable;		// 用户是否可见(yes:可见;no:不可见;)
 	private String stationName;         //服务站
 	private Timestamp orderTimeStart;		// 下单起始时
 	private Timestamp orderTimeEnd;		// 下单结束时
@@ -799,5 +800,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setCustomerAddressId(String customerAddressId) {
 		this.customerAddressId = customerAddressId;
+	}
+
+	public String getOrgVisable() {
+		return orgVisable;
+	}
+
+	public void setOrgVisable(String orgVisable) {
+		this.orgVisable = orgVisable;
 	}
 }

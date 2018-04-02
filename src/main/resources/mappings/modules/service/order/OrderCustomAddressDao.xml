@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderCustomAddressDao">
     
-	<sql id="orderCustomInfoColumns">
+	<sql id="orderCustomAddressColumns">
 		a.id AS "id",
 		a.customer_id AS "customerId",
 		a.address_name AS "addressName",
@@ -22,19 +22,19 @@
 		a.del_flag AS "delFlag"
 	</sql>
 	
-	<sql id="orderCustomInfoJoins">
+	<sql id="orderCustomAddressJoins">
 	</sql>
 
 
-	<select id="get" resultType="OrderCustomInfo">
+	<select id="get" resultType="OrderCustomAddress">
 		SELECT 
-			<include refid="orderCustomInfoColumns"/>
+			<include refid="orderCustomAddressColumns"/>
 		FROM customer_address a
-		<include refid="orderCustomInfoJoins"/>
+		<include refid="orderCustomAddressJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="OrderCustomInfo">
+	<select id="findList" resultType="OrderCustomAddress">
 		SELECT
 			a.id AS "id",
 			a.customer_id AS "customerId",
@@ -63,11 +63,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="OrderCustomInfo">
+	<select id="findAllList" resultType="OrderCustomAddress">
 		SELECT 
-			<include refid="orderCustomInfoColumns"/>
+			<include refid="orderCustomAddressColumns"/>
 		FROM customer_address a
-		<include refid="orderCustomInfoJoins"/>
+		<include refid="orderCustomAddressJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		

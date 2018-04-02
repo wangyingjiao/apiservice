@@ -422,6 +422,7 @@ origin_price,
 			a.order_time AS "orderTime",
 			a.org_id AS "orgId",
 			org.name AS "orgName",
+			org.visable AS "orgVisable",
 			a.station_id AS "stationId",
 			sta.name AS "stationName",
 
@@ -435,6 +436,12 @@ origin_price,
 			pay.pay_platform AS "payInfo.payPlatform",
 			pay.pay_account AS "payInfo.payAccount",
 			pay.pay_time AS "payInfo.payTime",
+
+			address.name AS "addressInfo.name",
+			address.phone AS "addressInfo.phone",
+			CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(address.placename,'')) AS "addressInfo.placename",
+			address.detail_address AS "addressInfo.detailAddress",
+			address.address AS "addressInfo.address",
 
 			a.service_time AS "serviceTime",
 			a.finish_time AS "finishTime",
@@ -461,6 +468,12 @@ origin_price,
 		LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+
+		LEFT JOIN order_address address ON a.order_address_id = address.id AND address.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN sys_area t1 ON address.province_code = t1.code
+		LEFT JOIN sys_area t2 ON address.city_code = t2.code
+		LEFT JOIN sys_area t3 ON address.area_code = t3.code
+
 		WHERE a.id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
