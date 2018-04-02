@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDropdownInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
@@ -33,4 +34,6 @@ public interface OrderCustomInfoDao extends CrudDao<OrderCustomInfo> {
     List<OrderCustomInfo> findCusList(OrderCustomInfo orderCustomInfo);
 
     OrderCustomInfo findCustomerById(OrderCustomInfo info);
+
+    List<OrderCustomAddress> listAddressByCustomAddress(OrderCustomInfo customInfo);
 }

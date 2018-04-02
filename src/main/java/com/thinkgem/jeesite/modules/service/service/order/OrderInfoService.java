@@ -2578,10 +2578,20 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	public OrderCustomInfo findCustomerById(OrderCustomInfo info) {
 		OrderCustomInfo customInfo = orderCustomInfoDao.findCustomerById(info);
+		List<OrderCustomAddress> addressList = orderCustomInfoDao.listAddressByCustomAddress(customInfo);
 		if(null != customInfo){
 			info.setOrgId(UserUtils.getUser().getOrganization().getId());
 			List<OrderDropdownInfo> stationList = orderCustomInfoDao.findStationList(info);
 			customInfo.setStationList(stationList);
+
+			if(addressList!=null && addressList.size()>0){
+				customInfo.setAddress(addressList.get(0));
+				for(OrderCustomAddress address : addressList){
+					if("yes".equals(address.getDefaultType())){
+						customInfo.setAddress(address);
+					}
+				}
+			}
 		}
 		return customInfo;
 	}
@@ -2594,10 +2604,20 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		info.setOrgId(UserUtils.getUser().getOrganization().getId());
 		info.setSource("own");
 		OrderCustomInfo customInfo = orderCustomInfoDao.findCustomerByPhone(info);
+		List<OrderCustomAddress> addressList = orderCustomInfoDao.listAddressByCustomAddress(customInfo);
 		if(null != customInfo){
 			info.setOrgId(UserUtils.getUser().getOrganization().getId());
 			List<OrderDropdownInfo> stationList = orderCustomInfoDao.findStationList(info);
 			customInfo.setStationList(stationList);
+
+			if(addressList!=null && addressList.size()>0){
+				customInfo.setAddress(addressList.get(0));
+				for(OrderCustomAddress address : addressList){
+					if("yes".equals(address.getDefaultType())){
+						customInfo.setAddress(address);
+					}
+				}
+			}
 		}
 		return customInfo;
 	}

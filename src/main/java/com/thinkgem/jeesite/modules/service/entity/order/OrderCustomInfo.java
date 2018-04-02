@@ -31,6 +31,7 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 	private String orgName;
 	private String customerRemark;		//备注
 	private List<String> customerRemarkPic;		//备注 图片
+	private OrderCustomAddress address;
 	private List<OrderCustomAddress> addressList;
 
 	public OrderCustomInfo() {
@@ -136,6 +137,14 @@ public class OrderCustomInfo extends DataEntity<OrderCustomInfo> {
 
 	public void setStationList(List<OrderDropdownInfo> stationList) {
 		this.stationList = stationList;
+	}
+
+	public OrderCustomAddress getAddress() {
+		return address;
+	}
+
+	public void setAddress(OrderCustomAddress address) {
+		this.address = address;
 	}
 
 	public List<OrderCustomAddress> getAddressList() {

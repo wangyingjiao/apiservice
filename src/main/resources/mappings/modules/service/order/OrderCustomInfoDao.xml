@@ -268,6 +268,25 @@
 		FROM customer_info a
 		WHERE a.id = #{id}
 	</select>
+	<select id="listAddressByCustomAddress" resultType="OrderCustomAddress">
+		SELECT
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.address_name AS "addressName",
+		a.address_phone AS "addressPhone",
+		a.placename AS "placename",
+		CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(a.placename,''),IFNULL(a.detail_address,'')) AS "detailAddress",
+		a.addr_longitude AS "addrLongitude",
+		a.addr_latitude AS "addrLatitude",
+		a.default_type AS "defaultType"
+		FROM customer_address a
+		LEFT JOIN sys_area t1 ON a.province_code = t1.code
+		LEFT JOIN sys_area t2 ON a.city_code = t2.code
+		LEFT JOIN sys_area t3 ON a.area_code = t3.code
+		WHERE
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.customer_id = #{id}
+	</select>
 	<select id="findStationList" resultType="OrderDropdownInfo">
 		SELECT
 			a.id AS "id",a.name AS "name"
