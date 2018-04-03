@@ -327,7 +327,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					address.setName(name);
 				}
 				String phone = addressInfo.getPhone();
-				if(StringUtils.isNotBlank(phone) && phone.length() == 12){
+				if(StringUtils.isNotBlank(phone) && phone.length() == 11){
 					address.setPhone(phone.substring(0, 3) + "****" + phone.substring(7, phone.length()));
 				}else{
 					address.setPhone(phone);
@@ -488,7 +488,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					address.setName(name);
 				}
 				String phone = addressInfo.getPhone();
-				if(StringUtils.isNotBlank(phone) && phone.length() == 12){
+				if(StringUtils.isNotBlank(phone) && phone.length() == 11){
 					address.setPhone(phone.substring(0, 3) + "****" + phone.substring(7, phone.length()));
 				}else{
 					address.setPhone(phone);
