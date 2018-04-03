@@ -186,6 +186,14 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	@Transactional(readOnly = false)
 	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i = 0;
+		//已经离职的技师不可休假
+		ServiceTechnicianInfo info=new ServiceTechnicianInfo();
+		info.setId(serviceTechnicianHoliday.getTechId());
+		ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoDao.appFindTech(info);
+		String jobStatus = serviceTechnicianInfo.getJobStatus();
+		if (StringUtils.isNotBlank(jobStatus) && "leave".equals(jobStatus)){
+			throw new ServiceException("技师已经离职,不可请假");
+		}
 		//转存对象为排期表
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
 		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());

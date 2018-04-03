@@ -332,7 +332,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}else{
 					address.setPhone(phone);
 				}
-				address.setDetailAddress(addressInfo.getPlacename() + "***");
+				address.setAddress(addressInfo.getPlacename() + "***");
 				orderInfo.setAddressInfo(address);
 			}
 		}else{
@@ -340,7 +340,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				OrderAddress address = new OrderAddress();
 				address.setName(addressInfo.getName());
 				address.setPhone(addressInfo.getPhone());
-				address.setDetailAddress(addressInfo.getAddress());
+				address.setAddress(addressInfo.getAddress());
 				orderInfo.setAddressInfo(address);
 			}
 		}
@@ -1284,8 +1284,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderDispatch.appPreUpdate();
 				//数据库将改派前技师派单 设为不可用
 				int update1 = orderDispatchDao.update(orderDispatch);
+				//将数据库中改派前技师排期表设为无效
+                TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+                techScheduleInfo.setTypeId(orderId);
+                techScheduleInfo.setType("order");
+                techScheduleInfo.setTechId(dispatchTechId);
+                techScheduleInfo.appPreUpdate();
+                techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfo);
 				//将老派单改成无效  再新增
-
 				if (update1 > 0){
 					OrderDispatch newDis = new OrderDispatch();
 					newDis.setTechId(techId);//技师ID
@@ -1293,7 +1299,22 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					newDis.setStatus("yes");//状态(yes：可用 no：不可用)
 					newDis.appreInsert();
 					insert = orderDispatchDao.insert(newDis);
-				}else {
+					if (insert > 0) {
+						//新增改派后的排期表
+						TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+						scheduleInfo.setTechId(techId);
+						scheduleInfo.setType("order");
+						scheduleInfo.setTypeId(orderId);
+						scheduleInfo.setStartTime(orderInfo.getServiceTime());
+						scheduleInfo.setEndTime(orderInfo.getFinishTime());
+						int weekNum = DateUtils.getWeekNum(orderInfo.getServiceTime());
+						scheduleInfo.setScheduleWeek(weekNum);
+						Date dateFirstTime = DateUtils.getDateFirstTime(orderInfo.getServiceTime());
+						scheduleInfo.setScheduleDate(dateFirstTime);
+						scheduleInfo.appreInsert();
+						insert = techScheduleDao.insertSchedule(scheduleInfo);
+					}
+                }else {
 					throw new ServiceException("删除改派前技师派单失败");
 				}
 				return insert;
@@ -2088,7 +2109,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 
 
-	//获取字符串中第三个/的下标
+	//获取字符串中第三个/的下标 App修改订单备注使用 截取图片路径
 	public static int index(String s) {
 		Pattern p = Pattern.compile("/");
 		Matcher m = p.matcher(s);
