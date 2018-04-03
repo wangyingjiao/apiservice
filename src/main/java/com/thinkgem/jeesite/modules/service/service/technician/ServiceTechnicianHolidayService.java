@@ -441,7 +441,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		//修改 休假表 状态改为审核中
 		if (StringUtils.isNotBlank(reviewStatus) && "no".equals(reviewStatus)){
-			serviceTechnicianHoliday.setSort("app");
+			serviceTechnicianHoliday.setSource("app");
 			serviceTechnicianHoliday.setReviewStatus("submit");
 			serviceTechnicianHoliday.appPreUpdate();
 			i = dao.update(serviceTechnicianHoliday);
