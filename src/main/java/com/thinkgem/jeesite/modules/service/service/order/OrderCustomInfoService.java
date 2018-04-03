@@ -53,6 +53,7 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	@Transactional(readOnly = false)
 	public void delete(OrderCustomInfo orderCustomInfo) {
 		super.delete(orderCustomInfo);
+		orderCustomAddressDao.deleteAddressByCustomerId(orderCustomInfo);
 	}
 
     public List<BasicOrganization> findOrganizationList() {
@@ -104,6 +105,7 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 
 	@Transactional(readOnly = false)
 	public void deleteDataAddress(OrderCustomAddress customAddress) {
+		customAddress.preUpdate();
 		orderCustomAddressDao.delete(customAddress);
 	}
 
