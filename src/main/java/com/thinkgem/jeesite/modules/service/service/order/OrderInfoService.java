@@ -2051,10 +2051,12 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 						scheduleInfo.setType("order");
 						scheduleInfo.setTechId(serviceTechnicianInfo.getId());
 						scheduleInfo.setTypeId(orderInfo.getId());
-						TechScheduleInfo orderSchedule = techScheduleDao.getOrderSchedule(scheduleInfo);
-						if (orderSchedule == null) {
+						//订单再排期表中只有一条数据
+						List<TechScheduleInfo> orderScheduleList = techScheduleDao.getOrderSchedule(scheduleInfo);
+						if (orderScheduleList == null || orderScheduleList.size()<=0 ) {
 							throw new ServiceException("该技师没有排期表");
 						}
+						TechScheduleInfo orderSchedule=orderScheduleList.get(0);
 						orderSchedule.setEndTime(date);
 						orderSchedule.setType("order");
 						orderSchedule.setTypeId(orderInfo.getId());

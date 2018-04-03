@@ -17,10 +17,8 @@ import java.util.List;
 @MyBatisDao
 public interface TechScheduleDao extends CrudDao<TechScheduleInfo> {
 
-    //根据typeId查询排期表
-    TechScheduleInfo getSchedule(TechScheduleInfo info);
     //根据typeId 技师id查询排期表
-    TechScheduleInfo getOrderSchedule(TechScheduleInfo info);
+    List<TechScheduleInfo> getOrderSchedule(TechScheduleInfo info);
 
     //根据技师id 开始时间 结束时间 获取排期表集合
     List<TechScheduleInfo> getScheduleByTechId(TechScheduleInfo info);

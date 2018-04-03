@@ -372,25 +372,33 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
         if (holiday == null) {
             throw new ServiceException("未找到该休假信息");
         }
-        TechScheduleInfo info = new TechScheduleInfo();
-        info.setTypeId(serviceTechnicianHoliday.getId());
-        TechScheduleInfo schedule = techScheduleDao.getSchedule(info);
-        if (schedule == null) {
-            throw new ServiceException("未在排期表中找到该休假信息");
-        }
+		List<TechScheduleInfo> orderSchedule =null;
+		TechScheduleInfo info = new TechScheduleInfo();
+        //如果是已经审核通过的需要去判断排期表
+        if ("yes".equals(holiday.getReviewStatus())) {
+			info.setTechId(serviceTechnicianHoliday.getTechId());
+			info.setType("holiday");
+			info.setTypeId(serviceTechnicianHoliday.getId());
+			orderSchedule = techScheduleDao.getOrderSchedule(info);
+			if (orderSchedule == null || orderSchedule.size() < 1) {
+				throw new ServiceException("未在排期表中找到该休假信息");
+			}
+		}
         //删除休假表（修改有效状态）
 		serviceTechnicianHoliday.appPreUpdate();
         i = dao.delete(serviceTechnicianHoliday);
         //如果是删除审核通过的休假 还需要把排期表删除
-        if ("yes".equals(holiday.getReviewStatus())) {
-            if (i > 0) {
-                //删除排期表（修改有效状态）
-				info.preUpdate();
-                i = techScheduleDao.deleteSchedule(info);
-            } else {
-                throw new ServiceException("删除休假表失败");
+		if (i > 0) {
+	    	if ("yes".equals(holiday.getReviewStatus())) {
+				//删除排期表（修改有效状态）
+				for (TechScheduleInfo scheduleInfo:orderSchedule){
+					scheduleInfo.preUpdate();
+					techScheduleDao.deleteSchedule(info);
+				}
             }
-        }
+        }else {
+			throw new ServiceException("删除休假表失败");
+		}
         return i;
     }
     //删除休假
