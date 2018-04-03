@@ -191,8 +191,12 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		info.setId(serviceTechnicianHoliday.getTechId());
 		ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoDao.appFindTech(info);
 		String jobStatus = serviceTechnicianInfo.getJobStatus();
+		String jobNature = serviceTechnicianInfo.getJobNature();
 		if (StringUtils.isNotBlank(jobStatus) && "leave".equals(jobStatus)){
 			throw new ServiceException("技师已经离职,不可请假");
+		}
+		if (StringUtils.isNotBlank(jobNature) && "part_time".equals(jobNature)){
+			throw new ServiceException("兼职技师,不可请假");
 		}
 		//转存对象为排期表
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
@@ -441,7 +445,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		//修改 休假表 状态改为审核中
 		if (StringUtils.isNotBlank(reviewStatus) && "no".equals(reviewStatus)){
-			serviceTechnicianHoliday.setSort("app");
+			serviceTechnicianHoliday.setSource("app");
 			serviceTechnicianHoliday.setReviewStatus("submit");
 			serviceTechnicianHoliday.appPreUpdate();
 			i = dao.update(serviceTechnicianHoliday);

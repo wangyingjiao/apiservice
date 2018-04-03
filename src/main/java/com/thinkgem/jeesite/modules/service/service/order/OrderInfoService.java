@@ -2037,13 +2037,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					}
 					info.setFinishTime(date);
 					//修改订单对应的排期表  先查出派单表集合
-					List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(orderInfo);
+					List<OrderDispatch> byOrderId= orderDispatchDao.getByOrderId(orderInfo);
 					List<ServiceTechnicianInfo> tech = new ArrayList<ServiceTechnicianInfo>();
-					for (OrderDispatch dispatch : byOrderId) {
-						ServiceTechnicianInfo info1 = new ServiceTechnicianInfo();
-						info1.setId(dispatch.getTechId());
-						ServiceTechnicianInfo byId = serviceTechnicianInfoDao.getById(info1);
-						tech.add(byId);
+					if (byOrderId != null && byOrderId.size()>0) {
+						for (OrderDispatch dispatch : byOrderId) {
+							ServiceTechnicianInfo info1 = new ServiceTechnicianInfo();
+							info1.setId(dispatch.getTechId());
+							ServiceTechnicianInfo byId = serviceTechnicianInfoDao.getById(info1);
+							tech.add(byId);
+						}
+					}else {
+						throw new ServiceException("没有派单表");
 					}
 					//查出每个技师对应的排期表 修改
 					for (ServiceTechnicianInfo serviceTechnicianInfo : tech) {

@@ -217,11 +217,11 @@ public class AppTechController extends BaseController {
 		try {
 			int delete = holidayService.saveHoliday(serviceTechnicianHoliday);
 			if (delete > 0){
-				return new AppSuccResult(0,null,"删除休假成功");
+				return new AppSuccResult(0,null,"修改休假成功");
 			}
-			return new AppFailResult(-1,null,"删除休假失败");
+			return new AppFailResult(-1,null,"修改休假失败");
 		}catch (ServiceException e){
-			return new AppFailResult(-1,e.getMessage(),"删除休假失败");
+			return new AppFailResult(-1,e.getMessage(),"修改休假失败");
 		}
 	}
 
