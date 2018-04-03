@@ -2006,17 +2006,44 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				Date finishTime = info.getFinishTime();
 				Date date=new Date();
 				//如果提前完成  更新完成时间
-				if (date.before(finishTime)){
+				if (date.before(finishTime)) {
+					//比数据库中结束时间早1个小时的时间
+					String format = df.format(new Date(finishTime.getTime() - (long) 1 * 60 * 60 * 1000));
+					Date date1 = DateUtils.parseDate(format);
+					//如果提前一个多小时 不能点击 抛异常
+					if (date.before(date1)) {
+						throw new ServiceException("最多提前一个小时点击完成");
+					}
 					info.setFinishTime(date);
+					//修改订单对应的排期表  先查出派单表集合
+					List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(orderInfo);
+					List<ServiceTechnicianInfo> tech = new ArrayList<ServiceTechnicianInfo>();
+					for (OrderDispatch dispatch : byOrderId) {
+						ServiceTechnicianInfo info1 = new ServiceTechnicianInfo();
+						info1.setId(dispatch.getTechId());
+						ServiceTechnicianInfo byId = serviceTechnicianInfoDao.getById(info1);
+						tech.add(byId);
+					}
+					//查出每个技师对应的排期表 修改
+					for (ServiceTechnicianInfo serviceTechnicianInfo : tech) {
+						TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+						scheduleInfo.setType("order");
+						scheduleInfo.setTechId(serviceTechnicianInfo.getId());
+						scheduleInfo.setTypeId(orderInfo.getId());
+						TechScheduleInfo orderSchedule = techScheduleDao.getOrderSchedule(scheduleInfo);
+						if (orderSchedule == null) {
+							throw new ServiceException("该技师没有排期表");
+						}
+						orderSchedule.setEndTime(date);
+						orderSchedule.setType("order");
+						orderSchedule.setTypeId(orderInfo.getId());
+						orderSchedule.setTechId(serviceTechnicianInfo.getId());
+						orderSchedule.appPreUpdate();
+						//修改数据库
+						techScheduleDao.updateScheduleByTypeIdTech(orderSchedule);
+					}
 				}
-				//比数据库中结束时间早1个小时的时间
-				String format = df.format(new Date(finishTime.getTime() - (long) 1 * 60 * 60 * 1000));
-				Date date1 = DateUtils.parseDate(format);
-				//如果提前一个多小时 不能点击 抛异常
-				if (date.before(date1)){
-					throw new ServiceException("最多提前一个小时点击完成");
-				}
-			}
+ 			}
 			//上门服务 把点击时间加入数据库
 			if (orderInfo.getServiceStatus().equals("started")){
 				//数据库查询出来的状态不是上门 将第一次上门时间添加到数据库 不是第一次不添加数据库

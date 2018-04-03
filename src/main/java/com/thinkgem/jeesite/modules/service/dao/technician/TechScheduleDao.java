@@ -19,6 +19,9 @@ public interface TechScheduleDao extends CrudDao<TechScheduleInfo> {
 
     //根据typeId查询排期表
     TechScheduleInfo getSchedule(TechScheduleInfo info);
+    //根据typeId 技师id查询排期表
+    TechScheduleInfo getOrderSchedule(TechScheduleInfo info);
+
     //根据技师id 开始时间 结束时间 获取排期表集合
     List<TechScheduleInfo> getScheduleByTechId(TechScheduleInfo info);
     //删除排期表
@@ -31,4 +34,6 @@ public interface TechScheduleDao extends CrudDao<TechScheduleInfo> {
     void deleteScheduleByTypeIdTechId(TechScheduleInfo scheduleInfo);
     // 根据 type, typeId, techId 更新排期表
     void updateScheduleByTypeIdTechId(TechScheduleInfo techScheduleInfo);
+    //app修改订单完成状态时完成时间提前需要修改排期表
+    void updateScheduleByTypeIdTech(TechScheduleInfo techScheduleInfo);
 }
