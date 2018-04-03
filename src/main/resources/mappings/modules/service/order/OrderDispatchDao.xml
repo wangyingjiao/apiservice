@@ -188,8 +188,9 @@
 		SELECT
 		<include refid="orderDispatchColumns"/>
 		FROM order_dispatch a
-		WHERE a.order_id = #{orderId}
+		WHERE a.order_id = #{id}
 		AND a.del_flag=#{delFlag}
+		AND a.status='yes'
 	</select>
 
 	<select id="formData" resultType="OrderDispatch">
