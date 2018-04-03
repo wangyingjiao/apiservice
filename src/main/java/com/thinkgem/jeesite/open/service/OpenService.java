@@ -1052,7 +1052,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderCustomAddress.setAddrLatitude(latitude);//服务地址：纬度
 		orderCustomAddress.setAddrLongitude(longitude);//服务地址：经度
 		orderCustomAddress.setDefaultType("yes");
+
+		orderCustomAddress.setId(IdGen.uuid());
+		orderCustomAddress.setCreateBy(user);
+		orderCustomAddress.setCreateDate(new Date());
+		orderCustomAddress.setUpdateBy(user);
+		orderCustomAddress.setUpdateDate(orderCustomAddress.getCreateDate());
+
 		orderCustomAddressDao.insert(orderCustomAddress);
+
+
 		List<OrderCustomAddress> orderCustomAddressList = new ArrayList<>();
 		orderCustomAddressList.add(orderCustomAddress);
 		orderCustomInfo.setAddressList(orderCustomAddressList);
