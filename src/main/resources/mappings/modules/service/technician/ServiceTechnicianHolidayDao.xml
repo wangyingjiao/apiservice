@@ -105,6 +105,7 @@
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.tech_id=#{techId}
 			AND a.review_status=#{reviewStatus}
+			AND a.source='app'
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -180,9 +181,7 @@
 	<update id="updateHoliday">
 		UPDATE tech_holiday SET
 		review_status = #{reviewStatus},
-		<if test="failReason !=null and failReason != ''">
-			fail_reason = #{failReason},
-		</if>
+		fail_reason = #{failReason},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}

@@ -99,6 +99,10 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
         if (getHoliday == null){
             throw new ServiceException("未找到该休假信息，请重新输入");
         }
+        //审核状态是yes 理由清空传“”
+        if ("yes".equals(serviceTechnicianHoliday.getReviewStatus())){
+			serviceTechnicianHoliday.setFailReason("");
+		}
         serviceTechnicianHoliday.preUpdate();
         int i = dao.updateHoliday(serviceTechnicianHoliday);
         //增加排期表
