@@ -12,6 +12,8 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
+import com.thinkgem.jeesite.modules.service.service.order.OrderInfoCreateService;
+import com.thinkgem.jeesite.modules.service.service.order.OrderInfoOperateService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -41,6 +43,10 @@ public class OrderInfoController extends BaseController {
 
 	@Autowired
 	private OrderInfoService orderInfoService;
+	@Autowired
+	private OrderInfoCreateService orderInfoCreateService;
+	@Autowired
+	private OrderInfoOperateService orderInfoOperateService;
 	@Autowired
 	private MessageInfoService messageInfoService;
 	
@@ -101,13 +107,13 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_time")
 	public Result timeDataList(@RequestBody OrderInfo orderInfo) {
 		//判断订单状态
-		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
 		if(!flag){
 			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
 		}
 
 		try {
-			List<OrderTimeList>  timeList = orderInfoService.timeDataList(orderInfo);
+			List<OrderTimeList>  timeList = orderInfoOperateService.timeDataList(orderInfo);
 			return new SuccResult(timeList);
 		}catch (ServiceException ex){
 			return new FailResult("获取时间列表失败-"+ex.getMessage());
@@ -122,7 +128,7 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_time")
 	public Result saveTime(@RequestBody OrderInfo orderInfo) {
 		try {
-			HashMap<String,Object> map = orderInfoService.saveTime(orderInfo);
+			HashMap<String,Object> map = orderInfoOperateService.saveTime(orderInfo);
 
 			try {
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
@@ -201,13 +207,13 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_addTech")
 	public Result addTech(@RequestBody OrderInfo orderInfo) {
 		//判断订单状态
-		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
 		if(!flag){
 			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
 		}
 
 		try{
-			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+			List<OrderDispatch> techList = orderInfoOperateService.addTech(orderInfo);
 			return new SuccResult(techList);
 		}catch (ServiceException ex){
 			return new FailResult("获取技师列表失败-"+ex.getMessage());
@@ -222,7 +228,7 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_addTech")
 	public Result addTechSave(@RequestBody OrderInfo orderInfo) {
 		try{
-			HashMap<String,Object> map = orderInfoService.addTechSave(orderInfo);
+			HashMap<String,Object> map = orderInfoOperateService.addTechSave(orderInfo);
 
 			try {//对接
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
@@ -278,13 +284,13 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_dispatch")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
 		//判断订单状态
-		boolean flag = orderInfoService.checkOrderStatus(orderInfo);
+		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
 		if(!flag){
 			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
 		}
 
 		try{
-			List<OrderDispatch> techList = orderInfoService.addTech(orderInfo);
+			List<OrderDispatch> techList = orderInfoOperateService.addTech(orderInfo);
 			return new SuccResult(techList);
 		}catch (ServiceException ex){
 			return new FailResult("获取技师列表失败-"+ex.getMessage());
@@ -299,7 +305,7 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_dispatch")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
 		try{
-			HashMap<String,Object> map = orderInfoService.dispatchTechSave(orderInfo);
+			HashMap<String,Object> map = orderInfoOperateService.dispatchTechSave(orderInfo);
 
 			try {
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
@@ -371,7 +377,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "createOrder", method = {RequestMethod.POST})
 	public Result createOrder(@RequestBody OrderInfo info) {
 		try {
-			HashMap<String,Object> map = orderInfoService.createOrder(info);
+			HashMap<String,Object> map = orderInfoCreateService.createOrder(info);
 			//OpenCreateResponse responseRe = (OpenCreateResponse)map.get("response");
 
 			try {
@@ -401,7 +407,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "findCustomerById", method = {RequestMethod.POST})
 	public Result findCustomerById(@RequestBody OrderCustomInfo info) {
 		try {
-			OrderCustomInfo customInfo = orderInfoService.findCustomerById(info);
+			OrderCustomInfo customInfo = orderInfoCreateService.findCustomerById(info);
 			if(customInfo == null){
 				return new SuccResult(3,"未找到客户信息");
 			}
@@ -420,7 +426,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "findCustomerByPhone", method = {RequestMethod.POST})
 	public Result findCustomerByPhone(@RequestBody OrderCustomInfo info) {
 		try {
-			OrderCustomInfo customInfo = orderInfoService.findCustomerByPhone(info);
+			OrderCustomInfo customInfo = orderInfoCreateService.findCustomerByPhone(info);
 			if(customInfo == null){
 				return new SuccResult(3,"未找到客户信息");
 			}
@@ -439,7 +445,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "findItemList", method = {RequestMethod.POST})
 	public Result findItemList(@RequestBody OrderInfo info) {
 		try {
-			List<OrderDropdownInfo> list = orderInfoService.findItemList(info);
+			List<OrderDropdownInfo> list = orderInfoCreateService.findItemList(info);
 			return new SuccResult(list);
 		}catch (Exception e){
 			return new SuccResult(new ArrayList<OrderDropdownInfo>());
@@ -455,7 +461,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "findGoodsListByItem", method = {RequestMethod.POST})
 	public Result findGoodsListByItem(@RequestBody OrderGoods info) {
 		try {
-			List<OrderGoods> list = orderInfoService.findGoodsListByItem(info);
+			List<OrderGoods> list = orderInfoCreateService.findGoodsListByItem(info);
 			if(list == null || list.size()==0){
 				return new FailResult(3,"未找到商品信息");
 			}
@@ -474,7 +480,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "findTechListByGoods", method = {RequestMethod.POST})
 	public Result findTechListByGoods(@RequestBody OrderInfo info) {
 		try {
-			List<OrderDispatch> list = orderInfoService.findTechListByGoods(info);
+			List<OrderDispatch> list = orderInfoCreateService.findTechListByGoods(info);
 
 			return new SuccResult(list);
 		}catch (Exception e){
@@ -491,7 +497,7 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_insert")
 	public Result findTimeListByTech(@RequestBody OrderInfo info) {
 		try {
-			List<OrderTimeList>  list = orderInfoService.findTimeListByTech(info);
+			List<OrderTimeList>  list = orderInfoCreateService.findTimeListByTech(info);
 
 			return new SuccResult(list);
 		}catch (Exception e){
@@ -509,7 +515,7 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_insert")
 	public Result findGoodsNeedTech(@RequestBody OrderInfo info) {
 		try {
-			Map<String,String> list = orderInfoService.findGoodsNeedTech(info);
+			Map<String,String> list = orderInfoCreateService.findGoodsNeedTech(info);
 			return new SuccResult(list);
 		}catch (Exception e){
 			return new FailResult("获取提示信息失败!");
@@ -526,13 +532,13 @@ public class OrderInfoController extends BaseController {
 	@RequiresPermissions("order_cancel")
 	public Result orderCancel(@RequestBody OrderInfo info) {
 		//判断订单状态
-		boolean flag = orderInfoService.checkOrderCancelStatus(info);
+		boolean flag = orderInfoOperateService.checkOrderCancelStatus(info);
 		if(flag){
 			return new FailResult("当前订单状态不允许取消订单");
 		}
 
 		try{
-			HashMap<String,Object>  map = orderInfoService.orderCancel(info);
+			HashMap<String,Object>  map = orderInfoOperateService.orderCancel(info);
 			if(map.get("list") != null) {
 				try {
 					List<OrderDispatch> orderCancelMsgList = (List<OrderDispatch>) map.get("list");

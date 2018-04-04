@@ -24,6 +24,7 @@ import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
+import com.thinkgem.jeesite.modules.service.service.order.OrderToolsService;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -71,6 +72,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	BasicStoreDao basicStoreDao;
 	@Autowired
 	TechScheduleDao techScheduleDao;
+
+	@Autowired
+	private OrderToolsService orderToolsService;
 
 	/**
      * 对接接口 选择服务时间
@@ -343,9 +347,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				//去除休假时间
 				serchTech.setStartTime(serviceDateMin);
 				serchTech.setEndTime(serviceDateMax);
-				List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
-				if (holidayList != null && holidayList.size() != 0) {
-					for (ServiceTechnicianHoliday holiday : holidayList) {
+				//List<ServiceTechnicianHoliday> holidayList = dao.findTechHolidayList(serchTech);//取得今天的休假时间
+				List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), date, "holiday");
+				if (techHolidyList != null && techHolidyList.size() != 0) {
+					for (TechScheduleInfo holiday : techHolidyList) {
 						//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(holiday.getStartTime(), holiday.getEndTime());
 						List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
 						Iterator<String> it1 = workTimes.iterator();
@@ -360,9 +365,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 
 				//去除订单前后时间段
-				List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
-				if (orderList != null && orderList.size() != 0) {
-					for (OrderDispatch order : orderList) {
+				//List<OrderDispatch> orderList = dao.findTechOrderList(serchTech);
+				List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), date, "order");
+				if (techOrderList != null && techOrderList.size() != 0) {
+					for (TechScheduleInfo order : techOrderList) {
 						int intervalTimeS = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
@@ -852,6 +858,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		orderInfo.setOpenPrice(openPrice);
 		orderInfo.setGoodsInfoList(orderGoods);//商品信息
+		orderInfo.setGoodsSortId(orderGoods.get(0).getSortId());
 
 		try {
 			List<OrderDispatch> techList = openCreateForOrderFindDispatchList(orderInfo,techDispatchNum,serviceSecond);//获取派单技师
@@ -871,101 +878,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	private List<OrderDispatch> openCreateForOrderFindDispatchList(OrderInfo orderInfo,int techDispatchNum,Double serviceSecond){
-
-		List<OrderGoods> goodsInfoList = orderInfo.getGoodsInfoList(); //取得订单服务信息
-		String orgId = orderInfo.getOrgId();
-		String stationId = orderInfo.getStationId();//服务站ID
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
-		Date finishTime = orderInfo.getFinishTime();//完成时间
-
-		//取得技师List
-		OrderDispatch serchInfo = new OrderDispatch();
-		//展示当前下单客户所在服务站的所有可服务的技师
-		serchInfo.setStationId(stationId);
-		//（1）会此技能的
-		SerSkillSort serchSkillSort = new SerSkillSort();
-		serchSkillSort.setOrgId(orgId);
-		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
-		String skillId = "";
-		List<SerSkillSort> skillSortList = orderInfoDao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()==1){
-			skillId = skillSortList.get(0).getSkillId();
-		}else{
-			throw new ServiceException("未找到商品需求的技能信息");
-		}
-		if(null == skillId){
-			throw new ServiceException("未找到当前商品对应的技能信息");
-		}
-		serchInfo.setSkillId(skillId);
-		//（2）上线、在职
-		serchInfo.setTechStatus("yes");
-		serchInfo.setJobStatus("online");
-		//自动派单 全职 ; 手动派单没有条件
-		serchInfo.setJobNature("full_time");
-		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
-		//serchInfo.setOrderId(orderInfo.getId());
-		//serchInfo.setTechName(techName);
-		//serchInfo.setOrderId(orderInfo.getId());
-		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
-
-		if(techList== null || techList.size() < techDispatchNum){//技师数量不够
-			throw new ServiceException("技师数量不满足当前商品的需求人数");
-		}
-
-		//（3）考虑技师的工作时间
-		//取得当前机构下工作时间包括服务时间的技师
-		serchInfo.setWeek(DateUtils.getWeekNum(serviceTime));
-		serchInfo.setStartTime(serviceTime);
-		serchInfo.setEndTime(finishTime);
-		List<String> workTechIdList = orderInfoDao.getTechByWorkTime(serchInfo);
-		//（4）考虑技师的休假时间
-		List<String> holidayTechIdList = orderInfoDao.getTechByHoliday(serchInfo);
-
-		List<OrderDispatch> techListRe = new ArrayList<>();
-		List<OrderDispatch> beforTimeCheckTechList = new ArrayList<OrderDispatch>();
-		List<String> beforTimeCheckTechIdList = new ArrayList<String>();
-		if(techList != null){
-			for(OrderDispatch tech : techList){//有工作时间并且没有休假的技师 有时间接单 还未考虑是否有订单
-				if((workTechIdList!=null && workTechIdList.contains(tech.getTechId()))
-						&& (holidayTechIdList == null || (holidayTechIdList!=null && !holidayTechIdList.contains(tech.getTechId()))) ){
-					beforTimeCheckTechList.add(tech);
-					beforTimeCheckTechIdList.add(tech.getTechId());
-				}
-			}
-		}
-		if(beforTimeCheckTechIdList.size() != 0){
-			serchInfo.setTechIds(beforTimeCheckTechIdList);
-			//今天的订单
-			serchInfo.setStartTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 00:00:00"));
-			serchInfo.setEndTime(DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd") + " 23:59:59"));
-			//（5）考虑技师是否已有订单" //去除有订单并且时间冲突的技师
-			List<OrderDispatch> orderTechList = orderInfoDao.getTechByOrder(serchInfo);//订单结束时间在当前订单上门时间前90分钟之后的技师列表
-
-			List<String> timeCheckDelTechIdList = new ArrayList<String>();
-
-			int intervalTimeS =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
-			int intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
-
-			Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
-			Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
-
-			for(OrderDispatch orderTech : orderTechList){
-				//（1）路上时间：计算得出，--按照骑行的时间计算 --> 15MIN
-				//		上一单的用户地址与下一单用户地址之间的距离，则可以接单的时间为：路上时间+富余时间
-				//（2）若上一单的完成时间在11点到14点之间，则要预留出40分钟的吃饭时间，可以接单的时间则为：40分钟+路上时间+富余时间
-				//				(3)若当前时间已经超过上一单完成时间90分钟，无需按照上面的方式计算，直接视为从当前时间起就可以接单
-				//（4）富余时间定为10分钟"
-
-				if(!DateUtils.checkDatesRepeat(checkServiceTime,checkFinishTime,orderTech.getServiceTime(),orderTech.getFinishTime())){
-					timeCheckDelTechIdList.add(orderTech.getTechId());
-				}
-			}
-			for(OrderDispatch tech : beforTimeCheckTechList){
-				if(!timeCheckDelTechIdList.contains(tech.getTechId())){
-					techListRe.add(tech);
-				}
-			}
-
+		List<OrderDispatch> techListRe = orderToolsService.listTechByGoodsAndTime(orderInfo);
+		if(techListRe != null && techListRe.size() != 0){
 			if(techListRe.size() < techDispatchNum){//技师数量不够
 				throw new ServiceException("技师数量不满足当前商品的需求人数");
 			}

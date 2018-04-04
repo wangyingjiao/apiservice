@@ -110,6 +110,16 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String pageNo;	//app 订单列表
 	private OrderPayInfo orderPayInfo; //app 订单的对应支付信息表
 
+	private String goodsSortId;
+
+	public String getGoodsSortId() {
+		return goodsSortId;
+	}
+
+	public void setGoodsSortId(String goodsSortId) {
+		this.goodsSortId = goodsSortId;
+	}
+
 	public String getCancelReasonName() {
 		return cancelReasonName;
 	}

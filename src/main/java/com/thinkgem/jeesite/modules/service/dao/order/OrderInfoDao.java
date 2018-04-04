@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 
 import java.util.List;
 
@@ -88,4 +89,10 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     int openUpdateOrderForShop(OrderInfo orderInfo);
 
     int orderCancel(OrderInfo orderInfo);
+
+    String getSortIdByOrderId(OrderInfo orderInfo);
+
+    List<ServiceTechnicianWorkTime> listTechWorkByTechsTime(ServiceTechnicianWorkTime serchInfo);
+
+    List<TechScheduleInfo> listTechScheduleByTechsTime(TechScheduleInfo serchInfo);
 }

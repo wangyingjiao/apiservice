@@ -521,9 +521,6 @@ origin_price,
 			good2.convert_hours AS "convertHours",
 			good2.start_per_num AS "startPerNum",
 			good2.capping_per_num AS "cappingPerNum"
-			<!-- ,
-			good2.joint_goods_code AS "jointGoodsCode" -->
-
 		FROM
 		order_info a
 		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
@@ -827,4 +824,48 @@ origin_price,
 		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
+	<select id="getSortIdByOrderId" resultType="String">
+		SELECT
+			DISTINCT good.sort_id AS sortId
+		FROM order_info a
+		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+			a.id = #{id}
+	</select>
+	<select id="listTechWorkByTechsTime" resultType="ServiceTechnicianWorkTime">
+		SELECT
+			a.id AS "id",
+			a.tech_id AS "techId",
+			a.week AS "week",
+			a.start_time AS "startTime",
+			a.end_time AS "endTime"
+		FROM  tech_work_time a
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.week = #{week}
+		AND a.tech_id  in
+		<foreach item="techId" index="index" collection="techIdList" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+	</select>
+	<select id="listTechScheduleByTechsTime" resultType="TechScheduleInfo">
+		SELECT
+			a.id AS "id",
+			a.tech_id AS "techId",
+			a.schedule_date AS "scheduleDate",
+			a.schedule_week AS "scheduleWeek",
+			a.start_time AS "startTime",
+			a.end_time AS "endTime",
+			a.type_id AS "typeId",
+			a.type AS "type",
+			a.remark AS "remark"
+		FROM  tech_schedule a
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.type=#{type}
+		AND a.tech_id  in
+		<foreach item="techId" index="index" collection="techIdList" open="(" separator="," close=")">
+			#{techId}
+		</foreach>
+	</select>
 </mapper>

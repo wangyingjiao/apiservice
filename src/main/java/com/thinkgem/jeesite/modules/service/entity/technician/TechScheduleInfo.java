@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.service.entity.technician;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 服务技师排期表
@@ -12,6 +13,7 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
 
     private static final long serialVersionUID = 1L;
     private String techId;		// 技师ID
+    private List<String> techIdList;
     private Date scheduleDate;		// 日期
     private int scheduleWeek;		// 日期（周一，周二。。。1,2,3,4,5,6,7）
     private Date startTime;		// 起始时段
@@ -127,5 +129,13 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public List<String> getTechIdList() {
+        return techIdList;
+    }
+
+    public void setTechIdList(List<String> techIdList) {
+        this.techIdList = techIdList;
     }
 }
