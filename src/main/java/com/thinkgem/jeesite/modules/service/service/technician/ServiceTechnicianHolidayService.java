@@ -421,7 +421,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 			if (StringUtils.isNotBlank(holiday.getReviewStatus()) && "yes".equals(holiday.getReviewStatus())){
 				TechScheduleInfo info=new TechScheduleInfo();
 				info.setType("holiday");
-				info.setTechId(holiday.getId());
+				info.setTypeId(holiday.getId());
 				info.preUpdate();
 				techScheduleDao.deleteScheduleByTypeId(info);
 			}
