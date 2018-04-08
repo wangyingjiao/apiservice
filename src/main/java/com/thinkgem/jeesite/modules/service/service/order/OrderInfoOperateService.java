@@ -157,7 +157,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 			//排期
 			TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
 			techScheduleInfo.setTechId(techId);//技师ID
-			techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+			techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(orderInfo.getServiceTime()));//日期
 			int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
 			techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
 			techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
@@ -299,7 +299,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 			//排期
 			TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
 			techScheduleInfo.setTechId(techId);//技师ID
-			techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+			techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(orderInfo.getServiceTime()));//日期
 			int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
 			techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
 			techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
@@ -795,7 +795,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 					//排期
 					TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
 					techScheduleInfo.setTechId(msgInfo.getTechId());//技师ID
-					techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+					techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(orderInfo.getServiceTime()));//日期
 					int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
 					techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
 					techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
@@ -822,7 +822,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 					//排期
 					TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
 					techScheduleInfo.setTechId(msgInfo.getTechId());//技师ID
-					techScheduleInfo.setScheduleDate(orderInfo.getServiceTime());//日期
+					techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(orderInfo.getServiceTime()));//日期
 					int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
 					techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
 					techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
