@@ -161,13 +161,27 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 			int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
 			techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
 			techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
-			techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
+			techScheduleInfo.setEndTime(info.getFinishTime());//结束时段
 			techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
 			techScheduleInfo.setType("order");//'holiday：休假  order：订单'
 			techScheduleInfo.preInsert();
 			techScheduleDao.insertSchedule(techScheduleInfo);
 
 			orderCreateMsgList.add(orderDispatch);
+		}
+		//排期
+		for(OrderDispatch orderDispatch : techList){
+			TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+			techScheduleInfo.setTechId(orderDispatch.getTechId());//技师ID
+			techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(orderInfo.getServiceTime()));//日期
+			int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+			techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+			techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+			techScheduleInfo.setEndTime(info.getFinishTime());//结束时段
+			techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+			techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+			techScheduleInfo.preUpdate();
+			techScheduleDao.updateScheduleByTypeIdTechId(techScheduleInfo);
 		}
 
 		List<OrderDispatch> techListRe = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
@@ -252,15 +266,24 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		for(OrderDispatch orderDispatch : techList){
 			//如果改派前是自己的订单 把自己的派单转为无效
 			if(dispatchTechId.equals(orderDispatch.getTechId())){
-				//techList.remove(orderDispatch);//返回的技师列表删除改派前技师
-
 				OrderDispatch orderDispatchUpdate = new OrderDispatch();
 				orderDispatchUpdate.setId(orderDispatch.getId());//ID
 				orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
 				orderDispatch.preUpdate();
 				orderDispatchDao.update(orderDispatch);//数据库改派前技师设为不可用
-
-				break;
+			}else{
+				//排期
+				TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+				techScheduleInfo.setTechId(orderDispatch.getTechId());//技师ID
+				techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(orderInfo.getServiceTime()));//日期
+				int weekDay = DateUtils.getWeekNum(orderInfo.getServiceTime());//周几
+				techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+				techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
+				techScheduleInfo.setEndTime(info.getFinishTime());//结束时段
+				techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+				techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+				techScheduleInfo.preUpdate();
+				techScheduleDao.updateScheduleByTypeIdTechId(techScheduleInfo);
 			}
 		}
 
