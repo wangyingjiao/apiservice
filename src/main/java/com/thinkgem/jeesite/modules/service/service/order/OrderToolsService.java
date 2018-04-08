@@ -150,7 +150,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 					if (techWorkStartTime.before(techWorkEndTime) && serviceTime.before(finishTime)) {
 						// 订单时间在工作时间内,可以下单
 						if ((techWorkStartTime.before(serviceTime) || techWorkStartTime.compareTo(serviceTime) == 0)
-								&& (finishTime.before(techWorkEndTime) || finishTime.compareTo(techWorkEndTime) == 0)) {
+								&& (techWorkEndTime.after(serviceTime) || techWorkEndTime.compareTo(serviceTime) == 0)) {
 							checkWorkTechIdList.add(techWork.getTechId());
 						}
 					}
