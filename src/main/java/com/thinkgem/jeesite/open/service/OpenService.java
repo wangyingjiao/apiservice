@@ -879,7 +879,14 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 */
 	private List<OrderDispatch> openCreateForOrderFindDispatchList(OrderInfo orderInfo,int techDispatchNum,Double serviceSecond){
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
-		List<OrderDispatch> techListRe = orderToolsService.listTechByGoodsAndTime(orderInfo);
+
+		OrderInfo serchOrderInfo = new OrderInfo();
+		serchOrderInfo.setOrgId(orderInfo.getOrgId());
+		serchOrderInfo.setStationId(orderInfo.getStationId());
+		serchOrderInfo.setServiceTime(orderInfo.getServiceTime());
+		serchOrderInfo.setFinishTime(orderInfo.getFinishTime());
+		serchOrderInfo.setGoodsSortId(orderInfo.getGoodsSortId());
+		List<OrderDispatch> techListRe = orderToolsService.listTechByGoodsAndTime(serchOrderInfo);
 		if(techListRe != null && techListRe.size() != 0){
 			if(techListRe.size() < techDispatchNum){//技师数量不够
 				throw new ServiceException("技师数量不满足当前商品的需求人数");

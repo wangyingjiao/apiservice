@@ -376,7 +376,14 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 				//新增、改派判断库存
 				//boolean flag = checkTechTimeWithStationId(techIdList,stationId,servie_time,DateUtils.addSeconds(servie_time, serviceSecond.intValue()));
 				boolean flag = false;
-				List<OrderDispatch> checkTechList = orderToolsService.listTechByGoodsAndTime(orderInfo);
+
+				OrderInfo serchOrderInfo = new OrderInfo();
+				serchOrderInfo.setOrgId(orderInfo.getOrgId());
+				serchOrderInfo.setStationId(orderInfo.getStationId());
+				serchOrderInfo.setServiceTime(orderInfo.getServiceTime());
+				serchOrderInfo.setFinishTime(orderInfo.getFinishTime());
+				serchOrderInfo.setGoodsSortId(orderInfo.getGoodsSortId());
+				List<OrderDispatch> checkTechList = orderToolsService.listTechByGoodsAndTime(serchOrderInfo);
 				List<String> checkTechIdList = new ArrayList<>();
 				if(checkTechList != null) {
 					for (OrderDispatch checkTech : checkTechList) {
