@@ -23,6 +23,7 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private List<String>  remark_pic;//订单备注(用户备注)
 	private String remark;//订单备注(用户备注)
 	private String gasq_order_id;//国安社区订单ID
+	private String gasq_order_sn;//国安社区订单SN
 	private String area_code;//区CODE
 	private String province_code;//省CODE
 	private String city_code;//市CODE
@@ -83,6 +84,14 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 
 	public void setGasq_order_id(String gasq_order_id) {
 		this.gasq_order_id = gasq_order_id;
+	}
+
+	public String getGasq_order_sn() {
+		return gasq_order_sn;
+	}
+
+	public void setGasq_order_sn(String gasq_order_sn) {
+		this.gasq_order_sn = gasq_order_sn;
 	}
 
 	public String getArea_code() {
