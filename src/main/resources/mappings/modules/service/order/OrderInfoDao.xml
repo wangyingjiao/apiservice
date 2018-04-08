@@ -863,6 +863,9 @@ origin_price,
 		WHERE
 		a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.type=#{type}
+		<if test="scheduleDate !=null and scheduleDate != ''">
+			AND a.schedule_date=#{scheduleDate}
+		</if>
 		AND a.tech_id  in
 		<foreach item="techId" index="index" collection="techIdList" open="(" separator="," close=")">
 			#{techId}
