@@ -138,6 +138,10 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		//参数 id 状态 未通过原因
 		try {
+			ServiceTechnicianHoliday holiday = serviceTechnicianHolidayService.get(serviceTechnicianHoliday.getId());
+			if (!"submit".equals(holiday.getReviewStatus())){
+				return new FailResult("该休假已经审核，不可再次审核");
+			}
 			//审核  增加排期表
 			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
 			//查询休假表

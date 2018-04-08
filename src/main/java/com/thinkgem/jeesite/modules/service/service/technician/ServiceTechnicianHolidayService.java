@@ -404,8 +404,8 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	    	if ("yes".equals(holiday.getReviewStatus())) {
 				//删除排期表（修改有效状态）
 				for (TechScheduleInfo scheduleInfo:orderSchedule){
-					scheduleInfo.preUpdate();
-					techScheduleDao.deleteSchedule(info);
+					scheduleInfo.appPreUpdate();
+					techScheduleDao.deleteSchedule(scheduleInfo);
 				}
             }
         }else {
