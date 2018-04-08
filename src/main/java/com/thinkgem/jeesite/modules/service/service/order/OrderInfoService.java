@@ -528,7 +528,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	public List<OrderDispatch> appTech(OrderInfo orderInfo) {
 		List<OrderGoods> goodsInfoList = null;
 		orderInfo = get(orderInfo.getId());//当前订单
-		goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
+		goodsInfoList = orderInfoDao.getOrderGoodsList(orderInfo); //取得订单服务信息
 
 		if(goodsInfoList == null || goodsInfoList.size() == 0 ){
 			throw new ServiceException("订单没有服务信息！");

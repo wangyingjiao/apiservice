@@ -104,7 +104,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
     @Transactional(readOnly = false)
     public int reviewedHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
         //根据id查询出对应的休假
-        ServiceTechnicianHoliday getHoliday = dao.get(serviceTechnicianHoliday.getId());
+        ServiceTechnicianHoliday getHoliday = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
         if (getHoliday == null){
             throw new ServiceException("未找到该休假信息，请重新输入");
         }
