@@ -17,8 +17,10 @@ import com.thinkgem.jeesite.common.utils.DateUtilsEntity;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianWorkTimeDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 
     @Autowired
     private ServiceTechnicianInfoDao serviceTechnicianInfoDao;
+
+    @Autowired
+    private ServiceTechnicianWorkTimeDao serviceTechnicianWorkTimeDao;
 
 	public ServiceTechnicianHoliday get(String id) {
 		return super.get(id);
@@ -148,6 +153,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
     @Transactional(readOnly = false)
 	public int savePc(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;
+		int techWorkTime=0;
 		//查询排期表是否有数据
 		TechScheduleInfo scheduleInfo1=new TechScheduleInfo();
 		scheduleInfo1.setTechId(serviceTechnicianHoliday.getTechId());
@@ -156,6 +162,22 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(scheduleInfo1);
 		if (scheduleByTechId != null && scheduleByTechId.size() >0){
 			throw new ServiceException("已有休假或者订单 不可休假");
+		}
+		//判断是否是工作时间
+		List<ServiceTechnicianHoliday> list = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		if (list != null && list.size() > 0 ){
+			ServiceTechnicianWorkTime workTime=new ServiceTechnicianWorkTime();
+			for (ServiceTechnicianHoliday  holiday:list){
+				workTime.setStartTime(holiday.getStartTime());
+				workTime.setEndTime(holiday.getEndTime());
+				workTime.setWeek(holiday.getHoliday());
+				workTime.setTechId(serviceTechnicianHoliday.getTechId());
+				int a = serviceTechnicianWorkTimeDao.getTechWorkTime(workTime);
+				techWorkTime+=a;
+			}
+		}
+		if (techWorkTime <= 0){
+			throw new ServiceException("休假时间不在工作区,不可请假");
 		}
 		//插入到数据库中
 		serviceTechnicianHoliday.setReviewStatus("yes");
@@ -190,6 +212,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	@Transactional(readOnly = false)
 	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i = 0;
+		int techWorkTime= 0;
 		//已经离职的技师不可休假
 		ServiceTechnicianInfo info=new ServiceTechnicianInfo();
 		info.setId(serviceTechnicianHoliday.getTechId());
@@ -202,7 +225,23 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		if (StringUtils.isNotBlank(jobNature) && "part_time".equals(jobNature)){
 			throw new ServiceException("兼职技师,不可请假");
 		}
-		//转存对象为排期表
+		//判断是否是工作时间
+        List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+        if (holidaysList != null && holidaysList.size() > 0 ){
+            ServiceTechnicianWorkTime workTime=new ServiceTechnicianWorkTime();
+            for (ServiceTechnicianHoliday  holiday:holidaysList){
+                workTime.setStartTime(holiday.getStartTime());
+                workTime.setEndTime(holiday.getEndTime());
+                workTime.setWeek(holiday.getHoliday());
+                workTime.setTechId(serviceTechnicianHoliday.getTechId());
+                int a = serviceTechnicianWorkTimeDao.getTechWorkTime(workTime);
+                techWorkTime+=a;
+            }
+        }
+        if (techWorkTime <= 0){
+            throw new ServiceException("休假时间不在工作区,不可请假");
+        }
+        //转存对象为排期表
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
 		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
 		techScheduleInfo.setStartTime(serviceTechnicianHoliday.getStartTime());

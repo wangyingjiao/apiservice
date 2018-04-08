@@ -19,4 +19,6 @@ import java.util.List;
 public interface ServiceTechnicianWorkTimeDao extends CrudDao<ServiceTechnicianWorkTime> {
 
     List<ServiceTechnicianWorkTime> findListByTech(ServiceTechnicianWorkTime time);
+    //判断是否在工作时间
+    int getTechWorkTime(ServiceTechnicianWorkTime time);
 }

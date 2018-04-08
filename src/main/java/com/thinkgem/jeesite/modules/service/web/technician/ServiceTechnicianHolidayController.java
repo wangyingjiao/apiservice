@@ -139,7 +139,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 		//参数 id 状态 未通过原因
 		try {
 			ServiceTechnicianHoliday holiday = serviceTechnicianHolidayService.get(serviceTechnicianHoliday.getId());
-			if (!"submit".equals(holiday.getReviewStatus())){
+			if ("yes".equals(holiday.getReviewStatus())){
 				return new FailResult("该休假已经审核，不可再次审核");
 			}
 			//审核  增加排期表
