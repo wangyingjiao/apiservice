@@ -99,6 +99,8 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         messageInfo.setUpdateDate(new Date());
         messageInfo.setPushTime(new Date());
         messageInfo.setIsRead("no");
+        messageInfo.setReviewStatus(serviceTechnicianHoliday.getReviewStatus());
+        messageInfo.setTargetId(serviceTechnicianHoliday.getId());
         messageInfoDao.insert(messageInfo);
 
         messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());
