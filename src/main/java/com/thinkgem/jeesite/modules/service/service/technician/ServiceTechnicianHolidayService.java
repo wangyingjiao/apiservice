@@ -95,7 +95,11 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		return holidayById;
 	}
 
-
+	//休假详情
+	public ServiceTechnicianHoliday getTechHolidayById(ServiceTechnicianHoliday serviceTechnicianHoliday){
+		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
+		return holidayById;
+	}
 	//审核app的休假
     @Transactional(readOnly = false)
     public int reviewedHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
