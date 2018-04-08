@@ -196,6 +196,15 @@
 		WHERE id = #{id}
 	</update>
 
+    <!--app新增判断是否已有休假-->
+    <select id="getHolidayList" resultType="int">
+        select count(*)
+        from tech_holiday a
+        where a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.tech_id = #{techId}
+        AND ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
+    </select>
+
 	<select id="getOrderTechRelationHoliday" resultType="int">
 		select count(*)
 		from order_info a

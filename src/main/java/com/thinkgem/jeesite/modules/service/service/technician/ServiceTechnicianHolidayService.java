@@ -207,6 +207,10 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
 		techScheduleInfo.setStartTime(serviceTechnicianHoliday.getStartTime());
 		techScheduleInfo.setEndTime(serviceTechnicianHoliday.getEndTime());
+		int holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList > 0){
+			throw new ServiceException("服务人员已有休假,不可再次请假");
+		}
 		//查询服务技师排期表 是否有数据  有则不可请假
 		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(techScheduleInfo);
 		if (scheduleByTechId != null && scheduleByTechId.size() > 0){
