@@ -28,7 +28,7 @@ public class MessageInfo extends DataEntity<MessageInfo> {
     private String extParameters;    //额外带参
     private String isSuccess;
     private String techId;
-    private String reviewStatus; //审核状态 no：审核人未通过 yes：审核通过
+
     private String createTime;    //app展示的推送时间
     private String orderId; //订单id
     private String orderType;
@@ -55,14 +55,6 @@ public class MessageInfo extends DataEntity<MessageInfo> {
 
     public void setExtParameters(String extParameters) {
         this.extParameters = extParameters;
-    }
-
-    public String getReviewStatus() {
-        return reviewStatus;
-    }
-
-    public void setReviewStatus(String reviewStatus) {
-        this.reviewStatus = reviewStatus;
     }
 
     private String accessKeyId= Global.getConfig("message_access_key_id");//"raAz3o82A1eT3TSy";

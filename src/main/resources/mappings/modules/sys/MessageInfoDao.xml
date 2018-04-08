@@ -13,7 +13,6 @@
 		a.target_type AS targetType,
 		a.target_id AS targetId,
 		a.push_time AS pushTime,
-		a.review_status AS reviewStatus,
 		a.create_by AS createBy,
 		a.create_date AS createDate,
 		a.update_by AS updateBy,
@@ -37,7 +36,6 @@
 		a.target_id AS targetId,
 		a.push_time AS pushTime,
 		a.push_time AS createTime,
-		a.review_status AS reviewStatus,
 		a.create_by AS createBy,
 		a.create_date AS createDate,
 		a.update_by AS updateBy,
@@ -72,7 +70,6 @@
 		a.target_type AS targetType,
 		a.target_id AS targetId,
 		a.push_time AS pushTime,
-		a.review_status AS reviewStatus,
 		a.create_by AS createBy,
 		a.create_date AS createDate,
 		a.update_by AS updateBy,
@@ -97,7 +94,6 @@
         a.target_id AS targetId,
         a.is_success AS isSuccess,
         a.push_time AS pushTime,
-        a.review_status AS reviewStatus,
         a.create_by AS createBy,
         a.create_date AS createDate,
         a.update_by AS updateBy,
@@ -169,7 +165,6 @@
 			target_type,
 			target_id,
 			push_time,
-			review_status,
 			create_by,
 			create_date,
 			update_by,
@@ -185,7 +180,6 @@
 			#{targetType},
 			#{targetId},
 			#{pushTime},
-			#{reviewStatus},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -234,9 +228,6 @@
 			</if>
 			<if test="pushTime != null and pushTime!='' ">
 				push_time = #{pushTime} ,
-			</if>
-			<if test="reviewStatus != null and reviewStatus!='' ">
-				review_status = #{reviewStatus},
 			</if>
 			<if test="createBy.id != null and createBy.id !='' ">
 				create_by = #{createBy.id} ,

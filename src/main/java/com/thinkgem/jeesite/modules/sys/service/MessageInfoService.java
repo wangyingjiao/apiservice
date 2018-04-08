@@ -81,6 +81,12 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             messageInfo.setTargetType("holiday");
             return insertAndPushHoliday(serviceTechnicianHoliday,messageInfo);
         }
+        if (orderType.equals("techHolidayFailWeb")){
+            messageInfo.setTitle("系统运营人员给您添加了一调休假，请点击查看");
+            messageInfo.setMessage("请点击查看");
+            messageInfo.setTargetType("holiday");
+            return insertAndPushHoliday(serviceTechnicianHoliday,messageInfo);
+        }
         return 0;
     }
     //添加休假后发送给技师短信
@@ -99,12 +105,11 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
         messageInfo.setUpdateDate(new Date());
         messageInfo.setPushTime(new Date());
         messageInfo.setIsRead("no");
-        messageInfo.setReviewStatus(serviceTechnicianHoliday.getReviewStatus());
         messageInfo.setTargetId(serviceTechnicianHoliday.getId());
         messageInfoDao.insert(messageInfo);
 
         messageInfo.setDeviceIds("community_tech_"+messageInfo.getReceivePhone());
-        messageInfo.setExtParameters("{\"type\":\"holiday\",\"relate\":\""+serviceTechnicianHoliday.getReviewStatus()+"\"}");
+        messageInfo.setExtParameters("{\"type\":\"holiday\",\"relate\":\""+serviceTechnicianHoliday.getId()+"$."+messageInfo.getId()+"\"}");
         int flag = PushMessageUtil.pushMessage(messageInfo);
         if (flag==1){
             messageInfo.setPushTime(new Date());

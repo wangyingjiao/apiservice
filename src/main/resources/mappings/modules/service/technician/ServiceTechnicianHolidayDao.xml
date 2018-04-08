@@ -38,6 +38,7 @@
 		<if test="reviewStatus != null and reviewStatus != ''">
 			AND a.review_status=#{reviewStatus}
 		</if>
+        AND a.del_flag=#{delFlag}
 	</select>
 
 	<select id="findList" resultType="ServiceTechnicianHoliday">

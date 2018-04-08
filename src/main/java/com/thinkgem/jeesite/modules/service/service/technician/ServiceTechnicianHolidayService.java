@@ -464,17 +464,17 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	public int getOrderTechRelationHoliday(ServiceTechnicianHoliday info) {
 		return serviceTechnicianHolidayDao.getOrderTechRelationHoliday(info);
 	}
-	//app根据id查看休假详情
-	// public ServiceTechnicianHoliday getHolidaty(ServiceTechnicianHoliday info) {
-	// 	ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.get(info.getId());
-	// 	if (holiday == null){
-	// 		throw new ServiceException("未找到该休假信息，请重新查询");
-	// 	}
-	// 	if (!holiday.getTechId().equals(info.getTechId())){
-	// 		throw new ServiceException("查询错误，改休假与用户不绑定，请重新查询");
-	// 	}
-	// 	return holiday;
-	// }
+	// app根据id查看休假详情
+	public ServiceTechnicianHoliday getHolidaty(ServiceTechnicianHoliday info) {
+		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getHolidayById(info);
+		if (holiday == null){
+			throw new ServiceException("未找到该休假信息，请重新查询");
+		}
+		if (!holiday.getTechId().equals(info.getTechId())){
+			throw new ServiceException("查询错误，该休假与用户不绑定，请重新查询");
+		}
+		return holiday;
+	}
 
 	public int getHolidayHistory(ServiceTechnicianHoliday info) {
 		List<ServiceTechnicianHoliday> list = serviceTechnicianHolidayDao.getHolidayHistory(info);

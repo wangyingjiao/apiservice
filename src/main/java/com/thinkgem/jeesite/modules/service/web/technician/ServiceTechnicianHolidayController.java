@@ -94,7 +94,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 			holiday.setTechId(info.getTechId());
 			holiday.setTechPhone(serviceTechnicianInfo.getPhone());
 			if (i>0) {
-				messageInfoService.insertHoliday(holiday,"techHolidaySuccess");
+				messageInfoService.insertHoliday(holiday,"techHolidayFailWeb");
 				return new SuccResult("保存成功");
 
 			}
