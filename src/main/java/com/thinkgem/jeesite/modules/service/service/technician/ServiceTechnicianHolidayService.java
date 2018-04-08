@@ -475,11 +475,15 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	public int saveHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;
 		//去数据库中查询出这个休假
-		ServiceTechnicianHoliday holiday = dao.get(serviceTechnicianHoliday.getId());
+		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
 		if (holiday == null){
-			throw new ServiceException("未找到该休假信息");
+			throw new ServiceException("该休假已删除，不可编辑");
 		}
-		String reviewStatus = holiday.getReviewStatus();
+        int holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList >0 ){
+            throw new ServiceException("已有相同时间的休假，不可编辑");
+        }
+        String reviewStatus = holiday.getReviewStatus();
 		//转存对象位排期表
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
 		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());

@@ -200,7 +200,7 @@ public class AppTechController extends BaseController {
 			}
 			return new AppFailResult(-1,null,"删除休假失败");
 		}catch (ServiceException e){
-			return new AppFailResult(-1,e.getMessage(),"删除休假失败");
+			return new AppFailResult(-1,null,e.getMessage());
 		}
 	}
 
@@ -221,7 +221,7 @@ public class AppTechController extends BaseController {
 			}
 			return new AppFailResult(-1,null,"修改休假失败");
 		}catch (ServiceException e){
-			return new AppFailResult(-1,e.getMessage(),"修改休假失败");
+			return new AppFailResult(-1,null,e.getMessage());
 		}
 	}
 
@@ -238,7 +238,7 @@ public class AppTechController extends BaseController {
             ServiceTechnicianHoliday holidaty = holidayService.getHolidaty(serviceTechnicianHoliday);
 			return new AppSuccResult(0,holidaty,"查询休假信息成功");
 		}catch (ServiceException e){
-			return new AppFailResult(-1,e.getMessage(),"查询休假信息失败");
+			return new AppFailResult(-1,null,e.getMessage());
 		}
 	}
 
