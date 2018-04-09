@@ -176,7 +176,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
 	}
 
-	public static double getDistanceOfTwoDate1(Date before, Date after) {
+	public static double getDistanceSecondOfTwoDate(Date before, Date after) {
 		long beforeTime = before.getTime();
 		long afterTime = after.getTime();
 		return (afterTime - beforeTime) / (1000);
@@ -485,6 +485,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		//String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
 
 
+/*
 
 
 		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
@@ -522,6 +523,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
+*/
 
 
 
@@ -541,6 +543,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			System.out.println(info);
 		}*/
 
+		System.out.println(getDistanceSecondOfTwoDate(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));
 	}
 
 	/**
