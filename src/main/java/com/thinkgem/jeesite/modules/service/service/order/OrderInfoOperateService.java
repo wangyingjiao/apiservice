@@ -109,8 +109,11 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
 
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
+		Date finishTime = orderInfo.getFinishTime();
 		//建议完成时间 增加人数后的时间计算 秒
-		Double serviceSecond = ((serviceHour * 3600) * techList.size())/( techList.size() + techIdList.size());
+		// Double serviceSecond = ((serviceHour * 3600) * techList.size())/( techList.size() + techIdList.size());
+		Double serviceSecond = ((DateUtils.getDistanceSecondOfTwoDate(serviceTime, finishTime)) * techList.size())/( techList.size() + techIdList.size());
+
 		serviceHourRe = new BigDecimal(serviceSecond/3600).setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 
 		//新增、改派判断库存
@@ -232,9 +235,11 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
 
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
+		Date finishTime = orderInfo.getFinishTime();
 
 		//建议完成时间 增加人数后的时间计算 秒
-		Double serviceSecond = ((serviceHour * 3600) * techList.size())/( techList.size() - 1 + techIdList.size());
+		//Double serviceSecond = ((serviceHour * 3600) * techList.size())/( techList.size() - 1 + techIdList.size());
+		Double serviceSecond = ((DateUtils.getDistanceSecondOfTwoDate(serviceTime, finishTime)) * techList.size())/( techList.size() - 1 + techIdList.size());
 
 		//新增、改派判断库存
 		//boolean flag = checkTechTime(techIdList,serviceTime,DateUtils.addSeconds(serviceTime, serviceSecond.intValue()));
