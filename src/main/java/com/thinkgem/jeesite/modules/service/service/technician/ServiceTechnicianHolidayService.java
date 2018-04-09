@@ -97,14 +97,14 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 
 	//休假详情
 	public ServiceTechnicianHoliday getTechHolidayById(ServiceTechnicianHoliday serviceTechnicianHoliday){
-		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
+		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayDao.getTechHolidayById(serviceTechnicianHoliday);
 		return holidayById;
 	}
 	//审核app的休假
     @Transactional(readOnly = false)
     public int reviewedHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
         //根据id查询出对应的休假
-        ServiceTechnicianHoliday getHoliday = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
+        ServiceTechnicianHoliday getHoliday = serviceTechnicianHolidayDao.getTechHolidayById(serviceTechnicianHoliday);
         if (getHoliday == null){
             throw new ServiceException("未找到该休假信息，请重新输入");
         }
@@ -479,7 +479,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	public int saveHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;
 		//去数据库中查询出这个休假
-		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
+		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getTechHolidayById(serviceTechnicianHoliday);
 		if (holiday == null){
 			throw new ServiceException("该休假已删除，不可编辑");
 		}
@@ -513,7 +513,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	}
 	// app根据id查看休假详情
 	public ServiceTechnicianHoliday getHolidaty(ServiceTechnicianHoliday info) {
-		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getHolidayById(info);
+		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getTechHolidayById(info);
 		if (holiday == null){
 			throw new ServiceException("未找到该休假信息，请重新查询");
 		}

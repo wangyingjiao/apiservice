@@ -41,6 +41,16 @@
         AND a.del_flag=#{delFlag}
 	</select>
 
+
+	<!--根据id获取休假详情  -->
+	<select id="getTechHolidayById" resultType="ServiceTechnicianHoliday">
+		SELECT
+		<include refid="serviceTechnicianHolidayColumns"/>
+		FROM tech_holiday a
+		WHERE a.id = #{id}
+		AND a.del_flag=#{delFlag}
+	</select>
+
 	<select id="findList" resultType="ServiceTechnicianHoliday">
 		SELECT
 			a.id AS "id",

@@ -27,8 +27,10 @@ public interface ServiceTechnicianHolidayDao extends CrudDao<ServiceTechnicianHo
     List<ServiceTechnicianHoliday> appFindPage(ServiceTechnicianHoliday serviceTechnicianHoliday);
     //审核app的休假
     int updateHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday);
-    //根据id获取休假详情
+    //根据id获取休假详情 有状态审核未通过
     ServiceTechnicianHoliday getHolidayById(ServiceTechnicianHoliday serviceTechnicianHoliday);
+    //根据id获取休假详情
+    ServiceTechnicianHoliday getTechHolidayById(ServiceTechnicianHoliday serviceTechnicianHoliday);
     //app新增判断是否已有休假
     int getHolidayList(ServiceTechnicianHoliday serviceTechnicianHoliday);
 }
