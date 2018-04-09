@@ -852,7 +852,7 @@
             <if test="skilId != null and skilId != ''">
                 AND d.skill_id = #{skilId}
             </if>
-            ORDER BY a.create_date DESC
+            ORDER BY a.name
     </select>
 
     <select id="getWorkTime" resultType="ScheduleDateInfo">
