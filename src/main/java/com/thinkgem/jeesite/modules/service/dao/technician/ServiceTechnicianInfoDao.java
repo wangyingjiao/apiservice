@@ -89,4 +89,6 @@ public interface ServiceTechnicianInfoDao extends CrudDao<ServiceTechnicianInfo>
     ScheduleDateInfo getWorkTime(ServiceTechnicianInfo sti);
 
     List<TechScheduleInfo> getScheduleList(ServiceTechnicianInfo sti);
+
+    void deleteSchedule(ServiceTechnicianInfo serviceTechnicianInfo);
 }

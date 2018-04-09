@@ -820,7 +820,7 @@
 	</select>
 
 	<select id="findSkil" resultType="SerSkillInfo">
-		SELECT id,org_id AS orgId,name FROM ser_skill_info WHERE org_id = #{orgId} ORDER BY create_date DESC
+		SELECT id,org_id AS orgId,name FROM ser_skill_info WHERE org_id = #{orgId} AND del_flag = 0 ORDER BY create_date DESC
 	</select>
 
     <select id="getTechList" resultType="ServiceTechnicianInfo">
@@ -875,5 +875,10 @@
             AND a.schedule_date &gt;= #{schedulebeginTime}
             AND a.schedule_date &lt;= #{scheduleEndTime}
             AND a.del_flag = 0
+            ORDER BY a.type DESC ,a.start_time
     </select>
+
+	<update id="deleteSchedule">
+		UPDATE tech_schedule SET del_flag = 1 WHERE tech_id = #{id}
+	</update>
 </mapper>

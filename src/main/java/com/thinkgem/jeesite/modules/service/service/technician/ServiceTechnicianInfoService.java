@@ -159,6 +159,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         deleteTechnicianHoliday(serviceTechnicianInfo);
         //删除家庭成员 按技师
         deleteFamilyMembers(serviceTechnicianInfo);
+        //删除排期数据 按技师
+        technicianInfoDao.deleteSchedule(serviceTechnicianInfo);
 
         List<String> skillIds = dao.getSkillIds(serviceTechnicianInfo);
         if (null != skillIds) {
