@@ -111,6 +111,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private OrderPayInfo orderPayInfo; //app 订单的对应支付信息表
 
 	private String goodsSortId;
+	private String serchNowOrderId;
 	private boolean serchFullTech = false;
 
 	public String getGoodsSortId() {
@@ -119,6 +120,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setGoodsSortId(String goodsSortId) {
 		this.goodsSortId = goodsSortId;
+	}
+
+	public String getSerchNowOrderId() {
+		return serchNowOrderId;
+	}
+
+	public void setSerchNowOrderId(String serchNowOrderId) {
+		this.serchNowOrderId = serchNowOrderId;
 	}
 
 	public boolean getSerchFullTech() {

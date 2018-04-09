@@ -105,6 +105,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		Date finishTime = orderInfo.getFinishTime();//完成时间
 		String sortId = orderInfo.getGoodsSortId();
 		boolean serchFullTech = orderInfo.getSerchFullTech();
+		String serchNowOrderId = orderInfo.getSerchNowOrderId();
 
 		// 根据订单ID返回分类ID
 		if(StringUtils.isBlank(sortId)) {
@@ -192,7 +193,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 				Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
 
 				for (TechScheduleInfo techOrder : techOrderList) {
-					if(!techOrder.getTypeId().equals(orderId)) {//当前订单不考虑
+					if(!techOrder.getTypeId().equals(serchNowOrderId)) {//当前订单不考虑
 						Date techOrderStartTime = techOrder.getStartTime();//订单开始时间
 						Date techOrderEndTime = techOrder.getEndTime();//订单结束时间
 						if (techOrderStartTime.before(techOrderEndTime) && serviceTime.before(finishTime)) {
