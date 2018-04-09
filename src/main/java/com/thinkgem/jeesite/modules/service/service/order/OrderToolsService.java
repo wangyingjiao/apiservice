@@ -238,7 +238,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 	private List<TechScheduleInfo> listTechScheduleByTechsTime(List<String> techIdListFull, Date serviceTime, String type) {
 		TechScheduleInfo serchInfo = new TechScheduleInfo();
 		serchInfo.setType(type);
-		serchInfo.setScheduleDate(serviceTime);
+		serchInfo.setScheduleDate(DateUtils.getDateFirstTime(serviceTime));
 		serchInfo.setTechIdList(techIdListFull);
 		List<TechScheduleInfo> list = dao.listTechScheduleByTechsTime(serchInfo);
 		return list;
