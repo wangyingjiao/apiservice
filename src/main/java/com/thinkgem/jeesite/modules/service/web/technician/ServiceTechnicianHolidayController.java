@@ -149,7 +149,7 @@ public class ServiceTechnicianHolidayController extends BaseController {
 			}
 			String reviewStatus = serviceTechnicianHoliday.getReviewStatus();
 			if ("no".equals(reviewStatus) && "no".equals(holiday.getReviewStatus())){
-				return new FailResult("该休假已经审核为不通过，不可再次审核为不通过");
+				return new FailResult("该休假已经审核，不可再次审核");
 			}
 			//审核  增加排期表
 			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);

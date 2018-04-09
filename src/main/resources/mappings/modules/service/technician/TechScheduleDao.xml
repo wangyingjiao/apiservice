@@ -52,12 +52,13 @@
 		AND type_id = #{typeId}
 		AND del_flag = '0'
 	</update>
+	<!--根据type typeId techId 刪除排期表-->
 	<update id="deleteScheduleByTypeIdTechId">
 		UPDATE tech_schedule SET
 			del_flag = '1',
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
-		WHERE type = #{type}
+			WHERE type = #{type}
 			AND type_id = #{typeId}
 			AND tech_id = #{techId}
 			AND del_flag = '0'

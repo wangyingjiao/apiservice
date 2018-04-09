@@ -485,6 +485,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	@Transactional(readOnly = false)
 	public int saveHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;
+		int techWorkTime= 0;
 		//去数据库中查询出这个休假
 		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getTechHolidayById(serviceTechnicianHoliday);
 		if (holiday == null){
@@ -508,6 +509,23 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		if (scheduleByTechId != null && scheduleByTechId.size() > 0){
 			throw new ServiceException("服务人员有排期,不可请假");
 		}
+		//判断是否是工作时间
+		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		if (holidaysList != null && holidaysList.size() > 0 ){
+			ServiceTechnicianWorkTime workTime=new ServiceTechnicianWorkTime();
+			for (ServiceTechnicianHoliday  techHoliday:holidaysList){
+				workTime.setStartTime(techHoliday.getStartTime());
+				workTime.setEndTime(techHoliday.getEndTime());
+				workTime.setWeek(techHoliday.getHoliday());
+				workTime.setTechId(serviceTechnicianHoliday.getTechId());
+				int a = serviceTechnicianWorkTimeDao.getTechWorkTime(workTime);
+				techWorkTime+=a;
+			}
+		}
+		if (techWorkTime <= 0){
+			throw new ServiceException("休假时间不在工作区,不可请假");
+		}
+
 		//修改 休假表 状态改为审核中
 		if (StringUtils.isNotBlank(reviewStatus) && "no".equals(reviewStatus)){
 			serviceTechnicianHoliday.setSource("app");
@@ -529,6 +547,12 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
 		if (!holiday.getTechId().equals(info.getTechId())){
 			throw new ServiceException("查询错误，该休假与用户不绑定，请重新查询");
+		}
+		//增加休假的过期标识
+		Date startTime = holiday.getStartTime();
+		Date date = new Date();
+		if (startTime.after(date)) {
+			holiday.setIsExpire("no");
 		}
 		return holiday;
 	}
