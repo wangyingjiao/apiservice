@@ -121,7 +121,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		}
         serviceTechnicianHoliday.preUpdate();
         int i = dao.updateHoliday(serviceTechnicianHoliday);
-        //增加排期表
+		//增加排期表
         if (i > 0){
             //查询数据库中 排期表是否有限制
             ServiceTechnicianHoliday holiday1 = dao.get(serviceTechnicianHoliday.getId());
@@ -257,8 +257,8 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
 		techScheduleInfo.setStartTime(serviceTechnicianHoliday.getStartTime());
 		techScheduleInfo.setEndTime(serviceTechnicianHoliday.getEndTime());
-		int holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
-		if (holidayList > 0){
+		List<ServiceTechnicianHoliday> holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList !=null && holidayList.size() > 0){
 			throw new ServiceException("服务人员已有休假,不可再次请假");
 		}
 		//查询服务技师排期表 是否有数据  有则不可请假
@@ -490,8 +490,11 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		if (holiday == null){
 			throw new ServiceException("该休假已删除，不可编辑");
 		}
-        int holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
-		if (holidayList >0 ){
+		if ("yes".equals(holiday.getReviewStatus())){
+			throw new ServiceException("已审核通过的休假不能编辑");
+		}
+		List<ServiceTechnicianHoliday> holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList != null && holidayList.size() >0 ){
             throw new ServiceException("已有相同时间的休假，不可编辑");
         }
         String reviewStatus = holiday.getReviewStatus();

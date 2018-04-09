@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.AppFailResult;
 import com.thinkgem.jeesite.common.result.AppResult;
 import com.thinkgem.jeesite.common.result.AppSuccResult;
+import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -18,6 +19,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.service.order.OrderInfoOperateService;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
@@ -57,6 +59,8 @@ public class AppOrderController extends BaseController {
 	//消息的service
 	@Autowired
 	private MessageInfoService messageInfoService;
+	@Autowired
+	private OrderInfoOperateService orderInfoOperateService;
 
 	//查询订单列表
 	@ResponseBody
@@ -204,8 +208,13 @@ public class AppOrderController extends BaseController {
 		String phone = token.getPhone();
 		orderInfo.setTechPhone(phone);
 		Map<String,Object> map=new HashMap<String,Object>();
+		//判断订单状态
+		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new AppFailResult(1,null,"当前订单状态或服务状态不允许操作此项内容");
+		}
 		try{
-			List<OrderDispatch> techList = orderInfoService.appTech(orderInfo);
+			List<OrderDispatch> techList = orderInfoOperateService.appTech(orderInfo);
 			PropertiesLoader loader = new PropertiesLoader("oss.properties");
 			String ossHost = loader.getProperty("OSS_THUMB_HOST");
 			List<AppServiceTechnicianInfo> apt=new ArrayList<AppServiceTechnicianInfo>();

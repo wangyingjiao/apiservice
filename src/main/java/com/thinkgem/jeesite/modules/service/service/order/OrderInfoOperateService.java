@@ -92,6 +92,21 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		List<OrderDispatch> techList = orderToolsService.listTechByGoodsAndTime(orderInfo);
 		return techList;
 	}
+
+	/**
+	 * app 技师列表
+	 * @param orderInfo
+	 * @return
+	 */
+
+	public List<OrderDispatch> appTech(OrderInfo orderInfo) {
+		String serchTechName = orderInfo.getTechName();
+		orderInfo = get(orderInfo.getId());//当前订单
+		orderInfo.setTechName(serchTechName);
+		orderInfo.setSerchFullTech(true);
+		List<OrderDispatch> techList = orderToolsService.listTechByGoodsAndTime(orderInfo);
+		return techList;
+	}
 	/**
 	 * 增加技师保存
 	 * @param orderInfo

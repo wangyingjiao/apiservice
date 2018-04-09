@@ -208,12 +208,16 @@
 	</update>
 
     <!--app新增判断是否已有休假-->
-    <select id="getHolidayList" resultType="int">
-        select count(*)
+    <select id="getHolidayList" resultType="ServiceTechnicianHoliday">
+        select
+		<include refid="serviceTechnicianHolidayColumns"/>
         from tech_holiday a
         where a.del_flag = #{DEL_FLAG_NORMAL}
         AND a.tech_id = #{techId}
         AND ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
+		<if test="id != null and id != ''">
+			AND a.id !=#{id}
+		</if>
     </select>
 
 	<select id="getOrderTechRelationHoliday" resultType="int">
