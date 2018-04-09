@@ -62,8 +62,15 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	//后台休假列表
 	public Page<ServiceTechnicianHoliday> findPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		serviceTechnicianHoliday.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "b"));
-		return super.findPage(page, serviceTechnicianHoliday);
-	}
+        Page<ServiceTechnicianHoliday> page1 = super.findPage(page, serviceTechnicianHoliday);
+        List<ServiceTechnicianHoliday> list = page1.getList();
+        for (ServiceTechnicianHoliday holiday:list){
+            if ((!"yes".equals(holiday.getReviewStatus())) && "online".equals(holiday.getJobStatus())){
+                holiday.setStatus("yes");
+            }
+        }
+        return page1;
+    }
 	//app获取技师休假列表
 	public Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		serviceTechnicianHoliday.setPage(page);

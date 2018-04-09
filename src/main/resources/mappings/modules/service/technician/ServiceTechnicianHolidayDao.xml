@@ -63,6 +63,7 @@
 			a.remark AS "remark",
 			b.name AS "techName",
 			b.phone AS "techPhone",
+            b.job_status AS "jobStatus",
 			c.name AS "techStationName"
 		FROM tech_holiday a
 		LEFT JOIN tech_info b ON a.tech_id = b.id
@@ -116,7 +117,6 @@
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.tech_id=#{techId}
 			AND a.review_status=#{reviewStatus}
-			AND a.source='app'
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}

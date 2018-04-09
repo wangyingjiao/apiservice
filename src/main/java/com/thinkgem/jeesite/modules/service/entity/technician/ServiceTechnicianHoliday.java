@@ -33,6 +33,23 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	private String reviewStatus; //审核状态 no：审核人未通过 submit：审核中 yes：审核通过
 	private String failReason; //未通过原因
 	private String source; //来源 app：技师APP端 sys：后台系统
+	private String jobStatus;		// 岗位状态(online:在职，leave:离职)
+	private String status; //按钮时候出现
+	public String getJobStatus() {
+		return jobStatus;
+	}
+
+	public void setJobStatus(String jobStatus) {
+		this.jobStatus = jobStatus;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public String getIsExpire() {
 		return isExpire;
