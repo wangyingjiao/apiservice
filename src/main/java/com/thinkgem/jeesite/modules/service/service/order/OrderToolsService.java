@@ -104,6 +104,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
 		Date finishTime = orderInfo.getFinishTime();//完成时间
 		String sortId = orderInfo.getGoodsSortId();
+		boolean serchFullTech = orderInfo.getSerchFullTech();
 
 		// 根据订单ID返回分类ID
 		if(StringUtils.isBlank(sortId)) {
@@ -113,7 +114,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		String skillId = getSkillIdByOrgSort(orgId, sortId);
 
 		// 取得符合条件的技师
-		List<OrderDispatch> techList = listTechByStationSkillOrder(stationId, skillId, orderId, serchTechName);
+		List<OrderDispatch> techList = listTechByStationSkillOrder(stationId, skillId, orderId, serchFullTech, serchTechName);
 		List<String> techIdList = new ArrayList<>();
 		List<OrderDispatch> techListPart = new ArrayList<>();//兼职
 		List<String> techIdListPart = new ArrayList<>();
@@ -191,16 +192,18 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 				Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
 
 				for (TechScheduleInfo techOrder : techOrderList) {
-					Date techOrderStartTime = techOrder.getStartTime();//订单开始时间
-					Date techOrderEndTime = techOrder.getEndTime();//订单结束时间
-					if (techOrderStartTime.before(techOrderEndTime) && serviceTime.before(finishTime)) {
-						if (11 <= Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) < 14) {
-							techOrderEndTime = DateUtils.addSeconds(techOrderEndTime, Integer.parseInt(Global.getConfig("order_eat_time")));
-						}
-						// 订单时间和已有订单时间有重合,不可下单
-						if (!DateUtils.checkDatesRepeat(checkServiceTime, checkFinishTime, techOrderStartTime, techOrderEndTime)) {
-							checkOrderTechIdList.add(techOrder.getTechId());
+					if(!techOrder.getTypeId().equals(orderId)) {//当前订单不考虑
+						Date techOrderStartTime = techOrder.getStartTime();//订单开始时间
+						Date techOrderEndTime = techOrder.getEndTime();//订单结束时间
+						if (techOrderStartTime.before(techOrderEndTime) && serviceTime.before(finishTime)) {
+							if (11 <= Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) < 14) {
+								techOrderEndTime = DateUtils.addSeconds(techOrderEndTime, Integer.parseInt(Global.getConfig("order_eat_time")));
+							}
+							// 订单时间和已有订单时间有重合,不可下单
+							if (!DateUtils.checkDatesRepeat(checkServiceTime, checkFinishTime, techOrderStartTime, techOrderEndTime)) {
+								checkOrderTechIdList.add(techOrder.getTechId());
+							}
 						}
 					}
 				}
@@ -278,7 +281,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @param serchTechName  列表查询条件
 	 * @return
 	 */
-	public List<OrderDispatch> listTechByStationSkillOrder(String stationId, String skillId, String orderId, String serchTechName){
+	public List<OrderDispatch> listTechByStationSkillOrder(String stationId, String skillId, String orderId, boolean serchFullTech, String serchTechName){
 		//取得技师List
 		OrderDispatch serchInfo = new OrderDispatch();
 		//展示当前下单客户所在服务站的所有可服务的技师
@@ -291,7 +294,8 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(StringUtils.isNotBlank(orderId)) {
 			//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
 			serchInfo.setOrderId(orderId);
-		}else{
+		}
+		if(serchFullTech){
 			//自动派单 全职 ; 手动派单没有条件
 			serchInfo.setJobNature("full_time");
 		}

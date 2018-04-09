@@ -736,6 +736,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		serchOrderInfo.setServiceTime(orderInfo.getServiceTime());
 		serchOrderInfo.setFinishTime(orderInfo.getFinishTime());
 		serchOrderInfo.setGoodsSortId(goodsInfoList.get(0).getSortId());
+		serchOrderInfo.setSerchFullTech(true);
+		serchOrderInfo.setId(orderInfo.getId());
 		List<OrderDispatch> techListRe = orderToolsService.listTechByGoodsAndTime(serchOrderInfo);
 		if(techListRe.size() != 0){
 			if(techListRe.size() < techDispatchNum){//技师数量不够

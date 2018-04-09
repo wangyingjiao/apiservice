@@ -383,6 +383,7 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 				serchOrderInfo.setServiceTime(orderInfo.getServiceTime());
 				serchOrderInfo.setFinishTime(orderInfo.getFinishTime());
 				serchOrderInfo.setGoodsSortId(orderInfo.getGoodsSortId());
+				serchOrderInfo.setSerchFullTech(true);
 				List<OrderDispatch> checkTechList = orderToolsService.listTechByGoodsAndTime(serchOrderInfo);
 				List<String> checkTechIdList = new ArrayList<>();
 				if(checkTechList != null) {
@@ -424,6 +425,7 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 		serchOrderInfo.setServiceTime(orderInfo.getServiceTime());
 		serchOrderInfo.setFinishTime(orderInfo.getFinishTime());
 		serchOrderInfo.setGoodsSortId(orderInfo.getGoodsSortId());
+		serchOrderInfo.setSerchFullTech(true);
 		List<OrderDispatch> techListRe = orderToolsService.listTechByGoodsAndTime(serchOrderInfo);
 		if(techListRe != null && techListRe.size() != 0){
 			if(techListRe.size() < techDispatchNum){//技师数量不够
