@@ -172,7 +172,11 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		scheduleInfo1.setEndTime(serviceTechnicianHoliday.getEndTime());
 		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(scheduleInfo1);
 		if (scheduleByTechId != null && scheduleByTechId.size() >0){
-			throw new ServiceException("已有休假或者订单 不可休假");
+			throw new ServiceException("已有排期 不可休假");
+		}
+		List<ServiceTechnicianHoliday> holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList !=null && holidayList.size() > 0){
+			throw new ServiceException("服务人员已有休假,不可再次请假");
 		}
 		//判断是否是工作时间
 		List<ServiceTechnicianHoliday> list = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
@@ -193,7 +197,7 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		//插入到数据库中
 		serviceTechnicianHoliday.setReviewStatus("yes");
 		serviceTechnicianHoliday.setSource("sys");
-		int a = super.savePc(serviceTechnicianHoliday);
+			int a = super.savePc(serviceTechnicianHoliday);
 		//将排期表插入到数据库中
 		if (a > 0){
 			ServiceTechnicianHoliday getHoliday = serviceTechnicianHolidayDao.get(serviceTechnicianHoliday.getId());

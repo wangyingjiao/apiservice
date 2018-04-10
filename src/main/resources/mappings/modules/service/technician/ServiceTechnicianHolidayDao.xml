@@ -207,7 +207,7 @@
 		WHERE id = #{id}
 	</update>
 
-    <!--app新增判断是否已有休假-->
+    <!--新增判断是否已有休假-->
     <select id="getHolidayList" resultType="ServiceTechnicianHoliday">
         select
 		<include refid="serviceTechnicianHolidayColumns"/>
