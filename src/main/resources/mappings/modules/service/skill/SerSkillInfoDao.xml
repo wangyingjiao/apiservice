@@ -163,6 +163,7 @@
 		LEFT JOIN  basic_service_station b ON a.station_id = b.id AND b.del_flag = '0'
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			and a.job_status = 'online'
 			<if test="techName != null and techName != ''">
 				AND a.name LIKE concat('%',#{techName},'%')
 			</if>
