@@ -546,7 +546,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 								intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));
 							}
 
-							List<String> orders = DateUtils.getHeafHourTimeListBorder(
+							List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
 									DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
 									DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
 							if (orders != null && workTimes!= null) {
