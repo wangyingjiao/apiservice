@@ -405,68 +405,16 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		int value = 1;
 
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
-		int techDispatchNum = 0;//派人数量
-		double orderTotalTime = 0.0;//订单所需时间
-		double serviceHour = 0.0;//建议服务时长（小时）
-		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
-			for(OrderGoods goods :goodsInfoList){//
-				int goodsNum = goods.getGoodsNum();		// 订购商品数
-				if(0 == goodsNum){
-					logger.error("未找到当前订单服务商品信息的订购商品数");
-				}
-				Double convertHours = goods.getConvertHours();		// 折算时长
-				if(convertHours == null || 0 == convertHours){
-					logger.error("未找到当前订单服务商品信息的订购商品数");
-				}
-				int startPerNum = goods.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
-				if(0 == startPerNum){
-					startPerNum =1;
-				}
-				int cappinPerNum = goods.getCappingPerNum();		//封项人数
-				if(0 == cappinPerNum){
-					cappinPerNum = 30;
-				}
+		int techDispatchNum = orderToolsService.getTechDispatchNumByGoodsList(goodsInfoList);//派人数量
+		double serviceHour = orderToolsService.getServiceHourByGoodsList(goodsInfoList);//建议服务时长（小时）
 
-				int techNum = 0;//当前商品派人数量
-				int addTechNum=0;
-				Double totalTime = 0.0;
-				if(convertHours!=null) {
-					totalTime = convertHours * goodsNum;//商品需要时间
-				}
-				Double goodsTime = convertHours * goodsNum;//gon
-				orderTotalTime = orderTotalTime + goodsTime;
-
-				if(totalTime > 4){//每4小时增加1人
-					BigDecimal b1 = new BigDecimal(totalTime);
-					BigDecimal b2 = new BigDecimal(new Double(4));
-					//addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
-					addTechNum= (b1.subtract(b2).divide(b2, 0, BigDecimal.ROUND_UP).intValue());
-				}
-				techNum = startPerNum + addTechNum;
-				if(techNum > cappinPerNum){//每个商品需求的人数
-					techNum = cappinPerNum;
-				}
-				if(techNum > techDispatchNum) {//订单需求的最少人数
-					techDispatchNum = techNum;
-				}
-			}
-			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
-			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
-		} else {
-			logger.error("未找到当前订单服务商品信息");
-			return null;
-		}
 		orderInfo = get(orderInfo);
 		String stationId = orderInfo.getStationId();//服务站ID
 		if(null == stationId){
 			logger.error("未找到当前订单的服务站信息");
 			return null;
 		}
-		/*Double serviceHour = orderInfo.getServiceHour();//建议服务时长（小时）
-		if(serviceHour == null || 0 == serviceHour){
-			logger.error("未找到当前订单的建议服务时长");
-			return null;
-		}*/
+
 		Double serviceSecond = (serviceHour * 3600);
 
 		String skillId = orderToolsService.getSkillIdByOrgSort(orderInfo.getOrgId(), goodsInfoList.get(0).getSortId());
@@ -672,49 +620,11 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		}
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
 		List<OrderDispatch> techBeforList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
-		int techDispatchNum = 0;//派人数量
-		double orderTotalTime = 0.0;//订单所需时间
-		double newServiceHour = 0.0;//建议服务时长（小时）
-		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
-			for(OrderGoods goods :goodsInfoList){//
-				//jointGoodsCodes = jointGoodsCodes + goods.getJointGoodsCode();//对接方商品CODE
 
-				int goodsNum = goods.getGoodsNum();		// 订购商品数
-				Double convertHours = goods.getConvertHours();		// 折算时长
-				int startPerNum = goods.getStartPerNum();   		//起步人数（第一个4小时时长派人数量）
-				if(0 == startPerNum){
-					startPerNum = 1;
-				}
-				int cappinPerNum = goods.getCappingPerNum();		//封项人数
-				if(0 == cappinPerNum){
-					cappinPerNum = 30;
-				}
+        int techDispatchNum = orderToolsService.getTechDispatchNumByGoodsList(goodsInfoList);//派人数量
+        double newServiceHour = orderToolsService.getServiceHourByGoodsList(goodsInfoList);//建议服务时长（小时）
 
-				int techNum = 0;//当前商品派人数量
-				int addTechNum=0;
-				Double totalTime = 0.0;
-				if(convertHours != null) {
-					totalTime = convertHours * goodsNum;//商品需要时间
-					orderTotalTime = orderTotalTime + totalTime;
-				}
-
-				if(totalTime > 4){//每4小时增加1人
-					BigDecimal b1 = new BigDecimal(totalTime);
-					BigDecimal b2 = new BigDecimal(new Double(4));
-					//addTechNum= (b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).intValue());
-					addTechNum= (b1.subtract(b2).divide(b2, 0, BigDecimal.ROUND_UP).intValue());
-				}
-				techNum = startPerNum + addTechNum;
-				if(techNum > cappinPerNum){//每个商品需求的人数
-					techNum = cappinPerNum;
-				}
-				if(techNum > techDispatchNum){//订单需求的最少人数
-					techDispatchNum = techNum;
-				}
-			}
-			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
-			newServiceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
-		}else{
+        if(techDispatchNum == 0 ){
 			throw new ServiceException("未找到当前订单服务商品信息");
 		}
 
