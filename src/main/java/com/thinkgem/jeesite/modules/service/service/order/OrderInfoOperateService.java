@@ -469,32 +469,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		}*/
 		Double serviceSecond = (serviceHour * 3600);
 
-		//取得技师List
-		OrderDispatch serchInfo = new OrderDispatch();
-		//展示当前下单客户所在服务站的所有可服务的技师
-		serchInfo.setStationId(stationId);
-		//（1）会此技能的
-		String orgId = orderInfo.getOrgId();
-		SerSkillSort serchSkillSort = new SerSkillSort();
-		serchSkillSort.setOrgId(orgId);
-		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
-		String skillId = "";
-		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if(skillSortList!=null && skillSortList.size()==1){
-			skillId = skillSortList.get(0).getSkillId();
-		}else{
-			logger.error("未找到商品需求的技能信息");
-			return null;
-		}
-		serchInfo.setSkillId(skillId);
-		//（2）上线、在职
-		serchInfo.setTechStatus("yes");
-		serchInfo.setJobStatus("online");
-		//自动派单 全职 ; 手动派单没有条件
-		serchInfo.setJobNature("full_time");
-		//派单、新增订单 没有订单ID ; 改派、增加技师 有订单ID
-		//serchInfo.setOrderId(orderInfo.getId());
-		List<OrderDispatch> techList = dao.getTechListBySkillId(serchInfo);
+		String skillId = orderToolsService.getSkillIdByOrgSort(orderInfo.getOrgId(), goodsInfoList.get(0).getSortId());
+		List<OrderDispatch> techList = orderToolsService.listTechByStationSkillOrder(stationId, skillId, null,true,null);
 
 		if(techList.size() < techDispatchNum){//技师数量不够
 			return null;
@@ -748,8 +724,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		OrderInfo serchOrderInfo = new OrderInfo();
 		serchOrderInfo.setOrgId(orderInfo.getOrgId());
 		serchOrderInfo.setStationId(orderInfo.getStationId());
-		serchOrderInfo.setServiceTime(orderInfo.getServiceTime());
-		serchOrderInfo.setFinishTime(orderInfo.getFinishTime());
+		serchOrderInfo.setServiceTime(newServiceDate);
+		serchOrderInfo.setFinishTime(newFinishTime);
 		serchOrderInfo.setGoodsSortId(goodsInfoList.get(0).getSortId());
 		serchOrderInfo.setSerchFullTech(true);
 		serchOrderInfo.setSerchNowOrderId(orderInfo.getId());
