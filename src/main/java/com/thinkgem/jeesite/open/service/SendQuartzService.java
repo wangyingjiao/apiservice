@@ -140,8 +140,10 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			params.put("appid", "selfService");
 
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-
-			OpenSendSaveOrderResponse sendResponse = JSON.parseObject(postClientResponse, OpenSendSaveOrderResponse.class);
+			OpenSendSaveOrderResponse sendResponse = null;
+			if(StringUtils.isNotBlank(postClientResponse)){
+				sendResponse = JSON.parseObject(postClientResponse, OpenSendSaveOrderResponse.class);
+			}
 
 			if(sendResponse != null && sendResponse.getCode() == 0){//执行成功
 				//保存对接日志表
@@ -208,7 +210,10 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			params.put("appid", "selfService");
 
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-			OpenSendSaveItemResponse sendResponse = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
+			OpenSendSaveItemResponse sendResponse = null;
+			if(StringUtils.isNotBlank(postClientResponse)){
+				sendResponse = JSON.parseObject(postClientResponse, OpenSendSaveItemResponse.class);
+			}
 
 			if(sendResponse != null && sendResponse.getCode() == 0){//执行成功
 				//保存对接日志表
@@ -335,7 +340,10 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			params.put("md5",md5Content);
 			params.put("appid", "selfService");
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-			OpenSendRemoveJointGoodsResponse sendResponse = JSON.parseObject(postClientResponse, OpenSendRemoveJointGoodsResponse.class);
+			OpenSendRemoveJointGoodsResponse sendResponse = null;
+			if(StringUtils.isNotBlank(postClientResponse)) {
+				sendResponse = JSON.parseObject(postClientResponse, OpenSendRemoveJointGoodsResponse.class);
+			}
 
 			if(sendResponse != null && sendResponse.getCode() == 0){//执行成功
 				//保存对接日志表
@@ -463,7 +471,10 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			params.put("appid", "selfService");
 
 			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
-			OpenSendRemoveJointGoodsResponse response = JSON.parseObject(postClientResponse, OpenSendRemoveJointGoodsResponse.class);
+			OpenSendRemoveJointGoodsResponse response = null;
+			if(StringUtils.isNotBlank(postClientResponse)) {
+				response = JSON.parseObject(postClientResponse, OpenSendRemoveJointGoodsResponse.class);
+			}
 			// 成功失败都不进行任何操作
 			//保存对接日志表
 			SysJointLog log = new SysJointLog();
