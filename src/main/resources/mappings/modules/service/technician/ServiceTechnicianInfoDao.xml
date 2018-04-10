@@ -828,6 +828,7 @@
             DISTINCT a.id,
             a.name,
             a.phone,
+            a.status,
             b.name AS stationName
             FROM ser_skill_tech d RIGHT JOIN tech_info a ON a.id = d.tech_id AND d.del_flag = 0
             LEFT JOIN basic_service_station b ON a.station_id = b.id AND b.del_flag = 0
@@ -852,7 +853,7 @@
             <if test="skilId != null and skilId != ''">
                 AND d.skill_id = #{skilId}
             </if>
-            ORDER BY a.name
+            ORDER BY a.status,a.name
     </select>
 
     <select id="getWorkTime" resultType="ScheduleDateInfo">
