@@ -11,6 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -243,7 +244,14 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
 				logger.trace("Attempting to access a path which requires authentication.  Forwarding to the "
 						+ "Authentication url [" + getLoginUrl() + "]");
 			}
-
+			//接口测试未登录校验
+			/*HttpServletRequest req=(HttpServletRequest)request;
+			HttpSession session = req.getSession(false);
+			if (null==session) {
+				response.getWriter().print(JSON.toJSONString(new FailResult<String>("请登录")));
+				return false;
+			}*/
+			
 			User user = UserUtils.getUser();
 			logger.info("=================FormAuthenticationFiltersession是否失效先查询user:"
 					+ JSON.toJSONString(user.toString()));
@@ -252,7 +260,7 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
 			if (null == cache) {
 				logger.info("=============FormAuthenticationFilter说明session过期请重新登录");
 				response.getWriter()
-						.print(JSON.toJSONString(new FailResult(2, "session过期请重新登录FormAuthenticationFilter过滤器")));
+						.print(JSON.toJSONString(new FailResult(2, "session过期请重新登录")));
 				return false;
 			}
 			//saveRequestAndRedirectToLogin(request, response);

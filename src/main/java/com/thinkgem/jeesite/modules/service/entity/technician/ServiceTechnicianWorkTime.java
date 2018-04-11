@@ -22,6 +22,7 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 	
 	private static final long serialVersionUID = 1L;
 	private String techId;		// tech_id
+	private List<String> techIdList;
 	private String techName;		// 名称
 	private String week;		// 工作日期（周一，周二。。。）
 	private Date startTime;		// 起始时段
@@ -131,5 +132,13 @@ public class ServiceTechnicianWorkTime extends DataEntity<ServiceTechnicianWorkT
 
 	public void setWeeks(List<ServiceTechnicianWorkTimeWeek> weeks) {
 		this.weeks = weeks;
+	}
+
+	public List<String> getTechIdList() {
+		return techIdList;
+	}
+
+	public void setTechIdList(List<String> techIdList) {
+		this.techIdList = techIdList;
 	}
 }

@@ -37,7 +37,7 @@
 			<if test="level != null and level != ''">
 				AND a.level = #{level}
 			</if>
-			AND a.hidden!='yes'
+			AND a.hidden!='yes' ORDER BY a.sort ASC
 		</where>
 	</select>
 </mapper>

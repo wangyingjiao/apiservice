@@ -20,7 +20,8 @@ public class OpenUpdateStautsRequest extends DataEntity<OpenUpdateStautsRequest>
 	private String service_order_id;//自营服务订单ID->编号
 	private String comment;//取消原因
 	private String status;//cancel取消；signed已签收；finish完成
-	private String gasq_order_id;//国安社区订单ID->编号
+	private String gasq_order_id;//国安社区订单ID
+	private String gasq_order_sn;//国安社区订单SN
 
 	public String getPlatform() {
 		return platform;
@@ -60,5 +61,13 @@ public class OpenUpdateStautsRequest extends DataEntity<OpenUpdateStautsRequest>
 
 	public void setGasq_order_id(String gasq_order_id) {
 		this.gasq_order_id = gasq_order_id;
+	}
+
+	public String getGasq_order_sn() {
+		return gasq_order_sn;
+	}
+
+	public void setGasq_order_sn(String gasq_order_sn) {
+		this.gasq_order_sn = gasq_order_sn;
 	}
 }

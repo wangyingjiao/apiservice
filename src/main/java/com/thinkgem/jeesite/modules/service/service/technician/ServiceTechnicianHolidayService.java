@@ -14,7 +14,14 @@ import java.util.List;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.DateUtilsEntity;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianWorkTimeDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +43,15 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	@Autowired
 	ServiceTechnicianHolidayDao serviceTechnicianHolidayDao;
 
+	@Autowired
+	TechScheduleDao techScheduleDao;
+
+    @Autowired
+    private ServiceTechnicianInfoDao serviceTechnicianInfoDao;
+
+    @Autowired
+    private ServiceTechnicianWorkTimeDao serviceTechnicianWorkTimeDao;
+
 	public ServiceTechnicianHoliday get(String id) {
 		return super.get(id);
 	}
@@ -43,11 +59,18 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 	public List<ServiceTechnicianHoliday> findList(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		return super.findList(serviceTechnicianHoliday);
 	}
-
+	//后台休假列表
 	public Page<ServiceTechnicianHoliday> findPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		serviceTechnicianHoliday.getSqlMap().put("dsf", dataStatioRoleFilter(UserUtils.getUser(), "b"));
-		return super.findPage(page, serviceTechnicianHoliday);
-	}
+        Page<ServiceTechnicianHoliday> page1 = super.findPage(page, serviceTechnicianHoliday);
+        List<ServiceTechnicianHoliday> list = page1.getList();
+        for (ServiceTechnicianHoliday holiday:list){
+            if ((!"yes".equals(holiday.getReviewStatus())) && "online".equals(holiday.getJobStatus())){
+                holiday.setStatus("yes");
+            }
+        }
+        return page1;
+    }
 	//app获取技师休假列表
 	public Page<ServiceTechnicianHoliday> appFindPage(Page<ServiceTechnicianHoliday> page, ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		serviceTechnicianHoliday.setPage(page);
@@ -72,101 +95,186 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 		return serviceTechnicianWorkTime;
 	}
 
-	@Transactional(readOnly = false)
-	public int savePc(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+	//审核未通过的休假详情
+	public ServiceTechnicianHoliday getHolidayById(ServiceTechnicianHoliday serviceTechnicianHoliday){
+		serviceTechnicianHoliday.setReviewStatus("no");
+		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayDao.getHolidayById(serviceTechnicianHoliday);
+		return holidayById;
+	}
+
+	//休假详情
+	public ServiceTechnicianHoliday getTechHolidayById(ServiceTechnicianHoliday serviceTechnicianHoliday){
+		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayDao.getTechHolidayById(serviceTechnicianHoliday);
+		return holidayById;
+	}
+	//审核app的休假
+    @Transactional(readOnly = false)
+    public int reviewedHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+        //根据id查询出对应的休假
+        ServiceTechnicianHoliday getHoliday = serviceTechnicianHolidayDao.getTechHolidayById(serviceTechnicianHoliday);
+        if (getHoliday == null){
+            throw new ServiceException("未找到该休假信息，请重新输入");
+        }
+        //审核状态是yes 理由清空传“”
+        if ("yes".equals(serviceTechnicianHoliday.getReviewStatus())){
+			serviceTechnicianHoliday.setFailReason("");
+		}
+        serviceTechnicianHoliday.preUpdate();
+        int i = dao.updateHoliday(serviceTechnicianHoliday);
+		//增加排期表
+        if (i > 0){
+            //查询数据库中 排期表是否有限制
+            ServiceTechnicianHoliday holiday1 = dao.get(serviceTechnicianHoliday.getId());
+			//如果传过来的是审核通过 查排期表是否有订单有则抛异常  没有就增加排期表
+            if ("yes".equals(serviceTechnicianHoliday.getReviewStatus())) {
+            	//查询是否有排期表 有则
+				TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+				techScheduleInfo.setStartTime(holiday1.getStartTime());
+				techScheduleInfo.setEndTime(holiday1.getEndTime());
+				techScheduleInfo.setTechId(holiday1.getTechId());
+				List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(techScheduleInfo);
+				if (scheduleByTechId !=null && scheduleByTechId.size()>0){
+					throw new ServiceException("已有排期，不可休假");
+				}
+                //getHolidaysList 方法传入开始和结束时间  返回一个list是两个时间中间的时间集合
+                List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(holiday1.getStartTime(), holiday1.getEndTime());
+                if (holidaysList != null && holidaysList.size() > 0) {
+                    for (ServiceTechnicianHoliday holiday : holidaysList) {
+                        int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
+                        TechScheduleInfo info = new TechScheduleInfo();
+                        info.setTechId(holiday1.getTechId());
+                        info.setScheduleWeek(weekDay);
+                        Date dateFirstTime = DateUtils.getDateFirstTime(holiday.getStartTime());
+                        info.setScheduleDate(dateFirstTime);
+                        info.setStartTime(holiday.getStartTime());
+                        info.setEndTime(holiday.getEndTime());
+                        info.setTypeId(holiday1.getId());
+                        info.setType("holiday");
+                        info.setRemark(holiday1.getRemark());
+                        info.preInsert();
+                        //将排期表插入数据库
+                        i = techScheduleDao.insertSchedule(info);
+                    }
+                }
+            }
+        }
+        return i;
+    }
+	//后台休假新增
+    @Transactional(readOnly = false)
+	public String saveWebHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i=0;
-		//最后休假日期List
-		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
-		//获取服务人员工作时间
-		List<ServiceTechnicianHoliday> workTimes = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
-		//请假List   00:00-23:59 周几
-		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
-
-		//循环请假时间
-		for (ServiceTechnicianHoliday holiday : holidaysList) {
-			int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
-			//获取周几的工作时间
-			List<ServiceTechnicianHoliday> weekDayWorkTimes = getWeekDayWorkTimes(weekDay, workTimes);
-			//循环工作时间
-			for (ServiceTechnicianHoliday weekDayWorkTime : weekDayWorkTimes) {
-
-				//判断请假时间是否在工作时间内，并返回在工作时间内的数据
-				DateUtilsEntity entity = DateUtils.findDatesRepeatTime(weekDayWorkTime.getStartTime(),weekDayWorkTime.getEndTime(),
-						holiday.getStartTime(),holiday.getEndTime());
-				if (null != entity) {//请假时间在工作时间内
-					ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
-					info.setStartTime(entity.getStartTime());
-					info.setEndTime(entity.getEndTime());
-					info.setTechId(serviceTechnicianHoliday.getTechId());//技师ID
-					info.setRemark(serviceTechnicianHoliday.getRemark());//备注
-					list.add(info);
+		int techWorkTime=0;
+		//查询排期表是否有数据
+		TechScheduleInfo scheduleInfo1=new TechScheduleInfo();
+		scheduleInfo1.setTechId(serviceTechnicianHoliday.getTechId());
+		scheduleInfo1.setStartTime(serviceTechnicianHoliday.getStartTime());
+		scheduleInfo1.setEndTime(serviceTechnicianHoliday.getEndTime());
+		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(scheduleInfo1);
+		if (scheduleByTechId != null && scheduleByTechId.size() >0){
+			throw new ServiceException("已有排期 不可休假");
+		}
+		List<ServiceTechnicianHoliday> holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList !=null && holidayList.size() > 0){
+			throw new ServiceException("服务人员已有休假,不可再次请假");
+		}
+		//判断是否是工作时间
+		List<ServiceTechnicianHoliday> list = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		if (list != null && list.size() > 0 ){
+			ServiceTechnicianWorkTime workTime=new ServiceTechnicianWorkTime();
+			for (ServiceTechnicianHoliday  holiday:list){
+				workTime.setStartTime(holiday.getStartTime());
+				workTime.setEndTime(holiday.getEndTime());
+				workTime.setWeek(holiday.getHoliday());
+				workTime.setTechId(serviceTechnicianHoliday.getTechId());
+				int a = serviceTechnicianWorkTimeDao.getTechWorkTime(workTime);
+				techWorkTime+=a;
+			}
+		}
+		if (techWorkTime <= 0){
+			throw new ServiceException("休假时间不在工作区,不可请假");
+		}
+		//插入到数据库中
+		serviceTechnicianHoliday.setReviewStatus("yes");
+		serviceTechnicianHoliday.setSource("sys");
+		int a = super.savePc(serviceTechnicianHoliday);
+		String id = serviceTechnicianHoliday.getId();
+		//将排期表插入到数据库中
+		if (a > 0){
+			ServiceTechnicianHoliday getHoliday = serviceTechnicianHolidayDao.get(serviceTechnicianHoliday.getId());
+			List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(getHoliday.getStartTime(), getHoliday.getEndTime());
+			if (holidaysList != null && holidaysList.size() > 0) {
+				for (ServiceTechnicianHoliday holiday : holidaysList) {
+					TechScheduleInfo scheduleInfo=new TechScheduleInfo();
+					//当前循环的休假时间是周几
+					int weekDay = Integer.parseInt(holiday.getHoliday());
+					scheduleInfo.setScheduleWeek(weekDay);
+					Date dateFirstTime = DateUtils.getDateFirstTime(holiday.getStartTime());
+					scheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
+					scheduleInfo.setScheduleDate(dateFirstTime);
+					scheduleInfo.setStartTime(holiday.getStartTime());
+					scheduleInfo.setEndTime(holiday.getEndTime());
+					scheduleInfo.setType("holiday");
+					scheduleInfo.setTypeId(getHoliday.getId());
+					scheduleInfo.setRemark(getHoliday.getRemark());
+					scheduleInfo.preInsert();
+					i = techScheduleDao.insertSchedule(scheduleInfo);
 				}
 			}
 		}
-		//循环插入
-		for (ServiceTechnicianHoliday saveInfo : list) {
-			i = super.savePc(saveInfo);
-		}
-		return i;
+		return id;
 	}
 	//app新增休假
 	@Transactional(readOnly = false)
 	public int appSave(ServiceTechnicianHoliday serviceTechnicianHoliday) {
 		int i = 0;
-		//服务人员在请假时间内是否有未完成的订单
-		int orderTechRelationHoliday = serviceTechnicianHolidayDao.getOrderTechRelationHoliday(serviceTechnicianHoliday);
-		if (orderTechRelationHoliday > 0) {
-			throw new ServiceException("服务人员有未完成订单,不可请假");
+		int techWorkTime= 0;
+		//已经离职的技师不可休假
+		ServiceTechnicianInfo info=new ServiceTechnicianInfo();
+		info.setId(serviceTechnicianHoliday.getTechId());
+		ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoDao.appFindTech(info);
+		String jobStatus = serviceTechnicianInfo.getJobStatus();
+		String jobNature = serviceTechnicianInfo.getJobNature();
+		if (StringUtils.isNotBlank(jobStatus) && "leave".equals(jobStatus)){
+			throw new ServiceException("技师已经离职,不可请假");
 		}
-		//服务人员在请假时间内是否有请假
-		List<ServiceTechnicianHoliday> hoList = serviceTechnicianHolidayDao.getHolidayHistory(serviceTechnicianHoliday);
-		int num = 0;
-		if (null != hoList && hoList.size() > 0) {
-			for (ServiceTechnicianHoliday holiday : hoList) {
-				if (!DateUtils.checkDatesRepeat(holiday.getStartTime(), holiday.getEndTime(), serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime())) {
-					num++;
-				}
-			}
+		if (StringUtils.isNotBlank(jobNature) && "part_time".equals(jobNature)){
+			throw new ServiceException("兼职技师,不可请假");
 		}
-		if (num > 0) {
-			throw new ServiceException("请假时间冲突");
+		//判断是否是工作时间
+        List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+        if (holidaysList != null && holidaysList.size() > 0 ){
+            ServiceTechnicianWorkTime workTime=new ServiceTechnicianWorkTime();
+            for (ServiceTechnicianHoliday  holiday:holidaysList){
+                workTime.setStartTime(holiday.getStartTime());
+                workTime.setEndTime(holiday.getEndTime());
+                workTime.setWeek(holiday.getHoliday());
+                workTime.setTechId(serviceTechnicianHoliday.getTechId());
+                int a = serviceTechnicianWorkTimeDao.getTechWorkTime(workTime);
+                techWorkTime+=a;
+            }
+        }
+        if (techWorkTime <= 0){
+            throw new ServiceException("休假时间不在工作区,不可请假");
+        }
+        //转存对象为排期表
+		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
+		techScheduleInfo.setStartTime(serviceTechnicianHoliday.getStartTime());
+		techScheduleInfo.setEndTime(serviceTechnicianHoliday.getEndTime());
+		List<ServiceTechnicianHoliday> holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList !=null && holidayList.size() > 0){
+			throw new ServiceException("服务人员已有休假,不可再次请假");
 		}
-
-		//最后休假日期List
-		List<ServiceTechnicianHoliday> list = new ArrayList<ServiceTechnicianHoliday>();
-		//获取服务人员工作时间
-		List<ServiceTechnicianHoliday> workTimes = serviceTechnicianHolidayDao.getServiceTechnicianWorkTime(serviceTechnicianHoliday);
-		//请假List   00:00-23:59 周几
-		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
-		//循环请假时间
-		if (holidaysList != null && holidaysList.size() > 0){
-			for (ServiceTechnicianHoliday holiday : holidaysList) {
-				int weekDay = Integer.parseInt(holiday.getHoliday());//当前循环的休假时间是周几
-				//获取周几的工作时间
-				List<ServiceTechnicianHoliday> weekDayWorkTimes = getWeekDayWorkTimes(weekDay, workTimes);
-				//循环工作时间
-				for (ServiceTechnicianHoliday weekDayWorkTime : weekDayWorkTimes) {
-
-					//判断请假时间是否在工作时间内，并返回在工作时间内的数据
-					DateUtilsEntity entity = DateUtils.findDatesRepeatTime(weekDayWorkTime.getStartTime(), weekDayWorkTime.getEndTime(),
-							holiday.getStartTime(), holiday.getEndTime());
-					if (null != entity) {//请假时间在工作时间内
-						ServiceTechnicianHoliday info = new ServiceTechnicianHoliday();
-						info.setStartTime(entity.getStartTime());
-						info.setEndTime(entity.getEndTime());
-						info.setTechId(serviceTechnicianHoliday.getTechId());//技师ID
-						info.setRemark(serviceTechnicianHoliday.getRemark());//备注
-						list.add(info);
-					}
-				}
-			}
+		//查询服务技师排期表 是否有数据  有则不可请假
+		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(techScheduleInfo);
+		if (scheduleByTechId != null && scheduleByTechId.size() > 0){
+			throw new ServiceException("服务人员有排期,不可请假");
 		}
-		//循环插入
-		if (list!=null && list.size()>0) {
-			for (ServiceTechnicianHoliday saveInfo : list) {
-				i = super.saveAPP(saveInfo);
-			}
-		}
+		//将假期插入数据库 app添加休假状态为submit
+		serviceTechnicianHoliday.setReviewStatus("submit");
+		serviceTechnicianHoliday.setSource("app");
+		i = super.saveAPP(serviceTechnicianHoliday);
 		return i;
 	}
 	/**
@@ -323,14 +431,146 @@ public class ServiceTechnicianHolidayService extends CrudService<ServiceTechnici
 			return null;
 		}
 	}
-	//app删除休假时间
+	//app删除休假
 	@Transactional(readOnly = false)
-	public int delete1(ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		return dao.delete(serviceTechnicianHoliday);
+	public int appDelete(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+        int i = 0;
+        ServiceTechnicianHoliday holiday = dao.get(serviceTechnicianHoliday.getId());
+        if (holiday == null) {
+            throw new ServiceException("未找到该休假信息");
+        }
+		Date startTime = holiday.getStartTime();
+		Date date = new Date();
+		if (startTime.before(date) && "yes".equals(holiday.getReviewStatus())) {
+			throw new ServiceException("该休假已审核通过且已过期，不允许删除");
+		}
+		List<TechScheduleInfo> orderSchedule =null;
+		TechScheduleInfo info = new TechScheduleInfo();
+        //如果是已经审核通过的需要去判断排期表
+        if ("yes".equals(holiday.getReviewStatus())) {
+			info.setTechId(serviceTechnicianHoliday.getTechId());
+			info.setType("holiday");
+			info.setTypeId(serviceTechnicianHoliday.getId());
+			orderSchedule = techScheduleDao.getOrderSchedule(info);
+			if (orderSchedule == null || orderSchedule.size() < 1) {
+				throw new ServiceException("未在排期表中找到该休假信息");
+			}
+		}
+        //删除休假表（修改有效状态）
+		serviceTechnicianHoliday.appPreUpdate();
+        i = dao.delete(serviceTechnicianHoliday);
+        //如果是删除审核通过的休假 还需要把排期表删除
+		if (i > 0) {
+	    	if ("yes".equals(holiday.getReviewStatus())) {
+				//删除排期表（修改有效状态）
+				for (TechScheduleInfo scheduleInfo:orderSchedule){
+					scheduleInfo.appPreUpdate();
+					techScheduleDao.deleteSchedule(scheduleInfo);
+				}
+            }
+        }else {
+			throw new ServiceException("删除休假表失败");
+		}
+        return i;
+    }
+    //删除休假
+	@Transactional(readOnly = false)
+	public void deleteHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		//先删除休假表 再删除排期表
+		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.get(serviceTechnicianHoliday.getId());
+		serviceTechnicianHoliday.preUpdate();
+		int i = dao.delete(serviceTechnicianHoliday);
+		if (i > 0){
+			//如果删除的是已经审核通过的休假 则需要把对应的排期表删除
+			if (StringUtils.isNotBlank(holiday.getReviewStatus()) && "yes".equals(holiday.getReviewStatus())){
+				TechScheduleInfo info=new TechScheduleInfo();
+				info.setType("holiday");
+				info.setTypeId(holiday.getId());
+				info.preUpdate();
+				techScheduleDao.deleteScheduleByTypeId(info);
+			}
+		}
+	}
+	//app编辑休假
+	@Transactional(readOnly = false)
+	public int saveHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		int i=0;
+		int techWorkTime= 0;
+		//去数据库中查询出这个休假
+		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getTechHolidayById(serviceTechnicianHoliday);
+		//增加休假的过期标识
+		Date startTime = holiday.getStartTime();
+		Date date = new Date();
+		if (startTime.before(date)) {
+			throw new ServiceException("该休假已过期，不可编辑");
+		}
+		if (holiday == null){
+			throw new ServiceException("该休假已删除，不可编辑");
+		}
+		if (!"no".equals(holiday.getReviewStatus())){
+			throw new ServiceException("已审核通过的或者审核中的休假不能编辑");
+		}
+		List<ServiceTechnicianHoliday> holidayList = serviceTechnicianHolidayDao.getHolidayList(serviceTechnicianHoliday);
+		if (holidayList != null && holidayList.size() >0 ){
+            throw new ServiceException("已有相同时间的休假，不可编辑");
+        }
+        String reviewStatus = holiday.getReviewStatus();
+		//转存对象位排期表
+		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+		techScheduleInfo.setTechId(serviceTechnicianHoliday.getTechId());
+		techScheduleInfo.setStartTime(serviceTechnicianHoliday.getStartTime());
+		techScheduleInfo.setEndTime(serviceTechnicianHoliday.getEndTime());
+
+		List<TechScheduleInfo> scheduleByTechId = techScheduleDao.getScheduleByTechId(techScheduleInfo);
+		if (scheduleByTechId != null && scheduleByTechId.size() > 0){
+			throw new ServiceException("服务人员有排期,不可请假");
+		}
+		//判断是否是工作时间
+		List<ServiceTechnicianHoliday> holidaysList = getHolidaysList(serviceTechnicianHoliday.getStartTime(), serviceTechnicianHoliday.getEndTime());
+		if (holidaysList != null && holidaysList.size() > 0 ){
+			ServiceTechnicianWorkTime workTime=new ServiceTechnicianWorkTime();
+			for (ServiceTechnicianHoliday  techHoliday:holidaysList){
+				workTime.setStartTime(techHoliday.getStartTime());
+				workTime.setEndTime(techHoliday.getEndTime());
+				workTime.setWeek(techHoliday.getHoliday());
+				workTime.setTechId(serviceTechnicianHoliday.getTechId());
+				int a = serviceTechnicianWorkTimeDao.getTechWorkTime(workTime);
+				techWorkTime+=a;
+			}
+		}
+		if (techWorkTime <= 0){
+			throw new ServiceException("休假时间不在工作区,不可请假");
+		}
+
+		//修改 休假表 状态改为审核中
+		if (StringUtils.isNotBlank(reviewStatus) && "no".equals(reviewStatus)){
+			serviceTechnicianHoliday.setSource("app");
+			serviceTechnicianHoliday.setReviewStatus("submit");
+			serviceTechnicianHoliday.appPreUpdate();
+			i = dao.update(serviceTechnicianHoliday);
+		}
+		return i;
 	}
 
 	public int getOrderTechRelationHoliday(ServiceTechnicianHoliday info) {
 		return serviceTechnicianHolidayDao.getOrderTechRelationHoliday(info);
+	}
+	// app根据id查看休假详情
+	public ServiceTechnicianHoliday getHolidaty(ServiceTechnicianHoliday info) {
+		ServiceTechnicianHoliday holiday = serviceTechnicianHolidayDao.getTechHolidayById(info);
+		if (holiday == null){
+			throw new ServiceException("该休假已被删除");
+		}
+		if (!holiday.getTechId().equals(info.getTechId())){
+			throw new ServiceException("查询错误，该休假与用户不绑定，请重新查询");
+		}
+		//增加休假的过期标识
+		Date startTime = holiday.getStartTime();
+		Date date = new Date();
+		if (startTime.after(date)) {
+			holiday.setIsExpire("no");
+		}
+		return holiday;
 	}
 
 	public int getHolidayHistory(ServiceTechnicianHoliday info) {

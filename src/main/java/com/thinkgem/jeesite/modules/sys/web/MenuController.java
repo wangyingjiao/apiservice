@@ -218,4 +218,13 @@ public class MenuController extends BaseController {
         logger.info(JSON.toJSONString(menus));
         return new SuccResult(menus);
     }
+
+    @ResponseBody
+    @RequestMapping(value = "getAllMenuList")
+    public Result getAllMenuList(@RequestBody(required=false) Menu menu) {
+        List<Menu> menuList = UserUtils.getAllMenuListForPlatform(menu);
+        List<Menu> menus = genTreeMenu("1", menuList);
+        logger.info(JSON.toJSONString(menus));
+        return new SuccResult(menus);
+    }
 }

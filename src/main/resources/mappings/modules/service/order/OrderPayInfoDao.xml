@@ -28,6 +28,14 @@
 		<include refid="orderPayInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
+
+	<!--app根据masterId获取支付信息-->
+    <select id="getByMasterId" resultType="OrderPayInfo">
+        SELECT
+        <include refid="orderPayInfoColumns"/>
+        FROM order_pay_info a
+        WHERE a.master_id = #{masterId}
+    </select>
 	
 	<select id="findList" resultType="OrderPayInfo">
 		SELECT 
@@ -105,6 +113,7 @@
 			<if test="payMethod !=null and payMethod != ''">pay_method = #{payMethod},</if>
 			<if test="payTime !=null and payTime != ''">pay_time = #{payTime},</if>
 			<if test="payAccount !=null and payAccount != ''">pay_account = #{payAccount},</if>
+			<if test="payTech !=null and payTech != ''">pay_tech = #{payTech},</if>
 			<if test="payStatus !=null and payStatus != ''">pay_status = #{payStatus},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>

@@ -26,5 +26,6 @@ public interface MenuDao extends CrudDao<Menu> {
 	public int updateSort(Menu menu);
 	//add by wyr全平台用户显示左侧菜单栏
 	public List<Menu> findByUserIdFullPlatform(Menu m);
-	
+
+    List<Menu> findAllMenuList(Menu menu);
 }

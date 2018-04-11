@@ -51,6 +51,15 @@ public class AppServiceTechnicianInfo extends DataEntity<AppServiceTechnicianInf
     private String cityCodeName;		// 市名
     private String areaCodeName;		// 区名
     private String jobStatus;		// 岗位状态(online:在职，leave:离职)
+    private String jobNature;		// 岗位性质（full_time:全职，part_time:兼职）
+
+    public String getJobNature() {
+        return jobNature;
+    }
+
+    public void setJobNature(String jobNature) {
+        this.jobNature = jobNature;
+    }
 
     public String getJobStatus() {
         return jobStatus;

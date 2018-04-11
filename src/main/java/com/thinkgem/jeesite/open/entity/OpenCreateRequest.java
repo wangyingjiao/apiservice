@@ -23,6 +23,7 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private List<String>  remark_pic;//订单备注(用户备注)
 	private String remark;//订单备注(用户备注)
 	private String gasq_order_id;//国安社区订单ID
+	private String gasq_order_sn;//国安社区订单SN
 	private String area_code;//区CODE
 	private String province_code;//省CODE
 	private String city_code;//市CODE
@@ -30,6 +31,8 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private List<OpenServiceInfo> service_info;//购买商品ID及数量
 	private String service_time;//服务时间
 	private String address;//服务地址：小区+详细地址
+	private String placename;//服务地址：小区
+	private String detail_address;//服务地址：门牌号
 	private String latitude;//服务地址：纬度
 	private String longitude;//服务地址：经度
 	private String sum_price;//订单总支付价格
@@ -81,6 +84,14 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 
 	public void setGasq_order_id(String gasq_order_id) {
 		this.gasq_order_id = gasq_order_id;
+	}
+
+	public String getGasq_order_sn() {
+		return gasq_order_sn;
+	}
+
+	public void setGasq_order_sn(String gasq_order_sn) {
+		this.gasq_order_sn = gasq_order_sn;
 	}
 
 	public String getArea_code() {
@@ -177,5 +188,21 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 
 	public void setRemark_pic(List<String> remark_pic) {
 		this.remark_pic = remark_pic;
+	}
+
+	public String getPlacename() {
+		return placename;
+	}
+
+	public void setPlacename(String placename) {
+		this.placename = placename;
+	}
+
+	public String getDetail_address() {
+		return detail_address;
+	}
+
+	public void setDetail_address(String detail_address) {
+		this.detail_address = detail_address;
 	}
 }

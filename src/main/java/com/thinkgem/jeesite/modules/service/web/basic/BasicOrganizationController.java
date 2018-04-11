@@ -12,8 +12,10 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
-import com.thinkgem.jeesite.modules.service.entity.basic.BasicServiceCity;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
 import com.thinkgem.jeesite.modules.sys.entity.Area;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.AreaService;
@@ -93,6 +95,28 @@ public class BasicOrganizationController extends BaseController {
 		return new SuccResult(map);
 	}
 
+    @ResponseBody
+    //@RequiresPermissions("office_insert")
+    @RequestMapping(value = "getEShopByCode", method = RequestMethod.POST)
+    @ApiOperation(value = "E店编码验重")
+    public Result getEShopByCode(@RequestBody BasicGasqEshop basicGasqEshop) {
+	    if (basicGasqEshop == null && basicGasqEshop.getCode().equals("")){
+	        return new FailResult("请输入正确E店编码");
+        }else {
+            BasicGasqEshop bge = basicOrganizationService.getEShopByCode(basicGasqEshop);
+            if (bge == null){
+                return new FailResult("请输入正确E店编码");
+            }else {
+                int count = basicOrganizationService.getOrgEShopByCode(basicGasqEshop);
+                if (count > 0){
+                    return new FailResult("该E店已对接其他机构，请重新选择");
+                }
+                return new SuccResult(bge);
+            }
+        }
+    }
+
+
 	@ResponseBody
 	@RequiresPermissions("office_insert")
 	@RequestMapping(value = "saveData", method = RequestMethod.POST)
@@ -108,7 +132,7 @@ public class BasicOrganizationController extends BaseController {
 			return new FailResult("机构名称不能重复");
 		}
 		//E店编码不能重复
-		if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
+		/*if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
 			if (basicOrganizationService.getByECode(basicOrganization)) {
 				return new FailResult("E店编码不能重复");
 			}
@@ -126,10 +150,29 @@ public class BasicOrganizationController extends BaseController {
 			}
 		}catch (Exception e){
 			return new FailResult("对接失败-系统异常");
+		}*/
+		if (!basicOrganization.getDockType().equals("")) {
+			if (basicOrganization.getBasicOrganizationEshops().size() == 0) {
+				return new FailResult("请选择E店");
+			}
 		}
-
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
+	}
+
+	@ResponseBody
+	//@RequiresPermissions("office_update")
+	@RequestMapping(value = "deleteEshop", method = RequestMethod.POST)
+	@ApiOperation(value = "删除E店")
+	public Result deleteEshop(@RequestBody BasicOrganization basicOrganization) {
+		if (basicOrganization!=null&&!basicOrganization.getEshopCode().equals("")){
+			basicOrganizationService.deleteEshop(basicOrganization);
+			int i = basicOrganizationService.getOrgEShopList(basicOrganization);
+			if (i==0){
+				basicOrganizationService.updDockType(basicOrganization);
+			}
+		}
+		return new SuccResult("删除成功");
 	}
 
 	@ResponseBody
@@ -146,7 +189,7 @@ public class BasicOrganizationController extends BaseController {
 		if (basicOrganizationService.getByName(basicOrganization)) {
 			return new FailResult("机构名称不能重复");
 		}
-		//E店编码不能重复
+		/*//E店编码不能重复
 		if (org.apache.commons.lang3.StringUtils.isNotEmpty(basicOrganization.getJointEshopCode())) {
 			if (basicOrganizationService.getByECode(basicOrganization)) {
 				return new FailResult("E店编码不能重复");
@@ -165,7 +208,7 @@ public class BasicOrganizationController extends BaseController {
 			}
 		}catch (Exception e){
 			return new FailResult("对接失败-系统异常");
-		}
+		}*/
 
 		basicOrganizationService.save(basicOrganization);
 		return new SuccResult<String>("保存成功");
@@ -199,13 +242,13 @@ public class BasicOrganizationController extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "getOrgCityCodes", method = {RequestMethod.GET})
-	@ApiOperation("获取当前机构下所有城市")
-	public Result getOrgCityCodes(HttpServletRequest request, HttpServletResponse response) {
-		User user = UserUtils.getUser();
-		String orgId = user.getOrganization().getId();//机构ID
-		List<BasicServiceCity> cityCodes = basicOrganizationService.getOrgCityCodes(orgId);
-		return new SuccResult(cityCodes);
+	@RequestMapping(value = "getPlatform", method = {RequestMethod.GET})
+	@ApiOperation("获取所有平台下拉")
+	public Result getPlatform(HttpServletRequest request, HttpServletResponse response) {
+		//User user = UserUtils.getUser();
+		//String orgId = user.getOrganization().getId();//机构ID
+		List<Dict> platformDict = basicOrganizationService.getPlatform();
+		return new SuccResult(platformDict);
 	}
 
 }

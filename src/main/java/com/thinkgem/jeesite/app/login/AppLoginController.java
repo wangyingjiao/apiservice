@@ -83,8 +83,6 @@ public class AppLoginController extends BaseController {
     public Object appLoginOut() {
         Token token = (Token) Servlets.getRequest().getAttribute("token");
         tokenManager.clearToken(token);
-        Subject subject = UserUtils.getSubject();
-        System.out.println(subject);
         UserUtils.getSubject().logout();
         return new AppSuccResult(0,null,"退出成功");
     }

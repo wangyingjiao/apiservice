@@ -176,7 +176,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
 	}
 
-	public static double getDistanceOfTwoDate1(Date before, Date after) {
+	public static double getDistanceSecondOfTwoDate(Date before, Date after) {
 		long beforeTime = before.getTime();
 		long afterTime = after.getTime();
 		return (afterTime - beforeTime) / (1000);
@@ -337,10 +337,18 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 */
 	public static boolean checkDatesRepeat(Date startTimeOne, Date endTimeOne, Date startTimeTwo, Date endTimeTwo) {
 		if(!startTimeOne.before(endTimeOne)){
-			return false;//开始时间在结束时间之前 否则返回null
+			//return false;//开始时间在结束时间之前 否则返回null
+			//容错处理，可以在前
+			Date date = parseDate(formatDateTime(startTimeOne));
+			startTimeOne = endTimeOne;
+			endTimeOne = date;
 		}
 		if(!startTimeTwo.before(endTimeTwo)){
-			return false;//开始时间在结束时间之前 否则返回null
+			//return false;//开始时间在结束时间之前 否则返回null
+			//容错处理，可以在前
+			Date date = parseDate(formatDateTime(startTimeTwo));
+			startTimeTwo = endTimeTwo;
+			endTimeTwo = date;
 		}
 
 		if(endTimeTwo.before(startTimeOne) || endTimeTwo.compareTo(startTimeOne)==0){
@@ -391,10 +399,18 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			endTimeOne = parseDate(formatDate(startTimeTwo,"yyyy-MM-dd") + " " + formatDate(endTimeOne,"HH:mm:ss"));
 
 			if(!startTimeOne.before(endTimeOne)){
-				return null;//开始时间在结束时间之前 否则返回null
+				//return false;//开始时间在结束时间之前 否则返回null
+				//容错处理，可以在前
+				Date date = parseDate(formatDateTime(startTimeOne));
+				startTimeOne = endTimeOne;
+				endTimeOne = date;
 			}
 			if(!startTimeTwo.before(endTimeTwo)){
-				return null;//开始时间在结束时间之前 否则返回null
+				//return false;//开始时间在结束时间之前 否则返回null
+				//容错处理，可以在前
+				Date date = parseDate(formatDateTime(startTimeTwo));
+				startTimeTwo = endTimeTwo;
+				endTimeTwo = date;
 			}
 
 			if(endTimeTwo.before(startTimeOne) || endTimeTwo.compareTo(startTimeOne)==0){
@@ -471,6 +487,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 /*
 
+
 		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 07:00:00")));//不重复    返回 true
 
@@ -499,15 +516,16 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 09:10:00")));//重复    返回 false
 		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 10:00:00")));//重复    返回 false
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 08:00:00"),
 				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 11:00:00")));//重复    返回 false
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
+		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 08:00:00"),
 				parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 11:00:00")));//不重复    返回 true
 
 		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
 				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
-
 */
+
+
 
        // System.out.println(getDateAndRandomTenNum("01"));
 
@@ -519,12 +537,13 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
 		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
 		//System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
-		List<String> list = new ArrayList<>();
-		list = getHeafHourTimeListLeftBorder(parseDate("2018-01-24 10:30:00"),parseDate("2018-01-24 11:01:00"));
-		for(String info : list){
+		/*List<Date> list = new ArrayList<>();
+		list = getAfterFifteenDays();
+		for(Date info : list){
 			System.out.println(info);
-		}
+		}*/
 
+		System.out.println(getDistanceSecondOfTwoDate(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));
 	}
 
 	/**

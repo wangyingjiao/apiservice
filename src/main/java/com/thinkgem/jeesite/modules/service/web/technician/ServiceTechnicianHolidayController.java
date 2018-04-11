@@ -9,8 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.service.entity.technician.SavePersonalGroup;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
+import com.thinkgem.jeesite.modules.service.service.technician.ServiceTechnicianInfoService;
+import com.thinkgem.jeesite.modules.service.service.technician.TechScheduleService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -40,7 +48,17 @@ public class ServiceTechnicianHolidayController extends BaseController {
 
 	@Autowired
 	private ServiceTechnicianHolidayService serviceTechnicianHolidayService;
-	
+
+	//消息的service
+	@Autowired
+	private MessageInfoService messageInfoService;
+
+	@Autowired
+    private ServiceTechnicianInfoService serviceTechnicianInfoService;
+
+	@Autowired
+	private TechScheduleService techScheduleService;
+
 	@ModelAttribute
 	public ServiceTechnicianHoliday get(@RequestParam(required=false) String id) {
 		ServiceTechnicianHoliday entity = null;
@@ -68,21 +86,20 @@ public class ServiceTechnicianHolidayController extends BaseController {
 		if (errList != null && errList.size() > 0) {
 			return new FailResult(errList);
 		}
-		//服务人员在请假时间内是否有未完成的订单
-		if(serviceTechnicianHolidayService.getOrderTechRelationHoliday(info) > 0){
-			return new FailResult("服务人员有未完成订单,不可请假.");
+		try {
+			String id= serviceTechnicianHolidayService.saveWebHoliday(info);
+			ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(info.getTechId());
+			//查询休假表
+			ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
+			holiday.setTechId(info.getTechId());
+			holiday.setTechPhone(serviceTechnicianInfo.getPhone());
+			holiday.setId(id);
+			messageInfoService.insertHoliday(holiday,"techHolidayFailWeb");
+			return new SuccResult("保存成功");
+		}catch (ServiceException e){
+			return new FailResult(e.getMessage());
 		}
-		//服务人员在请假时间内是否有请假
-		if(serviceTechnicianHolidayService.getHolidayHistory(info) > 0){
-			return new FailResult("请假时间冲突");
-		}
-
-		int i = serviceTechnicianHolidayService.savePc(info);
-		if (i==0) {
-			return new FailResult("设置的时间不在工作时间内");
-		}
-		return new SuccResult("保存成功");
-	}
+}
 
 	@ResponseBody
 	@RequiresPermissions("holiday_view")
@@ -102,8 +119,71 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	@RequestMapping(value = "delete", method = {RequestMethod.POST})
 	@ApiOperation("删除休假")
 	public Result delete(@RequestBody ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		serviceTechnicianHolidayService.delete(serviceTechnicianHoliday);
+		serviceTechnicianHolidayService.deleteHoliday(serviceTechnicianHoliday);
 		return new SuccResult("删除休假成功");
 	}
 
+	/**
+	 * 审核app休假
+	 * @param serviceTechnicianHoliday
+	 * @return
+	 */
+	@ResponseBody
+	@RequiresPermissions("holiday_review")
+	@RequestMapping(value = "/reviewedHoliday", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation("审核app休假")
+	public Result reviewedHoliday(@RequestBody(required=false) ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		//参数 id 状态 未通过原因
+		try {
+			//先查询是否有该休假
+			ServiceTechnicianHoliday holiday = serviceTechnicianHolidayService.getTechHolidayById(serviceTechnicianHoliday);
+			if (holiday !=null){
+				if ("yes".equals(holiday.getReviewStatus())){
+					return new FailResult("该休假已经审核，不可再次审核");
+				}
+			}else {
+				return new FailResult("该休假已经删除，不可审核");
+			}
+			String reviewStatus = serviceTechnicianHoliday.getReviewStatus();
+			if ("no".equals(reviewStatus) && "no".equals(holiday.getReviewStatus())){
+				return new FailResult("该休假已经审核，不可再次审核");
+			}
+			//审核  增加排期表
+			int i = serviceTechnicianHolidayService.reviewedHoliday(serviceTechnicianHoliday);
+			//查询休假表
+			ServiceTechnicianHoliday serviceTechnicianHoliday1 = serviceTechnicianHolidayService.get(serviceTechnicianHoliday);
+			// 查询出技师的手机
+            String techId = serviceTechnicianHoliday1.getTechId();
+            ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(techId);
+            serviceTechnicianHoliday1.setTechPhone(serviceTechnicianInfo.getPhone());
+            if (i > 0){
+				//发消息 如果是审核通过 带参数techHolidaySuccess 否则techHolidayFail
+				if ("yes".equals(serviceTechnicianHoliday1.getReviewStatus())){
+					messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidaySuccess");
+				}else {
+					messageInfoService.insertHoliday(serviceTechnicianHoliday1,"techHolidayFail");
+				}
+                return new SuccResult("审核成功");
+			}else {
+				return new FailResult("审核失败");
+			}
+		}catch (ServiceException e){
+			return new FailResult(e.getMessage());
+		}
+	}
+
+	/**
+	 * 审核未通过的休假详情
+	 * @param serviceTechnicianHoliday
+	 * @return
+	 */
+	@ResponseBody
+	@RequiresPermissions("holiday_review")
+	@RequestMapping(value = "getHolidayById", method = {RequestMethod.POST})
+	@ApiOperation("未通过审核的休假详情")
+	public Result getHolidayById(@RequestBody ServiceTechnicianHoliday serviceTechnicianHoliday) {
+		ServiceTechnicianHoliday holidayById = serviceTechnicianHolidayService.getHolidayById(serviceTechnicianHoliday);
+
+		return new SuccResult(1,holidayById);
+	}
 }

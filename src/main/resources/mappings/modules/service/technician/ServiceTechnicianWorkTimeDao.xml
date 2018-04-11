@@ -39,6 +39,15 @@
         </choose>
     </select>
 
+    <!--是否在工作时间-->
+    <select id="getTechWorkTime" resultType="int">
+        select count(*)
+        from tech_work_time a
+        where a.del_flag = #{DEL_FLAG_NORMAL}
+        and a.tech_id = #{techId}
+        AND a.week=#{week}
+        and ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
+    </select>
 
     <select id="findAllList" resultType="ServiceTechnicianWorkTime">
         SELECT

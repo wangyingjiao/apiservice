@@ -111,6 +111,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	 */
 	@Transactional(readOnly = false)
 	public void delete(T entity) {
+		entity.preUpdate();
 		int a = dao.delete(entity);
 	}
 

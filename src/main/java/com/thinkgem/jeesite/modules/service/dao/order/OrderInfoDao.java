@@ -4,7 +4,6 @@
 package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
@@ -13,6 +12,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
+import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 
 import java.util.List;
 
@@ -29,17 +29,18 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<BasicOrganization> findOrganizationList(BasicOrganization organization);
 
     OrderInfo formData(OrderInfo info);
-
+    //获取订单详情的服务信息
     List<OrderGoods> getOrderGoodsList(OrderInfo info);
 
     List<OrderDispatch> getOrderDispatchList(OrderInfo info);
     //app改派根据订单id技师id获取改派表
     OrderDispatch appGetOrderDispatch(OrderInfo info);
+
     void cancelData(OrderInfo orderInfo);
 
     void saveTime(OrderInfo orderInfo);
 
-    List<OrderGoods> getGoodsList(OrderInfo orderInfo);
+    List<OrderGoods> getGoodsList(OrderGoods orderInfo);
 
     List<SerSkillSort> getSkillIdBySortId(SerSkillSort serchSkillSort);
 
@@ -60,10 +61,14 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<OrderDispatch> getTechListOrderByNum(OrderDispatch serchTechInfo);
     //app修改订单
     int appUpdate(OrderInfo orderInfo);
+    //app修改订单备注
+    int appUpdateRemark(OrderInfo orderInfo);
+    //app订单支付
+    int appUpdatePay(OrderInfo orderInfo);
     //app获取订单列表
     List<OrderInfo> appFindList(OrderInfo orderInfo);
     //app获取图片
-    String appGetPics(String id);
+    List<String> appGetPics(String id);
     //app获取订单对应商品
     List<String> getGoods(OrderInfo orderInfo);
     //app根据商品id获取订单对应商品的对接code
@@ -71,11 +76,23 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     int openUpdateOrder(OrderInfo orderInfo);
 
-    BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo);
+    //BasicOrganization getBasicOrganizationByOrgId(OrderInfo orderInfo);
 
     List<OrderDispatch> getOrderDispatchMsgTechList(OrderInfo orderMsg);
 
     OrderInfo getBySn(OrderInfo orderInfo);
 
     OrderInfo checkGasqSnOrderSn(OrderInfo checkInfo);
+
+    int openUpdateOrderForBusiness(OrderInfo orderInfo);
+
+    int openUpdateOrderForShop(OrderInfo orderInfo);
+
+    int orderCancel(OrderInfo orderInfo);
+
+    String getSortIdByOrderId(OrderInfo orderInfo);
+
+    List<ServiceTechnicianWorkTime> listTechWorkByTechsTime(ServiceTechnicianWorkTime serchInfo);
+
+    List<TechScheduleInfo> listTechScheduleByTechsTime(TechScheduleInfo serchInfo);
 }

@@ -20,6 +20,7 @@
 				/userfiles/** = anon
 				${adminPath}/login = authc
 				${adminPath}/logout = anon
+				${adminPath}/service/appVersion/appVersion/getNewest = anon
 				${adminPath}/** = authc
 				/act/editor/** = authc
 				/ReportServer/** = authc

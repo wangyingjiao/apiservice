@@ -103,7 +103,9 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE ser_skill_info SET 
+		UPDATE ser_skill_info SET
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
@@ -156,7 +158,8 @@
 		a.id as techId, a.name AS techName,a.sex AS techSex,
 		a.station_id AS techStationId,
 		b.name AS techStationName,
-		a.head_pic AS headPic
+		a.head_pic AS headPic,
+		a.job_status AS jobStatus
 		FROM tech_info a
 		LEFT JOIN  basic_service_station b ON a.station_id = b.id AND b.del_flag = '0'
 		<where>

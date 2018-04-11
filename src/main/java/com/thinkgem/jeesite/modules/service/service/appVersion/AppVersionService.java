@@ -1,10 +1,16 @@
 package com.thinkgem.jeesite.modules.service.service.appVersion;
 
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.redis.JedisConstant;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.JedisUtils;
 import com.thinkgem.jeesite.modules.service.dao.appVersion.AppVersionDao;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
+import com.thinkgem.jeesite.modules.sys.dao.VersionInfoDao;
+import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +28,9 @@ import java.util.Date;
 public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     @Autowired
     private AppVersionDao appVersionDao;
+    @Autowired
+    private VersionInfoDao versionInfoDao;
+
 
     public Page<AppVersion> findPage(Page<AppVersion> page, AppVersion appVersion) {
         //appVersion.getSqlMap().put("dsf", dataRoleFilter(UserUtils.getUser(), "a"));
@@ -33,6 +42,14 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
             appVersion.setUpdateBy(UserUtils.getUser());
             appVersion.setUpdateDate(new Date());
             super.save(appVersion);
+        AppVersion newest = appVersionDao.getNewestVersion();
+        VersionInfo app = new VersionInfo();
+        app.setForcedUpdate("yes");
+        VersionInfo vi= versionInfoDao.getByTime(app);
+        newest.setForcedAppVersion(vi);
+        String json = JsonMapper.toJsonString(newest);
+        JedisUtils.set(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION,json,0);
+        // CacheUtils.put(CACHE_NEWEST_VERSION,newest);
     }
 
     public AppVersion getData(String id) {
@@ -43,6 +60,25 @@ public class AppVersionService extends CrudService<AppVersionDao,AppVersion> {
     @Transactional(readOnly = false)
     public void delete(AppVersion appVersion) {
         super.delete(appVersion);
+        AppVersion newest = appVersionDao.getNewestVersion();
+        VersionInfo app = new VersionInfo();
+        app.setForcedUpdate("yes");
+        VersionInfo vi= versionInfoDao.getByTime(app);
+        newest.setForcedAppVersion(vi);
+        String json = JsonMapper.toJsonString(newest);
+        JedisUtils.set(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION,json,0);
     }
 
+    public AppVersion getNewest() {
+        AppVersion newest = appVersionDao.getNewestVersion();
+        VersionInfo app = new VersionInfo();
+        app.setForcedUpdate("yes");
+        VersionInfo vi= versionInfoDao.getByTime(app);
+        newest.setForcedAppVersion(vi);
+        return newest;
+    }
+
+    public int getVersionNumber(AppVersion appVersion) {
+        return appVersionDao.getVersionNumber(appVersion);
+    }
 }
