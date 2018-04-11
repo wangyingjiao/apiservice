@@ -87,18 +87,15 @@ public class ServiceTechnicianHolidayController extends BaseController {
 			return new FailResult(errList);
 		}
 		try {
-			int i = serviceTechnicianHolidayService.savePc(info);
+			String id= serviceTechnicianHolidayService.saveWebHoliday(info);
 			ServiceTechnicianInfo serviceTechnicianInfo = serviceTechnicianInfoService.get(info.getTechId());
 			//查询休假表
 			ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
 			holiday.setTechId(info.getTechId());
 			holiday.setTechPhone(serviceTechnicianInfo.getPhone());
-			if (i>0) {
-				messageInfoService.insertHoliday(holiday,"techHolidayFailWeb");
-				return new SuccResult("保存成功");
-
-			}
-			return new FailResult("保存失败");
+			holiday.setId(id);
+			messageInfoService.insertHoliday(holiday,"techHolidayFailWeb");
+			return new SuccResult("保存成功");
 		}catch (ServiceException e){
 			return new FailResult(e.getMessage());
 		}

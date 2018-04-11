@@ -29,7 +29,7 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	private String techStationId;//服务站ID
 	private String techStationName;//服务站名称
 	private String remark;
-	private String isExpire="yes";//app是否过期
+	private String isExpire="yes";//app是否过期   yes已过期
 	private String reviewStatus; //审核状态 no：审核人未通过 submit：审核中 yes：审核通过
 	private String failReason; //未通过原因
 	private String source; //来源 app：技师APP端 sys：后台系统

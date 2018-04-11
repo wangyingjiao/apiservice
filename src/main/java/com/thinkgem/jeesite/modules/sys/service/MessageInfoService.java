@@ -82,7 +82,7 @@ public class MessageInfoService extends CrudService<MessageInfoDao, MessageInfo>
             return insertAndPushHoliday(serviceTechnicianHoliday,messageInfo);
         }
         if (orderType.equals("techHolidayFailWeb")){
-            messageInfo.setTitle("系统运营人员给您添加了一调休假，请点击查看");
+            messageInfo.setTitle("系统运营人员给您添加了一条休假");
             messageInfo.setMessage("请点击查看");
             messageInfo.setTargetType("holiday");
             return insertAndPushHoliday(serviceTechnicianHoliday,messageInfo);
