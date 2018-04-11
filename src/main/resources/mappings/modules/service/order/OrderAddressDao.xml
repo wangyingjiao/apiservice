@@ -10,6 +10,7 @@
 		a.province_code AS "provinceCode",
 		a.city_code AS "cityCode",
 		a.area_code AS "areaCode",
+		a.placename AS "placename",
 		a.detail_address AS "detailAddress",
 		a.address AS "address",
 		a.create_by AS "createBy.id",
@@ -81,6 +82,7 @@
 			province_code,
 			city_code,
 			area_code,
+			placename,
 			detail_address,
 			address,
 			create_by,
@@ -96,6 +98,7 @@
 			#{provinceCode},
 			#{cityCode},
 			#{areaCode},
+			#{placename},
 			#{detailAddress},
 			#{address},
 			#{createBy.id},
@@ -114,6 +117,7 @@
 			<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
 			<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
 			<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
+			<if test="placename !=null and placename != ''">placename = #{placename},</if>
 			<if test="detailAddress !=null and detailAddress != ''">detail_address = #{detailAddress},</if>
 			<if test="address !=null and address != ''">address = #{address},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>

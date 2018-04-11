@@ -4,7 +4,16 @@
     
 	<select id="findList" resultType="Log">
 		SELECT 
-			a.*,
+			a.id AS id,
+			a.type AS type,
+			a.title AS title,
+			a.request_content AS requestContent,
+			a.remote_addr AS remoteAddr,
+			a.user_agent AS userAgent,
+			a.request_uri AS requestUri,
+			a.method AS method,
+			a.params AS params,
+			a.exception AS exception,
 			u.id AS "createBy.id",
 			u.name AS "createBy.name",
 			c.name AS "createBy.company.name",
@@ -47,7 +56,8 @@
 			request_uri, 
 			method, 
 			params, 
-			exception
+			exception,
+			request_content
 		) VALUES (
 			#{id}, 
 			#{type}, 
@@ -59,7 +69,8 @@
 			#{requestUri}, 
 			#{method}, 
 			#{params}, 
-			#{exception}
+			#{exception},
+			#{requestContent}
 		)
 	</insert>
 	

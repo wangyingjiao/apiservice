@@ -7,7 +7,9 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 
@@ -26,6 +28,8 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
     List<SerItemCommodity> getSerItemCommoditys(SerItemInfo serItemInfo);
 
     void updateSerItemPicNum(SerItemInfo serItemInfo);
+    //app根据id获取服务项目的名称 图片 服务时间
+    OrderGoods getById(String id);
 
     SerItemInfo getSerItemInfoPic(SerItemInfo serItemInfo);
 
@@ -40,4 +44,8 @@ public interface SerItemInfoDao extends CrudDao<SerItemInfo> {
     void updateJointStatus(SerItemInfo serItemInfo);
 
     SerItemInfo getItemInfoByCommodityId(SerItemCommodity serItemCommodity);
+
+    List<SerItemCommodityEshop> getEshopGoods(SerItemCommodity commodity);
+
+    int getEshop(SerItemCommodityEshop sice);
 }

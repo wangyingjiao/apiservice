@@ -79,7 +79,7 @@
         a.update_by AS "updateBy.id",
         a.update_date,
         a.del_flag,
-
+		a.type,
         org.id as "organization.id",
         org.name as "organization.name",
 
@@ -333,7 +333,9 @@
 
     <!-- 逻辑删除用户 -->
     <update id="delete">
-		UPDATE sys_user SET 
+		UPDATE sys_user SET
+        <if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+        <if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

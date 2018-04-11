@@ -189,6 +189,17 @@ public class Menu extends DataEntity<Menu> {
 	public void setDisabled(Boolean disabled) {
 		this.disabled = disabled;
 	}
+	//add by wyr 菜单类型：'sys','business')
+	private String type;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	
 	
 }

@@ -10,6 +10,8 @@
 		a.request_content AS requestContent,
 		a.response_content AS responseContent,
 		a.create_date AS createDate,
+		a.source AS source,
+		a.send_type AS sendType,
 		a.is_success AS isSuccess
 		FROM
 		sys_joint_log a
@@ -25,9 +27,23 @@
 				AND a.response_content LIKE concat('%',#{responseContent},'%')
 			</if>
 			<if test="isSuccess != null and isSuccess != ''">
-				AND a.is_success LIKE concat('%',#{isSuccess},'%')
+				AND a.is_success =#{isSuccess}
 			</if>
 		</where>
 		ORDER BY a.create_date DESC
+	</select>
+	<select id="get" resultType="SysJointLogger">
+		SELECT
+		a.id AS id,
+		a.url AS url,
+		a.request_content AS requestContent,
+		a.response_content AS responseContent,
+		a.create_date AS createDate,
+		a.source AS source,
+		a.send_type AS sendType,
+		a.is_success AS isSuccess
+		FROM
+		sys_joint_log a
+		WHERE a.id = #{id}
 	</select>
 </mapper>

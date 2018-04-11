@@ -72,7 +72,7 @@ public class AppTechController extends BaseController {
 
 	//技师的服务信息列表
 	 @ResponseBody
-	 @RequestMapping(value = "${appPath}/getTechServiceList",method = {RequestMethod.POST, RequestMethod.GET})
+	 @RequestMapping(value = "${appPath}/getTechServiceList",method = {RequestMethod.POST})
 	 @ApiOperation(value = "技师服务信息列表", notes = "技师")
 	 public AppResult getTechServiceList() {
 
@@ -93,18 +93,18 @@ public class AppTechController extends BaseController {
 
 	//技师同服务站的通讯录
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/appGetFriendByStationId",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/appGetFriendByStationId",method = {RequestMethod.POST})
 	@ApiOperation(value = "通讯录", notes = "通讯录")
-	public AppResult appGetFriendByStationId(Page page,HttpServletRequest request, HttpServletResponse response) {
+	public AppResult appGetFriendByStationId(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id 服务站id
 		Token token = (Token) request.getAttribute("token");
-		ServiceTechnicianInfo tech=new ServiceTechnicianInfo();
 		tech.setId(token.getTechId());
 		ServiceTechnicianInfo tech1 = techService.appFindTech(tech);
 		if (null == tech1){
 			return new AppSuccResult(1, null, "未找到该用户");
 		}
 		try {
+		    Page<AppServiceTechnicianInfo> page = new Page<>(request, response);
 			Page<AppServiceTechnicianInfo> list = techService.appGetFriendByStationId(page, tech1);
 			long count = page.getCount();
 			int pageSize = page.getPageSize();
@@ -120,7 +120,7 @@ public class AppTechController extends BaseController {
 			map.put("list", page.getList());
 			map.put("totalPage", totalPage);
 			map.put("pageNo", page.getPageNo());
-			if (list.getList().size() == 0) {
+			if (list.getList()==null || list.getList().size() == 0) {
 				return new AppSuccResult(1, null, "查询通讯录");
 			}
 			return new AppSuccResult(0, map, "查询通讯录");
@@ -131,14 +131,14 @@ public class AppTechController extends BaseController {
 
 	//技师休假列表
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/restTechList",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/restTechList",method = {RequestMethod.POST})
 	@ApiOperation(value = "技师休假列表", notes = "技师休假")
-	public AppResult restTechList(Page serSortInfoPage,HttpServletRequest request, HttpServletResponse response) {
+	public AppResult restTechList(ServiceTechnicianHoliday holiday,HttpServletRequest request, HttpServletResponse response) {
 		Token token = (Token) request.getAttribute("token");
 		//获取登陆技师的信息  id
-		ServiceTechnicianHoliday holiday = new ServiceTechnicianHoliday();
 		holiday.setTechId(token.getTechId());
-		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(serSortInfoPage, holiday);
+        Page<ServiceTechnicianHoliday> holidayPage = new Page<>(request, response);
+		Page<ServiceTechnicianHoliday> page = holidayService.appFindPage(holidayPage, holiday);
 		long count = page.getCount();
 		int pageSize = page.getPageSize();
 		long totalPage=0;
@@ -153,7 +153,7 @@ public class AppTechController extends BaseController {
 		map.put("list",page.getList());
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
-		if (page.getList().size() == 0){
+		if (page.getList() == null || page.getList().size() == 0){
 			return new AppSuccResult(1,null,"技师休假列表");
 		}
 		return new AppSuccResult(0,map,"技师休假列表");
@@ -162,7 +162,7 @@ public class AppTechController extends BaseController {
 
 	//新增休假
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/insertTech",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/insertTech",method = {RequestMethod.POST})
 	@ApiOperation(value = "新增休假", notes = "技师休假")
 	public AppResult insertTech(ServiceTechnicianHoliday info,HttpServletRequest request, HttpServletResponse response) {
 
@@ -174,9 +174,8 @@ public class AppTechController extends BaseController {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		info.setTechId(token.getTechId());
-		int i ;
 		try{
-			i = holidayService.appSave(info);
+            int i = holidayService.appSave(info);
 			if (i>0){
 				return new AppSuccResult(0,null,"保存成功");
 			}
@@ -187,24 +186,65 @@ public class AppTechController extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/deleteTech", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/deleteTech", method = {RequestMethod.POST})
 	@ApiOperation(value = "删除休假", notes = "技师休假")
 	public AppResult deleteTech(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
 
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		serviceTechnicianHoliday.setTechId(token.getTechId());
-		int delete = holidayService.delete1(serviceTechnicianHoliday);
-		if (delete > 0){
-			return new AppSuccResult(0,null,"删除休假成功");
+		try {
+			int delete = holidayService.appDelete(serviceTechnicianHoliday);
+			if (delete > 0){
+				return new AppSuccResult(0,null,"删除休假成功");
+			}
+			return new AppFailResult(-1,null,"删除休假失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
 		}
-		return new AppFailResult(-1,null,"删除休假失败");
 	}
 
+	//修改休假
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/saveHoliday", method = {RequestMethod.POST})
+	@ApiOperation(value = "修改休假", notes = "技师休假")
+	public AppResult saveHoliday(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
+
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		serviceTechnicianHoliday.setTechId(token.getTechId());
+		//只有审核未通过的休假可以修改，修改后，清空不通过原因，并将审核状态修改为待审核
+		try {
+			int delete = holidayService.saveHoliday(serviceTechnicianHoliday);
+			if (delete > 0){
+				return new AppSuccResult(0,null,"修改休假成功");
+			}
+			return new AppFailResult(-1,null,"修改休假失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
+		}
+	}
+
+	// 根据id查询 单个休假信息
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/getHolidaty", method = {RequestMethod.POST})
+	@ApiOperation(value = "休假详情", notes = "技师休假")
+	public AppResult getHolidaty(ServiceTechnicianHoliday serviceTechnicianHoliday,HttpServletRequest request, HttpServletResponse response) {
+
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		serviceTechnicianHoliday.setTechId(token.getTechId());
+		try {
+            ServiceTechnicianHoliday holidaty = holidayService.getHolidaty(serviceTechnicianHoliday);
+			return new AppSuccResult(0,holidaty,"查询休假信息成功");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
+		}
+	}
 
 	//技师改密码
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/appChangePassword",method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/appChangePassword",method = {RequestMethod.POST})
 	@ApiOperation(value = "技师修改登陆密码", notes = "技师")
 	public AppResult appChangePassword(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		List<String> errList = errors(tech, SavePersonalGroup.class);
@@ -233,7 +273,7 @@ public class AppTechController extends BaseController {
 
 	//修改资料保存
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/saveTech", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/saveTech", method = {RequestMethod.POST})
 	@ApiOperation(value = "修改个人资料保存", notes = "修改个人资料")
 	public AppResult saveTech(AppServiceTechnicianInfo appTech,HttpServletRequest request, HttpServletResponse response) {
 
@@ -297,7 +337,7 @@ public class AppTechController extends BaseController {
 
 	//修改资料列表
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/selectList", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/selectList", method = {RequestMethod.POST})
 	@ApiOperation(value = "个人信息下拉列表", notes = "下拉列表")
 	public AppResult selectList(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 
@@ -345,7 +385,7 @@ public class AppTechController extends BaseController {
 	//现住地址下拉列表
 
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/selectListPro", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/selectListPro", method = {RequestMethod.POST})
 	@ApiOperation(value = "现住地址下拉列表省", notes = "地址下拉列表")
 	public AppResult selectListPro(ServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		Map map=new HashMap();
@@ -367,7 +407,7 @@ public class AppTechController extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/selectListCity", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/selectListCity", method = {RequestMethod.POST})
 	@ApiOperation(value = "现住地址下拉列表市", notes = "地址下拉列表")
 	public AppResult selectListCity(AppServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		if (StringUtils.isNotBlank(tech.getProvinceCode())){
@@ -387,7 +427,7 @@ public class AppTechController extends BaseController {
 				}
 			}
 			map.put("city",cityList);
-			if (cityList.size()>0){
+			if (cityList !=null && cityList.size()>0){
 				return new AppSuccResult(0,map,"下拉列表");
 			}
 		}
@@ -395,7 +435,7 @@ public class AppTechController extends BaseController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/selectListArea", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/selectListArea", method = {RequestMethod.POST})
 	@ApiOperation(value = "现住地址下拉列表区", notes = "地址下拉列表")
 	public AppResult selectListArea(AppServiceTechnicianInfo tech,HttpServletRequest request, HttpServletResponse response) {
 		Map map=new HashMap();
@@ -415,7 +455,7 @@ public class AppTechController extends BaseController {
 				}
 			}
 			map.put("area",areaList);
-			if (areaList.size()>0){
+			if (areaList != null && areaList.size()>0){
 				return new AppSuccResult(0,map,"下拉列表");
 			}
 		}
@@ -424,14 +464,14 @@ public class AppTechController extends BaseController {
 
 	//查看消息列表
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/getMessageList", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/getMessageList", method = {RequestMethod.POST})
 	@ApiOperation(value = "消息列表", notes = "消息列表")
 	public AppResult getMessageList(Page page,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id
 		Token token = (Token) request.getAttribute("token");
 		//根据消息的id 收件人查看
 		MessageInfo messageInfo=new MessageInfo();
-		messageInfo.setReceivePhone(token.getPhone());
+		messageInfo.setTechId(token.getTechId());
 		Page<MessageInfo> list = messageInfoService.findList(page, messageInfo);
 		long count = page.getCount();
 		int pageSize = page.getPageSize();
@@ -447,15 +487,29 @@ public class AppTechController extends BaseController {
 		map.put("list",list.getList());
 		map.put("totalPage",totalPage);
 		map.put("pageNo",page.getPageNo());
-		if (list.getList().size() == 0){
+		if (list.getList() ==null || list.getList().size() == 0){
 			return new AppFailResult(1,null,"没有消息");
 		}
 		return new AppSuccResult(0,map,"查看消息列表");
 	}
 
+	//app未读消息数量
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/getCount", method = {RequestMethod.POST})
+	@ApiOperation(value = "未读消息数量", notes = "未读消息数量")
+	public AppResult getCount(ServiceTechnicianInfo info,HttpServletRequest request, HttpServletResponse response) {
+		//获取登陆技师的信息  id
+		Token token = (Token) request.getAttribute("token");
+		//根据登陆技师的id去查询对应的未读消息数量
+		MessageInfo messageInfo=new MessageInfo();
+		messageInfo.setTechId(token.getTechId());
+		int count = messageInfoService.getCount(messageInfo);
+		return new AppFailResult(0,count,"未读消息数量");
+	}
+
 	//消息已读
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/updateMessage", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/updateMessage", method = {RequestMethod.POST})
 	@ApiOperation(value = "消息已读", notes = "消息已读")
 	public AppResult updateMessage(MessageInfo messageInfo,HttpServletRequest request, HttpServletResponse response) {
 		//获取登陆技师的信息  id
@@ -475,7 +529,7 @@ public class AppTechController extends BaseController {
 
 	//版本
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/updateVersion", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "${appPath}/updateVersion", method = {RequestMethod.POST})
 	@ApiOperation(value = "版本更新", notes = "版本更新")
 	public AppResult updateVersion(VersionInfo versionInfo,HttpServletRequest request, HttpServletResponse response) {
 		//获取传过来的code

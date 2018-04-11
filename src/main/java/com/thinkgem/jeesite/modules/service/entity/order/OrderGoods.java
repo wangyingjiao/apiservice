@@ -28,7 +28,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String goodsId;		// 商品ID
 	private String goodsName;		// 商品名称
 	private int goodsNum;		// 订购商品数
-	private String goodsUnit;		// 商品名称
+	private String goodsUnit;		// 商品单位
 	private String originPrice;		// 单价原价   自营价格
 	private String payPrice;		// 单价(折后价，无折扣时和原价相同) 国安社区价格
 	private String payPriceSum;		// 单价(折后价，无折扣时和原价相同)
@@ -39,6 +39,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private boolean goodsChecked = false;
 	private List<OrderGoods> goods; //商品list
 	private List<OrderGoodsTypeHouse> houses; //按居室商品列表
+	private String houseId; //按居室商品列表
 
 
 	private Double convertHours;		// 折算时长
@@ -253,5 +254,13 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setGoodsUnit(String goodsUnit) {
 		this.goodsUnit = goodsUnit;
+	}
+
+	public String getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(String houseId) {
+		this.houseId = houseId;
 	}
 }

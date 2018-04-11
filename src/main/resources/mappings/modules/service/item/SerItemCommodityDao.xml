@@ -4,7 +4,9 @@
     
 	<sql id="serItemCommodityColumns">
 		a.id AS "id",
+		a.sort_id AS "sortId",
 		a.item_id AS "itemId",
+        a.joint_name AS itemGoodName,
 		a.name AS "name",
 		a.unit AS "unit",
 		a.type AS "type",
@@ -12,8 +14,8 @@
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS "startPerNum",
-		a.capping_per_num AS "cappingPerNum",
-		a.joint_goods_code AS "jointGoodsCode"
+		a.capping_per_num AS "cappingPerNum"
+		<!--a.joint_goods_code AS "jointGoodsCode"-->
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -72,6 +74,7 @@
 			sort_id,
 			item_id,
 			name,
+			joint_name,
 			unit,
 			type,
 			price,
@@ -79,7 +82,7 @@
 			min_purchase,
 			start_per_num,
 			capping_per_num,
-			joint_goods_code,
+			<!--joint_goods_code,-->
 			create_by,
 			create_date,
 			update_by,
@@ -90,6 +93,7 @@
 			#{sortId},
 			#{itemId},
 			#{name},
+			#{itemGoodName},
 			#{unit},
 			#{type},
 			#{price},
@@ -97,7 +101,7 @@
 			#{minPurchase},
 			#{startPerNum},
 			#{cappingPerNum},
-			#{jointGoodsCode},
+			<!--#{jointGoodsCode},-->
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -111,13 +115,16 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
+			<if test="itemGoodName != null and itemGoodName != ''">
+				joint_name = #{itemGoodName},
+			</if>
 			<if test="unit != null and unit != ''">
 				unit = #{unit},
 			</if>
 			<if test="type != null and type != ''">
 				type = #{type},
 			</if>
-			<if test="price != null and price != ''">
+			<if test="price != null">
 				price = #{price},
 			</if>
 			<if test="convertHours != null and convertHours != ''">
@@ -132,9 +139,9 @@
 			<if test="cappingPerNum != null and cappingPerNum != ''">
 				capping_per_num = #{cappingPerNum},
 			</if>
-			<if test="jointGoodsCode != null and jointGoodsCode != ''">
+			<!--<if test="jointGoodsCode != null and jointGoodsCode != ''">
 				joint_goods_code = #{jointGoodsCode},
-			</if>
+			</if>-->
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
@@ -142,30 +149,26 @@
 
 	<update id="updateJointGoodsCode">
 		UPDATE ser_item_info_goods SET
-		joint_goods_code = #{jointGoodsCode},
+		<!--joint_goods_code = #{jointGoodsCode},-->
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE ser_item_info_goods SET 
+		UPDATE ser_item_info_goods SET
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
-	<select id="getSerItemCommodityByItem">
+	<select id="getSerItemCommodityByItem" resultType="SerItemCommodity">
 		SELECT id
 		FROM ser_item_info_goods
 		WHERE item_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</select>
-	<!--<update id="delSerItemCommodityPersons">-->
-		<!--UPDATE ser_item_info_goods_persons SET-->
-		<!--del_flag = #{DEL_FLAG_DELETE}-->
-		<!--WHERE goods_id = #{id}-->
-		<!--AND del_flag = #{DEL_FLAG_NORMAL}-->
-	<!--</update>-->
 
 	<update id="delSerItemCommodity">
 		UPDATE ser_item_info_goods SET
@@ -173,8 +176,6 @@
 		WHERE item_id = #{id}
 		AND del_flag = #{DEL_FLAG_NORMAL}
 	</update>
-
-
 
 	<select id="findListByItemId" resultType="SerItemCommodity">
 		SELECT
@@ -196,8 +197,8 @@
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS startPerNum,
-		a.capping_per_num AS cappingPerNum,
-		a.joint_goods_code AS jointGoodsCode
+		a.capping_per_num AS cappingPerNum
+		<!--a.joint_goods_code AS jointGoodsCode-->
 	</sql>
 	<resultMap type="SerItemCommodity" id="SerItemGoodsResultMap">
 		<id column="id" property="id"/>
@@ -208,12 +209,187 @@
 		<result column="price" property="price"/>
 		<result column="convert_hours" property="convertHours"/>
 		<result column="min_purchase" property="minPurchase"/>
-		<!-- 派人数量 -->
-		<!--<association property="persons" column="{reqId=id}" select="selectPersonsById"></association>-->
 	</resultMap>
-	<!--<select id="selectPersonsById" parameterType="java.util.Map" resultType="SerItemCommodityPersons">-->
-		<!--select id,critical,sort,quantity from ser_item_info_goods_persons-->
-		<!--where goods_id=#{reqId}-->
-		<!--and del_flag = '0'-->
-	<!--</select>-->
+
+	<select id="getEshopGoodsList" resultType="SerItemCommodityEshop">
+		SELECT
+			a.id,
+			a.org_id AS orgId,
+			a.eshop_code AS eshopCode,
+			a.item_id AS itemId,
+			a.goods_id AS goodsId,
+			<!--a.joint_goods_code AS jointGoodsCode,-->
+			a.joint_status AS jointStatus
+			FROM ser_item_info_goods_eshop a
+			WHERE a.goods_id = #{id}
+			AND enabled_status = 'yes'
+	</select>
+
+    <select id="getGoods" resultType="SerItemCommodity">
+        SELECT
+              id,
+              name,
+              sort_id AS sortId
+              FROM ser_item_info_goods
+              WHERE id = #{id}
+              AND del_flag = #{DEL_FLAG_NORMAL}
+
+    </select>
+
+	<select id="getEshopGoods" resultType="SerItemCommodityEshop">
+		SELECT
+			b.name AS eshopName,
+			a.joint_goods_code AS jointGoodsCode
+			FROM ser_item_info_goods_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
+			WHERE a.goods_id = #{id} AND a.enabled_status = 'yes'
+	</select>
+
+	<!--下拉列表 根据登录用户的机构id查询出对应E店名称-->
+	<select id="getGoodsCode" resultType="BasicGasqEshop">
+		SELECT
+		a.id,
+		a.name,
+		a.code AS eshopCode
+		FROM basic_gasq_eshop a
+		LEFT JOIN basic_organization_eshop b on a.code=b.eshop_code
+		WHERE b.org_id=#{orgId}
+		ORDER BY a.create_date DESC
+	</select>
+
+	<!--根据id获取商品-E店信息-->
+	<select id="getGoodEshop" resultType="SerItemCommodityEshop">
+		SELECT
+			id AS id,
+			org_id AS orgId,
+			eshop_code AS eshopCode,
+			item_id AS itemId,
+			goods_id AS goodsId,
+			joint_goods_code AS jointGoodsCode,
+			joint_status AS jointStatus,
+			enabled_status AS enabledStatus
+		FROM ser_item_info_goods_eshop
+
+		WHERE id = #{id}
+	</select>
+
+	<!--修改SerItemCommodityEshop中的状态-->
+	<update id="updateEshop">
+		UPDATE ser_item_info_goods_eshop SET
+		enabled_status = #{enabledStatus}
+		WHERE id = #{id}
+	</update>
+
+
+	<!--根据E店id 分类 商品名 对接code 查询出对应E店下的商品信息  获取对接商品-->
+	<select id="getGoodsList" resultType="SerItemCommodityEshop">
+		SELECT
+		b.id AS itemId,
+		b.name AS itemName,
+		c.id AS goodsId,
+		d.id AS sortId,
+		d.name AS sortName,
+		CONCAT(c.id,'_',d.id) AS selfCode,
+		a.id AS id,
+		a.org_id AS orgId,
+		a.eshop_code ASeshopCode,
+		a.joint_goods_code AS jointGoodsCode,
+		a.joint_status AS jointStatus
+		FROM ser_item_info_goods_eshop a
+		LEFT JOIN basic_gasq_eshop e on a.eshop_code=e.code
+		LEFT JOIN ser_item_info b on a.item_id=b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info_goods c on a.goods_id=c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_sort_info d on c.sort_id=d.id AND d.del_flag = #{DEL_FLAG_NORMAL}
+		<where>
+			e.code=#{eshopCode}
+			AND a.enabled_status='yes'
+			<if test="majorSort != null and majorSort != ''">
+				AND d.major_sort=#{majorSort}
+			</if>
+			<if test="sortId != null and sortId != ''">
+				AND d.id=#{sortId}
+			</if>
+			<if test="goodsName != null and goodsName != ''">
+				AND c.joint_name LIKE concat('%',#{goodsName},'%')
+			</if>
+			<if test="goodsId != null and goodsId != ''">
+				AND c.id=#{goodsId}
+			</if>
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY c.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findCommodityList" resultType="SerItemCommodityEshop">
+		SELECT
+			i.name AS itemName,
+			g.id,
+			g.name AS goodsName,
+            s.id AS sortId,
+			s.name AS sortName,
+			s.major_sort AS majorSort,
+			g.price,
+			g.unit
+			FROM ser_item_info i RIGHT JOIN ser_item_info_goods g ON i.id = g.item_id AND i.del_flag = #{DEL_FLAG_NORMAL}
+			LEFT JOIN ser_sort_info s ON g.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
+			WHERE g.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="majorSort != null and majorSort != ''">
+                AND s.major_sort = #{majorSort}
+            </if>
+            <if test="sortId != null and sortId != ''">
+                AND s.id = #{sortId}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                AND g.joint_name LIKE concat('%',#{goodsName},'%')
+            </if>
+			AND g.id NOT  IN (SELECT goods_id FROM ser_item_info_goods_eshop WHERE eshop_code = #{eshopCode} AND enabled_status = 'yes')
+			${sqlMap.dsf}
+			ORDER BY g.create_date DESC,g.name
+	</select>
+
+	<select id="getEshop" resultType="int">
+		SELECT COUNT(1) FROM basic_gasq_eshop WHERE code = #{eshopCode} AND status = 0 AND third_part = 'selfService'
+	</select>
+	<!--根据id 获取服务项目商品信息-->
+	<select id="getSerItemCommodity" resultType="SerItemCommodity">
+		SELECT
+		<include refid="serItemCommodityColumns"/>
+		FROM ser_item_info_goods a
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getGoodsEshop" resultType="SerItemCommodityEshop">
+        SELECT joint_goods_code AS jointGoodsCode FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+    </select>
+
+    <insert id="insertGoodsEshop">
+        INSERT INTO ser_item_info_goods_eshop (
+              id,
+              org_id,
+              eshop_code,
+              item_id,
+              goods_id,
+              joint_status
+        )VALUES (
+              #{id},
+              #{orgId},
+              #{eshopCode},
+              #{itemId},
+              #{goodsId},
+              #{jointStatus}
+        )
+    </insert>
+
+	<update id="updateGoodEshop">
+		UPDATE ser_item_info_goods_eshop SET
+			enabled_status = 'yes',
+			joint_status = 'butt_butt'
+			WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+	</update>
 </mapper>

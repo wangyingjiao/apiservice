@@ -27,10 +27,32 @@
 		<include refid="serItemInfoJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
+	<!--app根据id获取服务项目的名称 图片 服务时间-->
+	<select id="getById" resultType="OrderGoods">
+		SELECT
+		a.id AS "itemId",
+		a.name AS "itemName",
+		a.picture AS "picture"
+		FROM ser_item_info a
+		WHERE a.id = #{id}
+	</select>
+
 	<select id="findList" resultMap="SerItemCommodityResultMap">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
+			<if test="goodsName != null and goodsName != ''">
+			,#{goodsName} AS goodsName
+		</if>
+		<if test="sortIdandGoodsId != null and sortIdandGoodsId != ''">
+			,#{sortIdandGoodsId} AS sortIdandGoodsId
+		</if>
+		<if test="goodsName == null or goodsName == ''">
+			,'' AS goodsName
+		</if>
+		<if test="sortIdandGoodsId == null or sortIdandGoodsId == ''">
+			,'' AS sortIdandGoodsId
+		</if>
 		FROM ser_sort_info s
 		RIGHT JOIN ser_item_info a ON a.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_organization b ON a.org_id=b.id
@@ -49,9 +71,25 @@
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
 			</if>
-			<!--<if test="cityCode != null and cityCode !=''">-->
-				<!--AND (b.city_code = #{cityCode} OR a.all_city = 'yes')-->
-			<!--</if>-->
+			<if test="goodsName != null and goodsName != ''">
+				AND a.id in (
+				SELECT a.id FROM ser_item_info a LEFT JOIN ser_item_info_goods g ON a.id =g.item_id
+				where
+				a.del_flag = '0'
+				 and g.del_flag = '0'
+				AND g.name LIKE concat('%',#{goodsName},'%')
+				)
+			</if>
+			<if test="sortIdandGoodsId != null and sortIdandGoodsId != ''">
+				AND a.id in (
+				SELECT a.id FROM ser_item_info a LEFT JOIN ser_item_info_goods g ON a.id =g.item_id
+				where
+				a.del_flag = '0'
+				and g.del_flag = '0'
+				<!-- AND g.id LIKE concat('%',#{sortIdandGoodsId},'%') -->
+				AND g.id=#{sortIdandGoodsId}
+				)
+			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
 		</where>
@@ -72,14 +110,13 @@
 		a.sort_id AS "sortId",
 		s.name AS "sortName",
 		a.name AS "name",
-		a.all_city AS "allCity",
 		a.picture AS "picture",
 		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
 		a.sale AS "sale",
 		a.sort_num AS "sortNum",
-		a.joint_status AS "jointStatus",
-		b.joint_eshop_code AS jointEshopCode
+		a.joint_status AS "jointStatus"
+		<!--b.joint_eshop_code AS jointEshopCode-->
 	</sql>
 	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
 		<id column="id" property="id"/>
@@ -90,20 +127,30 @@
 		<result column="sort_id" property="sortId"/>
 		<result column="sort_name" property="sortName"/>
 		<result column="name" property="name"/>
-		<result column="all_city" property="allCity"/>
 		<result column="sale" property="sale"/>
 		<result column="joint_status" property="jointStatus"/>
 		<!-- 项目关联商品 -->
-		<association property="commoditys" column="{reqId=id}" select="selectCommodityById"></association>
+		<association property="commoditys" column="{reqId=id,goodsName=goodsName,sortIdandGoodsId=sortIdandGoodsId}" select="selectCommodityById"></association>
 		<!-- 定向城市 -->
 		<!--<association property="citys" column="{reqId=id}" select="selectCitysById"></association>-->
 	</resultMap>
 	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
 		select
-		id,name,unit,type,price,joint_goods_code AS jointGoodsCode
+		id,name,unit,type,price
+		<!--joint_goods_code AS jointGoodsCode-->
 		from ser_item_info_goods
 		where item_id=#{reqId}
 		and del_flag = '0'
+		<!-- 商品名称模糊查询 -->
+		<if test="goodsName != null and goodsName != ''">
+				AND name LIKE concat('%',#{goodsName},'%')
+		</if>
+		<!-- 对接编号（商品id）查询 -->
+		<if test="sortIdandGoodsId != null and sortIdandGoodsId != ''">
+				<!-- AND id LIKE concat('%',#{sortIdandGoodsId},'%') -->
+				AND id=#{sortIdandGoodsId}
+		</if>
+		
 	</select>
 	<!--<select id="selectCitysById" parameterType="java.util.Map" resultType="SerCityScope">-->
 		<!--select-->
@@ -184,9 +231,6 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<!--<if test="allCity != null and allCity != ''">-->
-				<!--all_city = #{allCity},-->
-			<!--</if>-->
 			<if test="picture != null and picture != ''">
 				picture = #{picture},
 			</if>
@@ -214,7 +258,9 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE ser_item_info SET 
+		UPDATE ser_item_info SET
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
@@ -258,17 +304,10 @@
 		AND  del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
-	<!--<select id="getSerSortInfo" resultType="SerSortInfo">-->
-		<!--select a.all_city AS allCity-->
-		<!--from ser_sort_info a-->
-		<!--where-->
-		<!--a.id = #{id}-->
-		<!--AND  a.del_flag = '0'-->
-	<!--</select>-->
 	<select id="getBasicOrganizationByOrgId" resultType="BasicOrganization">
 		select
-		a.id AS id, a.name AS name ,
-		a.joint_eshop_code AS jointEshopCode
+		a.id AS id, a.name AS name
+		<!--a.joint_eshop_code AS jointEshopCode-->
 		from basic_organization a
 		WHERE a.id= #{orgId}
 	</select>
@@ -289,5 +328,13 @@
 		LEFT JOIN ser_item_info b ON  b.id = a.item_id
 		WHERE
 		a.id = #{id}
+	</select>
+
+	<select id="getEshopGoods" resultType="SerItemCommodityEshop">
+		SELECT eshop_code AS eshopCode,joint_goods_code AS jointGoodsCode, enabled_status AS enabledStatus FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND enabled_status = 'yes'
+	</select>
+
+	<select id="getEshop" resultType="int">
+		SELECT COUNT(1) FROM basic_gasq_eshop WHERE status = '0' AND third_part = 'selfService' AND code = #{eshopCode}
 	</select>
 </mapper>

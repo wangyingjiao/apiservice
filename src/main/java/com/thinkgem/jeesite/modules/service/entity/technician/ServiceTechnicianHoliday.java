@@ -29,7 +29,27 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	private String techStationId;//服务站ID
 	private String techStationName;//服务站名称
 	private String remark;
-	private String isExpire="yes";//app是否过期
+	private String isExpire="yes";//app是否过期   yes已过期
+	private String reviewStatus; //审核状态 no：审核人未通过 submit：审核中 yes：审核通过
+	private String failReason; //未通过原因
+	private String source; //来源 app：技师APP端 sys：后台系统
+	private String jobStatus;		// 岗位状态(online:在职，leave:离职)
+	private String status; //按钮时候出现
+	public String getJobStatus() {
+		return jobStatus;
+	}
+
+	public void setJobStatus(String jobStatus) {
+		this.jobStatus = jobStatus;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public String getIsExpire() {
 		return isExpire;
@@ -129,5 +149,29 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public String getReviewStatus() {
+		return reviewStatus;
+	}
+
+	public void setReviewStatus(String reviewStatus) {
+		this.reviewStatus = reviewStatus;
+	}
+
+	public String getFailReason() {
+		return failReason;
+	}
+
+	public void setFailReason(String failReason) {
+		this.failReason = failReason;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 }

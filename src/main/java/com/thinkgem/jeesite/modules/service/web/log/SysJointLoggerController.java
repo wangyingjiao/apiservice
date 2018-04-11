@@ -3,6 +3,8 @@ package com.thinkgem.jeesite.modules.service.web.log;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,5 +46,20 @@ public class SysJointLoggerController {
 		Page<SysJointLogger> page = sysJointLoggerService.findPage(serSortInfoPage, sysJointLogger);
 		return new SuccResult(page);
 	}
+
+
+	@ResponseBody
+	@RequestMapping(value = "doOpenSend", method = {RequestMethod.POST})
+	public Result doOpenSend(@RequestBody SysJointLogger sysJointLogger) {
+		try{
+			sysJointLoggerService.doOpenSend(sysJointLogger);
+			return new SuccResult("对接成功");
+		}catch (ServiceException ex){
+			return new FailResult(""+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("对接失败!");
+		}
+	}
+
 
 }

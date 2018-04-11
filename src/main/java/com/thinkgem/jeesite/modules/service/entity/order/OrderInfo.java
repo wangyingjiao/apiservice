@@ -44,8 +44,10 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String serviceStatus;//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 	private String orderStatus;		// 订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)
 	private String orderSource;		// 订单来源(own:本机构 gasq:国安社区)
+	private String orderSourceName; // 订单来源 app中文
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
 	private String customerId;		// 客户ID
+	private String customerAddressId;		// 客户地址ID
 	private String customerRemark;		// 客户备注
 	private String customerRemarkPic;		// 客户备注图片
 	private List<String> customerRemarkPics;		// 客户备注图片
@@ -69,12 +71,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private List<String> orderRemarkPics;   //订单备注图片
 	private String orderContent;		// 下单服务内容
 	private String cancelReason;//取消原因
+	private String cancelReasonName;//取消原因中文
+	private String cancelReasonRemark;//取消原因备注
 	private String jointOrderId;//对接订单ID
 
 	private String customerName;         //客户姓名
 	private String customerPhone;         //客户电话
 	private OrderCustomInfo customerInfo;
 	private String orgName;         //机构
+	private String orgVisable;		// 用户是否可见(yes:可见;no:不可见;)
 	private String stationName;         //服务站
 	private Timestamp orderTimeStart;		// 下单起始时
 	private Timestamp orderTimeEnd;		// 下单结束时
@@ -83,7 +88,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	private OrderPayInfo payInfo;       // 支付信息
 	//private OrderRefund refundInfo;    //退款信息
-	//private OrderAddress addressInfo;  //服务地址信息
+	private OrderAddress addressInfo;  //服务地址信息
 	private OrderGoods goodsInfo;     //服务信息
 	private List<OrderGoods> goodsInfoList;
 	private List<OrderDispatch> techList; //技师List
@@ -103,6 +108,59 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String isTech="no"; //app技师修改服务状态时做展示功能标识符
 	private String pageSize;	//app 订单列表
 	private String pageNo;	//app 订单列表
+	private OrderPayInfo orderPayInfo; //app 订单的对应支付信息表
+
+	private String goodsSortId;
+	private String serchNowOrderId;
+	private boolean serchFullTech = false;
+
+	public String getGoodsSortId() {
+		return goodsSortId;
+	}
+
+	public void setGoodsSortId(String goodsSortId) {
+		this.goodsSortId = goodsSortId;
+	}
+
+	public String getSerchNowOrderId() {
+		return serchNowOrderId;
+	}
+
+	public void setSerchNowOrderId(String serchNowOrderId) {
+		this.serchNowOrderId = serchNowOrderId;
+	}
+
+	public boolean getSerchFullTech() {
+		return serchFullTech;
+	}
+
+	public void setSerchFullTech(boolean serchFullTech) {
+		this.serchFullTech = serchFullTech;
+	}
+
+	public String getCancelReasonName() {
+		return cancelReasonName;
+	}
+
+	public void setCancelReasonName(String cancelReasonName) {
+		this.cancelReasonName = cancelReasonName;
+	}
+
+	public String getOrderSourceName() {
+		return orderSourceName;
+	}
+
+	public void setOrderSourceName(String orderSourceName) {
+		this.orderSourceName = orderSourceName;
+	}
+
+	public OrderPayInfo getOrderPayInfo() {
+		return orderPayInfo;
+	}
+
+	public void setOrderPayInfo(OrderPayInfo orderPayInfo) {
+		this.orderPayInfo = orderPayInfo;
+	}
 
 	public String getPageNo() {
 		return pageNo;
@@ -510,6 +568,14 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 		this.cancelReason = cancelReason;
 	}
 
+	public String getCancelReasonRemark() {
+		return cancelReasonRemark;
+	}
+
+	public void setCancelReasonRemark(String cancelReasonRemark) {
+		this.cancelReasonRemark = cancelReasonRemark;
+	}
+
 	public String getCustomerName() {
 		return customerName;
 	}
@@ -575,6 +641,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	public void setRefundInfo(OrderRefund refundInfo) {
 		this.refundInfo = refundInfo;
 	}
+	*/
 
 	public OrderAddress getAddressInfo() {
 		return addressInfo;
@@ -582,7 +649,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setAddressInfo(OrderAddress addressInfo) {
 		this.addressInfo = addressInfo;
-	}*/
+	}
 
 	public OrderGoods getGoodsInfo() {
 		return goodsInfo;
@@ -753,5 +820,21 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setServiceTimeEnd(Timestamp serviceTimeEnd) {
 		this.serviceTimeEnd = serviceTimeEnd;
+	}
+
+	public String getCustomerAddressId() {
+		return customerAddressId;
+	}
+
+	public void setCustomerAddressId(String customerAddressId) {
+		this.customerAddressId = customerAddressId;
+	}
+
+	public String getOrgVisable() {
+		return orgVisable;
+	}
+
+	public void setOrgVisable(String orgVisable) {
+		this.orgVisable = orgVisable;
 	}
 }

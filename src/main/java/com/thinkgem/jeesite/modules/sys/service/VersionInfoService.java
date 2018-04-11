@@ -48,7 +48,7 @@ public class VersionInfoService extends CrudService<VersionInfoDao, VersionInfo>
         //比较build值 > 需要更新 <=不更新
         if (aLong2>aLong){
             //如果最新的版本是不强制更新的
-            if (versionInfo1.getForcedUpdate().equals("no")){
+            if ("no".equals(versionInfo1.getForcedUpdate())){
                 info.setForcedUpdate("yes");
                 //取数据库查询最新的一条强更的版本
                 VersionInfo byTime = versionInfoDao.getByTime(info);

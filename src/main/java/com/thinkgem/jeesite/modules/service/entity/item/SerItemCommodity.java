@@ -26,6 +26,7 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private String unit;		// 商品单位
 	private String type;		// 计量方式(num：按数量 area：按面积 house：按居室)
 	private BigDecimal price;		// 价格
+	private String doublePrice;
 	private Double convertHours;		// 折算时长
 	private int minPurchase;		// 起购数量
 	private int startPerNum;   		//起步人数（第一个4小时时长派人数量）
@@ -35,6 +36,79 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private String sortName;//分类名
 	private String itemName; //项目名
 	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
+	private String eshopCode; //E店code
+    private String itemGoodName;  //拼接后的名字
+    private String priceUnit;		//拼接后的单价
+	private List<String> goodIds;
+
+	private List<SerItemCommodityEshop> commodityEshops;
+	private String jointCode;
+
+	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
+
+	public String getDoublePrice() {
+		return doublePrice;
+	}
+
+	public void setDoublePrice(String doublePrice) {
+		this.doublePrice = doublePrice;
+	}
+
+	public String getJointEshopFlag() {
+		return jointEshopFlag;
+	}
+
+	public void setJointEshopFlag(String jointEshopFlag) {
+		this.jointEshopFlag = jointEshopFlag;
+	}
+
+	public List<String> getGoodIds() {
+		return goodIds;
+	}
+
+	public void setGoodIds(List<String> goodIds) {
+		this.goodIds = goodIds;
+	}
+
+	public String getPriceUnit() {
+        return priceUnit;
+    }
+
+    public void setPriceUnit(String priceUnit) {
+        this.priceUnit = priceUnit;
+    }
+
+    public String getItemGoodName() {
+        return itemGoodName;
+    }
+
+    public void setItemGoodName(String itemGoodName) {
+        this.itemGoodName = itemGoodName;
+    }
+
+    public String getEshopCode() {
+		return eshopCode;
+	}
+
+	public void setEshopCode(String eshopCode) {
+		this.eshopCode = eshopCode;
+	}
+
+	public String getJointCode() {
+		return jointCode;
+	}
+
+	public void setJointCode(String jointCode) {
+		this.jointCode = jointCode;
+	}
+
+	public List<SerItemCommodityEshop> getCommodityEshops() {
+		return commodityEshops;
+	}
+
+	public void setCommodityEshops(List<SerItemCommodityEshop> commodityEshops) {
+		this.commodityEshops = commodityEshops;
+	}
 
 	public int getStartPerNum() {
 		return startPerNum;
@@ -62,11 +136,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	private String jointGoodsCode;		//对接方商品CODE
 	private String selfCode;		//自营商品CODE
-	private List<SerItemCommodityPersons> persons;//派人数量
-
-	@NotNull(message = "派人数量不可为空")
-	public List<SerItemCommodityPersons> getPersons() {return persons;}
-	public void setPersons(List<SerItemCommodityPersons> persons) {this.persons = persons;}
 
 	public String getSelfCode() {
 		return selfCode;
