@@ -23,6 +23,8 @@ public class OrderRefundGoods extends DataEntity<OrderRefundGoods> {
 	private String goodsName;		// 商品名称
 	private String goodsNum;		// 订购商品数
 	private String payPrice;		// 单价(折后价，无折扣时和原价相同)
+	private String goodsUnit;  //单位
+	private String payPriceSum; //小计
 	
 	public OrderRefundGoods() {
 		super();
@@ -102,5 +104,20 @@ public class OrderRefundGoods extends DataEntity<OrderRefundGoods> {
 	public void setPayPrice(String payPrice) {
 		this.payPrice = payPrice;
 	}
-	
+
+	public String getGoodsUnit() {
+		return goodsUnit;
+	}
+
+	public void setGoodsUnit(String goodsUnit) {
+		this.goodsUnit = goodsUnit;
+	}
+
+	public String getPayPriceSum() {
+		return payPriceSum;
+	}
+
+	public void setPayPriceSum(String payPriceSum) {
+		this.payPriceSum = payPriceSum;
+	}
 }

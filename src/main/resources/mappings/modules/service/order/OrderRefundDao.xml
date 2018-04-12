@@ -29,14 +29,52 @@
 		<include refid="orderRefundJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
 	<select id="findList" resultType="OrderRefund">
-		SELECT 
-			<include refid="orderRefundColumns"/>
+		SELECT
+		a.id AS "id",
+		ord.order_number AS orderNumber,
+		org.name AS orgName,
+		sta.name AS stationName,
+		a.refund_number AS "refundNumber",
+		a.apply_time AS "applyTime",
+		a.finish_time AS "finishTime",
+		a.refund_account AS "refundAccount",
+		a.refund_status AS "refundStatus",
+		a.refund_method AS "refundMethod",
+		a.refund_reason AS "refundReason",
+		addr.name AS refundName,
+		addr.phone AS refundPhone
 		FROM order_refund a
-		<include refid="orderRefundJoins"/>
+		LEFT JOIN order_info ord ON a.order_id = ord.id
+		LEFT JOIN order_address addr ON ord.order_address_id = addr.id AND addr.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderSource != null and orderSource !=''">
+				AND ord.order_source= #{orderSource}
+			</if>
+			<if test="orgId != null and orgId !=''">
+				AND ord.org_id = #{orgId}
+			</if>
+			<if test="stationId != null and stationId !=''">
+				AND ord.station_id= #{stationId}
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">
+				AND ord.order_number LIKE concat('%',#{orderNumber},'%')
+			</if>
+			<if test="refundNumber != null and refundNumber != ''">
+				AND a.refund_number LIKE concat('%',#{refundNumber},'%')
+			</if>
+			<if test="refundName != null and refundName != ''">
+				AND addr.name LIKE concat('%',#{refundName},'%')
+			</if>
+			<if test="refundPhone != null and refundPhone != ''">
+				AND addr.phone LIKE concat('%',#{refundPhone},'%')
+			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -47,7 +85,8 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
+
 	<select id="findAllList" resultType="OrderRefund">
 		SELECT 
 			<include refid="orderRefundColumns"/>
@@ -120,5 +159,42 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+
+	<select id="formData" resultType="OrderRefund">
+		SELECT
+		a.id AS "id",
+		a.refund_number AS "refundNumber",
+		ord.order_number AS orderNumber,
+		a.order_id AS "orderId",
+		a.apply_time AS "applyTime",
+		a.finish_time AS "finishTime",
+		a.refund_account AS "refundAccount",
+		a.refund_status AS "refundStatus",
+		a.refund_method AS "refundMethod",
+		a.refund_reason AS "refundReason",
+		a.refund_difference_type AS "refundDifferenceType",
+		a.refund_difference AS "refundDifference"
+		FROM
+		order_refund a
+		LEFT JOIN order_info ord ON a.order_id = ord.id
+		WHERE a.id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<select id="listRefudGoodsByRefundId" resultType="OrderRefundGoods">
+		SELECT
+			a.id AS "id",
+			a.order_id AS "orderId",
+			a.refund_id AS "refundId",
+			a.item_id AS "itemId",
+			a.item_name AS "itemName",
+			a.goods_id AS "goodsId",
+			a.goods_name AS "goodsName",
+			a.goods_num AS "goodsNum",
+			a.goods_unit AS "goodsUnit",
+			a.pay_price AS "payPrice"
+		from
+		order_refund_goods a
+		WHERE
+		a.refund_id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 </mapper>

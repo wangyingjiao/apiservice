@@ -3,8 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.service.service.order;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderRefundGoods;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +36,12 @@ public class OrderRefundService extends CrudService<OrderRefundDao, OrderRefund>
 	}
 	
 	public Page<OrderRefund> findPage(Page<OrderRefund> page, OrderRefund orderRefund) {
+		User user = UserUtils.getUser();
+		BasicOrganization org = user.getOrganization();
+		if (null != org && org.getId().trim().equals("0")) {
+			orderRefund.setOrderSource("gasq");//全平台：只展示订单来源为国安社区的订单列表
+		}
+		orderRefund.getSqlMap().put("dsf", dataStatioRoleFilter(user, "a"));
 		return super.findPage(page, orderRefund);
 	}
 	
@@ -43,5 +54,21 @@ public class OrderRefundService extends CrudService<OrderRefundDao, OrderRefund>
 	public void delete(OrderRefund orderRefund) {
 		super.delete(orderRefund);
 	}
-	
+
+	public OrderRefund formData(OrderRefund orderRefund) {
+		OrderRefund info = dao.formData(orderRefund);
+		if(info == null){
+			return null;
+		}
+		List<OrderRefundGoods> refundGoodsList = dao.listRefudGoodsByRefundId(orderRefund);
+		if(refundGoodsList!=null && refundGoodsList.size()>0) {
+			for(OrderRefundGoods refundGoods : refundGoodsList){
+				BigDecimal b1 = new BigDecimal(refundGoods.getPayPrice());
+				BigDecimal b2 = new BigDecimal(refundGoods.getGoodsNum());
+				refundGoods.setPayPriceSum(b1.multiply(b2).toString());
+			}
+			info.setRefundGoodsList(refundGoodsList);
+		}
+		return info;
+	}
 }

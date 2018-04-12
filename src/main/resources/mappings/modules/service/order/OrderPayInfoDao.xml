@@ -36,21 +36,53 @@
         FROM order_pay_info a
         WHERE a.master_id = #{masterId}
     </select>
-	
+
 	<select id="findList" resultType="OrderPayInfo">
-		SELECT 
-			<include refid="orderPayInfoColumns"/>
+		SELECT
+		a.id AS "id",
+		ord.order_number AS orderNumber,
+		org.name AS orgName,
+		sta.name AS stationName,
+		a.pay_number AS "payNumber",
+		a.pay_time AS "payTime",
+		a.pay_account AS "payAccount",
+		a.pay_status AS "payStatus",
+		tech.name AS payTechName
 		FROM order_pay_info a
-		<include refid="orderPayInfoJoins"/>
+		LEFT JOIN order_info ord ON a.order_id = ord.id
+		LEFT JOIN order_master_info mas ON a.master_id = mas.id
+		LEFT JOIN tech_info tech ON a.pay_tech = tech.id
+		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderSource != null and orderSource !=''">
+				AND ord.order_source= #{orderSource}
+			</if>
+			<if test="orgId != null and orgId !=''">
+				AND ord.org_id = #{orgId}
+			</if>
+			<if test="stationId != null and stationId !=''">
+				AND ord.station_id= #{stationId}
+			</if>
+			<if test="payStatus != null and payStatus !=''">
+				AND a.pay_status= #{payStatus}
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">
+				AND ord.order_number LIKE concat('%',#{orderNumber},'%')
+			</if>
+			<if test="payNumber != null and payNumber != ''">
+				AND a.pay_number LIKE concat('%',#{payNumber},'%')
+			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date DESC
+				ORDER BY a.master_id ASC, a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
