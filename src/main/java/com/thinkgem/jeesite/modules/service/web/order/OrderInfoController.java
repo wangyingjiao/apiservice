@@ -12,8 +12,7 @@ import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
-import com.thinkgem.jeesite.modules.service.service.order.OrderInfoCreateService;
-import com.thinkgem.jeesite.modules.service.service.order.OrderInfoOperateService;
+import com.thinkgem.jeesite.modules.service.service.order.*;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 
 import java.util.*;
 
@@ -49,6 +47,10 @@ public class OrderInfoController extends BaseController {
 	private OrderInfoOperateService orderInfoOperateService;
 	@Autowired
 	private MessageInfoService messageInfoService;
+	@Autowired
+	private OrderPayInfoService orderPayInfoService;
+	@Autowired
+	private OrderRefundService orderRefundService;
 	
 	@ModelAttribute
 	public OrderInfo get(@RequestParam(required=false) String id) {
@@ -566,4 +568,54 @@ public class OrderInfoController extends BaseController {
 			return new FailResult("取消订单失败!");
 		}
 	}
+
+
+	@ResponseBody
+	@RequestMapping(value = "listDataPay", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation("获取订单收款列表")
+	//@RequiresPermissions("order_view")
+	public Result listDataPay(@RequestBody(required = false) OrderPayInfo orderPayInfo, HttpServletRequest request, HttpServletResponse response) {
+		if(null == orderPayInfo){
+			orderPayInfo = new OrderPayInfo();
+		}
+		Page<OrderPayInfo> orderPayInfoPage = new Page<>(request, response);
+		Page<OrderPayInfo> page = orderPayInfoService.findPage(orderPayInfoPage, orderPayInfo);
+		return new SuccResult(page);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "listDataRefund", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation("获取订单退款列表")
+	//@RequiresPermissions("order_view")
+	public Result listDataRefund(@RequestBody(required = false) OrderRefund orderRefund, HttpServletRequest request, HttpServletResponse response) {
+		if(null == orderRefund){
+			orderRefund = new OrderRefund();
+		}
+		Page<OrderRefund> orderRefundPage = new Page<>(request, response);
+		Page<OrderRefund> page = orderRefundService.findPage(orderRefundPage, orderRefund);
+		return new SuccResult(page);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "formDataRefund", method = {RequestMethod.POST})
+	@ApiOperation("查看退款")
+	@RequiresPermissions("order_info")
+	public Result formDataRefund(@RequestBody OrderRefund orderRefund) {
+		OrderRefund entity = null;
+		try {
+			if (StringUtils.isNotBlank(orderRefund.getId())) {
+				entity = orderRefundService.formData(orderRefund);
+			}
+			if (entity == null) {
+				return new FailResult("未找到此id对应的订单");
+			} else {
+				return new SuccResult(entity);
+			}
+		}catch (ServiceException ex){
+			return new FailResult("查看失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("未找到订单详情!");
+		}
+	}
+
 }

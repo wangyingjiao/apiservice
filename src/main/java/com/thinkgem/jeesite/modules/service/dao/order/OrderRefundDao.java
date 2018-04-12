@@ -6,6 +6,9 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderRefund;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderRefundGoods;
+
+import java.util.List;
 
 /**
  * 退款单DAO接口
@@ -14,5 +17,8 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderRefund;
  */
 @MyBatisDao
 public interface OrderRefundDao extends CrudDao<OrderRefund> {
-	
+
+    OrderRefund formData(OrderRefund orderRefund);
+
+    List<OrderRefundGoods> listRefudGoodsByRefundId(OrderRefund orderRefund);
 }

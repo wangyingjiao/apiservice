@@ -5,6 +5,10 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +35,12 @@ public class OrderPayInfoService extends CrudService<OrderPayInfoDao, OrderPayIn
 	}
 	
 	public Page<OrderPayInfo> findPage(Page<OrderPayInfo> page, OrderPayInfo orderPayInfo) {
+		User user = UserUtils.getUser();
+		BasicOrganization org = user.getOrganization();
+		if (null != org && org.getId().trim().equals("0")) {
+			orderPayInfo.setOrderSource("gasq");//全平台：只展示订单来源为国安社区的订单列表
+		}
+		orderPayInfo.getSqlMap().put("dsf", dataStatioRoleFilter(user, "a"));
 		return super.findPage(page, orderPayInfo);
 	}
 	
