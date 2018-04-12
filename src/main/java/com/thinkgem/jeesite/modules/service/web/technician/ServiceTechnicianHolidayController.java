@@ -119,8 +119,12 @@ public class ServiceTechnicianHolidayController extends BaseController {
 	@RequestMapping(value = "delete", method = {RequestMethod.POST})
 	@ApiOperation("删除休假")
 	public Result delete(@RequestBody ServiceTechnicianHoliday serviceTechnicianHoliday) {
-		serviceTechnicianHolidayService.deleteHoliday(serviceTechnicianHoliday);
-		return new SuccResult("删除休假成功");
+		try {
+			serviceTechnicianHolidayService.deleteHoliday(serviceTechnicianHoliday);
+			return new SuccResult("删除休假成功");
+		}catch (ServiceException e){
+			return new FailResult(e.getMessage());
+		}
 	}
 
 	/**
