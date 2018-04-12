@@ -963,8 +963,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					String format = df.format(new Date(finishTime.getTime() - (long) 1 * 60 * 60 * 1000));
 					Date date1 = DateUtils.parseDate(format);
 					//如果提前一个多小时 不能点击 抛异常
-					if (date.before(date1)) {
-						throw new ServiceException("最多提前一个小时点击完成");
+					if (date.before(date1) || date.before(info.getServiceTime())) {
+						throw new ServiceException("最多提前一个小时点击完成，且不能早于服务时间");
 					}
 					info.setFinishTime(date);
 					//修改订单对应的排期表  先查出派单表集合
