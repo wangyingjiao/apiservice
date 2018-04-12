@@ -5,8 +5,13 @@ package com.thinkgem.jeesite.modules.service.dao.basic;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 
 import java.util.List;
 
@@ -22,9 +27,35 @@ public interface BasicOrganizationDao extends CrudDao<BasicOrganization> {
     //add by wyr验证E店编码
     List<BasicOrganization> getByECode(BasicOrganization organization);
 
-    void deleteCitysByOrgId(BasicOrganization basicOrganization);
-
     int getStationList(String id);
 
-    List<BasicOrganization> getOrganizationListByJointEshopCode(BasicOrganization organizationSerch);
+    List<BasicOrganization> getOrganizationListByJointEshopCode(String eshop_code);
+
+    List<Dict> getPlatform();
+
+    BasicGasqEshop getEShopByCode(BasicGasqEshop basicGasqEshop);
+
+    int getOrgEShopByCode(BasicGasqEshop basicGasqEshop);
+
+    void deleteEcode(BasicOrganization basicOrganization);
+
+    void insetOrgEshop(BasicOrganizationEshop boe);
+
+    List<BasicOrganizationEshop> findListByOrgId(BasicOrganization basicOrganization);
+
+    void deleteEshop(BasicOrganization basicOrganization);
+
+    void updEshopGoods(BasicOrganization basicOrganization);
+
+    void updEshopGoodsYes(BasicOrganizationEshop boe);
+
+    void deleteEshopGoodsByEshopCode(BasicOrganization basicOrganization);
+
+    List<SerItemCommodity> getJointGoodsCodes(BasicOrganization basicOrganization);
+
+    int getOrgEShopList(BasicOrganization basicOrganization);
+
+    void updDockType(BasicOrganization basicOrganization);
+
+    int getOrgEShop(BasicOrganizationEshop basicOrganizationEshop);
 }

@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.open.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -12,6 +13,9 @@ import java.util.List;
 public class OpenSendSaveItemProduct extends DataEntity<OpenSendSaveItemProduct> {
 
     private static final long serialVersionUID = 1L;
+
+    private HashMap<String,Object> attachments;
+    private HashMap<String,String> eshop_codes;
 
     private String content_name;// 商品名称格式：项目名称（商品名）
     private String tags_system;//系统标签格式：系统标签1,系统标签2,系统标签3,
@@ -148,5 +152,21 @@ public class OpenSendSaveItemProduct extends DataEntity<OpenSendSaveItemProduct>
 
     public void setContent_number(String content_number) {
         this.content_number = content_number;
+    }
+
+    public HashMap<String, Object> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(HashMap<String, Object> attachments) {
+        this.attachments = attachments;
+    }
+
+    public HashMap<String, String> getEshop_codes() {
+        return eshop_codes;
+    }
+
+    public void setEshop_codes(HashMap<String, String> eshop_codes) {
+        this.eshop_codes = eshop_codes;
     }
 }

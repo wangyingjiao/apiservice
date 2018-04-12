@@ -19,7 +19,8 @@
 		a.tel_400 AS "tel400",
 		a.work_start_time AS "workStartTime",
 		a.work_end_time AS "workEndTime",
-		a.joint_eshop_code AS "jointEshopCode",
+		a.dock_type AS dockType,
+		<!--a.joint_eshop_code AS "jointEshopCode",-->
 		a.remark AS "remark",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -49,7 +50,8 @@
 			a.tel_400 AS "tel400",
 			a.work_start_time AS "workStartTime",
 			a.work_end_time AS "workEndTime",
-			a.joint_eshop_code AS "jointEshopCode",
+			a.dock_type AS dockType,
+			<!--a.joint_eshop_code AS "jointEshopCode",-->
 			a.remark AS "remark"
 		FROM basic_organization a
 		WHERE a.id = #{id}
@@ -62,8 +64,8 @@
 			a.telephone AS "telephone",
 			a.master_name AS "masterName",
 			a.master_phone AS "masterPhone",
-			a.address AS "address",
-			a.joint_eshop_code AS jointEshopCode
+			a.address AS "address"
+			<!--a.joint_eshop_code AS jointEshopCode-->
 		FROM basic_organization a
 		<include refid="basicOrganizationJoins"/>
 		<where>
@@ -76,6 +78,16 @@
 			</if>
 			<if test="masterPhone != null and masterPhone != ''">
 				AND a.master_phone like concat('%',#{masterPhone},'%')
+			</if>
+			<!--<if test="jointEshopCode != null and jointEshopCode != ''">
+				AND a.joint_eshop_code like concat('%',#{jointEshopCode},'%')
+			</if>-->
+			<if test="eshopNames != null and eshopNames != ''">
+				AND a.id in (
+				SELECT a.org_id FROM  basic_organization_eshop a LEFT JOIN basic_gasq_eshop g ON a.eshop_code =g.code
+				where
+			    g.name LIKE concat('%',#{eshopNames},'%')
+				)
 			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
@@ -109,7 +121,8 @@
 			tel_400,
 			work_start_time,
 			work_end_time,
-			joint_eshop_code,
+			dock_type,
+			<!--joint_eshop_code,-->
 			remark,
 			create_by,
 			create_date,
@@ -133,7 +146,8 @@
 			#{tel400},
 			#{workStartTime},
 			#{workEndTime},
-			#{jointEshopCode},
+			#{dockType},
+			<!--#{jointEshopCode},-->
 			#{remark},
 			#{createBy.id},
 			#{createDate},
@@ -172,6 +186,9 @@
 			<if test="scopeType != null and scopeType != ''">
 				scope_type = #{scopeType},
 			</if>
+			<if test="dockType != null and dockType != ''">
+				dock_type = #{dockType},
+			</if>
 			<if test="visable != null and visable != ''">
 				visable = #{visable},
 			</if>
@@ -182,7 +199,7 @@
 				work_end_time = #{workEndTime},
 			</if>
 			<!-- <if test="jointEshopCode != null and jointEshopCode != ''"> -->
-				joint_eshop_code = #{jointEshopCode},
+				<!--joint_eshop_code = #{jointEshopCode},-->
 			<!-- </if> -->
 			url = #{url},
 			fax = #{fax},
@@ -210,16 +227,11 @@
 	<select id="getByECode" resultType="BasicOrganization">
 		select * from basic_organization
 		WHERE 1=1
-		AND joint_eshop_code = #{jointEshopCode}
+		<!--AND joint_eshop_code = #{jointEshopCode}-->
 		<if test="id != null and id != ''">
 			AND id &lt;&gt; #{id}
 		</if>
 	</select>
-	<update id="deleteCitysByOrgId">
-		UPDATE basic_service_city SET
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE org_id = #{id}
-	</update>
 
 	<select id="getStationList" resultType="int">
 		SELECT count(1) FROM basic_service_station a
@@ -235,7 +247,99 @@
 			a.work_start_time AS workStartTime,
 			a.work_end_time AS workEndTime
 		from basic_organization a
-		WHERE a.joint_eshop_code = #{jointEshopCode}
-		AND a.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_organization_eshop b on a.id = b.org_id
+		WHERE
+		b.eshop_code = #{eshopCode}
+		and a.del_flag = '0'
 	</select>
+	<select id="getPlatform" resultType="Dict">
+		SELECT
+			a.id,
+			a.value,
+			a.label,
+			a.type,
+			a.description,
+			a.sort
+			FROM sys_dict a
+			WHERE a.type = 'dock_platform'
+	</select>
+
+    <select id="getEShopByCode" resultType="BasicGasqEshop">
+        SELECT
+            a.name,
+            a.code
+            FROM basic_gasq_eshop a
+            WHERE a.code = #{code}
+            AND a.status = 0
+            AND a.third_part = 'selfService'
+            AND a.business_model_id != ''
+            AND a.operation_base_status = 'yes'
+    </select>
+
+    <select id="getOrgEShopByCode" resultType="int">
+        SELECT
+            count(*)
+            FROM basic_organization_eshop
+            WHERE eshop_code = #{code}
+    </select>
+
+	<select id="getOrgEShop" resultType="int">
+		SELECT
+		count(1)
+		FROM basic_organization_eshop
+		WHERE eshop_code = #{eshopCode} AND org_id = #{orgId}
+	</select>
+	
+	<delete id="deleteEcode">
+		DELETE FROM basic_organization_eshop WHERE org_id = #{id}
+	</delete>
+
+	<insert id="insetOrgEshop">
+		INSERT INTO basic_organization_eshop(id,org_id,dock_type,eshop_code)
+		VALUES (#{id},#{orgId},#{dockType},#{eshopCode})
+	</insert>
+
+	<select id="findListByOrgId" resultType="BasicOrganizationEshop">
+		SELECT
+			  a.id,
+			  a.org_id AS orgId,
+			  a.dock_type AS dockType,
+			  a.eshop_code AS eshopCode,
+			  b.name
+			  FROM basic_organization_eshop a LEFT JOIN basic_gasq_eshop b ON a.eshop_code = b.code
+			  WHERE a.org_id = #{id}
+			  ORDER BY b.create_date DESC
+	</select>
+
+    <delete id="deleteEshop">
+        DELETE FROM basic_organization_eshop WHERE eshop_code = #{eshopCode}
+    </delete>
+
+    <update id="updEshopGoods">
+        UPDATE ser_item_info_goods_eshop SET status = 'no' WHERE eshop_code = #{eshopCode}
+    </update>
+
+    <update id="updEshopGoodsYes">
+        UPDATE ser_item_info_goods_eshop SET status = 'yes' WHERE eshop_code = #{eshopCode}
+    </update>
+
+    <delete id="deleteEshopGoodsByEshopCode">
+        UPDATE ser_item_info_goods_eshop SET enabled_status = 'no' WHERE eshop_code = #{eshopCode}
+    </delete>
+
+    <select id="getJointGoodsCodes" resultType="SerItemCommodity">
+        SELECT a.joint_goods_code AS jointGoodsCode,
+			b.sort_id AS sortId,
+			b.id
+         	FROM ser_item_info_goods_eshop a LEFT JOIN ser_item_info_goods b ON a.goods_id = b.id
+         	WHERE a.eshop_code = #{eshopCode} AND a.enabled_status = 'yes' AND joint_status = 'butt_success'
+    </select>
+
+	<select id="getOrgEShopList" resultType="int">
+		SELECT COUNT(1)  FROM basic_organization_eshop WHERE org_id = #{id}
+	</select>
+
+	<update id="updDockType">
+		UPDATE basic_organization SET dock_type = '' WHERE id = #{id}
+	</update>
 </mapper>

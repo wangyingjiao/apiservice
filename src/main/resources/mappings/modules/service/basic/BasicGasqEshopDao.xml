@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.basic.BasicGasqEshopDao">
+
+	<insert id="insert">
+		INSERT INTO basic_gasq_eshop(
+			id,
+			name,
+			business_model_id,
+			seller_id,
+			publish,
+			status,
+			code,
+			operation_base_status,
+			third_part,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{businessModelId},
+			#{sellerId},
+			#{publish},
+			#{status},
+			#{code},
+			#{operationBaseStatus},
+			#{thirdPart},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE basic_gasq_eshop SET
+			name = #{name},
+			business_model_id = #{businessModelId},
+			seller_id = #{sellerId},
+			publish = #{publish},
+			status = #{status},
+			operation_base_status = #{operationBaseStatus},
+			third_part = #{thirdPart},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE code = #{code}
+	</update>
+	
+	<update id="delete">
+		UPDATE basic_gasq_eshop SET
+			status = '1'
+		WHERE code = #{code}
+	</update>
+
+	<select id="getInfoByEshopCode" resultType="BasicGasqEshop">
+		SELECT * from basic_gasq_eshop
+		WHERE code = #{eshop_code}
+	</select>
+</mapper>

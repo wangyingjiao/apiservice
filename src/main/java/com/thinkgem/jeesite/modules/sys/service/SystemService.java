@@ -200,6 +200,7 @@ public class SystemService extends BaseService implements InitializingBean {
         BasicServiceStation station = stationDao.get(id);
         station.setEmployees(station.getEmployees() - 1);
         stationDao.update(station);
+        user.preUpdate();
         userDao.delete(user);
 
         UserUtils.clearCache(user);
@@ -348,6 +349,7 @@ public class SystemService extends BaseService implements InitializingBean {
 
     @Transactional(readOnly = false)
     public void deleteRole(Role role) {
+        role.preUpdate();
         roleDao.delete(role);
         // 同步到Activiti
         deleteActivitiGroup(role);
@@ -397,14 +399,19 @@ public class SystemService extends BaseService implements InitializingBean {
     @Transactional(readOnly = false)
     public void saveMenu(Menu menu) {
 
-        // 获取父节点实体
-        menu.setParent(this.getMenu(menu.getParent().getId()));
-
         // 获取修改前的parentIds，用于更新子节点的parentIds
         String oldParentIds = menu.getParentIds();
 
-        // 设置新的父节点串
-        menu.setParentIds(menu.getParent().getParentIds() + menu.getParent().getId() + ",");
+        if("1".equals(menu.getParent().getId())){
+            // 设置新的父节点串
+            menu.setParentIds("0,1,");
+        }else{
+            // 获取父节点实体
+            menu.setParent(this.getMenu(menu.getParent().getId()));
+
+            // 设置新的父节点串
+            menu.setParentIds(menu.getParent().getParentIds() + menu.getParent().getId() + ",");
+        }
 
         // 保存或更新实体
         if (StringUtils.isBlank(menu.getId())) {
@@ -444,6 +451,7 @@ public class SystemService extends BaseService implements InitializingBean {
 
     @Transactional(readOnly = false)
     public void deleteMenu(Menu menu) {
+        menu.preUpdate();
         menuDao.delete(menu);
         // 清除用户菜单缓存
         UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);
@@ -526,9 +534,24 @@ public class SystemService extends BaseService implements InitializingBean {
 		return roleDao.checkAddName(name,id);
 	}
 	//add by wyr 获取岗位表关联菜单表的数据
-	 public Role getRoleUnion(String id) {
-	        return roleDao.getRoleUnion(id);
+	 public Role getRoleUnion(String id,String type) {
+	        return roleDao.getRoleUnion(id,type);
 	    }
+
+    public User getUserFormData(User user) {
+        User userRe = userDao.get(user);
+        userRe.setRoleList(roleDao.findList(new Role(userRe)));
+        if(user.getId().equals(UserUtils.getUser().getId())){
+            userRe.setUpdateOwnFlag("yes");
+        }else{
+            userRe.setUpdateOwnFlag("no");
+        }
+       return userRe;
+    }
+
+    public String getUserRole(String principalId) {
+        return roleDao.getRoleIdByUserId(principalId);
+    }
 
 //	public Page<Role> findRolePage(Page){
 //

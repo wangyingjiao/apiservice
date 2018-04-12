@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -32,6 +33,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.service.DictService;
 import springfox.documentation.annotations.ApiIgnore;
+
 
 /**
  * 字典Controller
@@ -171,7 +173,7 @@ public class DictController extends BaseController {
 
 
     @ResponseBody
-    @RequiresPermissions("sys:dict:edit")
+    //@RequiresPermissions("sys:dict:edit")
     @RequestMapping(value = "saveData", method = {RequestMethod.POST, RequestMethod.GET})//@Valid
     @ApiOperation(value = "新建字典")
     public Result save(@RequestBody Dict dict) {
@@ -183,10 +185,10 @@ public class DictController extends BaseController {
     }
 
     @ResponseBody
-    @RequiresPermissions("sys:dict:edit")
+    //@RequiresPermissions("sys:dict:edit")
     @RequestMapping(value = "deleteDict", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation(value = "删除字典")
-    public Result deleteDict(Dict dict) {
+    public Result deleteDict(@RequestBody Dict dict) {
         dictService.delete(dict);
         return new SuccResult("删除字典成功");
     }
@@ -201,13 +203,60 @@ public class DictController extends BaseController {
     @ResponseBody
     //@RequiresPermissions("log_view")
     @RequestMapping(value = "/dictListData", method = {RequestMethod.POST, RequestMethod.GET})
-    @ApiOperation("获取字典列表")
+    @ApiOperation("获取字典类型列表")
     public Result dictListData(@RequestBody(required = false) Dict dict, HttpServletRequest request, HttpServletResponse response) {
         if(dict == null){
             dict = new Dict();
         }
         Page<Dict> serSortInfoPage = new Page<>(request, response);
-        Page<Dict> page = dictService.findPage(serSortInfoPage, dict);
+        Page<Dict> page = dictService.dictListData(serSortInfoPage, dict);
         return new SuccResult(page);
     }
+
+    @ResponseBody
+    //@RequiresPermissions("log_view")
+    @RequestMapping(value = "/dictListDataByType", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("根据类型获取字典列表")
+    public Result dictListDataByType(@RequestBody(required = false) Dict dict, HttpServletRequest request, HttpServletResponse response) {
+        if(dict == null){
+            dict = new Dict();
+        }
+        //Page<Dict> DictPage = new Page<>(request, response);
+        List<Dict> dicts = dictService.dictListDataByType(dict);
+        return new SuccResult(dicts);
+    }
+
+    @ResponseBody
+    //@RequiresPermissions("log_view")
+    @RequestMapping(value = "/dictListDataById", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("根据ID获取字典列表")
+    public Result dictListDataById(@RequestBody(required = false) Dict dict, HttpServletRequest request, HttpServletResponse response) {
+        if(dict == null){
+            dict = new Dict();
+        }
+        Dict d = dictService.dictListDataById(dict);
+        return new SuccResult(d);
+    }
+
+    @ResponseBody
+    //@RequiresPermissions("sys:dict:edit")
+    @RequestMapping(value = "upData", method = {RequestMethod.POST, RequestMethod.GET})//@Valid
+    @ApiOperation(value = "修改保存字典")
+    public Result upData(@RequestBody Dict dict) {
+        if (dict == null) {
+            return new FailResult("参数错误！");
+        }
+        dictService.upData(dict);
+        return new SuccResult<String>("修改字典成功");
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/getRedisValue", method = {RequestMethod.POST, RequestMethod.GET})
+    public Result getRedisValue(@RequestBody(required = false) Dict dict, HttpServletRequest request, HttpServletResponse response) {
+        Object cache = CacheUtils.get(dict.getValue());
+        return new SuccResult(cache);
+    }
+
 }

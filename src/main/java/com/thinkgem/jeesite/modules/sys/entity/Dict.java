@@ -28,6 +28,7 @@ public class Dict extends DataEntity<Dict> {
 	private String parentId;//父Id
 	private List<Dict> dictList;
 	private int dictNum;
+	private String typeStr;
 
 	public Dict() {
 		super();
@@ -118,5 +119,13 @@ public class Dict extends DataEntity<Dict> {
 	@Override
 	public String toString() {
 		return label;
+	}
+
+	public String getTypeStr() {
+		return typeStr;
+	}
+
+	public void setTypeStr(String typeStr) {
+		this.typeStr = typeStr;
 	}
 }

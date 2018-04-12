@@ -7,12 +7,6 @@
 		a.name AS "name",
 		a.sex AS "sex",
 		a.phone AS "phone",
-		a.province_code AS "provinceCode",
-		a.city_code AS "cityCode",
-		a.area_code AS "areaCode",
-		a.address AS "address",
-		a.addr_longitude AS "addrLongitude",
-		a.addr_latitude AS "addrLatitude",
 		a.email AS "email",
 		a.org_id AS "orgId",
 		a.source AS "source",
@@ -26,7 +20,23 @@
 	
 	<sql id="orderCustomInfoJoins">
 	</sql>
-    
+
+    <select id="findCusList" resultType="OrderCustomInfo">
+        SELECT
+        a.id AS "id",
+        a.name AS "name",
+        a.phone AS "phone"
+        FROM customer_info a
+        WHERE
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.phone = #{phone}
+        AND a.org_id = #{orgId}
+        AND a.source = #{source}
+		<if test="id != null and id != ''">
+			AND a.id != #{id}
+		</if>
+    </select>
+
 	<select id="get" resultType="OrderCustomInfo">
 		SELECT 
 			<include refid="orderCustomInfoColumns"/>
@@ -41,9 +51,6 @@
 			a.name AS "name",
 			a.sex AS "sex",
 			a.phone AS "phone",
-			a.address AS "address",
-			a.addr_longitude AS "addrLongitude",
-			a.addr_latitude AS "addrLatitude",
 			a.org_id AS "orgId",
 			b.name AS "orgName",
 			a.source AS "source"
@@ -51,6 +58,7 @@
 		LEFT JOIN basic_organization b ON a.org_id = b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.source = 'own'
 			<if test="phone != null and phone != ''">
 				AND a.phone LIKE concat('%',#{phone},'%')
 			</if>
@@ -97,12 +105,6 @@
 			name,
 			sex,
 			phone,
-			province_code,
-			city_code,
-			area_code,
-			address,
-			addr_longitude,
-			addr_latitude,
 			email,
 			org_id,
 			source,
@@ -117,12 +119,6 @@
 			#{name},
 			#{sex},
 			#{phone},
-			#{provinceCode},
-			#{cityCode},
-			#{areaCode},
-			#{address},
-			#{addrLongitude},
-			#{addrLatitude},
 			#{email},
 			#{orgId},
 			#{source},
@@ -140,13 +136,7 @@
 		<if test="name !=null and name != ''">name = #{name},</if>
 		<if test="sex !=null and sex != ''">sex = #{sex},</if>
 		<if test="phone !=null and phone != ''">phone = #{phone},</if>
-		<if test="provinceCode !=null and provinceCode != ''">province_code = #{provinceCode},</if>
-		<if test="cityCode !=null and cityCode != ''">city_code = #{cityCode},</if>
-		<if test="areaCode !=null and areaCode != ''">area_code = #{areaCode},</if>
-		<if test="address !=null and address != ''">address = #{address},</if>
-		<if test="addrLongitude !=null and addrLongitude != ''">addr_longitude = #{addrLongitude},</if>
-		<if test="addrLatitude !=null and addrLatitude != ''">addr_latitude = #{addrLatitude},</if>
-		<if test="email !=null and email != ''">email = #{email},</if>
+		email = #{email},
 		<if test="orgId !=null and orgId != ''">org_id = #{orgId},</if>
 		<if test="source !=null and source != ''">source = #{source},</if>
 		<if test="stationId !=null and stationId != ''">station_id = #{stationId},</if>
@@ -157,6 +147,8 @@
 
 	<update id="delete">
 		UPDATE customer_info SET
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
@@ -191,11 +183,72 @@
 			a.province_code AS "provinceCode",
 			a.city_code AS "cityCode",
 			a.area_code AS "areaCode",
+			a.placename AS "placename",
 			a.address AS "address",
 			a.service_point AS "servicePoint"
 		FROM basic_service_station a
 		WHERE a.org_id = #{id}
 		AND a.del_flag = '0'
 		AND a.is_useable = 'yes'
+	</select>
+
+	<select id="findCustomerByPhone" resultType="OrderCustomInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.email AS "email",
+		a.org_id AS "orgId",
+		a.source AS "source",
+		a.station_id AS "stationId"
+		FROM customer_info a
+		WHERE a.phone = #{phone}
+		AND a.org_id = #{orgId}
+		AND a.source = #{source}
+		AND a.del_flag = '0'
+	</select>
+	<select id="findCustomerById" resultType="OrderCustomInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.phone AS "phone",
+		a.email AS "email",
+		a.org_id AS "orgId",
+		a.source AS "source",
+		a.station_id AS "stationId"
+		FROM customer_info a
+		WHERE a.id = #{id}
+	</select>
+	<select id="listAddressByCustomAddress" resultType="OrderCustomAddress">
+		SELECT
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.address_name AS "addressName",
+		a.address_phone AS "addressPhone",
+		a.placename AS "placename",
+		CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(a.placename,''),IFNULL(a.detail_address,'')) AS "detailAddress",
+		a.addr_longitude AS "addrLongitude",
+		a.addr_latitude AS "addrLatitude",
+		a.default_type AS "defaultType"
+		FROM customer_address a
+		LEFT JOIN sys_area t1 ON a.province_code = t1.code
+		LEFT JOIN sys_area t2 ON a.city_code = t2.code
+		LEFT JOIN sys_area t3 ON a.area_code = t3.code
+		WHERE
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.customer_id = #{id}
+		ORDER BY a.create_date ASC
+	</select>
+	<select id="findStationList" resultType="OrderDropdownInfo">
+		SELECT
+			a.id AS "id",a.name AS "name"
+		from basic_service_station a
+		WHERE
+		a.org_id = #{orgId}
+		AND a.is_useable = 'yes'
+		AND a.del_flag = '0'
+		ORDER BY a.create_date DESC
 	</select>
 </mapper>

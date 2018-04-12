@@ -191,18 +191,23 @@ public class UserUtils {
         List<Menu> menuList = (List<Menu>) getCache(CACHE_MENU_LIST);
         if (menuList == null) {
             User user = getUser();
-            if (user.isAdmin()) {
-                menuList = menuDao.findAllList(new Menu());
+            //if (user.isAdmin) {
+            if (null!=user.getType()&&user.getType().equals("sys")) {
+            	Menu menu = new Menu();
+            	menu.setType(user.getType());
+                menuList = menuDao.findAllList(menu);
             } else {
             	 BasicOrganization org = user.getOrganization();
                  if (null != org && org.getId().trim().equals("0")) { //add by wyr全平台用户显示左侧菜单栏
             		Menu m = new Menu();
                 	m.setUserId(user.getId());
+                	m.setType(user.getType());
                 	//menuList = menuDao.findByUserId(m);
                 	menuList=menuDao.findByUserIdFullPlatform(m);
                 }else {
                 	Menu m = new Menu();
                 	m.setUserId(user.getId());
+                	m.setType(user.getType());
                 	menuList = menuDao.findByUserId(m);
 				} 
             }
@@ -363,10 +368,16 @@ public class UserUtils {
     public static List<Menu> getMenuListForPlatform() {
         User user = getUser();
         if (user.getOrganization().getId().equals("0")) {
-            return menuDao.findAllList(new Menu());
+        	Menu menu = new Menu();
+        	menu.setType(user.getType());
+            return menuDao.findAllList(menu);
         } else {
             return getMenuList();
         }
+    }
+
+    public static List<Menu> getAllMenuListForPlatform(Menu menu) {
+            return menuDao.findAllMenuList(menu);
     }
 
     public static List<Menu> genTreeMenu(String id, List<Menu> menus) {

@@ -1,10 +1,15 @@
 package com.thinkgem.jeesite.modules.service.web.appVersion;
 
+import com.alibaba.fastjson.JSON;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.redis.JedisConstant;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.JedisUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.appVersion.AppVersion;
@@ -25,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
+
 
 /**
  * APP发版管理Controller
@@ -71,6 +77,14 @@ public class AppVersionController extends BaseController {
                 return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
             }
         }*/
+        AppVersion newest = appVersionService.getNewest();
+        if (appVersion.getBuild().compareTo(newest.getBuild()) != 1){
+            return new FailResult("build号不得小于等于当前版本");
+        }
+        int count = appVersionService.getVersionNumber(appVersion);
+        if (count>0){
+            return new FailResult("版本号不可与历史版本重复");
+        }
         appVersion.setCreateBy(UserUtils.getUser());
         appVersion.setCreateDate(new Date());
         appVersionService.save(appVersion);
@@ -110,8 +124,28 @@ public class AppVersionController extends BaseController {
     @RequestMapping(value = "deleteAppVersion", method = { RequestMethod.POST, RequestMethod.GET })
     @ApiOperation("删除APP发版信息")
     public Result deleteSortInfo(@RequestBody AppVersion appVersion) {
+        AppVersion newest = appVersionService.getNewest();
+        if(!appVersion.getId().equals(newest.getId())){
+            return new FailResult("非最新版本，不能删除");
+        }
         appVersionService.delete(appVersion);
         return new SuccResult("删除成功");
     }
 
+
+    @ResponseBody
+    @RequestMapping(value = "getNewest", method = { RequestMethod.POST })
+    @ApiOperation("获取最新APP版本")
+    public Result getNewest() {
+        AppVersion appVersion=null;
+        String cache = JedisUtils.get(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION);
+        if (StringUtils.isNotBlank(cache)) {
+            appVersion = JSON.parseObject(cache, AppVersion.class);
+        }else {
+            appVersion = appVersionService.getNewest();
+            String json = JsonMapper.toJsonString(appVersion);
+            JedisUtils.set(JedisConstant.KEY_PREFIX + ":" + JedisConstant.CACHE_NEWEST_VERSION, json, 0);
+        }
+        return new SuccResult(appVersion);
+    }
 }

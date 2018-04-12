@@ -1,62 +1,49 @@
+/**
+ * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ */
 package com.thinkgem.jeesite.modules.sys.entity;
 
-import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.thinkgem.jeesite.modules.BaseEntity;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 
 /**
- * <p>
- * 日志表
- * </p>
- *
- * @author X
- * @since 2017-12-10
+ * 日志Entity
+ * @author ThinkGem
+ * @version 2014-8-19
  */
-@TableName("sys_log")
-public class Log extends BaseEntity<Log> {
+public class Log extends DataEntity<Log> {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 日志类型 visit：接入日志 error：异常日志
-     */
-	private String type;
-    /**
-     * 日志标题
-     */
-	private String title;
-    /**
-     * 操作IP地址
-     */
-	@TableField("remote_addr")
-	private String remoteAddr;
-    /**
-     * 用户代理
-     */
-	@TableField("user_agent")
-	private String userAgent;
-    /**
-     * 请求URI
-     */
-	@TableField("request_uri")
-	private String requestUri;
-    /**
-     * 操作方式
-     */
-	private String method;
-    /**
-     * 操作提交的数据
-     */
-	private String params;
-    /**
-     * 异常信息
-     */
-	private String exception;
-
-
+	private static final long serialVersionUID = 1L;
+	private String type; 		// 日志类型（1：接入日志；2：错误日志）
+	private String title;		// 日志标题
+	private String remoteAddr; 	// 操作用户的IP地址
+	private String requestUri; 	// 操作的URI
+	private String method; 		// 操作的方式
+	private String params; 		// 操作提交的数据
+	private String userAgent;	// 操作用户代理信息
+	private String exception; 	// 异常信息
+	private String requestContent;//参数值
+	
+	private Date beginDate;		// 开始日期
+	private Date endDate;		// 结束日期
+	
+	// 日志类型（1：接入日志；2：错误日志）
+	public static final String TYPE_ACCESS = "1";
+	public static final String TYPE_EXCEPTION = "2";
+	
+	public Log(){
+		super();
+	}
+	
+	public Log(String id){
+		super(id);
+	}
+	
 	public String getType() {
 		return type;
 	}
@@ -112,7 +99,7 @@ public class Log extends BaseEntity<Log> {
 	public void setParams(String params) {
 		this.params = params;
 	}
-
+	
 	public String getException() {
 		return exception;
 	}
@@ -121,22 +108,50 @@ public class Log extends BaseEntity<Log> {
 		this.exception = exception;
 	}
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
+	public Date getBeginDate() {
+		return beginDate;
 	}
 
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getRequestContent() {
+		return requestContent;
+	}
+
+	public void setRequestContent(String requestContent) {
+		this.requestContent = requestContent;
+	}
+
+	/**
+	 * 设置请求参数
+	 * @param paramMap
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setParams(Map paramMap){
+		if (paramMap == null){
+			return;
+		}
+		StringBuilder params = new StringBuilder();
+		for (Map.Entry<String, String[]> param : ((Map<String, String[]>)paramMap).entrySet()){
+			params.append(("".equals(params.toString()) ? "" : "&") + param.getKey() + "=");
+			String paramValue = (param.getValue() != null && param.getValue().length > 0 ? param.getValue()[0] : "");
+			params.append(StringUtils.abbr(StringUtils.endsWithIgnoreCase(param.getKey(), "password") ? "" : paramValue, 100));
+		}
+		this.params = params.toString();
+	}
+	
 	@Override
 	public String toString() {
-		return "Log{" +
-			", type=" + type +
-			", title=" + title +
-			", remoteAddr=" + remoteAddr +
-			", userAgent=" + userAgent +
-			", requestUri=" + requestUri +
-			", method=" + method +
-			", params=" + params +
-			", exception=" + exception +
-			"}";
+		return ReflectionToStringBuilder.toString(this);
 	}
 }

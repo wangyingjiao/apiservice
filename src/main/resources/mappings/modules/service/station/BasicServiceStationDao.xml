@@ -234,7 +234,9 @@
     </update>
 
     <update id="delete">
-		UPDATE basic_service_station SET 
+		UPDATE basic_service_station SET
+        <if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+        <if test="updateDate !=null and updateDate != ''">update_date = #{updateDate},</if>
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

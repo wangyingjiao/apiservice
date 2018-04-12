@@ -65,6 +65,14 @@ public class User extends DataEntity<User> {
     private String oldLoginIp;    // 上次登陆IP
     private Date oldLoginDate;    // 上次登陆日期
 
+    public String updateOwnFlag;//是否编辑自己
+    public String getUpdateOwnFlag() {
+        return updateOwnFlag;
+    }
+    public void setUpdateOwnFlag(String updateOwnFlag) {
+        this.updateOwnFlag = updateOwnFlag;
+    }
+
     private Role role;    // 根据角色查询用户条件
 
     private List<Role> roleList = Lists.newArrayList(); // 拥有角色列表
@@ -392,10 +400,16 @@ public class User extends DataEntity<User> {
     public boolean isAdmin() {
         return isAdmin(this.id);
     }
-
     public static boolean isAdmin(String id) {
-        return id != null && "1".equals(id);
+    	return id != null && "1".equals(id);
     }
+
+   /* public boolean isAdmin() {
+        return isAdmin(this.type);
+    }
+    public static boolean isAdmin(String type) {
+    	return type != null && "sys".equals(type);
+    }*/
 
     @Override
     public String toString() {
@@ -438,5 +452,14 @@ public class User extends DataEntity<User> {
 	public void setOrgId(String orgId) {
 		this.orgId = orgId;
 	}
-    
+	//add by wyr 用户类型：'sys','business')
+		private String type;
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
 }

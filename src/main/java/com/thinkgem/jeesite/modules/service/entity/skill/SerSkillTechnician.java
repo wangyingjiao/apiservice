@@ -28,7 +28,15 @@ public class SerSkillTechnician extends DataEntity<SerSkillTechnician> {
 	private String techStationId;
 	private String techStationName;
 	private String headPic;
+	private String jobStatus;
 
+	public String getJobStatus() {
+		return jobStatus;
+	}
+
+	public void setJobStatus(String jobStatus) {
+		this.jobStatus = jobStatus;
+	}
 
 	public SerSkillTechnician() {
 		super();

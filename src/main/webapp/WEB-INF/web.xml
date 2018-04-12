@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://java.sun.com/xml/ns/javaee"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5">
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
 
     <display-name>JeeSite</display-name>
 
     <!-- Context ConfigLocation -->
+    <!-- ,classpath*:/applicationContext-quartz.xml -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:/spring-context*.xml</param-value>
+        <param-value>
+            classpath*:/spring-context.xml,
+            classpath*:/spring-context-jedis.xml,
+            classpath*:/spring-context-shiro.xml,
+            classpath*:/spring-context-quartz.xml
+        </param-value>
     </context-param>
+
     <listener>
         <listener-class>com.thinkgem.jeesite.modules.sys.listener.WebContextListener</listener-class>
     </listener>
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
-
+    <!--解决quartz不能正常关闭的监听器-->
+    <listener>
+        <listener-class>com.thinkgem.jeesite.common.quartz.ShutDownQuartz</listener-class>
+    </listener>
+    <listener>
+        <listener-class>com.thinkgem.jeesite.common.task.QuartzListener</listener-class>
+    </listener>
     <!--<filter>-->
     <!--<filter-name>CORS</filter-name>-->
     <!--<filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>-->
@@ -100,6 +113,16 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!--  <filter>
+           <filter-name>abc</filter-name>
+           <filter-class>com.thinkgem.jeesite.common.filter.HttpServletRequestReplacedFilter</filter-class>
+       </filter>
+       <filter-mapping>
+           <filter-name>abc</filter-name>
+           <url-pattern>/${adminPath}/*</url-pattern>
+       </filter-mapping>-->
+
+
     <filter>
         <filter-name>CORS</filter-name>
         <filter-class>com.thinkgem.jeesite.common.filter.CorsFilter</filter-class>
@@ -170,7 +193,7 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>classpath*:/spring-mvc*.xml</param-value>
+            <param-value>classpath*:/spring-mvc.xml</param-value>
         </init-param>
         <init-param>
             <param-name>dispatchOptionsRequest</param-name>
@@ -193,6 +216,12 @@
         <url-pattern>/act/service/*</url-pattern>
     </filter-mapping> -->
 
+<!--    <servlet>
+        <servlet-name>QuartzServlet</servlet-name>
+        <servlet-class>com.thinkgem.jeesite.common.quartz.QuartzServlet</servlet-class>
+        <
+        <load-on-startup>5</load-on-startup>
+    </servlet>-->
     <!-- DruidStatView -->
     <servlet>
         <servlet-name>DruidStatView</servlet-name>

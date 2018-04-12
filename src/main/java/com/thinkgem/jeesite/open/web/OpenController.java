@@ -58,6 +58,7 @@ public class OpenController extends BaseController {
 			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","1");
+			request.setAttribute("openResponseSendType","");
 			return result;
 		}catch (ServiceException ex){
 			OpenFailResult result =  new OpenFailResult(ex.getMessage());
@@ -131,10 +132,12 @@ public class OpenController extends BaseController {
 				String status = info.getStatus();
 				if("cancel".equals(status)) {
 					OrderInfo orderInfo = (OrderInfo) map.get("orderInfoMsg");
-					User user = new User();
-					user.setId("gasq001");
-					orderInfo.setCreateBy(user);
-					messageInfoService.insert(orderInfo, "orderCancel");//取消
+					if(null != orderInfo) {
+						User user = new User();
+						user.setId("gasq001");
+						orderInfo.setCreateBy(user);
+						messageInfoService.insert(orderInfo, "orderCancel");//取消
+					}
 				}
 			}catch (Exception e){
 				logger.error("订单状态更新-推送消息失败-系统异常");

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao">
+    
+	<sql id="techScheduleColumns">
+		a.id AS "id",
+		a.tech_id AS "techId",
+		a.schedule_date AS "scheduleDate",
+		a.schedule_week AS "scheduleWeek",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.type_id AS "typeId",
+		a.type AS "type",
+		a.remark AS "remark"
+	</sql>
+
+	<!--根据typeId 技师id查询排期表-->
+	<select id="getOrderSchedule" resultType="TechScheduleInfo">
+		SELECT
+		<include refid="techScheduleColumns"/>
+		FROM tech_schedule a
+		WHERE a.type_id = #{typeId}
+		AND a.tech_id=#{techId}
+		AND a.type=#{type}
+		AND a.del_flag=#{delFlag}
+	</select>
+
+	<!--根据技师id 开始时间 结束时间 获取排期表集合-->
+	<select id="getScheduleByTechId" resultType="TechScheduleInfo">
+		SELECT
+		<include refid="techScheduleColumns"/>
+		FROM tech_schedule a
+		WHERE a.tech_id = #{techId}
+		AND ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
+		AND a.del_flag=#{delFlag}
+	</select>
+
+	<!--删除排期表-->
+	<update id="deleteSchedule">
+		UPDATE tech_schedule SET
+		del_flag = '1',
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	<update id="deleteScheduleByTypeId">
+		UPDATE tech_schedule SET
+		del_flag = '1',
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE type = #{type}
+		AND type_id = #{typeId}
+		AND del_flag = '0'
+	</update>
+	<!--根据type typeId techId 刪除排期表-->
+	<update id="deleteScheduleByTypeIdTechId">
+		UPDATE tech_schedule SET
+			del_flag = '1',
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+			WHERE type = #{type}
+			AND type_id = #{typeId}
+			AND tech_id = #{techId}
+			AND del_flag = '0'
+	</update>
+	<update id="updateScheduleByTypeIdTechId">
+		UPDATE tech_schedule SET
+			start_time = #{startTime},
+			end_time = #{endTime},
+			schedule_date = #{scheduleDate},
+			schedule_week = #{scheduleWeek},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE type = #{type}
+			AND type_id = #{typeId}
+			AND tech_id = #{techId}
+			AND del_flag = '0'
+	</update>
+
+	<!--app修改订单完成状态时完成时间提前需要修改排期表-->
+	<update id="updateScheduleByTypeIdTech">
+		UPDATE tech_schedule SET
+		end_time = #{endTime},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE type = #{type}
+		AND type_id = #{typeId}
+		AND tech_id = #{techId}
+		AND del_flag = '0'
+	</update>
+
+	<!--增加排期表-->
+	<insert id="insertSchedule">
+		INSERT INTO tech_schedule(
+		id,
+		tech_id,
+		start_time,
+		end_time,
+		schedule_date,
+		schedule_week,
+		type_id,
+		type,
+		remark,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		del_flag
+		) VALUES (
+		#{id},
+		#{techId},
+		#{startTime},
+		#{endTime},
+		#{scheduleDate},
+		#{scheduleWeek},
+		#{typeId},
+		#{type},
+		#{remark},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{delFlag}
+		)
+	</insert>
+
+</mapper>

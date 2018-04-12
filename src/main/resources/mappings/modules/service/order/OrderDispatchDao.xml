@@ -183,6 +183,16 @@
 		AND a.status='yes'
 	</select>
 
+	<!--app根据订单id查询派单表集合-->
+	<select id="getByOrderId" resultType="OrderDispatch">
+		SELECT
+		<include refid="orderDispatchColumns"/>
+		FROM order_dispatch a
+		WHERE a.order_id = #{id}
+		AND a.del_flag=#{delFlag}
+		AND a.status='yes'
+	</select>
+
 	<select id="formData" resultType="OrderDispatch">
 		SELECT
 			a.create_date AS "createDate",

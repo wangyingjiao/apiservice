@@ -5,9 +5,12 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.dao.order.OrderCustomAddressDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 import com.thinkgem.jeesite.modules.service.entity.station.ServiceStation;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,10 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderCustomInfoDao;
 @Service
 @Transactional(readOnly = true)
 public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, OrderCustomInfo> {
+	@Autowired
+	private OrderCustomInfoDao orderCustomInfoDao;
+	@Autowired
+	private OrderCustomAddressDao orderCustomAddressDao;
 
 	public OrderCustomInfo get(String id) {
 		return super.get(id);
@@ -46,6 +53,7 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 	@Transactional(readOnly = false)
 	public void delete(OrderCustomInfo orderCustomInfo) {
 		super.delete(orderCustomInfo);
+		orderCustomAddressDao.deleteAddressByCustomerId(orderCustomInfo);
 	}
 
     public List<BasicOrganization> findOrganizationList() {
@@ -60,5 +68,55 @@ public class OrderCustomInfoService extends CrudService<OrderCustomInfoDao, Orde
 
 	public List<ServiceStation> getStationsByOrgId(String orgId) {
 		return dao.getStationsByOrgId(orgId);
+	}
+
+
+	public List<OrderCustomInfo> findCusList(OrderCustomInfo orderCustomInfo) {
+		return orderCustomInfoDao.findCusList(orderCustomInfo);
+	}
+
+	public OrderCustomInfo formData(OrderCustomInfo orderCustomInfo) {
+		OrderCustomInfo info = super.get(orderCustomInfo.getId());
+		return info;
+	}
+
+    public List<OrderCustomAddress> listCustomAddress(OrderCustomAddress customAddress) {
+		List<OrderCustomAddress> list = orderCustomAddressDao.findList(customAddress);
+		return list;
+    }
+
+	@Transactional(readOnly = false)
+	public void saveDataAddress(OrderCustomAddress customAddress) {
+		List<OrderCustomAddress> list = orderCustomAddressDao.findList(customAddress);
+		if(list!=null && list.size()>0){//默认将第一个添加的地址设为默认地址
+			customAddress.setDefaultType("no");
+		}else{
+			customAddress.setDefaultType("yes");
+		}
+		customAddress.preInsert();
+		orderCustomAddressDao.insert(customAddress);
+	}
+
+	@Transactional(readOnly = false)
+	public void upDataAddress(OrderCustomAddress customAddress) {
+		customAddress.preUpdate();
+		orderCustomAddressDao.update(customAddress);
+	}
+
+	@Transactional(readOnly = false)
+	public void deleteDataAddress(OrderCustomAddress customAddress) {
+		customAddress.preUpdate();
+		orderCustomAddressDao.delete(customAddress);
+	}
+
+	public OrderCustomAddress formDataAddress(OrderCustomAddress customAddress) {
+		return orderCustomAddressDao.get(customAddress);
+	}
+
+	@Transactional(readOnly = false)
+	public void setDefaultAddress(OrderCustomAddress customAddress) {
+		customAddress.preUpdate();
+		orderCustomAddressDao.updateDefaultNoByCustomer(customAddress);
+		orderCustomAddressDao.updateDefaultYesById(customAddress);
 	}
 }

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.SysJointWaitDao">
+
+	<select id="findList" resultType="SysJointWait">
+		SELECT
+		a.id AS id,
+		a.url AS url,
+		a.request_content AS requestContent,
+		a.many AS many,
+		a.num AS num,
+		a.send_type AS sendType,
+		a.create_date AS createDate
+		FROM
+		sys_joint_wait a
+		<where>
+			1=1
+			<if test="url != null and url != ''">
+				AND a.url LIKE concat('%',#{url},'%')
+			</if>
+			<if test="requestContent != null and requestContent != ''">
+				AND a.request_content LIKE concat('%',#{requestContent},'%')
+			</if>
+		</where>
+		ORDER BY a.create_date DESC
+	</select>
+	<select id="findJointWaitList" resultType="SysJointWait">
+		SELECT *
+		FROM sys_joint_wait
+		ORDER BY create_date ASC
+		LIMIT 100
+	</select>
+	<insert id="insert">
+		INSERT INTO sys_joint_wait(
+			id,
+			url,
+			request_content,
+			many,
+			num,
+			send_type,
+			create_date
+		) VALUES (
+			#{id},
+			#{url},
+			#{requestContent},
+			#{many},
+			#{num},
+			#{sendType},
+			#{createDate}
+		)
+	</insert>
+
+	<delete id="delete">
+		DELETE FROM sys_joint_wait WHERE id = #{id}
+	</delete>
+
+	<update id="update">
+		UPDATE sys_joint_wait SET
+		num = num + 1
+		WHERE id = #{id}
+	</update>
+
+
+	<delete id="deleteGoodsEshop">
+		DELETE FROM ser_item_info_goods_eshop
+		WHERE eshop_code = #{eshopCode}
+		AND joint_goods_code = #{jointGoodsCode}
+	</delete>
+
+	<update id="updateGoodsEshopJointStatus">
+		UPDATE ser_item_info_goods_eshop SET
+		joint_status = #{jointStatus}
+		WHERE eshop_code = #{eshopCode}
+		AND goods_id = #{goodsId}
+	</update>
+	<update id="updateGoodsEshopEnabledStatus">
+		UPDATE ser_item_info_goods_eshop SET
+		enabled_status = #{enabledStatus}
+		WHERE eshop_code = #{eshopCode}
+		AND goods_id = #{goodsId}
+	</update>
+	<update id="updateGoodsEshopJointStatusAndCode">
+		UPDATE ser_item_info_goods_eshop SET
+		joint_status = #{jointStatus},
+		joint_goods_code = #{jointGoodsCode}
+		WHERE eshop_code = #{eshopCode}
+		AND goods_id = #{goodsId}
+	</update>
+
+</mapper>

@@ -57,6 +57,7 @@ public interface RoleDao extends CrudDao<Role> {
 	int getUserCount(@Param("id") String id);
 	//同一下的机构，岗位名不可重复add by wyr
 	int checkAddName(@Param("name")String name,@Param("id") String id);
-	Role getRoleUnion(@Param("id") String id);
+	Role getRoleUnion(@Param("id") String id,@Param("type") String type);
 
+    String getRoleIdByUserId(String principalId);
 }
