@@ -116,6 +116,16 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String payPlatform;//支付平台
 	private String orderNowRefundStatus;
 
+	private OrderRefund orderRefundInfo;
+
+	public OrderRefund getOrderRefundInfo() {
+		return orderRefundInfo;
+	}
+
+	public void setOrderRefundInfo(OrderRefund orderRefundInfo) {
+		this.orderRefundInfo = orderRefundInfo;
+	}
+
 	public String getOrderNowRefundStatus() {
 		return orderNowRefundStatus;
 	}

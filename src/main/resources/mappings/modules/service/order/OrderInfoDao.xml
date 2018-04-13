@@ -873,21 +873,4 @@ origin_price,
 		</foreach>
 	</select>
 
-	<select id="listRefundGoodsByOrderId" resultType="OrderRefundGoods">
-		SELECT
-		good.id AS "id",
-		good.order_id AS "orderId",
-		good.refund_id AS "refundId",
-		good.item_id AS "itemId",
-		good.item_name AS "itemName",
-		good.goods_id AS "goodsId",
-		good.goods_name AS "goodsName",
-		good.goods_num AS "goodsNum",
-		good.pay_price AS "payPrice"
-		FROM
-		order_refund_goods good
-		WHERE
-		good.order_id = #{id}
-		 AND good.del_flag = #{DEL_FLAG_NORMAL}
-	</select>
 </mapper>

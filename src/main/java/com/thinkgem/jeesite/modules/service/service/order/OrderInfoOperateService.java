@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderPayInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderRefundDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
@@ -42,6 +43,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	TechScheduleDao techScheduleDao;
 	@Autowired
 	OrderPayInfoDao orderPayInfoDao;
+	@Autowired
+	OrderRefundDao orderRefundDao;
 
 	@Autowired
 	private OrderToolsService orderToolsService;
@@ -919,16 +922,10 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	}
 
     public OrderInfo orderRefundInit(OrderInfo info) {
+		//支付信息
 		OrderPayInfo payInfo = orderPayInfoDao.getPayInfoByOrderId(info);
-		OrderInfo resOrderInfo = new OrderInfo();
-		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
-		List<OrderRefundGoods> refundGoodsList = dao.listRefundGoodsByOrderId(info);
-		List<String> refundGoodsIdList = new ArrayList<>();
-		if(refundGoodsList!=null && refundGoodsList.size()!=0){
-			for(OrderRefundGoods refundGoods : refundGoodsList){
-				refundGoodsIdList.add(refundGoods.getGoodsId());
-			}
-		}
+		//服务信息
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);
 		List<OrderGoods> goodsList = new ArrayList<>();
 		if(goodsInfoList != null && goodsInfoList.size() != 0){
 			for(OrderGoods orderGoods : goodsInfoList){
@@ -937,15 +934,46 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 				}
 			}
 		}
+		// 退款信息
+		List<OrderRefund> refundList = orderRefundDao.listRefundByOrderId(info);
+		String refundDifferenceType = "";
+		String refundDifference = "";
+		if(refundList!=null && refundList.size()>0){
+			BigDecimal num = new BigDecimal(0);
+
+			for(OrderRefund refund : refundList){
+				String type = refund.getRefundDifferenceType();
+				BigDecimal price = new BigDecimal(refund.getRefundDifference());
+				if("many".equals(type)){
+					num = num.add(price);
+				}else{
+					num = num.subtract(price);
+				}
+			}
+			if(num.compareTo(new BigDecimal(0)) > 0){
+				 refundDifferenceType = "多退";
+				 refundDifference = num.toString();
+			}else if(num.compareTo(new BigDecimal(0)) < 0){
+				 refundDifferenceType = "少退";
+				 refundDifference = num.toString();
+			}
+		}
+
+		OrderInfo resOrderInfo = new OrderInfo();
 		resOrderInfo.setGoodsInfoList(goodsList);
 		resOrderInfo.setPayPrice(payInfo.getPayAccount());
 		resOrderInfo.setPayPlatform(payInfo.getPayPlatform());
-		resOrderInfo.setOrderNowRefundStatus("该订单已" + "" + " ￥" + "");
+		if(StringUtils.isNotBlank(refundDifferenceType) && StringUtils.isNotBlank(refundDifference)) {
+			resOrderInfo.setOrderNowRefundStatus("该订单已" + refundDifferenceType + " ￥" + refundDifference);
+		}
 
 		return resOrderInfo;
     }
 
 	public HashMap<String,Object> orderRefundSave(OrderInfo info) {
+		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
+		OrderRefund orderRefund = info.getOrderRefundInfo();
+
 		return null;
 	}
 }
