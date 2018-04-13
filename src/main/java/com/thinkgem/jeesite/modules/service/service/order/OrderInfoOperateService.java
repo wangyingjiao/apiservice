@@ -974,6 +974,11 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
 		OrderRefund orderRefund = info.getOrderRefundInfo();
 
+//
+//		验证当前选择商品是否还可退款（订单详情表此商品的已退货数量与购买数量是否一致）；
+//		如可退，修改订单详情表的已退货数量字段；
+//		插入退款表；
+//		如果所有商品（包括品类和数量），全部已退款，则修改订单状态为‘已关闭’；
 		return null;
 	}
 }
