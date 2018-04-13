@@ -7,8 +7,10 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderPayInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
@@ -38,6 +40,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	OrderDispatchDao orderDispatchDao;
 	@Autowired
 	TechScheduleDao techScheduleDao;
+	@Autowired
+	OrderPayInfoDao orderPayInfoDao;
 
 	@Autowired
 	private OrderToolsService orderToolsService;
@@ -872,4 +876,76 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		return map;
 	}
 
+	public boolean checkOrderRefundStatus(OrderInfo info) {
+		info = get(info);
+		String orderStatus =  info.getOrderStatus();
+		String serviceStatus =  info.getServiceStatus();
+		String payStatus = info.getPayStatus();
+		String orderSource = info.getOrderSource();
+
+		//服务状态
+		String serviceStatusWait = "wait_service";//待服务
+		String serviceStatusStarted = "started";//已上门
+		String serviceStatusFinish = "finish";//已完成
+		String serviceStatusCancel = "cancel";//已取消
+		//订单状态
+		String orderStatusWaitdispatch = "waitdispatch";//待派单
+		String orderStatusDispatched = "dispatched";//已派单
+		String orderStatusCancel = "cancel";//已取消
+		String orderStatusStarted = "started";//已上门
+		String orderStatusFinish = "finish";//已完成
+		String orderStatusSuccess = "success";//已成功
+		String orderStatusStop = "stop";//已暂停
+		//支付状态
+		String waitpay = "waitpay";//待支付
+		String payed = "payed";//已支付
+		//订单来源
+		String own = "own";//本机构
+		String gasq = "gasq";//国安社区
+
+        /*
+       		只有订单来源为本机构的订单
+            若支付状态不是未支付、或服务状态是已取消或订单状态已取消,此时无需执行取消订单的流程
+         */
+		if(!own.equals(orderSource)){
+			return true;
+		}
+
+		if(!payed.equals(payStatus) || !orderStatusSuccess.equals(orderStatus)){
+			return true;
+		}
+
+		return false;
+	}
+
+    public OrderInfo orderRefundInit(OrderInfo info) {
+		OrderPayInfo payInfo = orderPayInfoDao.getPayInfoByOrderId(info);
+		OrderInfo resOrderInfo = new OrderInfo();
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
+		List<OrderRefundGoods> refundGoodsList = dao.listRefundGoodsByOrderId(info);
+		List<String> refundGoodsIdList = new ArrayList<>();
+		if(refundGoodsList!=null && refundGoodsList.size()!=0){
+			for(OrderRefundGoods refundGoods : refundGoodsList){
+				refundGoodsIdList.add(refundGoods.getGoodsId());
+			}
+		}
+		List<OrderGoods> goodsList = new ArrayList<>();
+		if(goodsInfoList != null && goodsInfoList.size() != 0){
+			for(OrderGoods orderGoods : goodsInfoList){
+				if(orderGoods.getGoodsNum() != orderGoods.getGoodsRefundNum()){
+					goodsList.add(orderGoods);
+				}
+			}
+		}
+		resOrderInfo.setGoodsInfoList(goodsList);
+		resOrderInfo.setPayPrice(payInfo.getPayAccount());
+		resOrderInfo.setPayPlatform(payInfo.getPayPlatform());
+		resOrderInfo.setOrderNowRefundStatus("该订单已" + "" + " ￥" + "");
+
+		return resOrderInfo;
+    }
+
+	public HashMap<String,Object> orderRefundSave(OrderInfo info) {
+		return null;
+	}
 }

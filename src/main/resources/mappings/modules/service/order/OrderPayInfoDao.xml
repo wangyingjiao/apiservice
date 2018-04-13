@@ -36,6 +36,12 @@
         FROM order_pay_info a
         WHERE a.master_id = #{masterId}
     </select>
+	<select id="getPayInfoByOrderId" resultType="OrderPayInfo">
+		SELECT
+		<include refid="orderPayInfoColumns"/>
+		FROM order_pay_info a
+		WHERE a.order_id = #{id}
+	</select>
 
 	<select id="findList" resultType="OrderPayInfo">
 		SELECT

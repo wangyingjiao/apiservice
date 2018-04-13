@@ -28,6 +28,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String goodsId;		// 商品ID
 	private String goodsName;		// 商品名称
 	private int goodsNum;		// 订购商品数
+	private int goodsRefundNum;
 	private String goodsUnit;		// 商品单位
 	private String originPrice;		// 单价原价   自营价格
 	private String payPrice;		// 单价(折后价，无折扣时和原价相同) 国安社区价格
@@ -118,7 +119,15 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	public void setGoodsNum(int goodsNum) {
 		this.goodsNum = goodsNum;
 	}
-	
+
+	public int getGoodsRefundNum() {
+		return goodsRefundNum;
+	}
+
+	public void setGoodsRefundNum(int goodsRefundNum) {
+		this.goodsRefundNum = goodsRefundNum;
+	}
+
 	public String getOriginPrice() {
 		return originPrice;
 	}

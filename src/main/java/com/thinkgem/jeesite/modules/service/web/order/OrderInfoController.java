@@ -569,6 +569,49 @@ public class OrderInfoController extends BaseController {
 		}
 	}
 
+	/**
+	 * 退款订单
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "orderRefundInit", method = {RequestMethod.POST})
+	@RequiresPermissions("order_refund")
+	public Result orderRefundInit(@RequestBody OrderInfo info) {
+		//判断订单状态
+		boolean flag = orderInfoOperateService.checkOrderRefundStatus(info);
+		if(flag){
+			return new FailResult("当前订单状态不允许退款");
+		}
+
+		OrderInfo orderInfo = orderInfoOperateService.orderRefundInit(info);
+		return new SuccResult(orderInfo);
+	}
+
+	/**
+	 * 退款订单
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "orderRefundSave", method = {RequestMethod.POST})
+	@RequiresPermissions("order_refund")
+	public Result orderRefundSave(@RequestBody OrderInfo info) {
+		//判断订单状态
+		boolean flag = orderInfoOperateService.checkOrderRefundStatus(info);
+		if(flag){
+			return new FailResult("当前订单状态不允许退款");
+		}
+
+		try{
+			HashMap<String,Object>  map = orderInfoOperateService.orderRefundSave(info);
+			return new SuccResult("退款成功");
+		}catch (ServiceException ex){
+			return new FailResult(ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("退款失败!");
+		}
+	}
 
 	@ResponseBody
 	@RequestMapping(value = "listDataPay", method = {RequestMethod.POST, RequestMethod.GET})

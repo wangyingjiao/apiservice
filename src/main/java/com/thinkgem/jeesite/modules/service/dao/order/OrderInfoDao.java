@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderRefundGoods;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
@@ -95,4 +96,6 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<ServiceTechnicianWorkTime> listTechWorkByTechsTime(ServiceTechnicianWorkTime serchInfo);
 
     List<TechScheduleInfo> listTechScheduleByTechsTime(TechScheduleInfo serchInfo);
+
+    List<OrderRefundGoods> listRefundGoodsByOrderId(OrderInfo info);
 }
