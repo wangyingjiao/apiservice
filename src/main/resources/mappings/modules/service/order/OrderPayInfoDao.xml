@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.pay_number AS "payNumber",
 		a.master_id AS "masterId",
+		a.order_id AS "orderId",
 		a.pay_platform AS "payPlatform",
 		a.pay_method AS "payMethod",
 		a.pay_time AS "payTime",
@@ -116,6 +117,7 @@
 			id,
 			pay_number,
 			master_id,
+			order_id,
 			pay_platform,
 			pay_method,
 			pay_time,
@@ -130,6 +132,7 @@
 			#{id},
 			#{payNumber},
 			#{masterId},
+			#{orderId},
 			#{payPlatform},
 			#{payMethod},
 			#{payTime},
@@ -147,6 +150,7 @@
 		UPDATE order_pay_info SET
 			<if test="payNumber !=null and payNumber != ''">pay_number = #{payNumber},</if>
 			<if test="masterId !=null and masterId != ''">master_id = #{masterId},</if>
+		<if test="orderId !=null and orderId != ''">order_id = #{orderId},</if>
 			<if test="payPlatform !=null and payPlatform != ''">pay_platform = #{payPlatform},</if>
 			<if test="payMethod !=null and payMethod != ''">pay_method = #{payMethod},</if>
 			<if test="payTime !=null and payTime != ''">pay_time = #{payTime},</if>

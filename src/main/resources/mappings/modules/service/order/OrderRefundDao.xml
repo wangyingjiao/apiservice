@@ -12,6 +12,9 @@
 		a.refund_status AS "refundStatus",
 		a.refund_method AS "refundMethod",
 		a.refund_reason AS "refundReason",
+		a.refund_difference_type AS "refundDifferenceType",
+		a.refund_difference AS "refundDifference",
+		a.refund_account_reality AS "refundAccountReality",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -43,6 +46,7 @@
 		a.refund_status AS "refundStatus",
 		a.refund_method AS "refundMethod",
 		a.refund_reason AS "refundReason",
+		a.refund_account_reality AS "refundAccountReality",
 		addr.name AS refundName,
 		addr.phone AS refundPhone
 		FROM order_refund a
@@ -116,6 +120,9 @@
 			refund_status,
 			refund_method,
 			refund_reason,
+			refund_difference_type,
+			refund_difference,
+			refund_account_reality,
 			create_by,
 			create_date,
 			update_by,
@@ -131,6 +138,9 @@
 			#{refundStatus},
 			#{refundMethod},
 			#{refundReason},
+			#{refundDifferenceType},
+			#{refundDifference},
+			#{refundAccountReality},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -149,6 +159,9 @@
 			<if test="refundStatus !=null and refundStatus != ''">refund_status = #{refundStatus},</if>
 			<if test="refundMethod !=null and refundMethod != ''">refund_method = #{refundMethod},</if>
 			<if test="refundReason !=null and refundReason != ''">refund_reason = #{refundReason},</if>
+		<if test="refundDifferenceType !=null and refundDifferenceType != ''">refund_difference_type = #{refundDifferenceType},</if>
+		<if test="refundDifference !=null and refundDifference != ''">refund_difference = #{refundDifference},</if>
+		<if test="refundAccountReality !=null and refundAccountReality != ''">refund_account_reality = #{refundAccountReality},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
@@ -174,7 +187,8 @@
 		a.refund_method AS "refundMethod",
 		a.refund_reason AS "refundReason",
 		a.refund_difference_type AS "refundDifferenceType",
-		a.refund_difference AS "refundDifference"
+		a.refund_difference AS "refundDifference",
+		a.refund_account_reality AS "refundAccountReality"
 		FROM
 		order_refund a
 		LEFT JOIN order_info ord ON a.order_id = ord.id

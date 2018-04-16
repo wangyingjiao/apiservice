@@ -11,6 +11,7 @@
 		a.goods_id AS "goodsId",
 		a.goods_name AS "goodsName",
 		a.goods_num AS "goodsNum",
+		a.goods_unit AS "goodsUnit",
 		a.pay_price AS "payPrice",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -76,6 +77,7 @@
 			goods_id,
 			goods_name,
 			goods_num,
+			goods_unit,
 			pay_price,
 			create_by,
 			create_date,
@@ -91,6 +93,7 @@
 			#{goodsId},
 			#{goodsName},
 			#{goodsNum},
+			#{goodsUnit},
 			#{payPrice},
 			#{createBy.id},
 			#{createDate},
@@ -109,6 +112,7 @@
 			<if test="goodsId !=null and goodsId != ''">goods_id = #{goodsId},</if>
 			<if test="goodsName !=null and goodsName != ''">goods_name = #{goodsName},</if>
 			<if test="goodsNum !=null and goodsNum != ''">goods_num = #{goodsNum},</if>
+		<if test="goodsUnit !=null and goodsUnit != ''">goods_unit = #{goodsUnit},</if>
 			<if test="payPrice !=null and payPrice != ''">pay_price = #{payPrice},</if>
 			<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
 			<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>

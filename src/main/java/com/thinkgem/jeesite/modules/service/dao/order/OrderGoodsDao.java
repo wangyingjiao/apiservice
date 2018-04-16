@@ -25,4 +25,6 @@ public interface OrderGoodsDao extends CrudDao<OrderGoods> {
     void deleteGoodsByOrderId(OrderGoods serchOrderGoods);
 
     List<OrderDropdownInfo> findItemList(OrderInfo info);
+
+    void updateRefundNumByOrderIdItemId(OrderGoods orderGoods);
 }

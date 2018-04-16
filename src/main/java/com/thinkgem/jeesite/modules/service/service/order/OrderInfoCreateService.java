@@ -127,8 +127,7 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 
 		// order_pay_info  支付信息 ------------------------------------------------------------------------------
 		try{
-			String originPrice = orderInfo.getOriginPrice();//对接总价
-			openCreateForPay( masterInfo, originPrice);
+			openCreateForPay(orderInfo);
 		}catch (ServiceException ex){
 			throw new ServiceException(ex.getMessage());
 		}catch (Exception e){
@@ -183,17 +182,17 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 
 	/**
 	 * 订单创建 - 支付信息
-	 * @param masterInfo
-	 * @param originPrice
+	 * @param orderInfo
 	 */
-	private void openCreateForPay(OrderMasterInfo masterInfo, String originPrice) {
+	private void openCreateForPay(OrderInfo orderInfo) {
 		OrderPayInfo payInfo = new OrderPayInfo();
 		payInfo.setPayNumber(DateUtils.getDateAndRandomTenNum("02"));//支付编号
-		payInfo.setMasterId(masterInfo.getId());//主订单ID',
+		payInfo.setMasterId(orderInfo.getMasterId());//主订单ID',
+		payInfo.setOrderId(orderInfo.getId());
 		payInfo.setPayPlatform(null);//支付平台(cash:现金 wx_pub_qr:微信扫码 wx:微信 alipay_qr:支付宝扫码 alipay:支付宝 pos:银行卡 balance:余额)
 		payInfo.setPayMethod(null);//支付方式(online:在线 offline:货到付款)',
 		payInfo.setPayTime(null);//支付时间',
-		payInfo.setPayAccount(originPrice);//支付总额',
+		payInfo.setPayAccount(orderInfo.getOriginPrice());//支付总额',
 		payInfo.setPayStatus("waitpay");//支付状态(waitpay:待支付 payed:已支付)',
 		payInfo.preInsert();
 

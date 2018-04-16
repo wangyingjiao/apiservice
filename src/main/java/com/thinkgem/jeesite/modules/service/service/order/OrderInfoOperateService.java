@@ -8,10 +8,7 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderPayInfoDao;
-import com.thinkgem.jeesite.modules.service.dao.order.OrderRefundDao;
+import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
@@ -45,6 +42,10 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	OrderPayInfoDao orderPayInfoDao;
 	@Autowired
 	OrderRefundDao orderRefundDao;
+	@Autowired
+	OrderRefundGoodsDao orderRefundGoodsDao;
+	@Autowired
+	OrderGoodsDao orderGoodsDao;
 
 	@Autowired
 	private OrderToolsService orderToolsService;
@@ -975,11 +976,42 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
 		OrderRefund orderRefund = info.getOrderRefundInfo();
 
-//
-//		验证当前选择商品是否还可退款（订单详情表此商品的已退货数量与购买数量是否一致）；
-//		如可退，修改订单详情表的已退货数量字段；
-//		插入退款表；
-//		如果所有商品（包括品类和数量），全部已退款，则修改订单状态为‘已关闭’；
+		// 插入退款表；
+		orderRefund.setRefundNumber(DateUtils.getDateAndRandomTenNum("03"));
+		orderRefund.preInsert();
+		orderRefundDao.insert(orderRefund);
+
+		if(goodsInfoList != null){
+			OrderRefundGoods orderRefundGoods = new OrderRefundGoods();
+			for(OrderGoods orderGoods : goodsInfoList){
+				// 退货表
+				orderRefundGoods = new OrderRefundGoods();
+				orderRefundGoods.setOrderId(info.getId());
+				orderRefundGoods.setRefundId(orderRefund.getId());
+				orderRefundGoods.setItemId(orderGoods.getItemId());
+				orderRefundGoods.setItemName(orderGoods.getItemName());
+				orderRefundGoods.setGoodsId(orderGoods.getGoodsId());
+				orderRefundGoods.setGoodsName(orderGoods.getGoodsName());
+				orderRefundGoods.setGoodsNum(String.valueOf(orderGoods.getGoodsNum()));
+				orderRefundGoods.setPayPrice(orderGoods.getPayPrice());
+				orderRefundGoods.setGoodsUnit(orderGoods.getGoodsUnit());
+				orderRefundGoods.preInsert();
+				orderRefundGoodsDao.insert(orderRefundGoods);
+
+				// 商品表
+				orderGoods.setOrderId(info.getId());
+				orderGoodsDao.updateRefundNumByOrderIdItemId(orderGoods);
+			}
+		}
+		List<OrderGoods> list = dao.listNotRefundOrderGoodsByOrderId(info);
+		if(list==null || list.size()==0){
+			// 如果所有商品（包括品类和数量），全部已退款，则修改订单状态为‘已关闭’；
+			OrderInfo order = new OrderInfo();
+			order.setId(info.getId());
+			order.setOrderStatus("close");
+			order.preUpdate();
+			dao.update(order);
+		}
 		return null;
 	}
 }

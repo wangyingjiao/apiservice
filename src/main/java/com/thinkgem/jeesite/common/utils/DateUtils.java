@@ -248,7 +248,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return
      */
     public static String getDateAndRandomTenNum(String type) {
-    	if(!"01".equals(type) && !"02".equals(type) ){//01订单编号   02支付编号
+    	if(!"01".equals(type) && !"02".equals(type) && !"03".equals(type)){//01订单编号   02支付编号 03退款编号
     		return formatDate(new Date(), "yyyyMMddHHmmss") + (int)((Math.random()*9+1)*1000000000);
 		}
         return formatDate(new Date(), "yyyyMMddHHmmss") + type + (int)((Math.random()*9+1)*10000000);
