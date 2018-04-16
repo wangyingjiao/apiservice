@@ -29,7 +29,7 @@ public abstract class BaseService {
 
     private static Logger log = LoggerFactory.getLogger(BaseService.class);
 
-    /**
+    /** 员工列表使用 （暂时测通）
      * @param user       用户信息
      * @param organAlias 关联表别名
      * @param stationAlias  用户别名
@@ -42,10 +42,22 @@ public abstract class BaseService {
         User u = UserUtils.get(user.getId());
         BasicOrganization organization = u.getOrganization();
         BasicServiceStation station = u.getStation();
-        if (null != organization &&
+        String type = u.getType();
+        if (null != organization
+                && StringUtils.isNotBlank(organization.getId())
+                && organization.getId().trim().equals("sys")
+                && null != station
+                && StringUtils.isNotBlank(station.getId())
+                && station.getId().trim().equals("sys")
+                && "sys".equals(type)) {
+            log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全系统权限 ");
+            // sql.append("AND " + organAlias + ".id = " + "'" + organization.getId() + "'");
+        } else if (null != organization &&
                 StringUtils.isNotBlank(organization.getId()) &&
                 organization.getId().trim().equals("0")) {
             log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全平台 ");
+            sql.append(" AND a.type !='sys'");
+            // sql.append(" AND " + stationAlias + ".id != 'sys' ");
         } else if (null != organization
                 && StringUtils.isNotBlank(organization.getId())
                 && !organization.getId().trim().equals("0")
@@ -53,13 +65,13 @@ public abstract class BaseService {
                 && StringUtils.isNotBlank(station.getId())
                 && station.getId().trim().equals("0")) {
             log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全机构权限 ");
-            sql.append("AND " + organAlias + ".id = " + "'" + organization.getId() + "'");
+            sql.append(" AND " + organAlias + ".id = " + "'" + organization.getId() + "'");
         } else if (null != organization
                 && null != station
                 && StringUtils.isNotBlank(organization.getId())
                 && StringUtils.isNotBlank(station.getId())
-                && !organization.getId().trim().equals("0")
-                && !station.getId().trim().equals("0")) {
+                && (!organization.getId().trim().equals("0") && !organization.getId().trim().equals("sys"))
+                && (!station.getId().trim().equals("0") && !station.getId().trim().equals("sys"))) {
             sql.append(" AND " + organAlias + ".id = '" + organization.getId() + "' ");
             sql.append(" AND " + stationAlias + ".id = '" + station.getId() + "' ");
             log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 本服务站权限 ");
@@ -72,21 +84,29 @@ public abstract class BaseService {
         return sql.toString();
     }
 
-
+    //员工新增时调用 根据登陆用户获取对应机构 下拉列表
     public static String dataOrganFilter(User user, String alias) {
         BasicOrganization organization = user.getOrganization();
-        if (null != organization && organization.getId().trim().equals("0")) {
-            log.info("机构权限过滤：当前用户为全平台用户 " + user.getId() + ":" + user.getName());
+        if (null != organization && organization.getId().trim().equals("sys")) {
+            log.info("机构权限过滤：当前用户为全系统用户 " + user.getId() + ":" + user.getName());
             return "";
-        } else {
+        } else if (null != organization && organization.getId().trim().equals("0")) {
+            log.info("机构权限过滤：当前用户为全平台用户 " + user.getId() + ":" + user.getName());
+            return " AND a.id != 'sys'";
+        } else{
             return " AND " + alias + ".id = '" + organization.getId() + "'";
         }
     }
-
+    //服务站列表使用（暂时测通）
     public static String dataStationFilter(User user, String alias) {
         BasicOrganization org = user.getOrganization();
         BasicServiceStation sts = user.getStation();
-        if (null != org && org.getId().trim().equals("0")) {
+        String type = user.getType();
+        if (org !=null &&  org.getId().trim().equals("sys") && sts != null && sts.getId().trim().equals("sys") && "sys".equals(type) ){
+            log.info("机构权限过滤：当前用户为 |全系统| 用户 " + user.getId() + ":" + user.getName());
+            //return " AND " + alias + ".org_id = '" + org.getId() + "'" + "AND a.id = '" + sts.getId() + "'";
+            return  "";
+        } else if (null != org && org.getId().trim().equals("0")) {
             log.info("机构权限过滤：当前用户为 |全平台| 用户 " + user.getId() + ":" + user.getName());
             return "";
         } else if (null != sts && sts.getId().trim().equals("0")) {
@@ -103,7 +123,12 @@ public abstract class BaseService {
     public static String dataStatioRoleFilter(User user, String alias) {
         BasicOrganization org = user.getOrganization();
         BasicServiceStation sts = user.getStation();
-        if (null != org && org.getId().trim().equals("0")) {
+        String type = user.getType();
+        if (org !=null &&  org.getId().trim().equals("sys") && sts != null && sts.getId().trim().equals("sys") && "sys".equals(type) ){
+            log.info("机构权限过滤：当前用户为 |全系统| 用户 " + user.getId() + ":" + user.getName());
+            //return " AND " + alias + ".org_id = '" + org.getId() + "'" + "AND a.id = '" + sts.getId() + "'";
+            return  "";
+        } else if (null != org && org.getId().trim().equals("0")) {
             log.info("机构权限过滤：当前用户为 |全平台| 用户 " + user.getId() + ":" + user.getName());
             return "";
         } else if (null != sts && sts.getId().trim().equals("0")) {
@@ -119,7 +144,12 @@ public abstract class BaseService {
     public static String dataStationIdRoleFilter(User user, String alias) {
         BasicOrganization org = user.getOrganization();
         BasicServiceStation sts = user.getStation();
-        if (null != org && org.getId().trim().equals("0")) {
+        String type = user.getType();
+        if (org !=null &&  org.getId().trim().equals("sys") && sts != null && sts.getId().trim().equals("sys") && "sys".equals(type) ){
+            log.info("机构权限过滤：当前用户为 |全系统| 用户 " + user.getId() + ":" + user.getName());
+            //return " AND " + alias + ".org_id = '" + org.getId() + "'" + "AND a.id = '" + sts.getId() + "'";
+            return  "";
+        } else if (null != org && org.getId().trim().equals("0")) {
             log.info("机构权限过滤：当前用户为 |全平台| 用户 " + user.getId() + ":" + user.getName());
             return "";
         } else if (null != sts && sts.getId().trim().equals("0")) {

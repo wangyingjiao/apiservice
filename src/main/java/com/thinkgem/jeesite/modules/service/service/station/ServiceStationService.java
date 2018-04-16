@@ -48,7 +48,8 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 		List<BasicServiceStation> list = new ArrayList<>();
 		// 如果用户服务站id不是0 list添加用户的服务站id
 		if (!user.getStation().getId().equals("0")) {
-			list.add(super.get(user.getStation().getId()));
+			BasicServiceStation basicServiceStation = super.get(user.getStation().getId());
+			list.add(basicServiceStation);
 			return list;
 		}
 		if (!user.getOrganization().getId().equals("0") && user.getStation().getId().equals("0")) {
@@ -56,19 +57,24 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 			station.setName("本机构");
 			list.add(station);
 		}
-
+		if (user.getOrganization().getId().equals("sys") && user.getStation().getId().equals("sys")) {
+			BasicServiceStation station = super.get("sys");
+			station.setName("全系统");
+			list.add(station);
+			return list;
+		}
 		if (user.getOrganization().getId().equals("0")) {
 			if ("0".equals(serviceStation.getOrgId())) {
 				BasicServiceStation station = super.get("0");
 				station.setName("全平台");
 				list.add(station);
 				// add by wyr 员工管理 机构为全平台机构时 服务站下拉列表只显示：全平台
-				return list;
 			} else {
 				BasicServiceStation station = super.get("0");
 				station.setName("本机构");
 				list.add(station);
 			}
+			return list;
 		}
 		List<BasicServiceStation> serviceStations = super.findList(serviceStation);
 		if (serviceStations.size() > 0) {
