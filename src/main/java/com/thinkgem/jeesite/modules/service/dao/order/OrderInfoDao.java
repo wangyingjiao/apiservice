@@ -97,4 +97,5 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     List<TechScheduleInfo> listTechScheduleByTechsTime(TechScheduleInfo serchInfo);
 
+    List<OrderGoods> listNotRefundOrderGoodsByOrderId(OrderInfo info);
 }

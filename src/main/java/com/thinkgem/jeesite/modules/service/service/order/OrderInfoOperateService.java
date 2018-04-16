@@ -879,46 +879,47 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		return map;
 	}
 
+	/**
+	 * 退款验证
+	 * @param info
+	 * @return
+	 */
 	public boolean checkOrderRefundStatus(OrderInfo info) {
 		info = get(info);
 		String orderStatus =  info.getOrderStatus();
-		String serviceStatus =  info.getServiceStatus();
 		String payStatus = info.getPayStatus();
 		String orderSource = info.getOrderSource();
 
-		//服务状态
-		String serviceStatusWait = "wait_service";//待服务
-		String serviceStatusStarted = "started";//已上门
-		String serviceStatusFinish = "finish";//已完成
-		String serviceStatusCancel = "cancel";//已取消
 		//订单状态
-		String orderStatusWaitdispatch = "waitdispatch";//待派单
-		String orderStatusDispatched = "dispatched";//已派单
-		String orderStatusCancel = "cancel";//已取消
-		String orderStatusStarted = "started";//已上门
-		String orderStatusFinish = "finish";//已完成
 		String orderStatusSuccess = "success";//已成功
-		String orderStatusStop = "stop";//已暂停
 		//支付状态
-		String waitpay = "waitpay";//待支付
 		String payed = "payed";//已支付
 		//订单来源
 		String own = "own";//本机构
-		String gasq = "gasq";//国安社区
 
         /*
        		只有订单来源为本机构的订单
-            若支付状态不是未支付、或服务状态是已取消或订单状态已取消,此时无需执行取消订单的流程
+            支付状态：已支付 并且 订单状态：已成功
+            订单所有商品全部退款后，不再显示此按钮
          */
+        boolean flag = false;
 		if(!own.equals(orderSource)){
-			return true;
+			flag = true;
 		}
 
 		if(!payed.equals(payStatus) || !orderStatusSuccess.equals(orderStatus)){
-			return true;
+			flag = true;
+		}
+		if(flag){
+			List<OrderGoods> list = dao.listNotRefundOrderGoodsByOrderId(info);
+			if(list!=null && list.size()>0){
+				flag = false;
+			}else{
+				flag = true;
+			}
 		}
 
-		return false;
+		return flag;
 	}
 
     public OrderInfo orderRefundInit(OrderInfo info) {
