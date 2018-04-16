@@ -33,4 +33,7 @@ public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
     List<BasicServiceStation> getStationListByStoreId(BasicServiceStation stationSerch);
 
     List<BasicServiceStation> getStationListByStoreIdUseable(BasicServiceStation stationSerch);
+
+    //服务站机构联动（下拉列表） 参数 orgId
+    List<BasicServiceStation> findListByOrgId(BasicServiceStation station);
 }

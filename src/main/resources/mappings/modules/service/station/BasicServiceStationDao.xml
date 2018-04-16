@@ -148,6 +148,38 @@
             </otherwise>
         </choose>
     </select>
+    <!--服务站机构联动（下拉列表） 参数 orgId-->
+    <select id="findListByOrgId" resultType="BasicServiceStation">
+        SELECT
+        a.id AS "id",
+        a.name AS "name",
+        a.type AS "type",
+        a.province_code AS "provinceCode",
+        a.city_code AS "cityCode",
+        a.area_code AS "areaCode",
+        a.address AS "address",
+        a.phone AS "phone",
+        a.employees AS "employees",
+        a.tech_num AS "techNum",
+        a.service_point AS "servicePoint",
+        a.org_id AS "orgId",
+        a.is_useable AS "isUseable",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag"
+        FROM basic_service_station a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+        <choose>
+            <otherwise>
+                ORDER BY a.create_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
     <select id="findAllList" resultType="BasicServiceStation">
         SELECT

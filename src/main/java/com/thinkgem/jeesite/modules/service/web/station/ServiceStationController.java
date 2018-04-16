@@ -58,6 +58,13 @@ public class ServiceStationController extends BaseController {
         return entity;
     }
 
+    /**
+     * 基础管理服务站列表
+     * @param serviceStation
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "listData", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取服务站列表")
@@ -70,6 +77,7 @@ public class ServiceStationController extends BaseController {
 
     }
 
+    //服务站机构联动（搜索栏下拉列表） 参数 orgId
     @ResponseBody
     @RequestMapping(value = "listByOffice", method = {RequestMethod.POST, RequestMethod.GET})
     //@RequiresPermissions("service:station:serviceStation:view")
@@ -231,6 +239,7 @@ public class ServiceStationController extends BaseController {
 //        }
     }
 
+    //好像没用到
     @ResponseBody
     @RequiresPermissions("user")
     @RequestMapping(value = "getStationByAreaTech")

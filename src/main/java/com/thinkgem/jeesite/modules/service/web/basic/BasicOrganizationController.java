@@ -77,7 +77,7 @@ public class BasicOrganizationController extends BaseController {
 
 
 	/**
-	 * 服务机构的下拉列表
+	 * 服务机构的下拉列表（搜索栏下拉列表）
 	 * @param basicOrganization
 	 * @param request
 	 * @param response
