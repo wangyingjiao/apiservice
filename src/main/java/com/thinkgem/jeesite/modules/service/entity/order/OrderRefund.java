@@ -40,6 +40,7 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 
 	private String refundDifferenceType; // 退款差额
 	private String refundDifference; // 退款差额
+	private String refundAccountReality;// 实际退款
 
 
 	private List<OrderRefundGoods> refundGoodsList;
@@ -207,5 +208,13 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 
 	public void setRefundGoodsList(List<OrderRefundGoods> refundGoodsList) {
 		this.refundGoodsList = refundGoodsList;
+	}
+
+	public String getRefundAccountReality() {
+		return refundAccountReality;
+	}
+
+	public void setRefundAccountReality(String refundAccountReality) {
+		this.refundAccountReality = refundAccountReality;
 	}
 }

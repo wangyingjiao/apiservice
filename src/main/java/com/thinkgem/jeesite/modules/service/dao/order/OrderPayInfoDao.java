@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderPayInfo;
 
 /**
@@ -17,4 +18,6 @@ public interface OrderPayInfoDao extends CrudDao<OrderPayInfo> {
 
     //app根据masterId获取支付信息
     OrderPayInfo getByMasterId(String masterId);
+
+    OrderPayInfo getPayInfoByOrderId(OrderInfo info);
 }

@@ -60,7 +60,7 @@ public class OrderRefundService extends CrudService<OrderRefundDao, OrderRefund>
 		if(info == null){
 			return null;
 		}
-		List<OrderRefundGoods> refundGoodsList = dao.listRefudGoodsByRefundId(orderRefund);
+		List<OrderRefundGoods> refundGoodsList = dao.listRefundGoodsByRefundId(orderRefund);
 		if(refundGoodsList!=null && refundGoodsList.size()>0) {
 			for(OrderRefundGoods refundGoods : refundGoodsList){
 				BigDecimal b1 = new BigDecimal(refundGoods.getPayPrice());

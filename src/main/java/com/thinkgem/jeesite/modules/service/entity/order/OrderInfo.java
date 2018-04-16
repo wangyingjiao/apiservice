@@ -113,6 +113,34 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String goodsSortId;
 	private String serchNowOrderId;
 	private boolean serchFullTech = false;
+	private String payPlatform;//支付平台
+	private String orderNowRefundStatus;
+
+	private OrderRefund orderRefundInfo;
+
+	public OrderRefund getOrderRefundInfo() {
+		return orderRefundInfo;
+	}
+
+	public void setOrderRefundInfo(OrderRefund orderRefundInfo) {
+		this.orderRefundInfo = orderRefundInfo;
+	}
+
+	public String getOrderNowRefundStatus() {
+		return orderNowRefundStatus;
+	}
+
+	public void setOrderNowRefundStatus(String orderNowRefundStatus) {
+		this.orderNowRefundStatus = orderNowRefundStatus;
+	}
+
+	public String getPayPlatform() {
+		return payPlatform;
+	}
+
+	public void setPayPlatform(String payPlatform) {
+		this.payPlatform = payPlatform;
+	}
 
 	public String getGoodsSortId() {
 		return goodsSortId;

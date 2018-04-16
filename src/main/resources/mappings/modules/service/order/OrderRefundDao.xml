@@ -180,7 +180,7 @@
 		LEFT JOIN order_info ord ON a.order_id = ord.id
 		WHERE a.id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
-	<select id="listRefudGoodsByRefundId" resultType="OrderRefundGoods">
+	<select id="listRefundGoodsByRefundId" resultType="OrderRefundGoods">
 		SELECT
 			a.id AS "id",
 			a.order_id AS "orderId",
@@ -196,5 +196,13 @@
 		order_refund_goods a
 		WHERE
 		a.refund_id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<select id="listRefundByOrderId" resultType="OrderRefund">
+		SELECT
+		<include refid="orderRefundColumns"/>
+		FROM
+		order_refund a
+		WHERE a.order_id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 </mapper>

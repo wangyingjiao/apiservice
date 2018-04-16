@@ -7,8 +7,11 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderDispatchDao;
 import com.thinkgem.jeesite.modules.service.dao.order.OrderInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderPayInfoDao;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderRefundDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
@@ -38,6 +41,10 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	OrderDispatchDao orderDispatchDao;
 	@Autowired
 	TechScheduleDao techScheduleDao;
+	@Autowired
+	OrderPayInfoDao orderPayInfoDao;
+	@Autowired
+	OrderRefundDao orderRefundDao;
 
 	@Autowired
 	private OrderToolsService orderToolsService;
@@ -872,4 +879,107 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		return map;
 	}
 
+	/**
+	 * 退款验证
+	 * @param info
+	 * @return
+	 */
+	public boolean checkOrderRefundStatus(OrderInfo info) {
+		info = get(info);
+		String orderStatus =  info.getOrderStatus();
+		String payStatus = info.getPayStatus();
+		String orderSource = info.getOrderSource();
+
+		//订单状态
+		String orderStatusSuccess = "success";//已成功
+		//支付状态
+		String payed = "payed";//已支付
+		//订单来源
+		String own = "own";//本机构
+
+        /*
+       		只有订单来源为本机构的订单
+            支付状态：已支付 并且 订单状态：已成功
+            订单所有商品全部退款后，不再显示此按钮
+         */
+        boolean flag = false;
+		if(!own.equals(orderSource)){
+			flag = true;
+		}
+
+		if(!payed.equals(payStatus) || !orderStatusSuccess.equals(orderStatus)){
+			flag = true;
+		}
+		if(flag){
+			List<OrderGoods> list = dao.listNotRefundOrderGoodsByOrderId(info);
+			if(list!=null && list.size()>0){
+				flag = false;
+			}else{
+				flag = true;
+			}
+		}
+
+		return flag;
+	}
+
+    public OrderInfo orderRefundInit(OrderInfo info) {
+		//支付信息
+		OrderPayInfo payInfo = orderPayInfoDao.getPayInfoByOrderId(info);
+		//服务信息
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);
+		List<OrderGoods> goodsList = new ArrayList<>();
+		if(goodsInfoList != null && goodsInfoList.size() != 0){
+			for(OrderGoods orderGoods : goodsInfoList){
+				if(orderGoods.getGoodsNum() != orderGoods.getGoodsRefundNum()){
+					goodsList.add(orderGoods);
+				}
+			}
+		}
+		// 退款信息
+		List<OrderRefund> refundList = orderRefundDao.listRefundByOrderId(info);
+		String refundDifferenceType = "";
+		String refundDifference = "";
+		if(refundList!=null && refundList.size()>0){
+			BigDecimal num = new BigDecimal(0);
+
+			for(OrderRefund refund : refundList){
+				String type = refund.getRefundDifferenceType();
+				BigDecimal price = new BigDecimal(refund.getRefundDifference());
+				if("many".equals(type)){
+					num = num.add(price);
+				}else{
+					num = num.subtract(price);
+				}
+			}
+			if(num.compareTo(new BigDecimal(0)) > 0){
+				 refundDifferenceType = "多退";
+				 refundDifference = num.toString();
+			}else if(num.compareTo(new BigDecimal(0)) < 0){
+				 refundDifferenceType = "少退";
+				 refundDifference = num.toString();
+			}
+		}
+
+		OrderInfo resOrderInfo = new OrderInfo();
+		resOrderInfo.setGoodsInfoList(goodsList);
+		resOrderInfo.setPayPrice(payInfo.getPayAccount());
+		resOrderInfo.setPayPlatform(payInfo.getPayPlatform());
+		if(StringUtils.isNotBlank(refundDifferenceType) && StringUtils.isNotBlank(refundDifference)) {
+			resOrderInfo.setOrderNowRefundStatus("该订单已" + refundDifferenceType + " ￥" + refundDifference);
+		}
+
+		return resOrderInfo;
+    }
+
+	public HashMap<String,Object> orderRefundSave(OrderInfo info) {
+		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
+		OrderRefund orderRefund = info.getOrderRefundInfo();
+
+//
+//		验证当前选择商品是否还可退款（订单详情表此商品的已退货数量与购买数量是否一致）；
+//		如可退，修改订单详情表的已退货数量字段；
+//		插入退款表；
+//		如果所有商品（包括品类和数量），全部已退款，则修改订单状态为‘已关闭’；
+		return null;
+	}
 }

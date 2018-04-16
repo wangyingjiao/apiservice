@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderRefund;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderRefundGoods;
 
@@ -20,5 +21,7 @@ public interface OrderRefundDao extends CrudDao<OrderRefund> {
 
     OrderRefund formData(OrderRefund orderRefund);
 
-    List<OrderRefundGoods> listRefudGoodsByRefundId(OrderRefund orderRefund);
+    List<OrderRefundGoods> listRefundGoodsByRefundId(OrderRefund orderRefund);
+
+    List<OrderRefund> listRefundByOrderId(OrderInfo info);
 }
