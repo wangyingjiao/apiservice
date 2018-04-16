@@ -37,7 +37,9 @@
 		SELECT
 		a.id AS "id",
 		ord.order_number AS orderNumber,
+		ord.order_source AS orderSource,
 		org.name AS orgName,
+		org.visable AS "orgVisable",
 		sta.name AS stationName,
 		a.refund_number AS "refundNumber",
 		a.apply_time AS "applyTime",

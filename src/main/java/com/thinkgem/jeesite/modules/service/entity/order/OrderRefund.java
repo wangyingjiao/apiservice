@@ -42,6 +42,7 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 	private String refundDifference; // 退款差额
 	private String refundAccountReality;// 实际退款
 
+	private String orgVisable;
 
 	private List<OrderRefundGoods> refundGoodsList;
 
@@ -51,6 +52,14 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 
 	public OrderRefund(String id){
 		super(id);
+	}
+
+	public String getOrgVisable() {
+		return orgVisable;
+	}
+
+	public void setOrgVisable(String orgVisable) {
+		this.orgVisable = orgVisable;
 	}
 
 	@Length(min=0, max=32, message="退款单编号长度必须介于 0 和 32 之间")

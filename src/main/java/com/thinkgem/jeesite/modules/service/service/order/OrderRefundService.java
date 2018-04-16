@@ -6,7 +6,9 @@ package com.thinkgem.jeesite.modules.service.service.order;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderAddress;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderRefundGoods;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -42,7 +44,30 @@ public class OrderRefundService extends CrudService<OrderRefundDao, OrderRefund>
 			orderRefund.setOrderSource("gasq");//全平台：只展示订单来源为国安社区的订单列表
 		}
 		orderRefund.getSqlMap().put("dsf", dataStatioRoleFilter(user, "a"));
-		return super.findPage(page, orderRefund);
+
+		Page<OrderRefund> orderRefundPage = super.findPage(page, orderRefund);
+
+		// 用户姓名和用户电话根据服务机构可见用户信息的设置项决定是否需要模糊
+		List<OrderRefund> orderRefundList = orderRefundPage.getList();
+		for(OrderRefund refund : orderRefundList){
+			if("gasq".equals(refund.getOrderSource()) && "no".equals(refund.getOrgVisable())){
+				//  用户姓名
+				String name = refund.getRefundName();
+				if(StringUtils.isNotBlank(name) && name.length() > 0){
+					String newName = name.substring(0,1);
+					for(int i=1;i<name.length();i++){
+						newName = newName.concat("*");
+					}
+					refund.setRefundName(newName);
+				}
+				// 用户电话
+				String phone = refund.getRefundPhone();
+				if(StringUtils.isNotBlank(phone) && phone.length() == 11){
+					refund.setRefundPhone(phone.substring(0, 3) + "****" + phone.substring(7, phone.length()));
+				}
+			}
+		}
+		return orderRefundPage;
 	}
 	
 	@Transactional(readOnly = false)
