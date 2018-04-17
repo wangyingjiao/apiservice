@@ -95,6 +95,21 @@ public class BasicOrganizationController extends BaseController {
 		return new SuccResult(map);
 	}
 
+    /**
+     * 新增员工 机构下拉列表 与角色联动 参数type
+     * @param basicOrganization
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getOrgByTypeOrgId", method = {RequestMethod.POST})
+    public Result getOrgByTypeOrgId(@RequestBody BasicOrganization basicOrganization) {
+        if(basicOrganization == null){
+            basicOrganization = new BasicOrganization();
+        }
+        List<BasicOrganization> listAll1 = basicOrganizationService.getOrgByTypeOrgId(basicOrganization);
+        return new SuccResult(listAll1);
+    }
+
     @ResponseBody
     //@RequiresPermissions("office_insert")
     @RequestMapping(value = "getEShopByCode", method = RequestMethod.POST)

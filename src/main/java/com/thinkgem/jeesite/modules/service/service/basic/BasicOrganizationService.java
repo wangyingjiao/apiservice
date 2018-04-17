@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.service.BaseService;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
@@ -210,10 +211,42 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		}
 		return basicOrganizationRe;
 	}
-
+	// 服务机构的下拉列表（搜索栏下拉列表）
 	public List<BasicOrganization> findListAll(BasicOrganization basicOrganization) {
 		basicOrganization.getSqlMap().put("dsf", BaseService.dataOrganFilter( UserUtils.getUser(), "a"));
 		return dao.findList(basicOrganization);
+	}
+
+	//新增员工 机构列表 参数type
+	public List<BasicOrganization> getOrgByTypeOrgId(BasicOrganization basicOrganization) {
+		List<BasicOrganization> list=new ArrayList<BasicOrganization>();
+		User user = UserUtils.getUser();
+		String type = user.getType();
+		//选择系统员工
+		if ("sys".equals(basicOrganization.getType())){
+			if ("sys".equals(type)){
+				BasicOrganization org = basicOrganizationDao.get(user.getOrganization().getId());
+				org.setName("全系统");
+				list.add(org);
+			}else {
+				throw new ServiceException("用户权限不够，不可以新增系统员工");
+			}
+		}
+		//如果选择平台员工
+		if ("platform".equals(basicOrganization.getType())){
+			if ("sys".equals(type) || "platform".equals(type)){
+				BasicOrganization organization = basicOrganizationDao.get(user.getOrganization().getId());
+				organization.setName("全平台");
+				list.add(organization);
+			}else {
+				throw new ServiceException("用户权限不够，不可以新增平台员工");
+			}
+		}
+		if ("org".equals(basicOrganization.getType()) || "station".equals(basicOrganization.getType())){
+			basicOrganization.getSqlMap().put("dsf", BaseService.dataOrganFilterAddUser(basicOrganization , "a"));
+			list = dao.findList(basicOrganization);
+		}
+		return list;
 	}
 
     public List<Dict> getPlatform() {

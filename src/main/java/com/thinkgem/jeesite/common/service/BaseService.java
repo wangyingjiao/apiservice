@@ -84,7 +84,7 @@ public abstract class BaseService {
         return sql.toString();
     }
 
-    //员工新增时调用 根据登陆用户获取对应机构 下拉列表
+    // 服务机构的下拉列表（搜索栏下拉列表）
     public static String dataOrganFilter(User user, String alias) {
         BasicOrganization organization = user.getOrganization();
         if (null != organization && organization.getId().trim().equals("sys")) {
@@ -97,6 +97,35 @@ public abstract class BaseService {
             return " AND " + alias + ".id = '" + organization.getId() + "'";
         }
     }
+
+    //员工新增时调用 根据type 获取对应机构 下拉列表
+    public static String dataOrganFilterAddUser(BasicOrganization basicOrganization, String alias) {
+        User user = UserUtils.getUser();
+        BasicOrganization organization = user.getOrganization();
+        String type = basicOrganization.getType();
+        //如果选择机构员工 先去看用户权限
+        if ("org".equals(type)){
+            //如果是系统或者平台用户则机构展示所有机构列表
+            if ("sys".equals(user.getType()) || "platform".equals(user.getType())){
+                return " AND a.id != 'sys' AND a.id !='0'";
+            }else if ("org".equals(user.getType())){
+                return " AND " + alias + ".id = '" + organization.getId() + "'";
+            }
+        }else if ("station".equals(type)){ //如果是服务站员工
+            //如果是系统或者平台用户则机构展示所有机构列表
+            if ("sys".equals(user.getType()) || "platform".equals(user.getType())){
+                return " AND a.id != 'sys' AND a.id !='0'";
+            }else if ("org".equals(user.getType())){
+                return " AND " + alias + ".id = '" + organization.getId() + "'";
+            }else if ("station".equals(user.getType())){
+                return " AND " + alias + ".id = '" + organization.getId() + "'";
+            }
+        }else {
+            throw new ServiceException("");
+        }
+        return "";
+    }
+
     //服务站列表使用（暂时测通）
     public static String dataStationFilter(User user, String alias) {
         BasicOrganization org = user.getOrganization();

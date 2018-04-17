@@ -43,6 +43,15 @@ public class BasicOrganization extends DataEntity<BasicOrganization> {
 	private List<BasicOrganizationEshop> basicOrganizationEshops; //E店集合
 	private String eshopNames;
 	private String eshopCode;
+	private String type;  //web端员工新增时 角色与机构联动 仅作为收参使用
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	public String getEshopCode() {
 		return eshopCode;
