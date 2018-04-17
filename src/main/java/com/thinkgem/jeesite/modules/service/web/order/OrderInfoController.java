@@ -616,7 +616,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "listDataPay", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取订单收款列表")
-	//@RequiresPermissions("order_view")
+	@RequiresPermissions("pay_view")
 	public Result listDataPay(@RequestBody(required = false) OrderPayInfo orderPayInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(null == orderPayInfo){
 			orderPayInfo = new OrderPayInfo();
@@ -629,7 +629,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "listDataRefund", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("获取订单退款列表")
-	//@RequiresPermissions("order_view")
+	@RequiresPermissions("refund_view")
 	public Result listDataRefund(@RequestBody(required = false) OrderRefund orderRefund, HttpServletRequest request, HttpServletResponse response) {
 		if(null == orderRefund){
 			orderRefund = new OrderRefund();
@@ -642,7 +642,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "formDataRefund", method = {RequestMethod.POST})
 	@ApiOperation("查看退款")
-	@RequiresPermissions("order_info")
+	@RequiresPermissions("refund_info")
 	public Result formDataRefund(@RequestBody OrderRefund orderRefund) {
 		OrderRefund entity = null;
 		try {

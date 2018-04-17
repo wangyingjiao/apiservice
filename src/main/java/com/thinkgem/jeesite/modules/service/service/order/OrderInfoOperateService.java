@@ -73,6 +73,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		String orderStatusFinish = "finish";//已完成
 		String orderStatusSuccess = "success";//已成功
 		String orderStatusStop = "stop";//已暂停
+		String orderStatusClose = "close";//关闭
 
         /*
             订单状态为已取消
@@ -80,7 +81,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
             服务状态为已完成
             （只要有一个满足就可以）
          */
-		if(orderStatusCancel.equals(orderStatus) || orderStatusFinish.equals(orderStatus) || orderStatusSuccess.equals(orderStatus) ||
+		if(orderStatusCancel.equals(orderStatus) || orderStatusFinish.equals(orderStatus) ||
+				orderStatusSuccess.equals(orderStatus) || orderStatusClose.equals(orderStatus) ||
 				serviceStatusFinish.equals(serviceStatus) || serviceStatusCancel.equals(serviceStatus) ){
 			return  false;
 		}else{
@@ -826,6 +828,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		String orderStatusFinish = "finish";//已完成
 		String orderStatusSuccess = "success";//已成功
 		String orderStatusStop = "stop";//已暂停
+		String orderStatusClose = "close";//关闭
 		//支付状态
 		String waitpay = "waitpay";//待支付
 		String payed = "payed";//已支付
@@ -841,7 +844,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 			return true;
 		}
 
-		if(!waitpay.equals(payStatus) || serviceStatusCancel.equals(serviceStatus) || orderStatusCancel.equals(orderStatus)){
+		if(!waitpay.equals(payStatus) || serviceStatusCancel.equals(serviceStatus) ||
+				orderStatusCancel.equals(orderStatus) || orderStatusClose.equals(orderStatus)){
 			return true;
 		}
 

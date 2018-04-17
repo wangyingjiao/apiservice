@@ -565,7 +565,8 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 		OrderCustomInfo customInfo = orderCustomInfoDao.findCustomerById(info);
 		List<OrderCustomAddress> addressList = orderCustomInfoDao.listAddressByCustomAddress(customInfo);
 		if(null != customInfo){
-			info.setOrgId(UserUtils.getUser().getOrganization().getId());
+			//info.setOrgId(UserUtils.getUser().getOrganization().getId());
+			info.setOrgId(customInfo.getOrgId());
 			List<OrderDropdownInfo> stationList = orderCustomInfoDao.findStationList(info);
 			customInfo.setStationList(stationList);
 
@@ -590,12 +591,15 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 	 * @return
 	 */
 	public OrderCustomInfo findCustomerByPhone(OrderCustomInfo info) {
-		info.setOrgId(UserUtils.getUser().getOrganization().getId());
+		if(StringUtils.isBlank(info.getOrgId())){
+			info.setOrgId(UserUtils.getUser().getOrganization().getId());
+		}
 		info.setSource("own");
 		OrderCustomInfo customInfo = orderCustomInfoDao.findCustomerByPhone(info);
 		List<OrderCustomAddress> addressList = orderCustomInfoDao.listAddressByCustomAddress(customInfo);
 		if(null != customInfo){
-			info.setOrgId(UserUtils.getUser().getOrganization().getId());
+			//info.setOrgId(UserUtils.getUser().getOrganization().getId());
+			info.setOrgId(customInfo.getOrgId());
 			List<OrderDropdownInfo> stationList = orderCustomInfoDao.findStationList(info);
 			customInfo.setStationList(stationList);
 
@@ -620,7 +624,9 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 	 * @return
 	 */
 	public List<OrderDropdownInfo> findItemList(OrderInfo info) {
-		info.setOrgId(UserUtils.getUser().getOrganization().getId());
+		if(StringUtils.isBlank(info.getOrgId())) {
+			info.setOrgId(UserUtils.getUser().getOrganization().getId());
+		}
 		return orderGoodsDao.findItemList(info);
 	}
 	/**
@@ -706,7 +712,13 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 		//展示当前下单客户所在服务站的所有可服务的技师
 		serchInfo.setStationId(stationId);
 		//（1）会此技能的
-		String orgId = UserUtils.getUser().getOrganization().getId();
+		String orgId = "";
+		if(StringUtils.isBlank(orderInfo.getOrgId())){
+			orgId = UserUtils.getUser().getOrganization().getId();
+		}else{
+			orgId = orderInfo.getOrgId();
+		}
+
 		SerSkillSort serchSkillSort = new SerSkillSort();
 		serchSkillSort.setOrgId(orgId);
 		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
@@ -817,7 +829,12 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 			//展示当前下单客户所在服务站的所有可服务的技师
 			serchInfo.setStationId(stationId);
 			//（1）会此技能的
-			String orgId =  UserUtils.getUser().getOrganization().getId();
+			String orgId = "";
+			if(StringUtils.isBlank(orderInfo.getOrgId())){
+				orgId = UserUtils.getUser().getOrganization().getId();
+			}else{
+				orgId = orderInfo.getOrgId();
+			}
 			SerSkillSort serchSkillSort = new SerSkillSort();
 			serchSkillSort.setOrgId(orgId);
 			serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
