@@ -37,8 +37,8 @@
 			a.id AS id,
 			a.order_number AS orderNumber,
 			a.service_time AS serviceTime,
-			org.name AS "orgName",
-			org.visable AS "orgVisable",
+            a.org_id AS orgId,
+            org.name AS orgName,
 			a.station_id AS "stationId",
 			sta.name AS "stationName"
 		<if test="techName != null and techName != ''">
@@ -61,6 +61,12 @@
 			<if test="orderNumber != null and orderNumber != ''">
 				AND a.order_number LIKE concat('%',#{orderNumber},'%')
 			</if>
+            <if test="orgId != null and orgId !=''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="stationId != null and stationId !=''">
+                AND a.station_id= #{stationId}
+            </if>
 
 			<if test="techName != null and techName != ''">
 				AND a.id in (
