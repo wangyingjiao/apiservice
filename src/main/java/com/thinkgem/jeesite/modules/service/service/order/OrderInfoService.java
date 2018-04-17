@@ -161,6 +161,20 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				address.setDetailAddress(addressInfo.getPlacename() + "***");
 				orderInfo.setAddressInfo(address);
 			}
+
+			String customerName = orderInfo.getCustomerName();
+			if(StringUtils.isNotBlank(customerName) && customerName.length() > 0){
+				String newCustomerName = customerName.substring(0,1);
+				for(int i=1;i<customerName.length();i++){
+					newCustomerName = newCustomerName.concat("*");
+				}
+				orderInfo.setCustomerName(newCustomerName);
+			}
+			String customerPhone = orderInfo.getCustomerPhone();
+			if(StringUtils.isNotBlank(customerPhone) && customerPhone.length() == 11){
+				orderInfo.setCustomerPhone(customerPhone.substring(0, 3) + "****" + customerPhone.substring(7, customerPhone.length()));
+			}
+
 		}else{
 			if(addressInfo != null){
 				OrderAddress address = new OrderAddress();
