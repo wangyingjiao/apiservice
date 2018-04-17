@@ -7,10 +7,13 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStoreDao;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -46,6 +49,52 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	@Override
 	public List<BasicServiceStation> findList(BasicServiceStation serviceStation) {
 		List<BasicServiceStation> listByOrgId = basicServiceStationDao.findListByOrgId(serviceStation);
+		return listByOrgId;
+
+	}
+
+	//员工新增 服务站下拉列表 与角色，机构联动  参数 orgId type
+	public List<BasicServiceStation> listStationByOrgId(BasicServiceStation serviceStation) {
+		List<BasicServiceStation> listByOrgId =new ArrayList<BasicServiceStation>();
+		String type = serviceStation.getType();
+		String orgId = serviceStation.getOrgId();
+		BasicServiceStation station=new BasicServiceStation();
+		User user = UserUtils.getUser();
+		//如果选择了sys 角色  机构id 也为sys
+		if ("sys".equals(type) && "sys".equals(orgId)){
+			if ("sys".equals(user.getType())){
+					station.setName("全系统");
+					station.setId("sys");
+					listByOrgId.add(station);
+			}else {
+				throw new ServiceException("权限不足");
+			}
+		}
+		//如果选择了sys 角色  机构id 也为sys
+		if ("platform".equals(type) && "0".equals(orgId)){
+			if ("sys".equals(user.getType()) || "platform".equals(user.getType())) {
+				station.setName("全平台");
+				station.setId("0");
+				listByOrgId.add(station);
+			}else {
+				throw new ServiceException("权限不足");
+			}
+		}
+		//如果选择了org 角色  机构id为orgId
+		if ("org".equals(type)){
+			if (!"station".equals(user.getType())) {
+				station.setName("本机构");
+				station.setId("0");
+				listByOrgId.add(station);
+			}else {
+				throw new ServiceException("权限不足");
+			}
+		}
+		//如果选择了机构或者服务站角色  机构id
+		if ("station".equals(type)) {
+			serviceStation.getSqlMap().put("dsf", BaseService.dataStationFilterAddUser(serviceStation , "a"));
+			listByOrgId = basicServiceStationDao.getServiceStationList(serviceStation);
+		}
 		return listByOrgId;
 
 	}

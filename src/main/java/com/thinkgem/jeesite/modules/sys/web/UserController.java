@@ -337,34 +337,6 @@ public class UserController extends BaseController {
                 roleList.add(r);
             }
         }
-/*
-        //获取传过来的员工的服务站
-        String staId = user.getStation().getId();
-        BasicServiceStation station = serviceStationService.get(staId);
-        //获取服务站的员工数量
-        int employees = station.getEmployees();
-        //新增
-        if (StringUtils.isBlank(user.getId())){
-            
-            station.setEmployees(employees+ 1);
-            serviceStationService.update(station);
-        }else{
-            //编辑 查询出来和传过来的员工服务站没变 不修改服务站数量
-            //根据用户id 去数据库查询出用户的服务站id
-            User temUser = systemService.getUser(user.getId());
-            String id = temUser.getStation().getId();
-            //查出来的服务站id和修改后的服务站id不同  修改两个服务站员工数量
-            if (!id.equals(staId)){
-                //新服务站数量+1
-                station.setEmployees(employees++);
-                serviceStationService.update(station);
-                //原服务站数量—1
-                BasicServiceStation oldStation =serviceStationService.get(temUser.getStation().getId());
-                oldStation.setEmployees(oldStation.getEmployees()-1);
-                serviceStationService.update(oldStation);
-            }
-        }
-        */
         user.setRoleList(roleList);
         // 保存用户信息
         systemService.saveUser(user);

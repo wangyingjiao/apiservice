@@ -221,12 +221,13 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 	public List<BasicOrganization> getOrgByTypeOrgId(BasicOrganization basicOrganization) {
 		List<BasicOrganization> list=new ArrayList<BasicOrganization>();
 		User user = UserUtils.getUser();
+		BasicOrganization org =new BasicOrganization();
 		String type = user.getType();
 		//选择系统员工
 		if ("sys".equals(basicOrganization.getType())){
 			if ("sys".equals(type)){
-				BasicOrganization org = basicOrganizationDao.get(user.getOrganization().getId());
 				org.setName("全系统");
+				org.setId("sys");
 				list.add(org);
 			}else {
 				throw new ServiceException("用户权限不够，不可以新增系统员工");
@@ -235,9 +236,9 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 		//如果选择平台员工
 		if ("platform".equals(basicOrganization.getType())){
 			if ("sys".equals(type) || "platform".equals(type)){
-				BasicOrganization organization = basicOrganizationDao.get(user.getOrganization().getId());
-				organization.setName("全平台");
-				list.add(organization);
+				org.setName("全平台");
+				org.setId("0");
+				list.add(org);
 			}else {
 				throw new ServiceException("用户权限不够，不可以新增平台员工");
 			}

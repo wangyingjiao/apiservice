@@ -77,7 +77,13 @@ public class ServiceStationController extends BaseController {
 
     }
 
-    //服务站机构联动（搜索栏下拉列表） 参数 orgId
+    /**
+     * 服务站机构联动（搜索栏下拉列表） 参数 orgId
+     * @param serviceStation
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "listByOffice", method = {RequestMethod.POST, RequestMethod.GET})
     //@RequiresPermissions("service:station:serviceStation:view")
@@ -90,6 +96,21 @@ public class ServiceStationController extends BaseController {
         return new SuccResult(list);
     }
 
+    /**
+     * 员工新增 服务站下拉列表 与角色，机构联动  参数 orgId type
+     * @param serviceStation
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "listStationByOrgId", method = {RequestMethod.POST, RequestMethod.GET})
+    //@RequiresPermissions("service:station:serviceStation:view")
+    @RequiresPermissions("user")
+    public Result listStationByOrgId(@RequestBody(required = false) BasicServiceStation serviceStation) {
+        List<BasicServiceStation> list = new ArrayList<>();
+
+        list = serviceStationService.listStationByOrgId(serviceStation);
+        return new SuccResult(list);
+    }
 
     @ResponseBody
     @RequiresPermissions("station_view")

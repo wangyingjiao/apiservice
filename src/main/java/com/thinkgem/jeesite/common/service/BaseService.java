@@ -98,7 +98,7 @@ public abstract class BaseService {
         }
     }
 
-    //员工新增时调用 根据type 获取对应机构 下拉列表
+    //员工新增时调用 角色机构下拉列表 根据type 获取对应机构 下拉列表
     public static String dataOrganFilterAddUser(BasicOrganization basicOrganization, String alias) {
         User user = UserUtils.getUser();
         BasicOrganization organization = user.getOrganization();
@@ -121,7 +121,27 @@ public abstract class BaseService {
                 return " AND " + alias + ".id = '" + organization.getId() + "'";
             }
         }else {
-            throw new ServiceException("");
+            throw new ServiceException("数据不对");
+        }
+        return "";
+    }
+
+    //员工新增时调用 角色机构服务站下拉列表 根据type 机构id 获取对应机构 下拉列表
+    public static String dataStationFilterAddUser(BasicServiceStation serviceStation, String alias) {
+        User user = UserUtils.getUser();
+        String type = serviceStation.getType();
+        //如果选择机构员工 先去看用户权限
+        if ("station".equals(type)){ //如果是服务站员工
+            //如果是系统或者平台用户则机构展示所有机构列表
+            if ("sys".equals(user.getType()) || "platform".equals(user.getType())){
+                return " AND " + alias + ".org_id = '" + serviceStation.getOrgId() + "'";
+            }else if ("org".equals(user.getType())){
+                return " AND " + alias + ".org_id = '" + serviceStation.getOrgId() + "'";
+            }else if ("station".equals(user.getType())){
+                return " AND " + alias + ".id = '" + user.getStation().getId() + "'";
+            }
+        }else {
+            throw new ServiceException("数据不对");
         }
         return "";
     }
