@@ -293,4 +293,32 @@ public abstract class BaseService {
         return "";
     }
 
+
+    /**
+     * 列表数据权限，订单、工单用
+     *
+     * 1、全平台角色： 只展示订单来源为国安社区的订单列表
+     * 2、本机构/本服务站角色 不区分来源
+     *    本机构：看到的是机构下所有的订单
+     *    服务站：看到的是本服务站的所有订单
+     * 3、全系统角色 可查看全部订单
+     *
+     * @param user
+     * @param alias
+     * @return
+     */
+    public static String dataRoleFilterForOrder(User user, String alias){
+        String userType = user.getType();
+        if("sys".equals(userType)){// 全系统角色 可查看全部订单
+            return "";
+        }else if("platform".equals(userType)){// 全平台角色： 只展示订单来源为国安社区的订单列表
+            return " AND " + alias + ".order_source = 'gasq'";
+        }else if("org".equals(userType)){// 本机构：看到的是机构下所有的订单
+            return " AND " + alias + ".org_id = '" + user.getOrganization().getId() + "'";
+        }else if("station".equals(userType)){// 服务站：看到的是本服务站的所有订单
+            return " AND " + alias + ".org_id = '" + user.getOrganization().getId() + "'" +
+                    " AND " + alias + ".station_id = '" + user.getStation().getId() + "'";
+        }
+        return "";
+    }
 }

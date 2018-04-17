@@ -68,12 +68,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 	public Page<OrderInfo> findPage(Page<OrderInfo> page, OrderInfo orderInfo) {
 		User user = UserUtils.getUser();
-		BasicOrganization org = user.getOrganization();
-		BasicServiceStation sts = user.getStation();
-		if (null != org && org.getId().trim().equals("0")) {
-			orderInfo.setOrderSource("gasq");//全平台：只展示订单来源为国安社区的订单列表
-		}
-		orderInfo.getSqlMap().put("dsf", dataStatioRoleFilter(user, "a"));
+		orderInfo.getSqlMap().put("dsf", dataRoleFilterForOrder(user, "a"));
 		Page<OrderInfo> pageResult = super.findPage(page, orderInfo);
 		return pageResult;
 	}
