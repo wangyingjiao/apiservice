@@ -169,6 +169,7 @@
 		from ser_item_info a
 		WHERE
 		a.org_id = #{orgId}
+		AND LENGTH(a.sort_id) &lt; 3
 		AND a.del_flag = '0'
 		ORDER BY a.create_date DESC
 	</select>
