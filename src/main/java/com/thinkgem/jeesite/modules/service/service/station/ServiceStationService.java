@@ -48,7 +48,16 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	//服务站机构联动（下拉列表） 参数 orgId
 	@Override
 	public List<BasicServiceStation> findList(BasicServiceStation serviceStation) {
-		List<BasicServiceStation> listByOrgId = basicServiceStationDao.findListByOrgId(serviceStation);
+		User user = UserUtils.getUser();
+		List<BasicServiceStation> listByOrgId =new ArrayList<BasicServiceStation>();
+		//如果不是station用户 根据orgId展示所有服务站信息
+		if (!"station".equals(user.getType())) {
+			listByOrgId = basicServiceStationDao.findListByOrgId(serviceStation);
+		}else {
+			//如果是服务站用户 只展示用户的服务站信息
+			BasicServiceStation station = basicServiceStationDao.get(user.getStation().getId());
+			listByOrgId.add(station);
+		}
 		return listByOrgId;
 
 	}

@@ -325,7 +325,7 @@ public class UserController extends BaseController {
 
         List<Role> role = new ArrayList<>();
         User currUser = UserUtils.getUser();
-        if (currUser.getOrganization().getId().equals("0")) {
+        if ("sys".equals(currUser.getType()) || "platform".equals(currUser.getType())) {
             logger.info("全平台用户！");
             role = systemService.findRole(new Role());
         } else {
@@ -393,7 +393,7 @@ public class UserController extends BaseController {
 
         List<Role> role = new ArrayList<>();
         User currUser = UserUtils.getUser();
-        if (currUser.getOrganization().getId().equals("0")) {
+        if ("sys".equals(currUser.getType()) || "platform".equals(currUser.getType())) {
             logger.info("全平台用户！");
             role = systemService.findRole(new Role());
         } else {

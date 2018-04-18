@@ -217,7 +217,7 @@
     <insert id="insert">
 		INSERT INTO sys_user(
 			id, 
-
+            type,
 			office_id,
 			station_id,
 			login_name, 
@@ -239,7 +239,7 @@
 			del_flag
 		) VALUES (
 			#{id}, 
-
+            #{type},
 			#{organization.id},
 			#{station.id},
 			#{loginName}, 
@@ -282,6 +282,7 @@
             <if test="remarks != null">remarks = #{remarks} ,</if>
             <if test="loginFlag != null">login_flag = #{loginFlag} ,</if>
             <if test="photo != null">photo = #{photo},</if>
+            <if test="type != null">type = #{type},</if>
         </set>
         WHERE id = #{id}
     </update>

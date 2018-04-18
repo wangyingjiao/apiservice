@@ -87,10 +87,10 @@ public abstract class BaseService {
     // 服务机构的下拉列表（搜索栏下拉列表）
     public static String dataOrganFilter(User user, String alias) {
         BasicOrganization organization = user.getOrganization();
-        if (null != organization && organization.getId().trim().equals("sys")) {
+        if ("sys".equals(user.getType())) {
             log.info("机构权限过滤：当前用户为全系统用户 " + user.getId() + ":" + user.getName());
             return "";
-        } else if (null != organization && organization.getId().trim().equals("0")) {
+        } else if ("platform".equals(user.getType())) {
             log.info("机构权限过滤：当前用户为全平台用户 " + user.getId() + ":" + user.getName());
             return " AND a.id != 'sys'";
         } else{
