@@ -993,11 +993,19 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		return resOrderInfo;
     }
 
+    @Transactional(readOnly = false)
 	public HashMap<String,Object> orderRefundSave(OrderInfo info) {
 		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
 		OrderRefund orderRefund = info.getOrderRefundInfo();
 
+		/*if(Integer.valueOf(orderRefund.getRefundAccountReality()) < 0){
+		    throw new ServiceException("实际退款金额小于0元");
+        }*/
 		// 插入退款表；
+        orderRefund.setOrderId(info.getId());
+        orderRefund.setApplyTime(new Date());
+        orderRefund.setFinishTime(new Date());
+        orderRefund.setRefundStatus("refunded");
 		orderRefund.setRefundNumber(DateUtils.getDateAndRandomTenNum("03"));
 		orderRefund.preInsert();
 		orderRefundDao.insert(orderRefund);

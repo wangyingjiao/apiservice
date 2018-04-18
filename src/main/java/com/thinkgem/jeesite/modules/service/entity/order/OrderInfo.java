@@ -117,6 +117,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String orderNowRefundStatus;
 
 	private OrderRefund orderRefundInfo;
+	private boolean orderRefundFlag;// 订单是否有退款
+
+	public boolean isOrderRefundFlag() {
+		return orderRefundFlag;
+	}
+
+	public void setOrderRefundFlag(boolean orderRefundFlag) {
+		this.orderRefundFlag = orderRefundFlag;
+	}
 
 	public OrderRefund getOrderRefundInfo() {
 		return orderRefundInfo;
