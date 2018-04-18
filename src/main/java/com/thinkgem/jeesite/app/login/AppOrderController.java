@@ -325,4 +325,26 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(-1,null,e.getMessage());
 		}
 	}
+
+	/**
+	 * 获取补单商品表 根据订单id获取多个sortId
+	 * @param info
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "${appPath}/getItemGoods",method = {RequestMethod.POST})
+	@ApiOperation(value = "订单详情", notes = "订单")
+	public AppResult getItemGoods(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
+		//获取登录用户id
+		Token token = (Token) request.getAttribute("token");
+		info.setNowId(token.getTechId());
+		try{
+			OrderInfo orderInfo = orderInfoService.appFormData(info);
+			return new AppSuccResult(0,orderInfo,"查询订单详情");
+		}catch (ServiceException e ){
+			return new AppFailResult(1,null,e.getMessage());
+		}
+	}
 }

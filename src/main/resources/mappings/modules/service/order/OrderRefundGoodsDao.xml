@@ -30,6 +30,24 @@
 		<include refid="orderRefundGoodsJoins"/>
 		WHERE a.id = #{id}
 	</select>
+
+	<!--根据refundId查询出所有的退货单表-->
+	<select id="getRefundGoodsByRefundId" resultType="OrderRefundGoods">
+		SELECT
+		<include refid="orderRefundGoodsColumns"/>
+		FROM order_refund_goods a
+		WHERE a.refund_id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<!--根据orderid查询出所有的退货单表-->
+	<select id="getRefundGoodsByRefundId" resultType="OrderRefundGoods">
+		SELECT
+		<include refid="orderRefundGoodsColumns"/>
+		FROM order_refund_goods a
+		WHERE a.order_id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 	
 	<select id="findList" resultType="OrderRefundGoods">
 		SELECT 

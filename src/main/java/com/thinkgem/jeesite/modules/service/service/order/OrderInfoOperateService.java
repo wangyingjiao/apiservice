@@ -993,7 +993,46 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		return resOrderInfo;
     }
 
-    @Transactional(readOnly = false)
+    
+	/**
+	 * 根据订单id查询对应的退款信息
+	 * @param info
+	 * @return
+	 */
+	public OrderRefund getOrderRefundInit(OrderInfo info) {
+		// 退款信息
+		OrderRefund orderRefund=new OrderRefund();
+		List<OrderRefund> refundList = orderRefundDao.listRefundByOrderId(info);
+		String refundDifferenceType = "";
+		String refundDifference = "";
+		String refundAccountReality="";
+		if(refundList!=null && refundList.size()>0){
+			BigDecimal num = new BigDecimal(0);
+
+			for(OrderRefund refund : refundList){
+				String type = refund.getRefundDifferenceType();
+				BigDecimal price = new BigDecimal(refund.getRefundDifference());
+				if("many".equals(type)){
+					num = num.add(price);
+				}else{
+					num = num.subtract(price);
+				}
+				refundAccountReality+=refund.getRefundAccountReality();
+			}
+			if(num.compareTo(new BigDecimal(0)) > 0){
+				refundDifferenceType = "多退";
+				refundDifference = num.toString();
+			}else if(num.compareTo(new BigDecimal(0)) < 0){
+				refundDifferenceType = "少退";
+				refundDifference = num.toString();
+			}
+		}
+		orderRefund.setRefundDifference(refundDifference);
+		orderRefund.setRefundDifferenceType(refundDifferenceType);
+		orderRefund.setRefundAccount(refundAccountReality);
+		return orderRefund;
+	}
+
 	public HashMap<String,Object> orderRefundSave(OrderInfo info) {
 		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
 		OrderRefund orderRefund = info.getOrderRefundInfo();

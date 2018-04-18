@@ -58,9 +58,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	@Autowired
 	TechScheduleDao techScheduleDao;
 	@Autowired
+	OrderRefundGoodsDao orderRefundGoodsDao;
+	@Autowired
 	OrderRefundDao orderRefundDao;
 	@Autowired
-	OrderRefundGoodsDao orderRefundGoodsDao;
+	OrderInfoOperateService orderInfoOperateService;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -182,19 +184,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				address.setDetailAddress(addressInfo.getAddress());
 				orderInfo.setAddressInfo(address);
 			}
-		}
-
-		List<OrderRefundGoods> refundList = orderRefundGoodsDao.listRefundGoodsByOrderId(info);
-		if(refundList!=null && refundList.size()>0){
-			orderInfo.setOrderRefundFlag(true);
-		}else{
-			orderInfo.setOrderRefundFlag(false);
-		}
-
-		if(goodsInfoList.size() == refundList.size()){
-			orderInfo.setOrderAllRefundFlag(true);
-		}else{
-			orderInfo.setOrderAllRefundFlag(false);
 		}
 		return orderInfo;
 	}
