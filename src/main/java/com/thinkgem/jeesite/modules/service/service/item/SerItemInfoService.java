@@ -732,5 +732,24 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		return returnString;
 	}
 
-
+	/**
+	 * 商品的计量方式只能是按数量、限制拆算时长只能是0、限制起步人数只能是0；
+	 * @param serItemInfo
+	 * @return
+	 */
+	public boolean checkSuppGoods(SerItemInfo serItemInfo) {
+		List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
+		boolean flag = false;
+		if (commoditys != null) {
+			// 批量插入商品信息
+			for (SerItemCommodity commodity : commoditys) {
+				if(commodity.getSortId().length() < 3){
+					if(!"num".equals(commodity.getType()) || commodity.getConvertHours()!=0 || commodity.getStartPerNum()!=0){
+						return true;
+					}
+				}
+			}
+		}
+		return flag;
+	}
 }

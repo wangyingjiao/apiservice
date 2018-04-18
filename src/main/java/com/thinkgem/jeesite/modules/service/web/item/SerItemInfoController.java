@@ -110,6 +110,11 @@ public class SerItemInfoController extends BaseController {
             serItemInfo.setCusTags(tags);
         }
 
+        // 验证补单商品
+        boolean suppFlag = serItemInfoService.checkSuppGoods(serItemInfo);
+        if(suppFlag){
+            return new FailResult("新增补单商品失败");
+        }
         int i = serItemInfoService.saveItem(serItemInfo);
         if (i==1){
             return new SuccResult("新增成功");
@@ -155,6 +160,12 @@ public class SerItemInfoController extends BaseController {
             }
             String tags = JsonMapper.toJsonString(customTags);
             serItemInfo.setCusTags(tags);
+        }
+
+        // 验证补单商品
+        boolean suppFlag = serItemInfoService.checkSuppGoods(serItemInfo);
+        if(suppFlag){
+            return new FailResult("修改补单商品失败");
         }
 
         int i = serItemInfoService.saveItem(serItemInfo);
