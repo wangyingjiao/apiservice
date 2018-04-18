@@ -113,6 +113,10 @@ public class OrderInfoController extends BaseController {
 		if(!flag){
 			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
 		}
+		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
+		if(!fullFlag){
+			return new FailResult("只有补单商品的订单不允许操作此项内容");
+		}
 
 		try {
 			List<OrderTimeList>  timeList = orderInfoOperateService.timeDataList(orderInfo);

@@ -91,6 +91,23 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	}
 
 	/**
+	 * 只有补单商品的订单不允许更换时间
+	 * @param orderInfo
+	 * @return
+	 */
+	public boolean checkOrderFullGoods(OrderInfo orderInfo) {
+		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
+		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
+			for(OrderGoods goods :goodsInfoList){//
+				if(goods.getSortId().length() >= 3){
+					return true;
+				}
+			}
+
+		}
+		return false;
+	}
+	/**
 	 * 增加技师
 	 * @param orderInfo
 	 * @return
@@ -1018,4 +1035,5 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		}
 		return null;
 	}
+
 }
