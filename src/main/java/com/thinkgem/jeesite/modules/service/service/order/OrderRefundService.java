@@ -39,12 +39,7 @@ public class OrderRefundService extends CrudService<OrderRefundDao, OrderRefund>
 	
 	public Page<OrderRefund> findPage(Page<OrderRefund> page, OrderRefund orderRefund) {
 		User user = UserUtils.getUser();
-		BasicOrganization org = user.getOrganization();
-		if (null != org && org.getId().trim().equals("0")) {
-			orderRefund.setOrderSource("gasq");//全平台：只展示订单来源为国安社区的订单列表
-		}
-		orderRefund.getSqlMap().put("dsf", dataStatioRoleFilter(user, "a"));
-
+		orderRefund.getSqlMap().put("dsf", dataRoleFilterForOrder(user, "ord"));
 		Page<OrderRefund> orderRefundPage = super.findPage(page, orderRefund);
 
 		// 用户姓名和用户电话根据服务机构可见用户信息的设置项决定是否需要模糊

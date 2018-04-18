@@ -36,11 +36,7 @@ public class OrderPayInfoService extends CrudService<OrderPayInfoDao, OrderPayIn
 	
 	public Page<OrderPayInfo> findPage(Page<OrderPayInfo> page, OrderPayInfo orderPayInfo) {
 		User user = UserUtils.getUser();
-		BasicOrganization org = user.getOrganization();
-		if (null != org && org.getId().trim().equals("0")) {
-			orderPayInfo.setOrderSource("gasq");//全平台：只展示订单来源为国安社区的订单列表
-		}
-		orderPayInfo.getSqlMap().put("dsf", dataStatioRoleFilter(user, "a"));
+		orderPayInfo.getSqlMap().put("dsf", dataRoleFilterForOrder(user, "ord"));
 		return super.findPage(page, orderPayInfo);
 	}
 	

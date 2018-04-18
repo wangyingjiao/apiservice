@@ -1008,6 +1008,12 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
         orderRefund.setRefundStatus("refunded");
 		orderRefund.setRefundNumber(DateUtils.getDateAndRandomTenNum("03"));
 		orderRefund.preInsert();
+		if(StringUtils.isBlank(orderRefund.getRefundDifferenceType())){
+			orderRefund.setRefundDifferenceType(null);
+		}
+		if(StringUtils.isBlank(orderRefund.getRefundDifference())){
+			orderRefund.setRefundDifference(null);
+		}
 		orderRefundDao.insert(orderRefund);
 
 		if(goodsInfoList != null){

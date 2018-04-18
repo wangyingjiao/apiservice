@@ -124,5 +124,13 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<select id="listRefundGoodsByOrderId" resultType="OrderRefundGoods">
+		SELECT
+		<include refid="orderRefundGoodsColumns"/>
+		FROM order_refund_goods a
+		WHERE a.order_id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
 	
 </mapper>
