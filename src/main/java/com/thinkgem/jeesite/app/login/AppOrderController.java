@@ -335,7 +335,7 @@ public class AppOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/getItemGoods",method = {RequestMethod.POST})
-	@ApiOperation(value = "订单详情", notes = "订单")
+	@ApiOperation(value = "补单商品表", notes = "订单")
 	public AppResult getItemGoods(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
 		Token token = (Token) request.getAttribute("token");

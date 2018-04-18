@@ -41,7 +41,7 @@
 	</select>
 
 	<!--根据orderid查询出所有的退货单表-->
-	<select id="getRefundGoodsByRefundId" resultType="OrderRefundGoods">
+	<select id="getRefundGoodsByOrderId" resultType="OrderRefundGoods">
 		SELECT
 		<include refid="orderRefundGoodsColumns"/>
 		FROM order_refund_goods a

@@ -237,6 +237,25 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("没有商品信息");
 		}
 		orderInfo.setGoodsInfoList(tem);
+		//app的退款详情
+		OrderRefund orderRefundInit = orderInfoOperateService.getOrderRefundInit(orderInfo);
+		//根据订单id查询出
+		List<OrderRefundGoods> refundGoodsByOrderId = orderRefundGoodsDao.getRefundGoodsByOrderId(orderInfo);
+		// List<OrderRefundGoods> refundGoods=new ArrayList<OrderRefundGoods>();
+		// List<OrderRefund> refunds =orderRefundDao.listRefundByOrderId(orderInfo);
+		// if (refunds !=null && refunds.size()>0){
+		// 	for (OrderRefund refund:refunds){
+		// 		//查询OrderRefundGoods表
+		// 		List<OrderRefundGoods> refundGoodsByRefundId = orderRefundGoodsDao.getRefundGoodsByRefundId(refund);
+		// 		if (refundGoodsByRefundId != null && refundGoodsByRefundId.size() > 0){
+		// 			for (OrderRefundGoods refundGood:refundGoodsByRefundId) {
+		// 				refundGoods.add(refundGood);
+		// 			}
+		// 		}
+		// 	}
+		// }
+		orderRefundInit.setRefundGoodsList(refundGoodsByOrderId);
+		orderInfo.setRefundInfo(orderRefundInit);
 		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
 		if (techList==null || techList.size()==0){

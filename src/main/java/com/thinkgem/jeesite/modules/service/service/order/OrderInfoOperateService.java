@@ -993,7 +993,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		return resOrderInfo;
     }
 
-    
+
 	/**
 	 * 根据订单id查询对应的退款信息
 	 * @param info
@@ -1032,7 +1032,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		orderRefund.setRefundAccount(refundAccountReality);
 		return orderRefund;
 	}
-
+    @Transactional(readOnly = false)
 	public HashMap<String,Object> orderRefundSave(OrderInfo info) {
 		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
 		OrderRefund orderRefund = info.getOrderRefundInfo();
