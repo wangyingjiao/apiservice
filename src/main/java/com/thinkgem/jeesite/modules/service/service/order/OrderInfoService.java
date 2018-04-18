@@ -185,6 +185,19 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderInfo.setAddressInfo(address);
 			}
 		}
+
+        List<OrderRefundGoods> refundList = orderRefundGoodsDao.listRefundGoodsByOrderId(info);
+        if(refundList!=null && refundList.size()>0){
+            orderInfo.setOrderRefundFlag(true);
+        }else{
+            orderInfo.setOrderRefundFlag(false);
+        }
+
+        if(goodsInfoList.size() == refundList.size()){
+            orderInfo.setOrderAllRefundFlag(true);
+        }else{
+            orderInfo.setOrderAllRefundFlag(false);
+        }
 		return orderInfo;
 	}
 
