@@ -147,7 +147,7 @@ public class SerSkillInfoController extends BaseController {
 			SerSortInfo serSortInfo = new SerSortInfo();
 			serSortInfo.setSortIds(entity.getSortIds());
 			serSortInfo.setOrgId(entity.getOrgId());
-			List<SerSortInfo> list = serSortInfoService.findList(serSortInfo);
+			List<SerSortInfo> list = serSortInfoService.findListExceptFullGoods(serSortInfo);
 			// List<SerItemInfo> items =
 			// serSkillInfoService.findSerPage(serSkillInfo);
 			List<SerSkillTechnician> techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
@@ -182,7 +182,7 @@ public class SerSkillInfoController extends BaseController {
 		User user = UserUtils.getUser();
 		serSortInfo.setOrgId(user.getOrganization().getId());// 机构ID
 		// 获取分类表
-		List<SerSortInfo> list = serSortInfoService.findList(serSortInfo);
+		List<SerSortInfo> list = serSortInfoService.findListExceptFullGoods(serSortInfo);
 
 		HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
 		// objectObjectHashMap.put("items",items);

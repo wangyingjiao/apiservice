@@ -92,6 +92,32 @@ public class SerSortInfoService extends CrudService<SerSortInfoDao, SerSortInfo>
         return listRE;
     }
 
+    public List<SerSortInfo> findListExceptFullGoods(SerSortInfo serSortInfo) {
+        List<SerSortInfo> list = dao.findSortAllList(serSortInfo);
+
+        List<String> sortIds = serSkillSortDao.findSortIdList(serSortInfo);
+
+        List<SerSortInfo> listRE = new ArrayList<SerSortInfo>();
+
+        for(SerSortInfo info :list){
+            if(info.getId().length() > 3) {
+                String id = info.getId();
+                if (!sortIds.contains(id)) {
+                    if (info.getMajorSort().equals("clean")) {
+                        info.setMajorSort("保洁");
+                    }
+                    if (info.getMajorSort().equals("repair")) {
+                        info.setMajorSort("家修");
+                    }
+                    info.setName(info.getName() + "(" + info.getMajorSort() + ")");
+                    listRE.add(info);
+                }
+            }
+        }
+
+        return listRE;
+    }
+
     public Page<SerSortInfo> findPage(Page<SerSortInfo> page, SerSortInfo serSortInfo) {
         return super.findPage(page, serSortInfo);
     }

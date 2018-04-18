@@ -743,7 +743,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		if (commoditys != null) {
 			// 批量插入商品信息
 			for (SerItemCommodity commodity : commoditys) {
-				if(commodity.getSortId().length() < 3){
+				if(serItemInfo.getSortId().length() < 3){
 					if(!"num".equals(commodity.getType()) || commodity.getConvertHours()!=0 || commodity.getStartPerNum()!=0){
 						return true;
 					}
