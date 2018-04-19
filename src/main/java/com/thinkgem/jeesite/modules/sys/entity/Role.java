@@ -41,7 +41,7 @@ public class Role<T> extends DataEntity<Role> {
 	private String enname;	// 英文名称
 	private String roleType;// 权限类型
 	private String dataScope;// 数据范围
-	
+	private String orgId;
 	private String oldName; 	// 原角色名称
 	private String oldEnname;	// 原英文名称
 	private String sysData; 		//是否是系统数据
@@ -70,6 +70,7 @@ public class Role<T> extends DataEntity<Role> {
 	public static final String DATA_SCOPE_SELF = "8";
 	public static final String DATA_SCOPE_CUSTOM = "9";
 
+	public static final String DATA_ROLE_SYS = "sys";//全系统
 	public static final String DATA_ROLE_ALL = "1";//全平台
 	public static final String DATA_ROLE_OFFICE = "2";//全机构、本机构
 	public static final String DATA_ROLE_STATION = "3";//本服务站
@@ -89,6 +90,14 @@ public class Role<T> extends DataEntity<Role> {
 		this.user = user;
 	}
 
+
+	public String getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
 
 	public String getSysData() {
 		return sysData;

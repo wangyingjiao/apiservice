@@ -31,6 +31,7 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String sale;		// 是否上架(yes:是，no:否)
 	private int sortNum;		// 排序号
 	private String orgId;//机构ID
+	private String orgName;
 	private List<String> sysTags;			//系统标签
 	private List<String> customTags;		//自定义标签
 	//private String eshopCode; //e点code 对接用
@@ -40,6 +41,14 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 
 	private String jointEshopCode;   //机构E店
 	private String flag="yes";   //是否需要对接
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
 
 	public String getJointEshopCode() {
 		return jointEshopCode;

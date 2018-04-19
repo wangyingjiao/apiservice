@@ -305,6 +305,9 @@
 			<if test="majorSort != null and majorSort != ''">
 				AND d.major_sort=#{majorSort}
 			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id=#{orgId}
+			</if>
 			<if test="sortId != null and sortId != ''">
 				AND d.id=#{sortId}
 			</if>
@@ -345,6 +348,9 @@
             <if test="sortId != null and sortId != ''">
                 AND s.id = #{sortId}
             </if>
+			<if test="orgId != null and orgId != ''">
+				AND i.org_id = #{orgId}
+			</if>
             <if test="goodsName != null and goodsName != ''">
                 AND g.joint_name LIKE concat('%',#{goodsName},'%')
             </if>

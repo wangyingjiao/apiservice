@@ -267,7 +267,9 @@ public abstract class BaseService {
         String dataRole = "";
         if ("0".equals(officeId)) {
             dataRole = Role.DATA_ROLE_ALL;//机构ID为0 代表全平台
-        } else {
+        }else if ("sys".equals(officeId)){
+            dataRole = Role.DATA_ROLE_SYS;//全系统
+        }else {
             // if ("0".equals(stationId)) {
             dataRole = Role.DATA_ROLE_OFFICE;//服务站ID为0 代表全机构
 //            } else {
@@ -281,6 +283,8 @@ public abstract class BaseService {
                 sqlString = new StringBuilder();
             } else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
                 sqlString.append(" AND " + "a" + ".office_id = '" + officeId + "'");
+            }else if (Role.DATA_ROLE_SYS.equals(dataRole)){
+                sqlString = new StringBuilder();
             }
 //            else if (Role.DATA_ROLE_STATION.equals(dataRole)) {
 //                sqlString.append(" AND " + tableAlias + ".station_id = '" + stationId + "'");

@@ -139,14 +139,19 @@ public class ServiceStationController extends BaseController {
         if (errors.size() > 0) {
             return new FailResult(errors);
         }
-        User user = UserUtils.getUser();
-        if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
-            serviceStation.setOrgId(user.getOrganization().getId());
-        } else {
-            return new FailResult("用户没有具体的所属机构(全平台权限)");
+        String orgId = null;
+        if (StringUtils.isEmpty(serviceStation.getOrgId())) {
+            User user = UserUtils.getUser();
+            if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
+                serviceStation.setOrgId(user.getOrganization().getId());
+            } else {
+                return new FailResult("用户没有具体的所属机构(全平台权限)");
+            }
+            //add by WYR同一机构下的服务站名称应不可重复
+            orgId = user.getOrganization().getId();//所属的机构id
+        }else {
+            orgId = serviceStation.getOrgId();
         }
-        //add by WYR同一机构下的服务站名称应不可重复
-        String orgId = user.getOrganization().getId();//所属的机构id
         int i=serviceStationService.checkRepeatName(serviceStation.getName(),orgId);
         if (0!=i) {
 			return new FailResult("同一机构下的服务站名称应不可重复");
@@ -166,15 +171,19 @@ public class ServiceStationController extends BaseController {
         if (errors.size() > 0) {
             return new FailResult(errors);
         }
-        User user = UserUtils.getUser();
-
-        if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
-            serviceStation.setOrgId(user.getOfficeId());
-        } else {
-            return new FailResult("用户没有具体的所属机构(全平台权限)");
+        String orgId = null;
+        if (StringUtils.isEmpty(serviceStation.getOrgId())) {
+            User user = UserUtils.getUser();
+            if (user.getOrganization() != null && user.getOrganization().getId() != "0") {
+                serviceStation.setOrgId(user.getOfficeId());
+            } else {
+                return new FailResult("用户没有具体的所属机构(全平台权限)");
+            }
+            //add by WYR编辑时同一机构下的服务站名称应不可重复
+            orgId = user.getOrganization().getId();//所属的机构id
+        }else {
+            orgId = serviceStation.getOrgId();
         }
-      //add by WYR编辑时同一机构下的服务站名称应不可重复
-        String orgId = user.getOrganization().getId();//所属的机构id
         String id = serviceStation.getId();
         int i=serviceStationService.checkRepeatNameUpdate(serviceStation.getName(),orgId,id);
         if (0!=i) {

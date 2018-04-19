@@ -64,14 +64,19 @@
 			b.name AS "techName",
 			b.phone AS "techPhone",
             b.job_status AS "jobStatus",
-			c.name AS "techStationName"
+			c.name AS "techStationName",
+			ba.name AS "orgName"
 		FROM tech_holiday a
 		LEFT JOIN tech_info b ON a.tech_id = b.id
 		LEFT JOIN basic_service_station c ON c.id = b.station_id
+		LEFT JOIN basic_organization ba ON ba.id = c.org_id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="reviewStatus != null and reviewStatus != ''">
 				AND a.review_status = #{reviewStatus}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND c.org_id = #{orgId}
 			</if>
 			<if test="techName != null and techName != ''">
 				AND b.name LIKE concat('%',#{techName},'%')

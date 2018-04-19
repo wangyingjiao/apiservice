@@ -35,6 +35,25 @@ public class ServiceTechnicianHoliday extends DataEntity<ServiceTechnicianHolida
 	private String source; //来源 app：技师APP端 sys：后台系统
 	private String jobStatus;		// 岗位状态(online:在职，leave:离职)
 	private String status; //按钮时候出现
+	private String orgName;  //机构名称
+	private String orgId;
+
+	public String getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+
 	public String getJobStatus() {
 		return jobStatus;
 	}

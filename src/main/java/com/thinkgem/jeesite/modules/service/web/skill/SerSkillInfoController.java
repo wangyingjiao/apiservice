@@ -80,8 +80,10 @@ public class SerSkillInfoController extends BaseController {
 		}
 
 		if (!StringUtils.isNotBlank(serSkillInfo.getId())) {// 新增时验证重复
-			User user = UserUtils.getUser();
-			serSkillInfo.setOrgId(user.getOrganization().getId());// 机构ID
+			if (StringUtils.isEmpty(serSkillInfo.getOrgId())) {
+				User user = UserUtils.getUser();
+				serSkillInfo.setOrgId(user.getOrganization().getId());// 机构ID
+			}
 			if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
 				return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
 			}
@@ -97,8 +99,10 @@ public class SerSkillInfoController extends BaseController {
 	public Result upData(@RequestBody SerSkillInfo serSkillInfo) {
 		List<String> errList = errors(serSkillInfo);
 		// 验证名字是否可用
-		User user = UserUtils.getUser();
-		serSkillInfo.setOrgId(user.getOrganization().getId());// 机构ID
+		if (StringUtils.isEmpty(serSkillInfo.getOrgId())) {
+			User user = UserUtils.getUser();
+			serSkillInfo.setOrgId(user.getOrganization().getId());// 机构ID
+		}
 		if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
 			return new FailResult("当前机构已经包含技能名称:" + serSkillInfo.getName() + "");
 		}

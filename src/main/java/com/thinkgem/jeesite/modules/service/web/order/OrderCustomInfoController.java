@@ -62,8 +62,10 @@ public class OrderCustomInfoController extends BaseController {
 			return new FailResult(errList);
 		}
 		if(StringUtils.isBlank(orderCustomInfo.getId())) {
-			User user = UserUtils.getUser();
-			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
+			if (StringUtils.isEmpty(orderCustomInfo.getOrgId())) {
+				User user = UserUtils.getUser();
+				orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
+			}
 			orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
 		}
 		/*
@@ -149,8 +151,10 @@ public class OrderCustomInfoController extends BaseController {
 		if (errList != null && errList.size() > 0) {
 			return new FailResult(errList);
 		}
-		User user = UserUtils.getUser();
-		orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
+		if (StringUtils.isEmpty(orderCustomInfo.getOrgId())) {
+			User user = UserUtils.getUser();
+			orderCustomInfo.setOrgId(user.getOrganization().getId());//机构ID
+		}
 		orderCustomInfo.setSource("own");// 来源   本机构:own    第三方:other
 		List<OrderCustomInfo> techInfoList=orderCustomInfoService.findCusList(orderCustomInfo);
 		if (null == techInfoList||techInfoList.size()==0) {

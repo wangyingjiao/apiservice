@@ -22,6 +22,15 @@ public class SerSkillInfo extends DataEntity<SerSkillInfo> {
 	private String name;		// 技能名称
 	private int techNum;  // 技师数量
 	private String orgId;//机构ID
+	private String orgName;
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
 
 	private List<SerSkillTechnician> technicians;
 	private List<SerSkillSort> goodsList;

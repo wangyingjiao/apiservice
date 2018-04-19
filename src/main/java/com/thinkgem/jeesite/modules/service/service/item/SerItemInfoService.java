@@ -97,11 +97,11 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                 serItemInfo.setPictureDetail(pictureDetail1);
             }
 			serItemInfo.preUpdate();
-
-			// add by wyr编辑项目服务需要获取当前的机构id
-			User user = UserUtils.getUser();
-			serItemInfo.setOrgId(user.getOrganization().getId());
-
+			if (StringUtils.isEmpty(serItemInfo.getOrgId())) {
+				// add by wyr编辑项目服务需要获取当前的机构id
+				User user = UserUtils.getUser();
+				serItemInfo.setOrgId(user.getOrganization().getId());
+			}
 			List<SerItemCommodity> commoditys = serItemInfo.getCommoditys();
 			/*
              * if (StringUtils.isNotBlank(serItemInfo.getId())) { //删除商品信息

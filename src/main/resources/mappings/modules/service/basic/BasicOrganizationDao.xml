@@ -70,6 +70,8 @@
 		<include refid="basicOrganizationJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.id != '0'
+			AND a.id != 'sys'
 			<if test="name != null and name != ''">
 				AND a.name like concat('%',#{name},'%')
 			</if>

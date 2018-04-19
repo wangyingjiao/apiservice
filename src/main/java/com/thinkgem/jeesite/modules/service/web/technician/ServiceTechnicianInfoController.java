@@ -173,8 +173,10 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (errList != null && errList.size() > 0) {
             return new FailResult(errList);
         }
-        User user = UserUtils.getUser();
-        info.setOrgId(user.getOrganization().getId());
+        if (StringUtils.isEmpty(info.getOrgId())) {
+            User user = UserUtils.getUser();
+            info.setOrgId(user.getOrganization().getId());
+        }
         //ServiceTechnicianInfo techInfo = serviceTechnicianInfoService.findTech(info);
         List<ServiceTechnicianInfo> techInfoList=serviceTechnicianInfoService.findTechList(info);
         
@@ -206,8 +208,10 @@ public class ServiceTechnicianInfoController extends BaseController {
             return new FailResult(errList);
         }*/
     	//add by WYR 校验手机号重复
-        User user = UserUtils.getUser();
-        info.setOrgId(user.getOrganization().getId());
+        /*if (StringUtils.isEmpty(info.getOrgId())) {
+            User user = UserUtils.getUser();
+            info.setOrgId(user.getOrganization().getId());
+        }*/
         int i= serviceTechnicianInfoService.checkPhone(info);
         if (0!=i) {
             return new FailResult("技师手机号不能重复！");

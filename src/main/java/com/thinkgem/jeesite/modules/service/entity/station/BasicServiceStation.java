@@ -39,6 +39,16 @@ public class BasicServiceStation extends DataEntity<BasicServiceStation> {
     private List<String> storeList;
     private String storeId;
 
+    private String orgName;   //机构名称
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
     public List<String> getStoreList() {
         return storeList;
     }

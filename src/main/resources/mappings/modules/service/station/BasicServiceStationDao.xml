@@ -115,7 +115,8 @@
 		u8.id AS "user.id",
 		u8.name AS "user.name"
         ,bo.scope_type AS "organ.scopeType"
-        ,sa.name AS "cityName"
+        ,sa.name AS "cityName",
+        bo.name AS "orgName"
         FROM basic_service_station a
         LEFT JOIN sys_user u8 ON u8.id = a.user_id  and u8.del_flag='0' and a.id=u8.station_id
         LEFT JOIN basic_organization bo on a.org_id = bo.id
