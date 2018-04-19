@@ -14,6 +14,7 @@ import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
@@ -327,8 +328,8 @@ public class AppOrderController extends BaseController {
 	}
 
 	/**
-	 * 获取补单商品表 根据订单id获取多个sortId
-	 * @param info
+	 * 获取补单商品表 根据订单id获取多个sortId位数小于3的商品
+	 * @param info 参数必穿orderId
 	 * @param request
 	 * @param response
 	 * @return
@@ -339,12 +340,13 @@ public class AppOrderController extends BaseController {
 	public AppResult getItemGoods(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
 		Token token = (Token) request.getAttribute("token");
-		info.setNowId(token.getTechId());
-		try{
-			OrderInfo orderInfo = orderInfoService.appFormData(info);
-			return new AppSuccResult(0,orderInfo,"查询订单详情");
-		}catch (ServiceException e ){
-			return new AppFailResult(1,null,e.getMessage());
+		String techId = token.getTechId();
+		ServiceTechnicianInfo serviceTechnicianInfo = techService.get(techId);
+		info.setOrgId(serviceTechnicianInfo.getOrgId());
+		if (StringUtils.isBlank(info.getId())){
+			return new AppFailResult(-1,null,"需要传入订单id");
 		}
+		List<SerItemInfo> itemGoods = orderInfoService.getItemGoods(info);
+		return new AppFailResult(1,itemGoods,"补单商品列表");
 	}
 }

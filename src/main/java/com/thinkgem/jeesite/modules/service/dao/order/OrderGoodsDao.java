@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDropdownInfo;
@@ -27,4 +28,6 @@ public interface OrderGoodsDao extends CrudDao<OrderGoods> {
     List<OrderDropdownInfo> findItemList(OrderInfo info);
 
     void updateRefundNumByOrderIdItemId(OrderGoods orderGoods);
+    //获取补单商品表 根据订单id获取多个sortId位数小于3的商品
+    List<SerItemInfo> listItemGoods(OrderInfo orderInfo);
 }

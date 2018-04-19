@@ -11,12 +11,14 @@ import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -63,6 +65,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	OrderRefundDao orderRefundDao;
 	@Autowired
 	OrderInfoOperateService orderInfoOperateService;
+	@Autowired
+	OrderGoodsDao orderGoodsDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -552,6 +556,11 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		super.delete(orderInfo);
 	}
 
+	//获取补单商品表 根据订单id获取多个sortId位数小于3的商品
+	public List<SerItemInfo> getItemGoods(OrderInfo orderInfo) {
+		List<SerItemInfo> list= orderGoodsDao.listItemGoods(orderInfo);
+		return list;
+	}
 	/**
 	 * 请求订单列表时返回查询条件服务机构下拉列表
 	 * @return
