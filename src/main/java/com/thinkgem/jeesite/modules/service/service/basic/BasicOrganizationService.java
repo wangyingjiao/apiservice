@@ -214,7 +214,7 @@ public class BasicOrganizationService extends CrudService<BasicOrganizationDao, 
 	// 服务机构的下拉列表（搜索栏下拉列表）
 	public List<BasicOrganization> findListAll(BasicOrganization basicOrganization) {
 		basicOrganization.getSqlMap().put("dsf", BaseService.dataOrganFilter( UserUtils.getUser(), "a"));
-		return dao.findList(basicOrganization);
+		return basicOrganizationDao.findListAll(basicOrganization);
 	}
 
 	//新增员工 机构列表 参数type

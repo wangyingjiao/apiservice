@@ -104,6 +104,51 @@
 		</choose>
 	</select>
 
+	<select id="findListAll" resultType="BasicOrganization">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.telephone AS "telephone",
+		a.master_name AS "masterName",
+		a.master_phone AS "masterPhone",
+		a.address AS "address"
+		<!--a.joint_eshop_code AS jointEshopCode-->
+		FROM basic_organization a
+		<include refid="basicOrganizationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name like concat('%',#{name},'%')
+			</if>
+			<if test="masterName != null and masterName != ''">
+				AND a.master_name like concat('%',#{masterName},'%')
+			</if>
+			<if test="masterPhone != null and masterPhone != ''">
+				AND a.master_phone like concat('%',#{masterPhone},'%')
+			</if>
+			<!--<if test="jointEshopCode != null and jointEshopCode != ''">
+				AND a.joint_eshop_code like concat('%',#{jointEshopCode},'%')
+			</if>-->
+			<if test="eshopNames != null and eshopNames != ''">
+				AND a.id in (
+				SELECT a.org_id FROM  basic_organization_eshop a LEFT JOIN basic_gasq_eshop g ON a.eshop_code =g.code
+				where
+				g.name LIKE concat('%',#{eshopNames},'%')
+				)
+			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
 	
 	<insert id="insert">
 		INSERT INTO basic_organization(
