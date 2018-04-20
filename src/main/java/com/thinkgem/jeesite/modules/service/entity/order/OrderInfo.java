@@ -120,6 +120,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private OrderRefund orderRefundInfo;
 	private boolean orderRefundFlag;// 订单是否有退款
 	private boolean orderAllRefundFlag;// 订单是否全部退款
+	private List<String> refundGoodsList;
+
+	public List<String> getRefundGoodsList() {
+		return refundGoodsList;
+	}
+
+	public void setRefundGoodsList(List<String> refundGoodsList) {
+		this.refundGoodsList = refundGoodsList;
+	}
 
 	public boolean isOrderAllRefundFlag() {
 		return orderAllRefundFlag;

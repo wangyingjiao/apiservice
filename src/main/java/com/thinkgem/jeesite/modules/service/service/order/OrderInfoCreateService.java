@@ -345,8 +345,8 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 		orderInfo.setOrderTime(DateUtils.parseDate(DateUtils.getDateTime()));    //下单时间
 		orderInfo.setServiceTime(servie_time);     //上门时间（服务时间）
 		Double serviceSecond = serviceHour * 3600;
-		orderInfo.setFinishTime(DateUtils.addSeconds(servie_time,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
-		orderInfo.setSuggestFinishTime(DateUtils.addSeconds(servie_time,serviceSecond.intValue()));              //建议完成时间',
+		orderInfo.setFinishTime(DateUtils.addSecondsNotDayE(servie_time,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
+		orderInfo.setSuggestFinishTime(DateUtils.addSecondsNotDayE(servie_time,serviceSecond.intValue()));              //建议完成时间',
 		orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
 		orderInfo.setServiceStatus("wait_service");   // 服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 		orderInfo.setOrderStatus("dispatched");   // 订单状态(waitdispatch:待派单dispatched:已派单cancel:已取消started:已上门finish:已完成success:已成功stop:已暂停)

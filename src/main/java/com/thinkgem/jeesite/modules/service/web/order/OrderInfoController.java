@@ -606,6 +606,11 @@ public class OrderInfoController extends BaseController {
 		if(flag){
 			return new FailResult("当前订单状态不允许退款");
 		}
+		// 判断订单商品是否已退
+		boolean flag2 = orderInfoOperateService.checkOrderRefundGoods(info);
+		if(!flag2){
+			return new FailResult("当前商品状态不允许退款");
+		}
 
 		try{
 			HashMap<String,Object>  map = orderInfoOperateService.orderRefundSave(info);

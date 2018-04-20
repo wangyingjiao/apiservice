@@ -944,6 +944,25 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		return flag;
 	}
 
+
+	public boolean checkOrderRefundGoods(OrderInfo info) {
+		boolean flag = false;
+		List<String> refundGoodsList = new ArrayList<>();
+		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
+		for(OrderGoods goods : goodsInfoList){
+			refundGoodsList.add(goods.getGoodsId());
+		}
+		info.setRefundGoodsList(refundGoodsList);
+		List<OrderGoods> list = dao.listRefundOrderGoodsByOrderIdGoods(info);
+		if(list!=null && list.size()>0){
+			flag = false;
+		}else{
+			flag = true;
+		}
+
+		return flag;
+	}
+
     public OrderInfo orderRefundInit(OrderInfo info) {
 		//支付信息
 		OrderPayInfo payInfo = orderPayInfoDao.getPayInfoByOrderId(info);
