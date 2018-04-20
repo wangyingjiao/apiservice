@@ -966,11 +966,15 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 
 			for(OrderRefund refund : refundList){
 				String type = refund.getRefundDifferenceType();
-				BigDecimal price = new BigDecimal(refund.getRefundDifference());
-				if("many".equals(type)){
-					num = num.add(price);
-				}else{
-					num = num.subtract(price);
+				if(type != null) {
+					if(refund.getRefundDifference() != null) {
+						BigDecimal price = new BigDecimal(refund.getRefundDifference());
+						if ("many".equals(type)) {
+							num = num.add(price);
+						} else {
+							num = num.subtract(price);
+						}
+					}
 				}
 			}
 			if(num.compareTo(new BigDecimal(0)) > 0){
@@ -978,7 +982,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 				 refundDifference = num.toString();
 			}else if(num.compareTo(new BigDecimal(0)) < 0){
 				 refundDifferenceType = "少退";
-				 refundDifference = num.toString();
+				 refundDifference = new BigDecimal(0).subtract(num).toString();
 			}
 		}
 
@@ -987,7 +991,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		resOrderInfo.setPayPrice(payInfo.getPayAccount());
 		resOrderInfo.setPayPlatform(payInfo.getPayPlatform());
 		if(StringUtils.isNotBlank(refundDifferenceType) && StringUtils.isNotBlank(refundDifference)) {
-			resOrderInfo.setOrderNowRefundStatus("该订单已" + refundDifferenceType + " ￥" + refundDifference);
+			resOrderInfo.setOrderNowRefundStatus("* 该订单已" + refundDifferenceType + " ￥" + refundDifference);
 		}
 
 		return resOrderInfo;
@@ -1024,7 +1028,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 				refundDifference = num.toString();
 			}else if(num.compareTo(new BigDecimal(0)) < 0){
 				refundDifferenceType = "少退";
-				refundDifference = num.toString();
+				refundDifference = new BigDecimal(0).subtract(num).toString();
 			}
 		}
 		orderRefund.setRefundDifference(refundDifference);

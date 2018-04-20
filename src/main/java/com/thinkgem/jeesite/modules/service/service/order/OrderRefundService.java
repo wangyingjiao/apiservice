@@ -89,6 +89,13 @@ public class OrderRefundService extends CrudService<OrderRefundDao, OrderRefund>
 			}
 			info.setRefundGoodsList(refundGoodsList);
 		}
+		String type = info.getRefundDifferenceType();
+		String diff = info.getRefundDifference();
+		if(StringUtils.isBlank(type) || StringUtils.isBlank(diff) || "0".equals(diff)){
+			info.setRefundDifferenceType(null);
+			info.setRefundDifference("0");
+		}
+
 		return info;
 	}
 }
