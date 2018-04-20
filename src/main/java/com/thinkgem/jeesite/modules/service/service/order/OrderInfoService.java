@@ -512,6 +512,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (StringUtils.isBlank(payStatus) || "payed".equals(payStatus)){
 			throw new ServiceException("订单已经支付，无需再次支付");
 		}
+		if (orderInfo.getOriginPrice().equals(info.getOriginPrice())){
+            throw new ServiceException("当前支付价格与订单实际价格不一致，请重新支付");
+        }
 		info.appPreUpdate();
 		info.setPayStatus("payed");
 		i = dao.appUpdatePay(info);
@@ -560,6 +563,21 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (orderInfo == null){
 			throw new ServiceException("该订单未找到，未传订单id");
 		}
+        String orderStatus = orderInfo.getOrderStatus();
+        if (("cancel".equals(orderStatus)) || ("finish".equals(orderStatus)) || ("success".equals(orderStatus)) || ("stop".equals(orderStatus)) || ("close".equals(orderStatus))){
+            throw new ServiceException("该订单的状态不允许补单");
+        }
+        if ("payed".equals(orderInfo.getPayStatus())){
+            throw new ServiceException("该订单已支付，不可补单");
+        }
+        //查询支付表 orderId
+        OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayInfoByOrderId(orderInfo);
+        if (payInfoByOrderId == null){
+            throw new ServiceException("未找到支付表");
+        }
+        if ("payed".equals(payInfoByOrderId.getPayStatus())){
+            throw new ServiceException("订单已支付，不可补单");
+        }
 		//订单原总价
 		String originPrice = orderInfo.getOriginPrice();
 		//传参的补单商品集合
@@ -623,17 +641,15 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		BigDecimal subtract = paypriceSumNew.subtract(paypriceSum);
 		BigDecimal bigDecimal = new BigDecimal(originPrice);
 		BigDecimal add = bigDecimal.add(subtract);
-		//查询支付表 orderId
-		OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayInfoByOrderId(orderInfo);
-		if (payInfoByOrderId == null){
-			throw new ServiceException("未找到支付表");
-		}
 		//4.如果订单总价改变 修改订单表和订单支付表
 		if (!originPrice.equals(add.toString())){
 			orderInfo.setOriginPrice(add.toString());
 			orderInfo.appPreUpdate();
-			orderInfoDao.update(orderInfo);
-			payInfoByOrderId.setPayAccount(add.toString());
+            int update = orderInfoDao.update(orderInfo);
+            if(update < 0){
+                throw new ServiceException("更新订单总额失败");
+            }
+            payInfoByOrderId.setPayAccount(add.toString());
 			payInfoByOrderId.appPreUpdate();
 			change=orderPayInfoDao.update(payInfoByOrderId);
 		}

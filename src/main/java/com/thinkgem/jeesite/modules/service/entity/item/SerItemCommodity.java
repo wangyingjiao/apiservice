@@ -41,8 +41,8 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
     private String priceUnit;		//拼接后的单价
 	private List<String> goodIds;
 
-	private String orderUseGoods;
-	private int orderGoodsNum;
+	private String orderUseGoods;  //已补单商品是否选中 yes  选中  false 未选中
+	private int orderGoodsNum;  //已补单的商品数量
 
 	private List<SerItemCommodityEshop> commodityEshops;
 	private String jointCode;

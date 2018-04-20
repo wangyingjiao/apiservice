@@ -38,7 +38,7 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 	private String orderSource;// 订单来源
 
 
-	private String refundDifferenceType; // 退款差额
+	private String refundDifferenceType; // 退款差额方式
 	private String refundDifference; // 退款差额
 	private String refundAccountReality;// 实际退款
 

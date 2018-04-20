@@ -999,7 +999,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 
 
 	/**
-	 * 根据订单id查询对应的退款信息
+	 * APP根据订单id查询对应的退款信息
 	 * @param info
 	 * @return
 	 */
