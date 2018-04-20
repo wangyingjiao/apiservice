@@ -79,6 +79,7 @@
        <if test="type!= null and type=='business' ">
             and a.type=#{type}
         </if>
+        ${sqlMap.dsf}
         ORDER BY a.sort
     </select>
     <!-- add by wyr 全平台用户显示左侧菜单栏 -->
