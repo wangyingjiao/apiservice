@@ -137,6 +137,11 @@
 		WHERE id = #{id}
 	</update>
 
+	<update id="deleteById">
+		DELETE FROM order_goods
+		WHERE id = #{id}
+	</update>
+
 	<select id="findItemGoodsByGoodId" resultType="SerItemCommodity">
 		SELECT
 		a.id AS id,
@@ -225,5 +230,16 @@
 		AND o.order_id = #{orderId}
 		where g.item_id=#{reqId}
 		and g.del_flag = '0'
+	</select>
+
+	<!--根据订单id查询所有的订单商品表中分类id小于3的商品集合-->
+	<select id="getbyOrderId" resultType="OrderGoods">
+		SELECT
+		<include refid="orderGoodsColumns"/>
+		FROM order_goods a
+		<include refid="orderGoodsJoins"/>
+		WHERE a.order_id = #{id}
+		AND a.del_flag='0'
+		AND LENGTH(a.sort_id) &lt; 3
 	</select>
 </mapper>

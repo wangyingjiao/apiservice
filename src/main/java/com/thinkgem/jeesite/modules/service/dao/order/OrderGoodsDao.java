@@ -30,4 +30,10 @@ public interface OrderGoodsDao extends CrudDao<OrderGoods> {
     void updateRefundNumByOrderIdItemId(OrderGoods orderGoods);
     //获取补单商品表 根据订单id获取多个sortId位数小于3的商品
     List<SerItemInfo> listItemGoods(OrderInfo orderInfo);
+
+    // 根据订单id查询所有的订单商品表中分类id小于3的商品结合
+    List<OrderGoods> getbyOrderId(OrderInfo info);
+    //根据id删除订单商品表  物理删除
+    int deleteById(OrderGoods orderGoods);
+
 }

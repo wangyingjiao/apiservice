@@ -335,9 +335,9 @@ public class AppOrderController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "${appPath}/getItemGoods",method = {RequestMethod.POST})
+	@RequestMapping(value = "${appPath}/suppList",method = {RequestMethod.POST})
 	@ApiOperation(value = "补单商品表", notes = "订单")
-	public AppResult getItemGoods(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
+	public AppResult suppList(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
 		Token token = (Token) request.getAttribute("token");
 		String techId = token.getTechId();
@@ -347,6 +347,29 @@ public class AppOrderController extends BaseController {
 			return new AppFailResult(-1,null,"需要传入订单id");
 		}
 		List<SerItemInfo> itemGoods = orderInfoService.getItemGoods(info);
-		return new AppFailResult(1,itemGoods,"补单商品列表");
+		return new AppSuccResult(0,itemGoods,"补单商品列表");
 	}
+
+    /**
+     *  补单保存
+     *  参数 orderId 服务项目itemId  商品goodsId  数量goodsNum 单价payPrice
+     * @param info
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "${appPath}/saveSupp",method = {RequestMethod.POST})
+    @ApiOperation(value = "补单商品表", notes = "订单")
+    public AppResult saveSupp(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
+        try {
+			int i = orderInfoService.saveSupp(info);
+			if (i > 0){
+				return new AppSuccResult(0,null,"补单保存成功");
+			}
+			return new AppFailResult(-1,null,"补单保存失败");
+		}catch (ServiceException e){
+			return new AppFailResult(-1,null,e.getMessage());
+		}
+    }
 }

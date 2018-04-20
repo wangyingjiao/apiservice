@@ -18,6 +18,7 @@ import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
@@ -67,6 +68,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	OrderInfoOperateService orderInfoOperateService;
 	@Autowired
 	OrderGoodsDao orderGoodsDao;
+	@Autowired
+	SerItemCommodityDao serItemCommodityDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -258,19 +261,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		OrderRefund orderRefundInit = orderInfoOperateService.getOrderRefundInit(orderInfo);
 		//根据订单id查询出
 		List<OrderRefundGoods> refundGoodsByOrderId = orderRefundGoodsDao.getRefundGoodsByOrderId(orderInfo);
-		// List<OrderRefundGoods> refundGoods=new ArrayList<OrderRefundGoods>();
-		// List<OrderRefund> refunds =orderRefundDao.listRefundByOrderId(orderInfo);
-		// if (refunds !=null && refunds.size()>0){
-		// 	for (OrderRefund refund:refunds){
-		// 		//查询OrderRefundGoods表
-		// 		List<OrderRefundGoods> refundGoodsByRefundId = orderRefundGoodsDao.getRefundGoodsByRefundId(refund);
-		// 		if (refundGoodsByRefundId != null && refundGoodsByRefundId.size() > 0){
-		// 			for (OrderRefundGoods refundGood:refundGoodsByRefundId) {
-		// 				refundGoods.add(refundGood);
-		// 			}
-		// 		}
-		// 	}
-		// }
 		orderRefundInit.setRefundGoodsList(refundGoodsByOrderId);
 		orderInfo.setRefundInfo(orderRefundInit);
 		//app的技师列表 appTechList
@@ -556,10 +546,98 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		super.delete(orderInfo);
 	}
 
-	//获取补单商品表 根据订单id获取多个sortId位数小于3的商品
+	//app获取补单商品表 根据订单id获取多个sortId位数小于3的商品
 	public List<SerItemInfo> getItemGoods(OrderInfo orderInfo) {
 		List<SerItemInfo> list= orderGoodsDao.listItemGoods(orderInfo);
 		return list;
+	}
+	//app补单保存 参数 orderId 服务项目itemId  商品goodsId  数量goodsNum 单价payPrice
+	@Transactional(readOnly = false)
+	public int saveSupp(OrderInfo info) {
+		int change=0;
+		//首先 验证参数
+		OrderInfo orderInfo = orderInfoDao.appGet(info);
+		if (orderInfo == null){
+			throw new ServiceException("该订单未找到，未传订单id");
+		}
+		//订单原总价
+		String originPrice = orderInfo.getOriginPrice();
+		//传参的补单商品集合
+		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
+		//1.根据订单id先去修改orderGood表 将订单商品已有的补单商品删除
+		//根据订单id查询所有的订单商品表中分类id小于3的商品结合
+		List<OrderGoods> orderOldSuppGoods = orderGoodsDao.getbyOrderId(info);
+		BigDecimal paypriceSum =new BigDecimal(0);
+		if (orderOldSuppGoods != null && orderOldSuppGoods.size() > 0){
+			for (OrderGoods good:orderOldSuppGoods){
+				//已有补单的商品总价
+				paypriceSum = paypriceSum.add(new BigDecimal(good.getPayPrice()));
+				// 删除 good
+				int i = orderGoodsDao.deleteById(good);
+				if (i < 0){
+					throw new ServiceException("删除订单原商品失败");
+				}
+			}
+		}
+		//如果订单商品中没有补单商品  且没有传补单商品
+		if (goodsInfoList == null || goodsInfoList.size() < 1){
+			if (orderOldSuppGoods == null || orderOldSuppGoods.size() <1) {
+				return 1;
+			}
+		}
+		int a=0;
+		//2.循环项目表 将补单商品新增至数据库中
+		BigDecimal paypriceSumNew =new BigDecimal(0);
+		if (goodsInfoList != null || goodsInfoList.size() > 0) {
+			for (OrderGoods goods : goodsInfoList) {
+				//传入的商品 goods是一个服务项目 goodsList是商品
+				List<OrderGoods> goodsList = goods.getGoods();
+				OrderGoods byId = serItemInfoDao.getById(goods.getItemId());
+				//循环项中的商品表
+				if (goodsList != null || goodsList.size() > 0) {
+					for (OrderGoods good : goodsList) {
+						//根据商品id查询出商品
+						SerItemCommodity serItemCommodity = serItemCommodityDao.get(good.getGoodsId());
+						//传入的商品总价
+						paypriceSumNew = paypriceSumNew.add(new BigDecimal(good.getPayPrice()));
+						// insert
+						good.setOrderId(info.getId());
+						good.setSortId(goods.getSortId());
+						good.setItemId(goods.getItemId());
+						good.setItemName(byId.getItemName());
+						good.setGoodsName(serItemCommodity.getName());
+						good.setGoodsType(serItemCommodity.getType());
+						good.setGoodsUnit(serItemCommodity.getUnit());
+						good.setPayPrice(serItemCommodity.getPrice().toString());
+						good.setOriginPrice(serItemCommodity.getPrice().toString());
+						good.appreInsert();
+						a = orderGoodsDao.insert(good);
+					}
+				}
+			}
+		}
+		if (a < 0){
+			throw new ServiceException("新增补单商品失败");
+		}
+		//3. 计算新的商品总价
+		BigDecimal subtract = paypriceSumNew.subtract(paypriceSum);
+		BigDecimal bigDecimal = new BigDecimal(originPrice);
+		BigDecimal add = bigDecimal.add(subtract);
+		//查询支付表 orderId
+		OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayInfoByOrderId(orderInfo);
+		if (payInfoByOrderId == null){
+			throw new ServiceException("未找到支付表");
+		}
+		//4.如果订单总价改变 修改订单表和订单支付表
+		if (!originPrice.equals(add.toString())){
+			orderInfo.setOriginPrice(add.toString());
+			orderInfo.appPreUpdate();
+			orderInfoDao.update(orderInfo);
+			payInfoByOrderId.setPayAccount(add.toString());
+			payInfoByOrderId.appPreUpdate();
+			change=orderPayInfoDao.update(payInfoByOrderId);
+		}
+		return change;
 	}
 	/**
 	 * 请求订单列表时返回查询条件服务机构下拉列表
