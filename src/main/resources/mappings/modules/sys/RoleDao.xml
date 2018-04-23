@@ -39,7 +39,8 @@
 		<result property="organization.name" column="organization.name" />
 		<collection property="menuList" ofType="Menu">
 			<id property="id" column="menuList.id" />
-			<id property="name" column="menuList.name" />					
+			<id property="name" column="menuList.name" />
+			<id property="type" column="menuList.type" />
 			<id property="delFlag" column="menuList.delFlag"/>	
 			<id property="parent.id" column="menuList.parent.id"/>
 			<id property="parentIds" column="menuList.parentIds"/>						
@@ -325,6 +326,7 @@
 		sm.name as "menuList.name",
 		sm.href,
 		sm.target,
+		sm.type AS "menuList.type",
 		sm.icon,
 		sm.sort,
 		sm.is_show,
@@ -337,8 +339,8 @@
 		LEFT JOIN sys_menu sm on sm.id=rm.menu_id and sm.del_flag =0
 		LEFT JOIN sys_menu p ON p.id = sm.parent_id
 		WHERE a.del_flag =0 and a.id = #{id}
-		 <if test="type!= null and type=='business' ">
-            AND sm.type=#{type}
+		 <if test="type!= null and type!='sys' ">
+            AND sm.type='business'
         </if>
 		
 	</select>

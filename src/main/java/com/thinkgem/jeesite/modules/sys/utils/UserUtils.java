@@ -191,26 +191,32 @@ public class UserUtils {
         List<Menu> menuList = (List<Menu>) getCache(CACHE_MENU_LIST);
         if (menuList == null) {
             User user = getUser();
-            //if (user.isAdmin) {
-            if (null!=user.getType()&&user.getType().equals("sys")) {
-            	Menu menu = new Menu();
-            	menu.setType(user.getType());
+            if (user.isAdmin()) {
+                Menu menu = new Menu();
+                menu.setType(user.getType());
                 menuList = menuDao.findAllList(menu);
-            } else {
-            	 BasicOrganization org = user.getOrganization();
-                 if (null != org && org.getId().trim().equals("0")) { //add by wyr全平台用户显示左侧菜单栏
-            		Menu m = new Menu();
-                	m.setUserId(user.getId());
-                	m.setType(user.getType());
-                	//menuList = menuDao.findByUserId(m);
-                	menuList=menuDao.findByUserIdFullPlatform(m);
-                }else {
-                	Menu m = new Menu();
-                	m.setUserId(user.getId());
-                	m.setType(user.getType());
-                	//m.getSqlMap().put("dsf","and a.permission not in('class_insert','class_update','class_delete','class','class_view')");
-                	menuList = menuDao.findByUserId(m);
-				} 
+            }else {
+                if (null != user.getType() && user.getType().equals("sys")) {
+                    Menu menu = new Menu();
+                    menu.setUserId(user.getId());
+                    menu.setType(user.getType());
+                    menuList = menuDao.findByUserId(menu);
+                } else {
+                    BasicOrganization org = user.getOrganization();
+                    if (null != org && org.getId().trim().equals("0")) { //add by wyr全平台用户显示左侧菜单栏
+                        Menu m = new Menu();
+                        m.setUserId(user.getId());
+                        m.setType(user.getType());
+                        //menuList = menuDao.findByUserId(m);
+                        menuList = menuDao.findByUserIdFullPlatform(m);
+                    } else {
+                        Menu m = new Menu();
+                        m.setUserId(user.getId());
+                        m.setType(user.getType());
+                        //m.getSqlMap().put("dsf","and a.permission not in('class_insert','class_update','class_delete','class','class_view')");
+                        menuList = menuDao.findByUserId(m);
+                    }
+                }
             }
             putCache(CACHE_MENU_LIST, menuList);
        }
