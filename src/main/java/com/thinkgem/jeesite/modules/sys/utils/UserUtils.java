@@ -208,7 +208,7 @@ public class UserUtils {
                 	Menu m = new Menu();
                 	m.setUserId(user.getId());
                 	m.setType(user.getType());
-                	m.getSqlMap().put("dsf","and a.permission not in('class_insert','class_update','class_delete','class','class_view')");
+                	//m.getSqlMap().put("dsf","and a.permission not in('class_insert','class_update','class_delete','class','class_view')");
                 	menuList = menuDao.findByUserId(m);
 				} 
             }

@@ -322,6 +322,15 @@ public class ServiceTechnicianInfoController extends BaseController {
         if (serviceTechnicianInfo == null) {
             serviceTechnicianInfo = new ServiceTechnicianInfo();
         }
+        if (StringUtils.isEmpty(serviceTechnicianInfo.getStationId())){
+            User user = UserUtils.getUser();
+            if (user.getType().equals("station")){
+                BasicOrganization organization = user.getOrganization();
+                BasicServiceStation station = user.getStation();
+                serviceTechnicianInfo.setOrgId(organization.getId());
+                serviceTechnicianInfo.setStationId(station.getId());
+            }
+        }
         Page<ServiceTechnicianInfo> serSkillPage = new Page<>(request, response);
         Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.scheduleList(serSkillPage, serviceTechnicianInfo);
         return new SuccResult(page);
