@@ -14,6 +14,7 @@ import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -346,8 +348,24 @@ public class AppOrderController extends BaseController {
 		if (StringUtils.isBlank(info.getId())){
 			return new AppFailResult(-1,null,"需要传入订单id");
 		}
+		//计算总价
+		BigDecimal count = new BigDecimal(0);
 		List<SerItemInfo> itemGoods = orderInfoService.getItemGoods(info);
-		return new AppSuccResult(0,itemGoods,"补单商品列表");
+		if (itemGoods != null && itemGoods.size()> 0){
+			for (SerItemInfo item:itemGoods){
+				List<SerItemCommodity> commoditys = item.getCommoditys();
+				for (SerItemCommodity good:commoditys){
+					BigDecimal price = good.getPrice();
+					BigDecimal orderGoodsNum = new BigDecimal(good.getOrderGoodsNum());
+					BigDecimal multiply = price.multiply(orderGoodsNum);
+					count.add(multiply);
+				}
+			}
+		}
+		Map map=new HashMap();
+		map.put("count",count);
+		map.put("itemGoods",itemGoods);
+		return new AppSuccResult(0,map,"补单商品列表");
 	}
 
     /**

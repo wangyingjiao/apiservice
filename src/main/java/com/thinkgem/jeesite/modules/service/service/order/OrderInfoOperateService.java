@@ -1097,7 +1097,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		}
 		orderRefund.setRefundDifference(refundDifference);
 		orderRefund.setRefundDifferenceType(refundDifferenceType);
-		orderRefund.setRefundAccount(refundAccountReality.toString());
+		orderRefund.setRefundAccountReality(refundAccountReality.toString());
 		orderRefund.setGoodsInfoList(orderGoodsList);
 		return orderRefund;
 	}
