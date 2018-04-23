@@ -335,6 +335,9 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		double orderTotalTime = 0.0;//订单所需时间
 		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
 			for(OrderGoods goods :goodsInfoList){//
+				if(goods.getSortId().length()<3){
+					continue;
+				}
 				int goodsNum = goods.getGoodsNum();		// 订购商品数
 				if(0 == goodsNum){
 					logger.error("未找到当前订单服务商品信息的订购商品数");
@@ -391,6 +394,9 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		double serviceHour = 0.0;//建议服务时长（小时）
 		if(goodsInfoList != null && goodsInfoList.size() != 0 ){
 			for(OrderGoods goods :goodsInfoList){//
+				if(goods.getSortId().length()<3){
+					continue;
+				}
 				int goodsNum = goods.getGoodsNum();		// 订购商品数
 				if(0 == goodsNum){
 					logger.error("未找到当前订单服务商品信息的订购商品数");

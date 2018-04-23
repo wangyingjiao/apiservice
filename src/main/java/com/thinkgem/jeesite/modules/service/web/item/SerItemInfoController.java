@@ -111,10 +111,10 @@ public class SerItemInfoController extends BaseController {
         }
 
         // 验证补单商品
-        boolean suppFlag = serItemInfoService.checkSuppGoods(serItemInfo);
+        /*boolean suppFlag = serItemInfoService.checkSuppGoods(serItemInfo);
         if(suppFlag){
             return new FailResult("新增补单商品失败");
-        }
+        }*/
         int i = serItemInfoService.saveItem(serItemInfo);
         if (i==1){
             return new SuccResult("新增成功");
@@ -163,10 +163,10 @@ public class SerItemInfoController extends BaseController {
         }
 
         // 验证补单商品
-        boolean suppFlag = serItemInfoService.checkSuppGoods(serItemInfo);
+        /*boolean suppFlag = serItemInfoService.checkSuppGoods(serItemInfo);
         if(suppFlag){
             return new FailResult("修改补单商品失败");
-        }
+        }*/
 
         int i = serItemInfoService.saveItem(serItemInfo);
 
