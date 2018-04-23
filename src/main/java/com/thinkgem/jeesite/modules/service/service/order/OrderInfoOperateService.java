@@ -8,9 +8,11 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
@@ -49,6 +51,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 
 	@Autowired
 	private OrderToolsService orderToolsService;
+	@Autowired
+	SerItemInfoDao serItemInfoDao;
 
 	/**
 	 * 增加、改派、更换时间 判断订单状态
@@ -1022,16 +1026,54 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 
 	/**
 	 * APP根据订单id查询对应的退款信息
+	 * 多条退款商品合并 根据服务项目集合
 	 * @param info
 	 * @return
 	 */
 	public OrderRefund getOrderRefundInit(OrderInfo info) {
-		// 退款信息
+		List<String> itemIds=new ArrayList<String>();
+		// 退款商品集合
+		List<OrderRefundGoods> refundGoodsByOrderId = orderRefundGoodsDao.getRefundGoodsByOrderId(info);
+		if (refundGoodsByOrderId != null && refundGoodsByOrderId.size()>0){
+			for (OrderRefundGoods orderRefundGoods:refundGoodsByOrderId){
+				String itemId = orderRefundGoods.getItemId();
+				itemIds.add(itemId);
+			}
+		}
+		//将项目id集合去重
+		Set set = new  HashSet();
+		//最后的 项目id集合
+		List<String> newList = new  ArrayList<String>();
+		for (String cd:itemIds) {
+			if(set.add(cd)){
+				newList.add(cd);
+			}
+		}
+		//项目集合
+		List<OrderGoods> orderGoodsList=new ArrayList<OrderGoods>();
+		//商品结合
+		List<OrderGoods> goodsList=new ArrayList<OrderGoods>();
+		for (String id:newList){
+			OrderGoods byId = serItemInfoDao.getById(id);
+			orderGoodsList.add(byId);
+		}
+		//循环商品
+		for (OrderGoods item:orderGoodsList){
+			for (OrderRefundGoods orderRefundGoods:refundGoodsByOrderId) {
+				OrderGoods orderGoods=new OrderGoods();
+				orderGoods.setGoodsId(orderRefundGoods.getGoodsId());
+				orderGoods.setPayPrice(orderRefundGoods.getPayPrice());
+				orderGoods.setGoodsName(orderRefundGoods.getGoodsName());
+				orderGoods.setGoodsNum(Integer.parseInt(orderRefundGoods.getGoodsNum()));
+				goodsList.add(orderGoods);
+				item.setGoods(goodsList);
+			}
+		}
 		OrderRefund orderRefund=new OrderRefund();
 		List<OrderRefund> refundList = orderRefundDao.listRefundByOrderId(info);
 		String refundDifferenceType = "";
 		String refundDifference = "";
-		String refundAccountReality="";
+		BigDecimal refundAccountReality=new BigDecimal(0);
 		if(refundList!=null && refundList.size()>0){
 			BigDecimal num = new BigDecimal(0);
 
@@ -1043,7 +1085,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 				}else{
 					num = num.subtract(price);
 				}
-				refundAccountReality+=refund.getRefundAccountReality();
+				refundAccountReality.add(new BigDecimal(refund.getRefundAccountReality()));
 			}
 			if(num.compareTo(new BigDecimal(0)) > 0){
 				refundDifferenceType = "多退";
@@ -1055,7 +1097,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		}
 		orderRefund.setRefundDifference(refundDifference);
 		orderRefund.setRefundDifferenceType(refundDifferenceType);
-		orderRefund.setRefundAccount(refundAccountReality);
+		orderRefund.setRefundAccount(refundAccountReality.toString());
+		orderRefund.setGoodsInfoList(orderGoodsList);
 		return orderRefund;
 	}
     @Transactional(readOnly = false)

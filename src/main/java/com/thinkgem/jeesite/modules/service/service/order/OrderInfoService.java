@@ -259,10 +259,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setGoodsInfoList(tem);
 		//app的退款详情
 		OrderRefund orderRefundInit = orderInfoOperateService.getOrderRefundInit(orderInfo);
-		//根据订单id查询出
-		List<OrderRefundGoods> refundGoodsByOrderId = orderRefundGoodsDao.getRefundGoodsByOrderId(orderInfo);
-		orderRefundInit.setRefundGoodsList(refundGoodsByOrderId);
 		orderInfo.setRefundInfo(orderRefundInit);
+		//根据订单id查询出
 		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
 		if (techList==null || techList.size()==0){
@@ -512,7 +510,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (StringUtils.isBlank(payStatus) || "payed".equals(payStatus)){
 			throw new ServiceException("订单已经支付，无需再次支付");
 		}
-		if (orderInfo.getOriginPrice().equals(info.getOriginPrice())){
+		if (orderInfo.getPayPrice().equals(info.getPayPrice())){
             throw new ServiceException("当前支付价格与订单实际价格不一致，请重新支付");
         }
 		info.appPreUpdate();

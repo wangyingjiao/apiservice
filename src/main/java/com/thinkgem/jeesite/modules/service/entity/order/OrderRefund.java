@@ -43,8 +43,19 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 	private String refundAccountReality;// 实际退款
 
 	private String orgVisable;
+	private List<OrderGoods> goodsInfoList;
 
 	private List<OrderRefundGoods> refundGoodsList;
+
+	private List<OrderRefund> refundList;
+
+	public List<OrderGoods> getGoodsInfoList() {
+		return goodsInfoList;
+	}
+
+	public void setGoodsInfoList(List<OrderGoods> goodsInfoList) {
+		this.goodsInfoList = goodsInfoList;
+	}
 
 	public OrderRefund() {
 		super();
@@ -225,5 +236,13 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 
 	public void setRefundAccountReality(String refundAccountReality) {
 		this.refundAccountReality = refundAccountReality;
+	}
+
+	public List<OrderRefund> getRefundList() {
+		return refundList;
+	}
+
+	public void setRefundList(List<OrderRefund> refundList) {
+		this.refundList = refundList;
 	}
 }
