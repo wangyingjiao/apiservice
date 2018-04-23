@@ -57,6 +57,9 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	 */
 	public boolean checkOrderStatus(OrderInfo orderInfo) {
 		orderInfo = get(orderInfo);
+		if(orderInfo.getSuggestFinishTime()!=null && new Date().after(orderInfo.getSuggestFinishTime())){
+			return false;
+		}
 		String orderStatus =  orderInfo.getOrderStatus();
 		String serviceStatus =  orderInfo.getServiceStatus();
 
