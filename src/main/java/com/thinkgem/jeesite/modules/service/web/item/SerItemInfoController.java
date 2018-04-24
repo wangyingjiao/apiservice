@@ -567,7 +567,8 @@ public class SerItemInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "getGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取E店名称")
-    public Result getGoodsCode(@RequestBody String orgId) {
+        public Result getGoodsCode(@RequestBody SerItemCommodityEshop serItemCommodityEshop) {
+        String orgId = serItemCommodityEshop.getOrgId();
         if (StringUtils.isBlank(orgId)) {
             User user = UserUtils.getUser();
             orgId = user.getOrganization().getId();
