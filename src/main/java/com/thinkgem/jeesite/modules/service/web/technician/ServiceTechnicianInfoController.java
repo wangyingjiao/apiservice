@@ -72,8 +72,13 @@ public class ServiceTechnicianInfoController extends BaseController {
     @ResponseBody
     @ApiOperation(notes = "返回用户服务站的工作时间", value = "获取用户服务站的工作时间")
     @RequestMapping(value = {"getDate"}, method = RequestMethod.POST)
-    public Result getDate(){
-        String orgId = UserUtils.getUser().getOrganization().getId();
+    public Result getDate(@RequestBody(required = false) ServiceTechnicianInfo serviceTechnicianInfo){
+        String orgId = null;
+        if (StringUtils.isEmpty(serviceTechnicianInfo.getOrgId())) {
+            orgId = UserUtils.getUser().getOrganization().getId();
+        }else {
+            orgId = serviceTechnicianInfo.getOrgId();
+        }
         BasicOrganization basicOrganization = basicOrganizationService.get(orgId);
         SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
         //开始时间
