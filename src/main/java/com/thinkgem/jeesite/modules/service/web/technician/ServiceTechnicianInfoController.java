@@ -330,6 +330,10 @@ public class ServiceTechnicianInfoController extends BaseController {
                 serviceTechnicianInfo.setOrgId(organization.getId());
                 serviceTechnicianInfo.setStationId(station.getId());
             }
+            if (user.getType().equals("org")){
+                BasicOrganization organization = user.getOrganization();
+                serviceTechnicianInfo.setOrgId(organization.getId());
+            }
         }
         Page<ServiceTechnicianInfo> serSkillPage = new Page<>(request, response);
         Page<ServiceTechnicianInfo> page = serviceTechnicianInfoService.scheduleList(serSkillPage, serviceTechnicianInfo);
