@@ -218,9 +218,11 @@ public abstract class BaseService {
         String stationId = user.getStation().getId();//服务站ID
 
         String dataRole = "";
-        if ("0".equals(officeId)) {
+        if ("platform".equals(user.getType())) {
             dataRole = Role.DATA_ROLE_ALL;//机构ID为0 代表全平台
-        } else {
+        }else if ("sys".equals(user.getType())){
+            dataRole = Role.DATA_ROLE_SYS; //全系统
+        }else {
             dataRole = Role.DATA_ROLE_OFFICE;//服务站ID为0 代表全机构
         }
         // 超级管理员，跳过权限过滤
@@ -228,7 +230,9 @@ public abstract class BaseService {
             boolean isDataScopeAll = false;
             if (Role.DATA_ROLE_ALL.equals(dataRole)) {
                 sqlString = new StringBuilder();
-            } else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
+            }else if (Role.DATA_ROLE_SYS.equals(dataRole)){
+                sqlString = new StringBuilder();
+            }else if (Role.DATA_ROLE_OFFICE.equals(dataRole)) {
                 sqlString.append(" AND " + tableAlias + ".org_id = '" + officeId + "'");
             }
         }
