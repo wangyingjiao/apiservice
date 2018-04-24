@@ -567,9 +567,11 @@ public class SerItemInfoController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "getGoodsCode", method = {RequestMethod.POST, RequestMethod.GET})
     @ApiOperation("获取E店名称")
-    public Result getGoodsCode() {
-        User user = UserUtils.getUser();
-        String orgId = user.getOrganization().getId();
+    public Result getGoodsCode(@RequestBody String orgId) {
+        if (StringUtils.isBlank(orgId)) {
+            User user = UserUtils.getUser();
+            orgId = user.getOrganization().getId();
+        }
         List<BasicGasqEshop> basicGasqEshop = serItemInfoService.getGoodsCode(orgId);
         return new SuccResult(basicGasqEshop);
     }
