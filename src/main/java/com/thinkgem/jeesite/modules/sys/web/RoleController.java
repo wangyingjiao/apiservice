@@ -605,6 +605,21 @@ public class RoleController extends BaseController {
 		 */
 		List<Menu> menus = genTreeMenu("1", menuList);
 		// List<Menu> menus = genTreeMenuOrder("1", menuList);
+
+		//冒泡排序
+		if (menus != null && menus.size()>1) {
+			Menu menu1 = new Menu();
+			for (int i = 0; i < menus.size(); i++) {//冒泡趟数
+				for (int j = 0; j < menus.size() - i - 1; j++) {
+					if (menus.get(j + 1).getSort() < menus.get(j).getSort()) {
+						menu1 = menus.get(j);
+						menus.set(j, menus.get(j + 1));
+						menus.set(j + 1, menu1);
+					}
+				}
+			}
+		}
+
 		role.setMenuListUnion(menus);
 
 		// 方案二

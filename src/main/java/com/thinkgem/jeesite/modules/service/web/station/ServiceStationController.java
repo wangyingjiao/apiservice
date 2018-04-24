@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicStore;
 import com.thinkgem.jeesite.modules.service.entity.station.SaveStationGroup;
@@ -70,8 +71,12 @@ public class ServiceStationController extends BaseController {
     @ApiOperation("获取服务站列表")
     @RequiresPermissions("station_view")
     public Result listData(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
+        if (StringUtils.isEmpty(serviceStation.getOrgId())){
+            User user = UserUtils.getUser();
+            BasicOrganization organization = user.getOrganization();
+            serviceStation.setOrgId(organization.getId());
+        }
         Page<BasicServiceStation> stationPage = new Page<>(request, response);
-
         Page<BasicServiceStation> page = serviceStationService.findPage(stationPage, serviceStation);
         return new SuccResult(page);
 

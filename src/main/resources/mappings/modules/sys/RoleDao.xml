@@ -41,6 +41,7 @@
 			<id property="id" column="menuList.id" />
 			<id property="name" column="menuList.name" />
 			<id property="type" column="menuList.type" />
+			<id property="sort" column="menuList.sort" />
 			<id property="delFlag" column="menuList.delFlag"/>	
 			<id property="parent.id" column="menuList.parent.id"/>
 			<id property="parentIds" column="menuList.parentIds"/>						
@@ -328,7 +329,7 @@
 		sm.target,
 		sm.type AS "menuList.type",
 		sm.icon,
-		sm.sort,
+		sm.sort AS "menuList.sort",
 		sm.is_show,
 		sm.permission AS "menuList.permission", 
 		p.name AS "parent.name"
