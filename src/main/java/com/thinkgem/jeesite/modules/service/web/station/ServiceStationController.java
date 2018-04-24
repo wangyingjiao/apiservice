@@ -94,6 +94,10 @@ public class ServiceStationController extends BaseController {
     //@RequiresPermissions("service:station:serviceStation:view")
     @RequiresPermissions("user")
     public Result listByOffice(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
+        if (StringUtils.isEmpty(serviceStation.getOrgId())){
+            BasicOrganization organization = UserUtils.getUser().getOrganization();
+            serviceStation.setOrgId(organization.getId());
+        }
         List<BasicServiceStation> list = new ArrayList<>();
         if (StringUtils.isNotBlank(serviceStation.getOrgId())) {
             list = serviceStationService.findList(serviceStation);

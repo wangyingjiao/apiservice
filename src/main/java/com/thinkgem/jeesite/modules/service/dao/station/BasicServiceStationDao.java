@@ -36,4 +36,6 @@ public interface BasicServiceStationDao extends CrudDao<BasicServiceStation> {
 
     //服务站机构联动（下拉列表） 参数 orgId
     List<BasicServiceStation> findListByOrgId(BasicServiceStation station);
+
+    List<BasicServiceStation> findListData(BasicServiceStation serviceStation);
 }

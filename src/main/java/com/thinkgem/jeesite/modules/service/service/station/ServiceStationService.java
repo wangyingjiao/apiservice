@@ -128,7 +128,9 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	@Override
 	public Page<BasicServiceStation> findPage(Page<BasicServiceStation> page, BasicServiceStation serviceStation) {
 		serviceStation.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
-		return super.findPage(page, serviceStation);
+		serviceStation.setPage(page);
+		page.setList(basicServiceStationDao.findListData(serviceStation));
+		return page;
 	}
 
 	@Override
