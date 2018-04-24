@@ -50,9 +50,16 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 	public List<BasicServiceStation> findList(BasicServiceStation serviceStation) {
 		User user = UserUtils.getUser();
 		List<BasicServiceStation> listByOrgId =new ArrayList<BasicServiceStation>();
+		List<BasicServiceStation> listByOrgId2 =new ArrayList<BasicServiceStation>();
 		//如果不是station用户 根据orgId展示所有服务站信息
 		if (!"station".equals(user.getType())) {
-			listByOrgId = basicServiceStationDao.findListByOrgId(serviceStation);
+			listByOrgId2 = basicServiceStationDao.findListByOrgId(serviceStation);
+			BasicServiceStation station=new BasicServiceStation();
+			station.setName("本机构");
+			listByOrgId.add(station);
+			for(int i=0;i<listByOrgId2.size();i++){
+				listByOrgId.add(listByOrgId2.get(i));//开始复制一个list的内容到另外一个list
+			}
 		}else {
 			//如果是服务站用户 只展示用户的服务站信息
 			BasicServiceStation station = basicServiceStationDao.get(user.getStation().getId());
