@@ -43,35 +43,17 @@ public abstract class BaseService {
         BasicOrganization organization = u.getOrganization();
         BasicServiceStation station = u.getStation();
         String type = u.getType();
-        if (null != organization
-                && StringUtils.isNotBlank(organization.getId())
-                && organization.getId().trim().equals("sys")
-                && null != station
-                && StringUtils.isNotBlank(station.getId())
-                && station.getId().trim().equals("sys")
-                && "sys".equals(type)) {
+        if ("sys".equals(type)) {
             log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全系统权限 ");
             // sql.append("AND " + organAlias + ".id = " + "'" + organization.getId() + "'");
-        } else if (null != organization &&
-                StringUtils.isNotBlank(organization.getId()) &&
-                organization.getId().trim().equals("0")) {
+        } else if ("platform".equals(type)) {
             log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全平台 ");
             sql.append(" AND a.type !='sys'");
             // sql.append(" AND " + stationAlias + ".id != 'sys' ");
-        } else if (null != organization
-                && StringUtils.isNotBlank(organization.getId())
-                && !organization.getId().trim().equals("0")
-                && null != station
-                && StringUtils.isNotBlank(station.getId())
-                && station.getId().trim().equals("0")) {
+        } else if ("org".equals(type)) {
             log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 全机构权限 ");
             sql.append(" AND " + organAlias + ".id = " + "'" + organization.getId() + "'");
-        } else if (null != organization
-                && null != station
-                && StringUtils.isNotBlank(organization.getId())
-                && StringUtils.isNotBlank(station.getId())
-                && (!organization.getId().trim().equals("0") && !organization.getId().trim().equals("sys"))
-                && (!station.getId().trim().equals("0") && !station.getId().trim().equals("sys"))) {
+        } else if ("station".equals(type)) {
             sql.append(" AND " + organAlias + ".id = '" + organization.getId() + "' ");
             sql.append(" AND " + stationAlias + ".id = '" + station.getId() + "' ");
             log.info("当前用户：" + user.getId() + ":" + user.getName() + "==> 数据权限 本服务站权限 ");
