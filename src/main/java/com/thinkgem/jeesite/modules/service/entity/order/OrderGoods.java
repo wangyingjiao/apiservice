@@ -49,7 +49,17 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private String jointGoodsCode; //对接方商品CODE
 
 	private String majorSort;//分类(all:全部 clean:保洁 repair:家修)
-	
+
+	private String isChecked;  //已补单商品是否选中 true  选中  false 未选中
+
+	public String getIsChecked() {
+		return isChecked;
+	}
+
+	public void setIsChecked(String isChecked) {
+		this.isChecked = isChecked;
+	}
+
 	public OrderGoods() {
 		super();
 	}

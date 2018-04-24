@@ -548,8 +548,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 
 	//app获取补单商品表 根据订单id获取多个sortId位数小于3的商品
-	public List<SerItemInfo> getItemGoods(OrderInfo orderInfo) {
-		List<SerItemInfo> list= orderGoodsDao.listItemGoods(orderInfo);
+	public List<OrderGoods> getItemGoods(OrderInfo orderInfo) {
+		List<OrderGoods> list= orderGoodsDao.listItemGoods(orderInfo);
 		return list;
 	}
 	//app补单保存 参数 orderId 服务项目itemId  商品goodsId  数量goodsNum 单价payPrice

@@ -41,29 +41,10 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
     private String priceUnit;		//拼接后的单价
 	private List<String> goodIds;
 
-	private String orderUseGoods;  //已补单商品是否选中 yes  选中  false 未选中
-	private int orderGoodsNum;  //已补单的商品数量
-
 	private List<SerItemCommodityEshop> commodityEshops;
 	private String jointCode;
 
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
-
-	public String getOrderUseGoods() {
-		return orderUseGoods;
-	}
-
-	public void setOrderUseGoods(String orderUseGoods) {
-		this.orderUseGoods = orderUseGoods;
-	}
-
-	public int getOrderGoodsNum() {
-		return orderGoodsNum;
-	}
-
-	public void setOrderGoodsNum(int orderGoodsNum) {
-		this.orderGoodsNum = orderGoodsNum;
-	}
 
 	public String getDoublePrice() {
 		return doublePrice;

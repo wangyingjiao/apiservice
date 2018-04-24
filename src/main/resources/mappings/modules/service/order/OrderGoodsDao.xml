@@ -191,10 +191,9 @@
 
 	<!--app补单-->
 	<sql id="serItemCommodityColumns">
-		a.id AS "id",
-		a.major_sort AS "majorSort",
+		a.id AS "itemId",
 		a.sort_id AS "sortId",
-		a.name AS "name",
+		a.name AS "itemName",
 		a.picture AS "picture"
 	</sql>
 	<!--获取补单商品表 根据订单id获取多个sortId位数小于3的商品-->
@@ -211,20 +210,24 @@
 		ORDER BY a.create_date DESC
 	</select>
 	<!--app补单-->
-	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
-		<id column="id" property="id"/>
+	<resultMap type="OrderGoods" id="SerItemCommodityResultMap">
+		<id column="itemId" property="itemId"/>
 		<result column="picture" property="picture"/>
-		<result column="major_sort" property="majorSort"/>
-		<result column="sort_id" property="sortId"/>
-		<result column="name" property="name"/>
+		<result column="sortId" property="sortId"/>
+		<result column="itemName" property="itemName"/>
 		<!-- 项目关联商品 -->
-		<association property="commoditys" column="{reqId=id,orderId=orderId}" select="selectCommodityById"></association>
+		<association property="goods" column="{reqId=itemId,orderId=orderId}" select="selectCommodityById"></association>
 	</resultMap>
 	<!--app补单-->
-	<select id="selectCommodityById" parameterType="java.util.Map" resultType="SerItemCommodity">
+	<select id="selectCommodityById" parameterType="java.util.Map" resultType="OrderGoods">
 		select
-		g.id,g.name,g.unit,g.type,g.price,g.min_purchase AS minPurchase,
-		(case when o.id IS null then 'false' else 'true' END ) AS orderUseGoods,o.goods_num AS orderGoodsNum
+		g.id AS goodsId,
+		g.name AS goodsName,
+		g.type AS goodsType,
+		g.price AS payPrice,
+		g.min_purchase AS minPurchase,
+		(case when o.id IS null then 'false' else 'true' END ) AS isChecked,
+		o.goods_num AS goodsNum
 		from ser_item_info_goods g
 		LEFT JOIN order_goods o on g.id = o.goods_id AND o.del_flag = '0'
 		AND o.order_id = #{orderId}
