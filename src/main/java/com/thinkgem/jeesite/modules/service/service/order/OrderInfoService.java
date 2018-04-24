@@ -565,6 +565,13 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
                         orderGoods.setPicture(ossHost+picl.get(0));
                     }
                 }
+                //如果是未选择的商品 将起购数量赋值给数量
+                List<OrderGoods> goods = orderGoods.getGoods();
+                for (OrderGoods good:goods) {
+                    if ("false".equals(good.getIsChecked())) {
+                        good.setGoodsNum(good.getMinPurchase());
+                    }
+                }
             }
         }
 		return list;

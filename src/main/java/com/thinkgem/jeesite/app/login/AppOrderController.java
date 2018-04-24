@@ -349,9 +349,9 @@ public class AppOrderController extends BaseController {
 		if (StringUtils.isBlank(info.getId())){
 			return new AppFailResult(-1,null,"需要传入订单id");
 		}
-		//计算总价
-		BigDecimal payPrice = new BigDecimal(0);
 		List<OrderGoods> itemGoods = orderInfoService.getItemGoods(info);
+        //计算总价
+        BigDecimal payPrice = new BigDecimal(0);
 		if (itemGoods != null && itemGoods.size()> 0){
 			for (OrderGoods item:itemGoods){
 				List<OrderGoods> commoditys = item.getGoods();
