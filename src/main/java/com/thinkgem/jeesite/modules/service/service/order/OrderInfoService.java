@@ -259,7 +259,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setGoodsInfoList(tem);
 		//app的退款详情
 		OrderRefund orderRefundInit = orderInfoOperateService.getOrderRefundInit(orderInfo);
-		orderInfo.setRefundInfo(orderRefundInit);
+		if (orderRefundInit.getGoodsInfoList() != null && orderRefundInit.getGoodsInfoList().size() > 0){
+            orderInfo.setRefundInfo(orderRefundInit);
+        }
 		//根据订单id查询出
 		//app的技师列表 appTechList
 		List<OrderDispatch> techList = dao.getOrderDispatchList(info); //技师List
