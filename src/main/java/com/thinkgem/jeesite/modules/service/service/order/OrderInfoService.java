@@ -576,7 +576,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         }
 		return list;
 	}
-	//app补单保存 参数 orderId 服务项目itemId  商品goodsId  数量goodsNum 单价payPrice
+	//app补单保存 参数 order的id 商品goodsId  数量goodsNum
 	@Transactional(readOnly = false)
 	public int saveSupp(OrderInfo info) {
 		int change=0;
@@ -605,7 +605,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//传参的补单商品集合
 		List<OrderGoods> goodsInfoList = info.getGoodsInfoList();
 		//1.根据订单id先去修改orderGood表 将订单商品已有的补单商品删除
-		//根据订单id查询所有的订单商品表中分类id小于3的商品结合
+		//根据订单id查询所有的订单商品表中分类id小于3的商品集合
 		List<OrderGoods> orderOldSuppGoods = orderGoodsDao.getbyOrderId(info);
 		BigDecimal paypriceSum =new BigDecimal(0);
 		if (orderOldSuppGoods != null && orderOldSuppGoods.size() > 0){
@@ -626,42 +626,42 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		int a=0;
-		//2.循环项目表 将补单商品新增至数据库中
+		//2.循环商品表 将补单商品新增至数据库中
 		BigDecimal paypriceSumNew =new BigDecimal(0);
-		if (goodsInfoList != null || goodsInfoList.size() > 0) {
-			for (OrderGoods goods : goodsInfoList) {
-				//传入的商品 goods是一个服务项目 goodsList是商品
-				List<OrderGoods> goodsList = goods.getGoods();
-				OrderGoods byId = serItemInfoDao.getById(goods.getItemId());
-				//循环项中的商品表
-				if (goodsList != null || goodsList.size() > 0) {
-					for (OrderGoods good : goodsList) {
-						//根据商品id查询出商品
-						SerItemCommodity serItemCommodity = serItemCommodityDao.get(good.getGoodsId());
-						//传入的商品总价
-						paypriceSumNew = paypriceSumNew.add(new BigDecimal(good.getPayPrice()));
-						// insert
-						good.setOrderId(info.getId());
-						good.setSortId(goods.getSortId());
-						good.setItemId(goods.getItemId());
-						good.setItemName(byId.getItemName());
-						good.setGoodsName(serItemCommodity.getName());
-						good.setGoodsType(serItemCommodity.getType());
-						good.setGoodsUnit(serItemCommodity.getUnit());
-						good.setPayPrice(serItemCommodity.getPrice().toString());
-						good.setOriginPrice(serItemCommodity.getPrice().toString());
-						good.appreInsert();
-						a = orderGoodsDao.insert(good);
-					}
-				}
-			}
-		}
+        if (goodsInfoList != null || goodsInfoList.size() > 0) {
+            for (OrderGoods goods : goodsInfoList) {
+                //根据商品id查询出商品
+                SerItemCommodity serItemCommodity = serItemCommodityDao.get(goods.getGoodsId());
+                //查询商品的项目名
+                if (serItemCommodity == null) {
+                    throw new ServiceException("未找到该商品");
+                }
+                OrderGoods byId = serItemInfoDao.getById(serItemCommodity.getItemId());
+                //传入的补单商品总价
+                paypriceSumNew = paypriceSumNew.add(new BigDecimal(goods.getPayPrice()));
+                // 插入 订单商品表
+                goods.setOrderId(info.getId());
+                goods.setSortId(serItemCommodity.getSortId());
+                goods.setItemId(serItemCommodity.getItemId());
+                goods.setItemName(byId.getItemName());
+                goods.setGoodsName(serItemCommodity.getName());
+                goods.setGoodsType(serItemCommodity.getType());
+                goods.setGoodsUnit(serItemCommodity.getUnit());
+                goods.setPayPrice(serItemCommodity.getPrice().toString());
+                goods.setOriginPrice(serItemCommodity.getPrice().toString());
+                goods.appreInsert();
+                a = orderGoodsDao.insert(goods);
+            }
+        }
 		if (a < 0){
 			throw new ServiceException("新增补单商品失败");
 		}
 		//3. 计算新的商品总价
+        //新增补单商品总价-已有补单总价
 		BigDecimal subtract = paypriceSumNew.subtract(paypriceSum);
+		//原订单总价
 		BigDecimal bigDecimal = new BigDecimal(originPrice);
+		//补单后订单商品总价
 		BigDecimal add = bigDecimal.add(subtract);
 		//4.如果订单总价改变 修改订单表和订单支付表
 		if (!originPrice.equals(add.toString())){
