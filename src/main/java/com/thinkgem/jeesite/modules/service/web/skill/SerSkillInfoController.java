@@ -158,13 +158,13 @@ public class SerSkillInfoController extends BaseController {
 			String orgId = serSkillInfo.getOrgId();
 			BasicServiceStation station = new BasicServiceStation();
 			station.setId(orgId);
-			List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
+			//List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
 			HashMap<Object, Object> objectObjectHashMap = new HashMap<Object, Object>();
 			objectObjectHashMap.put("info", entity);
 			objectObjectHashMap.put("list", list);
 			// objectObjectHashMap.put("items",items);
 			objectObjectHashMap.put("techs", techs);
-			objectObjectHashMap.put("stations", stations);
+			//objectObjectHashMap.put("stations", stations);
 
 			return new SuccResult(objectObjectHashMap);
 		}
@@ -177,14 +177,20 @@ public class SerSkillInfoController extends BaseController {
 		// 服务项目
 		// List<SerItemInfo> items =
 		// serSkillInfoService.findSerPage(serSkillInfo);
+		String orgId = serSkillInfo.getOrgId();
+		if(StringUtils.isBlank(orgId)){
+			orgId = UserUtils.getUser().getOrganization().getId();
+			serSkillInfo.setOrgId(orgId);
+		}
+
 		// 根据权限查看对应下的技师列表
 		List<SerSkillTechnician> techs = serSkillInfoService.findTechnicianPage(serSkillInfo);
 		// 根据权限 查看对应的服务站列表
 		BasicServiceStation station = new BasicServiceStation();
-		List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
+		//List<BasicServiceStation> stations = serSkillInfoService.getServiceStationList(station);
 		SerSortInfo serSortInfo = new SerSortInfo();
-		User user = UserUtils.getUser();
-		serSortInfo.setOrgId(user.getOrganization().getId());// 机构ID
+		//User user = UserUtils.getUser();
+		serSortInfo.setOrgId(orgId);// 机构ID
 		// 获取分类表
 		List<SerSortInfo> list = serSortInfoService.findListExceptFullGoods(serSortInfo);
 
@@ -192,7 +198,7 @@ public class SerSkillInfoController extends BaseController {
 		// objectObjectHashMap.put("items",items);
 		objectObjectHashMap.put("list", list);
 		objectObjectHashMap.put("techs", techs);
-		objectObjectHashMap.put("stations", stations);
+		//objectObjectHashMap.put("stations", stations);
 
 		return new SuccResult(objectObjectHashMap);
 	}
