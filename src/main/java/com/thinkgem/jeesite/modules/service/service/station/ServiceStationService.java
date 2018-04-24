@@ -56,6 +56,7 @@ public class ServiceStationService extends CrudService<BasicServiceStationDao, B
 			listByOrgId2 = basicServiceStationDao.findListByOrgId(serviceStation);
 			BasicServiceStation station=new BasicServiceStation();
 			station.setName("本机构");
+			station.setId("0");
 			listByOrgId.add(station);
 			for(int i=0;i<listByOrgId2.size();i++){
 				listByOrgId.add(listByOrgId2.get(i));//开始复制一个list的内容到另外一个list

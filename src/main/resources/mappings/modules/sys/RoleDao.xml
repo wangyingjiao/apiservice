@@ -241,7 +241,7 @@
 		SELECT
 		<include refid="roleColumns" />
 		FROM sys_role a
-		INNER JOIN basic_organization o ON o.id = a.office_id
+		LEFT JOIN basic_organization o ON o.id = a.office_id
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		<!-- AND CAST(a.data_scope AS SIGNED)
 		&lt;= CAST(#{currentUser.role.dataScope} AS SIGNED) -->
