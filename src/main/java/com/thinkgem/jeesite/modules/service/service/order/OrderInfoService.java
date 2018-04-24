@@ -549,7 +549,22 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 
 	//app获取补单商品表 根据订单id获取多个sortId位数小于3的商品
 	public List<OrderGoods> getItemGoods(OrderInfo orderInfo) {
+		//图片路径
+		PropertiesLoader loader = new PropertiesLoader("oss.properties");
+		String ossHost = loader.getProperty("OSS_THUMB_HOST");
 		List<OrderGoods> list= orderGoodsDao.listItemGoods(orderInfo);
+
+        if (list != null && list.size() > 0) {
+            for (OrderGoods orderGoods : list) {
+                String picture = orderGoods.getPicture();
+                if (StringUtils.isNotBlank(picture)) {
+                    List<String> picl = (List<String>) JsonMapper.fromJsonString(picture, ArrayList.class);
+                    if (picl !=null && picl.size()>0){
+                        orderGoods.setPicture(ossHost+picl.get(0));
+                    }
+                }
+            }
+        }
 		return list;
 	}
 	//app补单保存 参数 orderId 服务项目itemId  商品goodsId  数量goodsNum 单价payPrice
