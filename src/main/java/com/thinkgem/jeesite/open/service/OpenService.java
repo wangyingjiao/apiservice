@@ -132,6 +132,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				if(null == commodity){
 					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
 				}
+				if(commodity.getSortId().length()<3){
+					continue;
+				}
 
 				goods = new OrderGoods();
 				goods.setSortId(commodity.getSortId());//服务分类ID
@@ -174,6 +177,13 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 					techDispatchNum = techNum;
 				}
 			}
+
+			if(orderGoods.size() == 0){
+				Map<String,Object> value = new HashMap();
+				value.put("availabletimes",list);
+				return value;
+			}
+
 			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
