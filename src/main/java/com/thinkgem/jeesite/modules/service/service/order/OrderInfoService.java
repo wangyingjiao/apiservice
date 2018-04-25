@@ -667,6 +667,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//4.如果订单总价改变 修改订单表和订单支付表
 		if (!originPrice.equals(add.toString())){
 			orderInfo.setOriginPrice(add.toString());
+            orderInfo.setPayPrice(add.toString());
 			orderInfo.appPreUpdate();
             int update = orderInfoDao.update(orderInfo);
             if(update < 0){
