@@ -1293,6 +1293,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String sortItemNames = "";//服务分类+服务项目
 		String goodsNames = "";//商品名称
 
+		String orderContent = "";
+		List<String> sortNameList = new ArrayList<>();
+		HashMap<String,String> nameMap = new HashMap<>();
+
 		OrderGoods goods = new OrderGoods();
 		for(OpenServiceInfo openServiceInfo : serviceInfos){
 
@@ -1327,12 +1331,35 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             orderGoods.add(goods);
             BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
             originPrice = originPrice.add(price);//商品总价
-
+/*
 			if(commodity.getSortId().length() >= 3) {
 				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',
 				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
+			}*/
+
+			if(sortNameList.contains(commodity.getSortName())){
+				String oldName = nameMap.get(commodity.getSortName());
+				nameMap.put(commodity.getSortName(), oldName + "+" + commodity.getName());
+			}else{
+				sortNameList.add(commodity.getSortName());
+				nameMap.put(commodity.getSortName(), commodity.getName());
 			}
 		}
+
+		if(nameMap != null){
+			Iterator iter = nameMap.entrySet().iterator();
+			while (iter.hasNext()) {
+				Map.Entry entry = (Map.Entry) iter.next();
+				String key = entry.getKey().toString();
+				String value = entry.getValue().toString();
+				if("".equals(orderContent)){
+					orderContent = key + value;
+				}else{
+					orderContent = orderContent + "、" + key + value;
+				}
+			}
+		}
+
 
 		//删除 订单 原商品信息
 		OrderGoods serchOrderGoods = new OrderGoods();
@@ -1345,7 +1372,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
 		orderInfo.setPayPrice(sum_price);            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
-		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
+		orderInfo.setOrderContent(orderContent);               //下单服务内容(服务分类+服务项目+商品名称)',
         User user = new User();
         user.setId("gasq001");
         orderInfo.setUpdateBy(user);
@@ -1367,5 +1394,4 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		return num;
 	}
-
 }
