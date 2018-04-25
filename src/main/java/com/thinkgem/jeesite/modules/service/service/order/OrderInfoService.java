@@ -592,6 +592,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         if ("payed".equals(orderInfo.getPayStatus())){
             throw new ServiceException("该订单已支付，不可补单");
         }
+        if (!"own".equals(orderInfo.getOrderSource())){
+            throw new ServiceException("订单来源不是本机构，不可补单");
+        }
         //查询支付表 orderId
         OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayInfoByOrderId(orderInfo);
         if (payInfoByOrderId == null){
