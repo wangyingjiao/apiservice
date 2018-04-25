@@ -78,6 +78,9 @@
 			<if test="orgId != null and orgId != ''">
 				AND c.org_id = #{orgId}
 			</if>
+			<if test="techStationId != null and techStationId != ''">
+				AND b.station_id = #{techStationId}
+			</if>
 			<if test="techName != null and techName != ''">
 				AND b.name LIKE concat('%',#{techName},'%')
 			</if>
