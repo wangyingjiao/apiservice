@@ -18,6 +18,7 @@
 		a.service_status AS "serviceStatus",
 
 		a.pay_price AS "payPrice",
+		a.origin_price AS "originPrice",
 		a.order_address_id AS "orderAddressId",
 		a.order_time AS "orderTime",
 		a.service_time AS "serviceTime",

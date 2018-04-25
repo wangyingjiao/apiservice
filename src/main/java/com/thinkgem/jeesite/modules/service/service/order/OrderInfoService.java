@@ -638,7 +638,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
                 }
                 OrderGoods byId = serItemInfoDao.getById(serItemCommodity.getItemId());
                 //传入的补单商品总价
-                paypriceSumNew = paypriceSumNew.add(new BigDecimal(goods.getPayPrice()));
+                paypriceSumNew = paypriceSumNew.add(serItemCommodity.getPrice());
                 // 插入 订单商品表
                 goods.setOrderId(info.getId());
                 goods.setSortId(serItemCommodity.getSortId());

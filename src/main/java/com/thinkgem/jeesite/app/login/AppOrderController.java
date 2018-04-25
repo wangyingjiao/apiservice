@@ -349,6 +349,13 @@ public class AppOrderController extends BaseController {
 		if (StringUtils.isBlank(info.getId())){
 			return new AppFailResult(-1,null,"需要传入订单id");
 		}
+		OrderInfo orderInfo = orderInfoService.appGet(info);
+		if ("payed".equals(orderInfo.getPayStatus())){
+			return new AppFailResult(-1,null,"订单已支付，不可补单");
+		}
+		if (!"own".equals(orderInfo.getOrderSource())){
+			return new AppFailResult(-1,null,"订单来源不是本机构，不可补单");
+		}
 		List<OrderGoods> itemGoods = orderInfoService.getItemGoods(info);
         //计算总价
         BigDecimal payPrice = new BigDecimal(0);
