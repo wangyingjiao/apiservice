@@ -721,7 +721,7 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 
 		SerSkillSort serchSkillSort = new SerSkillSort();
 		serchSkillSort.setOrgId(orgId);
-		serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+		serchSkillSort.setSortId(orderToolsService.getNotFullGoodsSortId(goodsInfoList));
 		String skillId = "";
 		List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
 		if(skillSortList!=null && skillSortList.size()==1){
@@ -837,7 +837,7 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 			}
 			SerSkillSort serchSkillSort = new SerSkillSort();
 			serchSkillSort.setOrgId(orgId);
-			serchSkillSort.setSortId(goodsInfoList.get(0).getSortId());
+			serchSkillSort.setSortId(orderToolsService.getNotFullGoodsSortId(goodsInfoList));
 			String skillId = "";
 			List<SerSkillSort> skillSortList = dao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
 			if (skillSortList != null && skillSortList.size() == 1) {

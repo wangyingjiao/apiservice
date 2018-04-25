@@ -444,4 +444,21 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		return  serviceHour;
 	}
+
+	/**
+	 * 返回订单除补单商品外的分类ID
+	 * @param goodsInfoList
+	 * @return
+	 */
+	public String getNotFullGoodsSortId(List<OrderGoods> goodsInfoList) {
+		String sortId = "";
+		if(goodsInfoList != null && goodsInfoList.size() != 0 ) {
+			for (OrderGoods goods : goodsInfoList) {
+				if(goods.getSortId().length() >= 3){
+					return  goods.getSortId();
+				}
+			}
+		}
+		return sortId;
+	}
 }

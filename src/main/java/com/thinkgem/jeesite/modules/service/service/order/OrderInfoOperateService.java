@@ -451,7 +451,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 
 		Double serviceSecond = (serviceHour * 3600);
 
-		String skillId = orderToolsService.getSkillIdByOrgSort(orderInfo.getOrgId(), goodsInfoList.get(0).getSortId());
+		String skillId = orderToolsService.getSkillIdByOrgSort(orderInfo.getOrgId(), orderToolsService.getNotFullGoodsSortId(goodsInfoList));
 		List<OrderDispatch> techList = orderToolsService.listTechByStationSkillOrder(stationId, skillId, null,true,null);
 
 		if(techList.size() < techDispatchNum){//技师数量不够
@@ -670,7 +670,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		serchOrderInfo.setStationId(orderInfo.getStationId());
 		serchOrderInfo.setServiceTime(newServiceDate);
 		serchOrderInfo.setFinishTime(newFinishTime);
-		serchOrderInfo.setGoodsSortId(goodsInfoList.get(0).getSortId());
+		serchOrderInfo.setGoodsSortId(orderToolsService.getNotFullGoodsSortId(goodsInfoList));
 		serchOrderInfo.setSerchFullTech(true);
 		serchOrderInfo.setSerchNowOrderId(orderInfo.getId());
 		List<OrderDispatch> techListRe = orderToolsService.listTechByGoodsAndTime(serchOrderInfo);

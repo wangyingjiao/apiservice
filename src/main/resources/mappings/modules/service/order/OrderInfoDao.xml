@@ -836,7 +836,7 @@ origin_price,
 		SELECT
 			DISTINCT good.sort_id AS sortId
 		FROM order_info a
-		LEFT JOIN order_goods good ON a.id = good.order_id AND good.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN order_goods good ON a.id = good.order_id AND LENGTH(good.sort_id) &gt;= 3 AND good.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE
 			a.id = #{id}
 	</select>
