@@ -602,7 +602,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		payInfo.setPayPlatform(null);//支付平台(cash:现金 wx_pub_qr:微信扫码 wx:微信 alipay_qr:支付宝扫码 alipay:支付宝 pos:银行卡 balance:余额)
 		payInfo.setPayMethod(null);//支付方式(online:在线 offline:货到付款)',
 		payInfo.setPayTime(null);//支付时间',
-		payInfo.setPayAccount(orderInfo.getOpenPrice().toString());//支付总额',
+		payInfo.setPayAccount(orderInfo.getOriginPrice());//支付总额',
 		payInfo.setPayStatus("waitpay");//支付状态(waitpay:待支付 payed:已支付)',
 
         User user = new User();
@@ -752,7 +752,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderGoods.add(goods);
 				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
 				originPrice = originPrice.add(price);//商品总价
-				openPrice = openPrice.add(new BigDecimal(pay_price));
+				//openPrice = openPrice.add(new BigDecimal(pay_price));
 				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
 				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
 
@@ -865,7 +865,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
         orderInfoDao.insert(orderInfo);
 
-		orderInfo.setOpenPrice(openPrice);
+		//orderInfo.setOpenPrice(openPrice);
 		orderInfo.setGoodsInfoList(orderGoods);//商品信息
 		orderInfo.setGoodsSortId(orderGoods.get(0).getSortId());
 
@@ -1293,9 +1293,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String sortItemNames = "";//服务分类+服务项目
 		String goodsNames = "";//商品名称
 
-		double orderTotalTime = 0.0;//订单所需时间
-		double serviceHour = 0.0;//建议服务时长（小时）
-
 		OrderGoods goods = new OrderGoods();
 		for(OpenServiceInfo openServiceInfo : serviceInfos){
 
@@ -1315,10 +1312,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			goods.setGoodsNum(buy_num);//订购商品数
 			goods.setPayPrice(pay_price);//对接后单价
 			goods.setOriginPrice(commodity.getPrice().toString());//原价
-
 			goods.setGoodsType(commodity.getType());
 			goods.setGoodsUnit(commodity.getUnit());
-
 			goods.setMajorSort(commodity.getMajorSort());
 
             User user = new User();
@@ -1333,31 +1328,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
             BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
             originPrice = originPrice.add(price);//商品总价
 
-			sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',
-			goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
-
-			//int goodsNum = buy_num;		// 订购商品数
-			//Double convertHours = commodity.getConvertHours();		// 折算时长
-
-			//Double goodsTime = convertHours * goodsNum;//gon
-			//orderTotalTime = orderTotalTime + goodsTime;
+			if(commodity.getSortId().length() >= 3) {
+				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',
+				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',
+			}
 		}
-/*
-		OrderInfo orderInfoBefor = orderInfoDao.get(orderId);//当前订单
-		if(orderInfoBefor == null){
-			throw new ServiceException("未找到当前订单信息");
-		}
-		Date serviceTime = orderInfoBefor.getServiceTime();//服务时间
-
-		OrderInfo serchOrderInfo = new OrderInfo();
-		serchOrderInfo.setId(orderId);
-		List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(serchOrderInfo); //订单当前已有技师List
-		if(techList != null && techList.size() != 0){
-			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techList.size());//建议服务时长（小时） = 订单商品总时长/ 派人数量
-			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
-		}else{
-			throw new ServiceException("未找到当前订单的技师信息");
-		}*/
 
 		//删除 订单 原商品信息
 		OrderGoods serchOrderGoods = new OrderGoods();
@@ -1370,18 +1345,20 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
 		orderInfo.setPayPrice(sum_price);            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
-		//Double serviceSecond = serviceHour * 3600;
-		//orderInfo.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));               //实际完成时间（用来计算库存）',
-		//orderInfo.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));              //建议完成时间',
-		//orderInfo.setServiceHour(serviceHour);                //建议服务时长（小时）',
 		orderInfo.setOrderContent(sortItemNames + goodsNames);               //下单服务内容(服务分类+服务项目+商品名称)',
-
         User user = new User();
         user.setId("gasq001");
         orderInfo.setUpdateBy(user);
         orderInfo.setUpdateDate(new Date());
-
         int num = orderInfoDao.update(orderInfo);
+
+        //更新支付表金额
+		OrderPayInfo payInfo = new OrderPayInfo();
+		payInfo.setOrderId(orderId);
+		payInfo.setPayAccount(originPrice.toString());
+		payInfo.setUpdateBy(user);
+		payInfo.setUpdateDate(new Date());
+		orderPayInfoDao.updateByOrderId(payInfo);
 
 		//新增商品信息
 		for(OrderGoods goodsInsert : orderGoods){

@@ -20,4 +20,6 @@ public interface OrderPayInfoDao extends CrudDao<OrderPayInfo> {
     OrderPayInfo getByMasterId(String masterId);
 
     OrderPayInfo getPayInfoByOrderId(OrderInfo info);
+
+    void updateByOrderId(OrderPayInfo payInfo);
 }

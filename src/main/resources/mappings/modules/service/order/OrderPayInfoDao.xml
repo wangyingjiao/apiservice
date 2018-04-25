@@ -167,5 +167,13 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<update id="updateByOrderId">
+		UPDATE order_pay_info SET
+		<if test="payAccount !=null and payAccount != ''">pay_account = #{payAccount},</if>
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE order_id = #{orderId}
+	</update>
 	
 </mapper>
