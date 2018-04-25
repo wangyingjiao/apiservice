@@ -217,6 +217,12 @@ public class AppOrderController extends BaseController {
 		if(!flag){
 			return new AppFailResult(1,null,"当前订单状态或服务状态不允许操作此项内容");
 		}
+
+		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
+		if(!fullFlag){
+			return new AppFailResult(1,null,"当前订单只有补单商品,不允许操作此项内容");
+		}
+
 		try{
 			List<OrderDispatch> techList = orderInfoOperateService.appTech(orderInfo);
 			PropertiesLoader loader = new PropertiesLoader("oss.properties");

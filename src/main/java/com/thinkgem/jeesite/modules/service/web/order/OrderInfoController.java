@@ -115,7 +115,7 @@ public class OrderInfoController extends BaseController {
 		}
 		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
 		if(!fullFlag){
-			return new SuccResult("补单商品");
+			return new FailResult("当前订单只有补单商品,不允许操作此项内容");
 		}
 
 		try {
@@ -219,7 +219,7 @@ public class OrderInfoController extends BaseController {
 		}
 		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
 		if(!fullFlag){
-			return new SuccResult("补单商品");
+			return new FailResult("当前订单只有补单商品,不允许操作此项内容");
 		}
 
 		try{
@@ -300,7 +300,7 @@ public class OrderInfoController extends BaseController {
 		}
 		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
 		if(!fullFlag){
-			return new SuccResult("补单商品");
+			return new FailResult("当前订单只有补单商品,不允许操作此项内容");
 		}
 
 		try{
