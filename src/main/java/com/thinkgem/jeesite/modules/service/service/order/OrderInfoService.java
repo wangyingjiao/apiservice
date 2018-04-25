@@ -607,6 +607,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//1.根据订单id先去修改orderGood表 将订单商品已有的补单商品删除
 		//根据订单id查询所有的订单商品表中分类id小于3的商品集合
 		List<OrderGoods> orderOldSuppGoods = orderGoodsDao.getbyOrderId(info);
+
+        //如果订单商品中没有补单商品  且没有传补单商品
+        if (goodsInfoList == null || goodsInfoList.size() < 1){
+            if (orderOldSuppGoods == null || orderOldSuppGoods.size() <1) {
+                return 1;
+            }
+        }
+
 		BigDecimal paypriceSum =new BigDecimal(0);
 		if (orderOldSuppGoods != null && orderOldSuppGoods.size() > 0){
 			for (OrderGoods good:orderOldSuppGoods){
@@ -619,13 +627,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 			}
 		}
-		//如果订单商品中没有补单商品  且没有传补单商品
-		if (goodsInfoList == null || goodsInfoList.size() < 1){
-			if (orderOldSuppGoods == null || orderOldSuppGoods.size() <1) {
-				return 1;
-			}
-		}
-		int a=0;
 		//2.循环商品表 将补单商品新增至数据库中
 		BigDecimal paypriceSumNew =new BigDecimal(0);
         if (goodsInfoList != null || goodsInfoList.size() > 0) {
@@ -650,10 +651,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
                 goods.setPayPrice(serItemCommodity.getPrice().toString());
                 goods.setOriginPrice(serItemCommodity.getPrice().toString());
                 goods.appreInsert();
-                a = orderGoodsDao.insert(goods);
+                change = orderGoodsDao.insert(goods);
             }
         }
-		if (a < 0){
+		if (change < 0){
 			throw new ServiceException("新增补单商品失败");
 		}
 		//3. 计算新的商品总价
