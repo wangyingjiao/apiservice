@@ -73,8 +73,10 @@ public class ServiceStationController extends BaseController {
     public Result listData(@RequestBody(required = false) BasicServiceStation serviceStation, HttpServletRequest request, HttpServletResponse response) {
         if (StringUtils.isEmpty(serviceStation.getOrgId())){
             User user = UserUtils.getUser();
-            BasicOrganization organization = user.getOrganization();
-            serviceStation.setOrgId(organization.getId());
+            if (!user.getType().equals("sys")) {
+                BasicOrganization organization = user.getOrganization();
+                serviceStation.setOrgId(organization.getId());
+            }
         }
         Page<BasicServiceStation> stationPage = new Page<>(request, response);
         Page<BasicServiceStation> page = serviceStationService.findPage(stationPage, serviceStation);
