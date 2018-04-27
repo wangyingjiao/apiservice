@@ -43,8 +43,17 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	private List<SerItemCommodityEshop> commodityEshops;
 	private String jointCode;
+	private String orgId;
 
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
+
+	public String getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
 
 	public String getDoublePrice() {
 		return doublePrice;

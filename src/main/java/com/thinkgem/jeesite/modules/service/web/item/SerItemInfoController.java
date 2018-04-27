@@ -649,7 +649,14 @@ public class SerItemInfoController extends BaseController {
         }
         BasicOrganizationEshop basicOrganizationEshop = new BasicOrganizationEshop();
         basicOrganizationEshop.setEshopCode(serItemCommodity.getEshopCode());
-        basicOrganizationEshop.setOrgId(UserUtils.getUser().getOrganization().getId());
+        User user = UserUtils.getUser();
+        if (StringUtils.isEmpty(serItemCommodity.getOrgId())) {
+            if (!user.getType().equals("sys")) {
+                basicOrganizationEshop.setOrgId(user.getOrganization().getId());
+            }
+        }else {
+            basicOrganizationEshop.setOrgId(serItemCommodity.getOrgId());
+        }
         int count = basicOrganizationService.getOrgEShop(basicOrganizationEshop);
         if (count>0) {
             int i = serItemCommodityService.getEshopCount(serItemCommodity);
