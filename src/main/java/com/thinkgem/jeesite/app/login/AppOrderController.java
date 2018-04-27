@@ -345,7 +345,7 @@ public class AppOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "${appPath}/suppList",method = {RequestMethod.POST})
-	@ApiOperation(value = "补单商品表", notes = "订单")
+	@ApiOperation(value = "补单列表", notes = "订单")
 	public AppResult suppList(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
 		//获取登录用户id
 		Token token = (Token) request.getAttribute("token");
@@ -374,8 +374,9 @@ public class AppOrderController extends BaseController {
 					BigDecimal orderGoodsNum = new BigDecimal(good.getGoodsNum());
 					if ("true".equals(good.getIsChecked())) {
 						multiply = price.multiply(orderGoodsNum);
+						payPrice = payPrice.add(multiply);
 					}
-                    payPrice.add(multiply);
+
 				}
 			}
 		}
