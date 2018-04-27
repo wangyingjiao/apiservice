@@ -376,7 +376,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 				orderInfo.setOrderStatusName("已成功");
 			} else if (orderStatus.equals("stop")) {
 				orderInfo.setOrderStatusName("已暂停");
-			}
+			}else if (orderStatus.equals("close")) {
+                orderInfo.setOrderStatusName("已关闭");
+            }
 		}
 		String payStatus = orderInfo.getPayStatus();
 		if (StringUtils.isNotBlank(payStatus)) {

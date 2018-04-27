@@ -29,7 +29,7 @@
 	</select>
 
 	<!--app根据id获取服务项目的名称 图片 服务时间-->
-	<select id="getById" resultType="OrderGoods">
+	<select id="getById" resultType="OrderGoods" flushCache="true">
 		SELECT
 		a.id AS "itemId",
 		a.name AS "itemName",

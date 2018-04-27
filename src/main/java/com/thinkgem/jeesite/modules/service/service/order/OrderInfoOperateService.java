@@ -1085,7 +1085,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 				}else{
 					num = num.subtract(price);
 				}
-				refundAccountReality.add(new BigDecimal(refund.getRefundAccountReality()));
+				refundAccountReality=refundAccountReality.add(new BigDecimal(refund.getRefundAccountReality()));
 			}
 			if(num.compareTo(new BigDecimal(0)) > 0){
 				refundDifferenceType = "多退";
