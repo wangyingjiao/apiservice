@@ -512,7 +512,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (StringUtils.isBlank(payStatus) || "payed".equals(payStatus)){
 			throw new ServiceException("订单已经支付，无需再次支付");
 		}
-		if (orderInfo.getPayPrice().equals(info.getPayPrice())){
+		if (!orderInfo.getPayPrice().equals(info.getPayPrice())){
             throw new ServiceException("当前支付价格与订单实际价格不一致，请重新支付");
         }
 		info.appPreUpdate();
