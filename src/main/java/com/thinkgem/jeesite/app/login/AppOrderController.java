@@ -362,23 +362,26 @@ public class AppOrderController extends BaseController {
 		if (!"own".equals(orderInfo.getOrderSource())){
 			return new AppFailResult(-1,null,"订单来源不是本机构，不可补单");
 		}
-		List<OrderGoods> itemGoods = orderInfoService.getItemGoods(info);
+		List<OrderGoods> goodsInfoList = orderInfoService.getItemGoods(info);
         //计算总价
         BigDecimal payPrice = new BigDecimal(0);
-		if (itemGoods != null && itemGoods.size()> 0){
-			for (OrderGoods item:itemGoods){
+		if (goodsInfoList != null && goodsInfoList.size()> 0){
+			for (OrderGoods item:goodsInfoList){
 				List<OrderGoods> commoditys = item.getGoods();
 				for (OrderGoods good:commoditys){
+					BigDecimal multiply =new BigDecimal(0);
 					BigDecimal price = new BigDecimal(good.getPayPrice());
 					BigDecimal orderGoodsNum = new BigDecimal(good.getGoodsNum());
-					BigDecimal multiply = price.multiply(orderGoodsNum);
+					if ("true".equals(good.getIsChecked())) {
+						multiply = price.multiply(orderGoodsNum);
+					}
                     payPrice.add(multiply);
 				}
 			}
 		}
 		Map map=new HashMap();
 		map.put("payPrice",payPrice);
-		map.put("goodsInfoList",itemGoods);
+		map.put("goodsInfoList",goodsInfoList);
 		return new AppSuccResult(0,map,"补单商品列表");
 	}
 
@@ -392,7 +395,7 @@ public class AppOrderController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "${appPath}/saveSupp",method = {RequestMethod.POST})
-    @ApiOperation(value = "补单商品表", notes = "订单")
+    @ApiOperation(value = "补单保存", notes = "订单")
     public AppResult saveSupp(OrderInfo info, HttpServletRequest request, HttpServletResponse response){
         try {
 			int i = orderInfoService.saveSupp(info);
