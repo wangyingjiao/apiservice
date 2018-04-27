@@ -1299,13 +1299,26 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 
 		OrderGoods goods = new OrderGoods();
 		for(OpenServiceInfo openServiceInfo : serviceInfos){
-
-			String key = openServiceInfo.getCate_goods_id();
-			String cate_goods_id = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
+			String cate_goods_id = "";
+			String key = openServiceInfo.getCate_goods_id();//自营商品ID
+			if(StringUtils.isNotBlank(key)) {
+				cate_goods_id = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
+			}
+			String gasq_product_id = openServiceInfo.getGasq_product_id();//国安社区商品ID
 			int buy_num = openServiceInfo.getBuy_num();
 			String pay_price = openServiceInfo.getPay_price();
 
-			SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
+			SerItemCommodity commodity = null;
+			if(StringUtils.isNotBlank(cate_goods_id)) {//自营商品ID
+				commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
+			}else if(StringUtils.isNotBlank(gasq_product_id)){//国安社区商品ID
+				commodity = orderGoodsDao.findItemGoodsByGasqGoodId(gasq_product_id);
+			}else {
+				continue;
+			}
+			if(commodity == null){//找不到商品
+				continue;
+			}
 			goods = new OrderGoods();
 			goods.setOrderId(orderId);
 			goods.setSortId(commodity.getSortId());//服务分类ID

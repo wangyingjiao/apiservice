@@ -36,4 +36,5 @@ public interface OrderGoodsDao extends CrudDao<OrderGoods> {
     //根据id删除订单商品表  物理删除
     int deleteById(OrderGoods orderGoods);
 
+    SerItemCommodity findItemGoodsByGasqGoodId(String gasq_product_id);
 }

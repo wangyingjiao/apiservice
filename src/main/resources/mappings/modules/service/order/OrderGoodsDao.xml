@@ -162,6 +162,28 @@
 		LEFT JOIN ser_sort_info c on b.sort_id = c.id
 		WHERE a.id = #{id}
 	</select>
+	<select id="findItemGoodsByGasqGoodId" resultType="SerItemCommodity">
+		SELECT
+		a.id AS id,
+		a.name AS name,
+		a.price AS price,
+		a.convert_hours AS convertHours,
+		a.start_per_num AS startPerNum,
+		a.capping_per_num AS cappingPerNum,
+		a.type AS "type",
+		a.unit AS unit,
+		b.id AS itemId,
+		b.name AS itemName,
+		c.id AS sortId,
+		c.name AS sortName,
+		b.major_sort AS majorSort
+		FROM ser_item_info_goods_eshop e
+		LEFT JOIN ser_item_info_goods a ON e.goods_id = a.id
+		LEFT JOIN ser_item_info b ON b.id = a.item_id
+		LEFT JOIN ser_sort_info c on b.sort_id = c.id
+		WHERE e.joint_goods_code = #{id}
+	</select>
+
 	<update id="deleteGoodsByOrderId">
 		UPDATE order_goods SET
 			del_flag = #{DEL_FLAG_DELETE}
