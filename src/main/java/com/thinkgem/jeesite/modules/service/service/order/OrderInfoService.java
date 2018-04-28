@@ -619,12 +619,14 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
                 return 1;
             }
         }
-
+		BigDecimal countOld =new BigDecimal(0);
 		BigDecimal paypriceSum =new BigDecimal(0);
 		if (orderOldSuppGoods != null && orderOldSuppGoods.size() > 0){
 			for (OrderGoods good:orderOldSuppGoods){
 				//已有补单的商品总价
-				paypriceSum = paypriceSum.add(new BigDecimal(good.getPayPrice()));
+				//单个商品总价
+				paypriceSum = new BigDecimal(good.getPayPrice()).multiply(new BigDecimal(good.getGoodsNum()));
+				countOld = countOld.add(paypriceSum);
 				// 删除 good
 				int i = orderGoodsDao.deleteById(good);
 				if (i < 0){
@@ -633,18 +635,26 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		//2.循环商品表 将补单商品新增至数据库中
+		BigDecimal countNew =new BigDecimal(0);
 		BigDecimal paypriceSumNew =new BigDecimal(0);
         if (goodsInfoList != null || goodsInfoList.size() > 0) {
             for (OrderGoods goods : goodsInfoList) {
                 //根据商品id查询出商品
                 SerItemCommodity serItemCommodity = serItemCommodityDao.get(goods.getGoodsId());
+                //商品的最低起购数量
+				int minPurchase = serItemCommodity.getMinPurchase();
+				if (minPurchase > goods.getGoodsNum()) {
+					throw new ServiceException("选中的商品"+serItemCommodity.getName()+"数量不可低于商品的起购数量");
+				}
                 //查询商品的项目名
                 if (serItemCommodity == null) {
                     throw new ServiceException("未找到该商品");
                 }
                 OrderGoods byId = serItemInfoDao.getById(serItemCommodity.getItemId());
                 //传入的补单商品总价
-                paypriceSumNew = paypriceSumNew.add(serItemCommodity.getPrice());
+                // 单种商品总价 数量* 单价
+				paypriceSumNew = serItemCommodity.getPrice().multiply(new BigDecimal(goods.getGoodsNum()));
+				countNew = countNew.add(paypriceSumNew);
                 // 插入 订单商品表
                 goods.setOrderId(info.getId());
                 goods.setSortId(serItemCommodity.getSortId());
@@ -664,7 +674,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		//3. 计算新的商品总价
         //新增补单商品总价-已有补单总价
-		BigDecimal subtract = paypriceSumNew.subtract(paypriceSum);
+		BigDecimal subtract = countNew.subtract(countOld);
 		//原订单总价
 		BigDecimal bigDecimal = new BigDecimal(originPrice);
 		//补单后订单商品总价
