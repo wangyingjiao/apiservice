@@ -187,8 +187,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		OrderInfo info = new OrderInfo();
 		info.setId(orderInfo.getId());
 		info.setServiceHour(serviceHourRe);//建议服务时长（小时）
-		info.setFinishTime(DateUtils.addSeconds(serviceTime, serviceSecond.intValue()));//实际完成时间（用来计算库存）
-		info.setSuggestFinishTime(DateUtils.addSeconds(serviceTime, serviceSecond.intValue()));//实际完成时间（用来计算库存）
+		info.setFinishTime(DateUtils.addSecondsNotDayE(serviceTime, serviceSecond.intValue()));//实际完成时间（用来计算库存）
+		info.setSuggestFinishTime(DateUtils.addSecondsNotDayE(serviceTime, serviceSecond.intValue()));//实际完成时间（用来计算库存）
 		info.preUpdate();
 		dao.update(info);
 
@@ -313,8 +313,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		OrderInfo info = new OrderInfo();
 		info.setId(orderInfo.getId());
 		info.setServiceHour(serviceHourRe);//建议服务时长（小时）
-		info.setFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
-		info.setSuggestFinishTime(DateUtils.addSeconds(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
+		info.setFinishTime(DateUtils.addSecondsNotDayE(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
+		info.setSuggestFinishTime(DateUtils.addSecondsNotDayE(serviceTime,serviceSecond.intValue()));//实际完成时间（用来计算库存）
 		info.preUpdate();
 		dao.update(info);
 		for(OrderDispatch orderDispatch : techList){
@@ -663,7 +663,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		}
 
 		Double serviceSecond = (newServiceHour * 3600);
-		Date newFinishTime = DateUtils.addSeconds(newServiceDate,serviceSecond.intValue());//完成时间
+		Date newFinishTime = DateUtils.addSecondsNotDayE(newServiceDate,serviceSecond.intValue());//完成时间
 
 		OrderInfo serchOrderInfo = new OrderInfo();
 		serchOrderInfo.setOrgId(orderInfo.getOrgId());

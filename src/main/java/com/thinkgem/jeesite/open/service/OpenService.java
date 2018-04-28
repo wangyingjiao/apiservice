@@ -1355,7 +1355,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				nameMap.put(commodity.getSortName(), oldName + "+" + commodity.getName());
 			}else{
 				sortNameList.add(commodity.getSortName());
-				nameMap.put(commodity.getSortName(), commodity.getName());
+				nameMap.put(commodity.getSortName(), "+" + commodity.getName());
 			}
 		}
 
