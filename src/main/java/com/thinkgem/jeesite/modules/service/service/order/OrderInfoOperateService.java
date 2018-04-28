@@ -1082,11 +1082,15 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 
 			for(OrderRefund refund : refundList){
 				String type = refund.getRefundDifferenceType();
-				BigDecimal price = new BigDecimal(refund.getRefundDifference());
-				if("many".equals(type)){
-					num = num.add(price);
-				}else{
-					num = num.subtract(price);
+				if(type != null) {
+					if(refund.getRefundDifference() != null) {
+						BigDecimal price = new BigDecimal(refund.getRefundDifference());
+						if ("many".equals(type)) {
+							num = num.add(price);
+						} else {
+							num = num.subtract(price);
+						}
+					}
 				}
 				refundAccountReality=refundAccountReality.add(new BigDecimal(refund.getRefundAccountReality()));
 			}
