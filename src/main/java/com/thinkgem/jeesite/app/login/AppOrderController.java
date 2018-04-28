@@ -362,7 +362,7 @@ public class AppOrderController extends BaseController {
 		if (!"own".equals(orderInfo.getOrderSource())){
 			return new AppFailResult(-1,null,"订单来源不是本机构，不可补单");
 		}
-		List<OrderGoods> goodsInfoList = orderInfoService.getItemGoods(info);
+		List<OrderGoods> goodsInfoList = orderInfoService.getItemGoods(orderInfo);
         //计算总价
         BigDecimal payPrice = new BigDecimal(0);
 		if (goodsInfoList != null && goodsInfoList.size()> 0){

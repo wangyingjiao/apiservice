@@ -14,6 +14,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
+import com.thinkgem.jeesite.modules.service.dao.sort.SerSortInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
@@ -22,6 +23,7 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
+import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.service.entity.technician.*;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -70,6 +72,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	OrderGoodsDao orderGoodsDao;
 	@Autowired
 	SerItemCommodityDao serItemCommodityDao;
+	@Autowired
+	SerSortInfoDao serSortInfoDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -692,6 +696,55 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			payInfoByOrderId.appPreUpdate();
 			change=orderPayInfoDao.update(payInfoByOrderId);
 		}
+		//将商品分类 商品名称拼接
+		List<String> sortList=new ArrayList<String>();
+		List<OrderGoods> orderGoodsList = orderInfoDao.getOrderGoodsList(info);
+
+		if (orderGoodsList != null && orderGoodsList.size() > 0) {
+			for (OrderGoods orderGoods:orderGoodsList) {
+				SerSortInfo serSortInfo = serSortInfoDao.get(orderGoods.getSortId());
+				sortList.add(serSortInfo.getId());
+			}
+		}
+		//将分类id集合去重
+		Set set = new  HashSet();
+		//最后的 项目id集合
+		List<String> newList = new  ArrayList<String>();
+		for (String cd:sortList) {
+			if(set.add(cd)){
+				newList.add(cd);
+			}
+		}
+		List<String> strList = new  ArrayList<String>();
+		if (newList != null && newList.size() > 0) {
+			for (String id : newList) {
+				String orderContent = "";
+				SerSortInfo serSortInfo = serSortInfoDao.get(id);
+				for (OrderGoods orderGoods:orderGoodsList) {
+					if (id.equals(orderGoods.getSortId())) {
+						SerItemCommodity serItemCommodity = serItemCommodityDao.get(orderGoods.getGoodsId());
+						orderContent =orderContent+ "+"+serItemCommodity.getName();
+					}
+				}
+				orderContent=serSortInfo.getName()+orderContent;
+				strList.add(orderContent);
+			}
+		}
+		// 修改数据库
+		String content="";
+		if (strList != null && strList.size() > 0) {
+			for (int i=0 ;i< strList.size(); i++ ) {
+				if("".equals(content)){
+					content =  strList.get(i);
+				}else {
+					content = content  + "、" +  strList.get(i);
+				}
+			}
+		}
+		orderInfo.setOrderContent(content);
+		orderInfo.setPayPrice(add.toString());
+		orderInfo.appPreUpdate();
+		change = orderInfoDao.update(orderInfo);
 		return change;
 	}
 	/**

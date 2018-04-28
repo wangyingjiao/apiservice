@@ -227,6 +227,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.org_id=#{orgId}
+			AND a.major_sort=#{majorSort}
 			AND LENGTH(a.sort_id) &lt; 3
 		</where>
 		ORDER BY a.create_date DESC
