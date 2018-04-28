@@ -535,6 +535,7 @@ origin_price,
 		LEFT JOIN ser_item_info_goods good2 ON good.goods_id = good2.id
 		WHERE
 		a.id = #{id}
+		ORDER BY good.item_id, good.create_date DESC
 	</select>
 
 	<!--app 获取订单对应图片-->
