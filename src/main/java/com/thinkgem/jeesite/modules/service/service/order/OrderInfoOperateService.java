@@ -1051,23 +1051,26 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		}
 		//项目集合
 		List<OrderGoods> orderGoodsList=new ArrayList<OrderGoods>();
-		//商品结合
-		List<OrderGoods> goodsList=new ArrayList<OrderGoods>();
 		for (String id:newList){
 			OrderGoods byId = serItemInfoDao.getById(id);
 			orderGoodsList.add(byId);
 		}
 		//循环商品
 		for (OrderGoods item:orderGoodsList){
+			//商品集合
+			List<OrderGoods> goodsList=new ArrayList<OrderGoods>();
 			for (OrderRefundGoods orderRefundGoods:refundGoodsByOrderId) {
-				OrderGoods orderGoods=new OrderGoods();
-				orderGoods.setGoodsId(orderRefundGoods.getGoodsId());
-				orderGoods.setPayPrice(orderRefundGoods.getPayPrice());
-				orderGoods.setGoodsName(orderRefundGoods.getGoodsName());
-				orderGoods.setGoodsNum(Integer.parseInt(orderRefundGoods.getGoodsNum()));
-				goodsList.add(orderGoods);
-				item.setGoods(goodsList);
+				//如果商品itemId 是项目id 那个商品加入项目的商品集合
+				if (orderRefundGoods.getItemId().equals(item.getItemId())) {
+					OrderGoods orderGoods = new OrderGoods();
+					orderGoods.setGoodsId(orderRefundGoods.getGoodsId());
+					orderGoods.setPayPrice(orderRefundGoods.getPayPrice());
+					orderGoods.setGoodsName(orderRefundGoods.getGoodsName());
+					orderGoods.setGoodsNum(Integer.parseInt(orderRefundGoods.getGoodsNum()));
+					goodsList.add(orderGoods);
+				}
 			}
+			item.setGoods(goodsList);
 		}
 		OrderRefund orderRefund=new OrderRefund();
 		List<OrderRefund> refundList = orderRefundDao.listRefundByOrderId(info);
