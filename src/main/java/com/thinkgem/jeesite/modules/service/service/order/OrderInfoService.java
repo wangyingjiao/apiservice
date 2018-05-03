@@ -683,19 +683,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		BigDecimal bigDecimal = new BigDecimal(originPrice);
 		//补单后订单商品总价
 		BigDecimal add = bigDecimal.add(subtract);
-		//4.如果订单总价改变 修改订单表和订单支付表
-		if (!originPrice.equals(add.toString())){
-			orderInfo.setOriginPrice(add.toString());
-            orderInfo.setPayPrice(add.toString());
-			orderInfo.appPreUpdate();
-            int update = orderInfoDao.update(orderInfo);
-            if(update < 0){
-                throw new ServiceException("更新订单总额失败");
-            }
-            payInfoByOrderId.setPayAccount(add.toString());
-			payInfoByOrderId.appPreUpdate();
-			change=orderPayInfoDao.update(payInfoByOrderId);
-		}
 		//将商品分类 商品名称拼接
 		List<String> sortList=new ArrayList<String>();
 		List<OrderGoods> orderGoodsList = orderInfoDao.getOrderGoodsList(info);
@@ -742,9 +729,21 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		orderInfo.setOrderContent(content);
-		orderInfo.setPayPrice(add.toString());
 		orderInfo.appPreUpdate();
-		change = orderInfoDao.update(orderInfo);
+		//4.如果订单总价改变 修改订单表和订单支付表
+		if (!originPrice.equals(add.toString())){
+			orderInfo.setPayPrice(add.toString());
+			orderInfo.setOriginPrice(add.toString());
+            int update = orderInfoDao.update(orderInfo);
+            if(update < 0){
+                throw new ServiceException("更新订单总额失败");
+            }
+            payInfoByOrderId.setPayAccount(add.toString());
+			payInfoByOrderId.appPreUpdate();
+			change=orderPayInfoDao.update(payInfoByOrderId);
+		}else {
+			change = orderInfoDao.update(orderInfo);
+		}
 		return change;
 	}
 	/**
