@@ -1100,6 +1100,8 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 			}else if(num.compareTo(new BigDecimal(0)) < 0){
 				refundDifferenceType = "少退";
 				refundDifference = new BigDecimal(0).subtract(num).toString();
+			}else if (num.compareTo(new BigDecimal(0)) == 0){
+				refundDifference = new BigDecimal(0).toString();
 			}
 		}
 		orderRefund.setRefundDifference(refundDifference);
