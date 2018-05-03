@@ -268,7 +268,7 @@
         <set>
             <if test="organization.id != null">office_id = #{organization.id},</if>
             <if test="station.id != null">station_id = #{station.id},</if>
-            <if test="loginName != null">login_name = #{loginName},</if>
+            <!--<if test="loginName != null">login_name = #{loginName},</if>-->
             <if test="password != null">password = #{password},</if>
             <if test="no != null">no = #{no},</if>
             <if test="name != null">name = #{name} ,</if>

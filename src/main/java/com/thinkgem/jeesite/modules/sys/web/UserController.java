@@ -358,7 +358,7 @@ public class UserController extends BaseController {
         // 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
         user.setOrganization(organizationService.get(user.getOfficeId()));
         user.setStation(stationService.get(user.getStationId()));
-        user.setLoginName(user.getMobile());
+        //user.setLoginName(user.getMobile());//手机号不修改
 
 
         if (StringUtils.isNotBlank(user.getNewPassword())) {
@@ -405,6 +405,10 @@ public class UserController extends BaseController {
                 roleList.add(r);
             }
         }
+        if(user.isAdmin() && roleList.size()==0){
+            Role r = systemService.getRole("sys");
+            roleList.add(r);
+        }
 /*
         //获取传过来的员工的服务站
         String staId = user.getStation().getId();
@@ -442,6 +446,7 @@ public class UserController extends BaseController {
             UserUtils.clearCache();
         }
         UserUtils.getUser(user.getId());
+
 
         //删除当前编辑用户session
         Collection<Session> sessions =  systemService.getSessionDao().getActiveSessions();
