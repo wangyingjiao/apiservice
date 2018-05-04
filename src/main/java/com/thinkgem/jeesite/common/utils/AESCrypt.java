@@ -78,10 +78,13 @@ public class AESCrypt {
 
         AESCrypt crypt = new AESCrypt("seed");
         String s3="{\"pageSize\":15,\"pageNo\":1}";
-        String s1="{\"username\":\"13508070808\",\"password\":\"1234qwer\"}";
+        String s4="{\"id\":\"f9235c2d27324238bc632f6a9af4d0c6\"}";
+        String s1="{\"username\":\"13455555555\",\"password\":\"111111a\"}";
+        String s5="{\"goodsInfoList\":[{\"goodsId\":\"67d7aafa9a9547ceb6210a7d9a9aee7a\",\"goodsNum\":\"1\"},{\"goodsId\":\"0e867b753ab54d0bbc10ba93937011ae\",\"goodsNum\":\"1\"}],\"id\":\"a9282cb23f9245ff80ddcf36b911df93\"}";
 //        String s3="{\"id\":\"9\"}";
 //        String s2="{\"username\":\"15711445637\",\"password\":\"1234qwer\",\"serviceStatus\":wait_service,\"majorSort\":all}";
         String baseEncode = Base64Encoder.encode(s1);//base64加密
+        System.out.println(baseEncode);
         String aesEncode = crypt.encrypt(baseEncode);//aes加密
         System.out.println("2次加密"+aesEncode);
         //MD5获取MD5操作之后值
@@ -93,6 +96,7 @@ public class AESCrypt {
     public static void main1(String[] args) throws Exception {
 
         AESCrypt crypt = new AESCrypt("seed");
+
         String encrypt2 = crypt.encrypt("{\"pageSize\":15,\"pageNo\":1,\"serviceStatus\":\"wait_service\",\"majorSort\":\"all\"}");
 
         System.out.println(encrypt2+"+++++++++加密后");
