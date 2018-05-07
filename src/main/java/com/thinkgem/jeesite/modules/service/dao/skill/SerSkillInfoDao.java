@@ -32,4 +32,6 @@ public interface SerSkillInfoDao extends CrudDao<SerSkillInfo> {
     SerSkillInfo getByName(SerSkillInfo serSkillInfo);
     //app获取技师技能
     List<SerSkillInfo> appGetSkillByTech(ServiceTechnicianInfo serviceTechnicianInfo);
+
+    int checkSkillSort(SerSkillInfo serSkillInfo);
 }

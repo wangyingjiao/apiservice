@@ -203,4 +203,20 @@
 		</where>
 	</select>
 
+	<select id="checkSkillSort" resultType="int">
+		SELECT COUNT(*)
+		FROM ser_skill_sort
+		WHERE
+		org_id = #{orgId}
+		AND del_flag = #{DEL_FLAG_NORMAL}
+		<if test="id != null and id !=''">
+			AND skill_id != #{id}
+		</if>
+		<if test="sortIds != null and sortIds.size() != 0">
+			and sort_id in
+			<foreach item="sortId" index="index" collection="sortIds" open="(" separator="," close=")">
+				#{sortId}
+			</foreach>
+		</if>
+	</select>
 </mapper>
