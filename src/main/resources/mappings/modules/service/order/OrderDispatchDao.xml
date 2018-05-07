@@ -26,6 +26,8 @@
 	</select>
 	<resultMap id="orderDispatchMap" type="OrderInfo">
 		<result column="orderNumber" property="orderNumber"></result>
+		<result column="serviceHour" property="serviceHour"></result>
+		<result column="orderContent" property="orderContent"></result>
 		<result column="serviceTime" property="serviceTime"></result>
 		<result column="id" property="id"></result>
 		<!-- 订单关联派单 -->
@@ -37,6 +39,8 @@
 			a.id AS id,
 			a.order_number AS orderNumber,
 			a.service_time AS serviceTime,
+		a.service_hour AS serviceHour,
+		a.order_content AS orderContent,
             a.org_id AS orgId,
             org.name AS orgName,
 			a.station_id AS "stationId",
