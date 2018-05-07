@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -381,12 +382,14 @@ public class AppOrderController extends BaseController {
 			}
 		}
 		Map map=new HashMap();
-		map.put("payPrice",payPrice);
+		//保留2位小数
+		DecimalFormat df = new DecimalFormat("#0.00");
+		map.put("payPrice",df.format(payPrice));
 		map.put("goodsInfoList",goodsInfoList);
 		return new AppSuccResult(0,map,"补单商品列表");
 	}
 
-    /**
+	/**
      *  补单保存
      *  参数 orderId 服务项目itemId  商品goodsId  数量goodsNum 单价payPrice
      * @param info
