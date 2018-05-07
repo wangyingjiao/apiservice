@@ -49,11 +49,11 @@
 		a.refund_method AS "refundMethod",
 		a.refund_reason AS "refundReason",
 		a.refund_account_reality AS "refundAccountReality",
-		addr.name AS refundName,
-		addr.phone AS refundPhone
+		cus.name AS refundName,
+		cus.phone AS refundPhone
 		FROM order_refund a
 		LEFT JOIN order_info ord ON a.order_id = ord.id
-		LEFT JOIN order_address addr ON ord.order_address_id = addr.id AND addr.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN customer_info cus ON ord.customer_id = cus.id
 		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
@@ -74,10 +74,10 @@
 				AND a.refund_number LIKE concat('%',#{refundNumber},'%')
 			</if>
 			<if test="refundName != null and refundName != ''">
-				AND addr.name LIKE concat('%',#{refundName},'%')
+				AND cus.name LIKE concat('%',#{refundName},'%')
 			</if>
 			<if test="refundPhone != null and refundPhone != ''">
-				AND addr.phone LIKE concat('%',#{refundPhone},'%')
+				AND cus.phone LIKE concat('%',#{refundPhone},'%')
 			</if>
 			<!-- 数据范围过滤 -->
 			${sqlMap.dsf}
