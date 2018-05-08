@@ -1032,6 +1032,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	 */
 	public OrderRefund getOrderRefundInit(OrderInfo info) {
 		List<String> itemIds=new ArrayList<String>();
+		String orderId=info.getId();
 		// 退款商品集合
 		List<OrderRefundGoods> refundGoodsByOrderId = orderRefundGoodsDao.getRefundGoodsByOrderId(info);
 		if (refundGoodsByOrderId != null && refundGoodsByOrderId.size()>0){
@@ -1052,7 +1053,10 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		//项目集合
 		List<OrderGoods> orderGoodsList=new ArrayList<OrderGoods>();
 		for (String id:newList){
-			OrderGoods byId  = orderRefundGoodsDao.getByItemId(id);
+			OrderGoods orderGoods=new OrderGoods();
+			orderGoods.setOrderId(orderId);
+			orderGoods.setItemId(id);
+			OrderGoods byId  = orderRefundGoodsDao.getByItemId(orderGoods);
 			orderGoodsList.add(byId);
 		}
 		//循环商品
