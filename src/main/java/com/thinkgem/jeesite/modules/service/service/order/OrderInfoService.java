@@ -734,7 +734,13 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (!originPrice.equals(add.toString())){
 			orderInfo.setPayPrice(add.toString());
 			orderInfo.setOriginPrice(add.toString());
-            int update = orderInfoDao.update(orderInfo);
+			int update =0;
+			try{
+            	update = orderInfoDao.update(orderInfo);
+			}catch (Exception e){
+				//长度过长捕获异常信息
+				throw new ServiceException("修改数据库失败可能是长度过长");
+			}
             if(update < 0){
                 throw new ServiceException("更新订单总额失败");
             }
@@ -742,7 +748,12 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			payInfoByOrderId.appPreUpdate();
 			change=orderPayInfoDao.update(payInfoByOrderId);
 		}else {
-			change = orderInfoDao.update(orderInfo);
+			try{
+				change = orderInfoDao.update(orderInfo);
+			}catch (Exception e){
+				//长度过长捕获异常信息
+				throw new ServiceException("修改数据库失败可能是长度过长");
+			}
 		}
 		return change;
 	}

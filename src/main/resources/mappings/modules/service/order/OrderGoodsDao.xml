@@ -27,7 +27,7 @@
 	</sql>
     
 	<select id="get" resultType="OrderGoods">
-		SELECT 
+		SELECT
 			<include refid="orderGoodsColumns"/>
 		FROM order_goods a
 		<include refid="orderGoodsJoins"/>
