@@ -1052,7 +1052,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		//项目集合
 		List<OrderGoods> orderGoodsList=new ArrayList<OrderGoods>();
 		for (String id:newList){
-			OrderGoods byId = serItemInfoDao.getById(id);
+			OrderGoods byId  = orderRefundGoodsDao.getByItemId(id);
 			orderGoodsList.add(byId);
 		}
 		//循环商品

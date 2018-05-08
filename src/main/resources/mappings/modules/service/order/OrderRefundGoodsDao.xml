@@ -31,6 +31,17 @@
 		WHERE a.id = #{id}
 	</select>
 
+    <!--app退款详情 根据itemid查询itemName-->
+	<select id="getByItemId" resultType="OrderGoods">
+		SELECT
+		a.item_id AS "itemId",
+		a.item_name AS "itemName"
+		FROM order_refund_goods a
+		WHERE a.item_id = #{itemId}
+		AND a.del_flag = 0
+		LIMIT 1
+	</select>
+
 	<!--根据refundId查询出所有的退货单表-->
 	<select id="getRefundGoodsByRefundId" resultType="OrderRefundGoods">
 		SELECT
