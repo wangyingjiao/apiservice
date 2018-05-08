@@ -26,6 +26,8 @@
 	</select>
 	<resultMap id="orderDispatchMap" type="OrderInfo">
 		<result column="orderNumber" property="orderNumber"></result>
+		<result column="serviceStatus" property="serviceStatus"></result>
+		<result column="orderStatus" property="orderStatus"></result>
 		<result column="serviceHour" property="serviceHour"></result>
 		<result column="orderContent" property="orderContent"></result>
 		<result column="serviceTime" property="serviceTime"></result>
@@ -39,6 +41,8 @@
 			a.id AS id,
 			a.order_number AS orderNumber,
 			a.service_time AS serviceTime,
+		a.service_status AS serviceStatus,
+		a.order_status AS orderStatus,
 		a.service_hour AS serviceHour,
 		a.order_content AS orderContent,
             a.org_id AS orgId,
