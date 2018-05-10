@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.service.entity.appVersion;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.sys.entity.VersionInfo;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
@@ -14,15 +15,10 @@ import java.math.BigDecimal;
 public class AppVersion extends DataEntity<AppVersion> {
 
     private static final long serialVersionUID = 1L;
-    @NotBlank(message = "版本号不可为空")
     private String versionNumber;  //版本号
-    @NotBlank(message = "build号不可为空")
     private BigDecimal build;       //build号
-    @NotBlank(message = "强更状态不可为空")
     private String forcedUpdate;   //强更状态：不强更no; 强更yes
-    @NotBlank(message = "更新提示语不可为空")
     private String upgradeContent; //更新提示语
-    @NotBlank(message = "更新地址不可为空")
     private String refreshAddress; //更新地址
     private String startTime;
     private String endTime;
@@ -52,7 +48,7 @@ public class AppVersion extends DataEntity<AppVersion> {
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
-
+    @NotBlank(message = "版本号不可为空")
     public String getVersionNumber() {
         return versionNumber;
     }
@@ -60,7 +56,7 @@ public class AppVersion extends DataEntity<AppVersion> {
     public void setVersionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
     }
-
+    @NotBlank(message = "build号不可为空")
     public BigDecimal getBuild() {
         return build;
     }
@@ -68,7 +64,7 @@ public class AppVersion extends DataEntity<AppVersion> {
     public void setBuild(BigDecimal build) {
         this.build = build;
     }
-
+    @NotBlank(message = "强更状态不可为空")
     public String getForcedUpdate() {
         return forcedUpdate;
     }
@@ -76,7 +72,7 @@ public class AppVersion extends DataEntity<AppVersion> {
     public void setForcedUpdate(String forcedUpdate) {
         this.forcedUpdate = forcedUpdate;
     }
-
+    @NotBlank(message = "更新提示语不可为空")
     public String getUpgradeContent() {
         return upgradeContent;
     }
@@ -84,7 +80,7 @@ public class AppVersion extends DataEntity<AppVersion> {
     public void setUpgradeContent(String upgradeContent) {
         this.upgradeContent = upgradeContent;
     }
-
+    @NotBlank(message = "更新地址不可为空")
     public String getRefreshAddress() {
         return refreshAddress;
     }
