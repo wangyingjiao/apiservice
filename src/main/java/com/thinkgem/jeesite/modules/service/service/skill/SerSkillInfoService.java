@@ -209,4 +209,8 @@ public class SerSkillInfoService extends CrudService<SerSkillInfoDao, SerSkillIn
 		station.getSqlMap().put("dsf", dataStationFilter(UserUtils.getUser(), "a"));
 		return basicServiceStationDao.getServiceStationList(station);
     }
+
+	public int checkSkillSort(SerSkillInfo serSkillInfo) {
+		return serSkillInfoDao.checkSkillSort(serSkillInfo);
+	}
 }

@@ -84,6 +84,9 @@ public class SerSkillInfoController extends BaseController {
 				User user = UserUtils.getUser();
 				serSkillInfo.setOrgId(user.getOrganization().getId());// 机构ID
 			}
+			if (0 != serSkillInfoService.checkSkillSort(serSkillInfo)) {
+				return new FailResult("分类已被其他技能选择，请重新勾选");
+			}
 			if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
 				return new FailResult("当前机构已经包含技能名称" + serSkillInfo.getName() + "");
 			}
@@ -102,6 +105,9 @@ public class SerSkillInfoController extends BaseController {
 		if (StringUtils.isEmpty(serSkillInfo.getOrgId())) {
 			User user = UserUtils.getUser();
 			serSkillInfo.setOrgId(user.getOrganization().getId());// 机构ID
+		}
+		if (0 != serSkillInfoService.checkSkillSort(serSkillInfo)) {
+			return new FailResult("分类已被其他技能选择，请重新勾选");
 		}
 		if (0 != serSkillInfoService.checkDataName(serSkillInfo)) {
 			return new FailResult("当前机构已经包含技能名称:" + serSkillInfo.getName() + "");
