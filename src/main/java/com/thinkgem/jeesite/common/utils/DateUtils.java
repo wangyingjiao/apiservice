@@ -304,6 +304,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return  list;
 	}
+	/**
+	 * 获取今天后7天的日期数组
+	 * @return
+	 */
+	public static List<Date> getAfterSevenDays() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		list.add(day);
+		for(int i=0;i<6;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
+	}
 
 	/**
 	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回false
@@ -542,8 +556,11 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		for(Date info : list){
 			System.out.println(info);
 		}*/
-
-		System.out.println(getDistanceSecondOfTwoDate(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));
+		List<Date> list = null;
+		list = getAfterSevenDays();
+		for(Date info : list){
+			System.out.println(info);
+		}
 	}
 
 	/**

@@ -434,7 +434,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 	 */
 	public List<OrderTimeList> timeDataList(OrderInfo orderInfo) {
 
-		List<Date> dateList = DateUtils.getAfterFifteenDays();
+		List<Date> dateList = DateUtils.getAfterSevenDays();
 		List<OrderTimeList> list = new ArrayList<>();
 		int value = 1;
 

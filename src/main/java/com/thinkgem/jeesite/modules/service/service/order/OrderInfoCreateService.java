@@ -750,7 +750,7 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 	 */
 	public List<OrderTimeList> findTimeListByTech(OrderInfo orderInfo) {
 
-		List<Date> dateList = DateUtils.getAfterFifteenDays();
+		List<Date> dateList = DateUtils.getAfterSevenDays();
 		List<OrderTimeList> list = new ArrayList<>();
 		int value = 1;
 		List<OrderGoods> goodsInfoList = orderInfo.getGoodsInfoList();

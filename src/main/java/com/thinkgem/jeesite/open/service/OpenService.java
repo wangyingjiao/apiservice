@@ -82,7 +82,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
      * @return
      */
     public Map<String,Object> openServiceTimes(OpenServiceTimesRequest info) {
-		List<Date> dateList = DateUtils.getAfterFifteenDays();
+		List<Date> dateList = DateUtils.getAfterSevenDays();
 		List<OpenServiceTimesResponse> list = new ArrayList<>();
 
 		String store_id = info.getStore_id();//门店ID
