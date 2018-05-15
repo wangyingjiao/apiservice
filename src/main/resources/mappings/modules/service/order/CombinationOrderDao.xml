@@ -57,4 +57,27 @@
             </otherwise>
         </choose>
     </select>
+
+
+
+
+    <select id="getOrderRemark" resultType="OrderInfo">
+		SELECT
+			a.customer_remark AS "customerRemark",
+			a.customer_remark_pic AS "customerRemarkPic",
+			a.order_remark AS "orderRemark",
+			a.order_remark_pic AS "orderRemarkPic",
+			a.business_name AS "businessName",
+			a.business_phone AS "businessPhone",
+			a.business_remark AS "businessRemark",
+			a.business_remark_pic AS "businessRemarkPic",
+			a.shop_name AS "shopName",
+			a.shop_phone AS "shopPhone",
+			a.shop_addr AS "shopAddr",
+			a.shop_remark AS "shopRemark",
+			a.shop_remark_pic AS "shopRemarkPic"
+		FROM
+		order_info a
+		WHERE a.id = #{orderId} AND a.del_flag = #{DEL_FLAG_NORMAL}
+    </select>
 </mapper>

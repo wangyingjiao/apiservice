@@ -59,4 +59,107 @@ public class CombinationOrderController extends BaseController {
 		Page<CombinationOrderInfo> page = combinationOrderService.listDataCombination(orderInfoPage, combinationOrderInfo);
 		return new SuccResult(page);
 	}
+
+
+
+
+	/**
+	 * 设置固定时间
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "initSetRegularDate", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_start_time")
+	public Result initSetRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+
+		return new SuccResult("");
+	}
+	/**
+	 * 设置固定时间
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "saveRegularTime", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_start_time")
+	public Result saveRegularTime(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+
+		return new SuccResult("");
+	}
+
+	/**
+	 * 更换固定时间
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateRegularTime", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_regular_time")
+	public Result updateRegularTime(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+
+		return new SuccResult("");
+	}
+
+	/**
+	 * 更换固定技师
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateRegularTech", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_regular_tech")
+	public Result updateRegularTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+
+		return new SuccResult("");
+	}
+
+	/**
+	 * 更换子订单时间
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTime", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_order_time")
+	public Result updateOrderTime(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+
+		return new SuccResult("");
+	}
+
+	/**
+	 * 更换子订单技师
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTech", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_order_tech")
+	public Result updateOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+
+		return new SuccResult("");
+	}
+
+	/**
+	 * 查看备注
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "getOrderRemark", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_order_remark")
+	public Result getOrderRemark(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		// 订单ID不为空
+		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
+			return new FailResult("未找到订单信息");
+		}
+		try {
+			return new SuccResult(combinationOrderService.getOrderRemark(combinationOrderInfo));
+		}catch (ServiceException ex){
+			return new FailResult("查看失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("未找到订单信息!");
+		}
+	}
+
 }

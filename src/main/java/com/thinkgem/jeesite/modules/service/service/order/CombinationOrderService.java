@@ -62,4 +62,54 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 		page.setList(orderList);
 		return page;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * 查看备注
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+    public OrderInfo getOrderRemark(CombinationOrderInfo combinationOrderInfo) {
+		OrderInfo orderInfo = combinationOrderDao.getOrderRemark(combinationOrderInfo);
+		if(orderInfo == null){
+			throw new ServiceException("未找到订单信息");
+		}
+		// 用户备注图片
+		String customerRemarkPic = orderInfo.getCustomerRemarkPic();
+		if(null != customerRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(customerRemarkPic,ArrayList.class);
+			orderInfo.setCustomerRemarkPics(pictureDetails);
+		}
+		// 订单备注图片
+		String orderRemarkPic = orderInfo.getOrderRemarkPic();
+		if(null != orderRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(orderRemarkPic,ArrayList.class);
+			orderInfo.setOrderRemarkPics(pictureDetails);
+		}
+		// 业务人员备注图片
+		String businessRemarkPic = orderInfo.getBusinessRemarkPic();
+		if(null != businessRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(businessRemarkPic,ArrayList.class);
+			orderInfo.setBusinessRemarkPics(pictureDetails);
+		}
+		// 门店备注图片
+		String shopRemarkPic = orderInfo.getShopRemarkPic();
+		if(null != shopRemarkPic){
+			List<String> pictureDetails = (List<String>) JsonMapper.fromJsonString(shopRemarkPic,ArrayList.class);
+			orderInfo.setShopRemarkPics(pictureDetails);
+		}
+
+		return orderInfo;
+    }
 }
