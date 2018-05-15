@@ -459,7 +459,7 @@ public class OrderInfoController extends BaseController {
 	@RequestMapping(value = "findItemList", method = {RequestMethod.POST})
 	public Result findItemList(@RequestBody OrderInfo info) {
 		try {
-			List<OrderDropdownInfo> list = orderInfoCreateService.findItemList(info);
+			List<OrderDropdownInfo> list = orderInfoCreateService.findSingleItemList(info);
 			return new SuccResult(list);
 		}catch (Exception e){
 			return new SuccResult(new ArrayList<OrderDropdownInfo>());

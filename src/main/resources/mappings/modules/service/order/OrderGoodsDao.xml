@@ -200,6 +200,17 @@
 		AND a.del_flag = '0'
 		ORDER BY a.create_date DESC
 	</select>
+	<select id="findSingleItemList" resultType="OrderDropdownInfo">
+		SELECT
+		a.id AS "id",a.name AS "name"
+		from ser_item_info a
+		WHERE
+		a.org_id = #{orgId}
+		AND LENGTH(a.sort_id) &gt; 3
+		AND a.del_flag = '0'
+		AND a.goods_type = 'single'
+		ORDER BY a.create_date DESC
+	</select>
 
 	<update id="updateRefundNumByOrderIdItemId">
 		UPDATE order_goods SET

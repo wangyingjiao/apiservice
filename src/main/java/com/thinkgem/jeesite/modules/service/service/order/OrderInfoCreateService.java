@@ -630,6 +630,18 @@ public class OrderInfoCreateService extends CrudService<OrderInfoDao, OrderInfo>
 		return orderGoodsDao.findItemList(info);
 	}
 	/**
+	 * 获取服务项目列表 单一商品
+	 * @param info
+	 * @return
+	 */
+	public List<OrderDropdownInfo> findSingleItemList(OrderInfo info) {
+		if(StringUtils.isBlank(info.getOrgId())) {
+			info.setOrgId(UserUtils.getUser().getOrganization().getId());
+		}
+		return orderGoodsDao.findSingleItemList(info);
+	}
+
+	/**
 	 * 获取服务项目下的商品列表
 	 * @param orderInfo
 	 * @return
