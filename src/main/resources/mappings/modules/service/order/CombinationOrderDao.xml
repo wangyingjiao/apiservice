@@ -34,7 +34,10 @@
         AND a.station_id= #{stationId}
         </if>
         <if test="orderTime != null and orderTime != ''">
-        AND a.order_time &gt;= #{orderTime}
+        AND a.order_time &gt;= #{startTime}
+        </if>
+        <if test="orderTime != null and orderTime != ''">
+            AND a.order_time &lt;= #{endTime}
         </if>
         <if test="masterId != null and masterId != ''">
         AND a.master_id LIKE concat('%',#{masterId},'%')

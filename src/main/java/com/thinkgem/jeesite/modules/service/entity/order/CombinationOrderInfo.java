@@ -22,6 +22,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	private static final long serialVersionUID = 1L;
 	private String masterId;		// 主订单ID
+    private String orderId;         //订单id
 	private String orderType;		// 订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
 	private String orgId;		// 所属服务机构ID
 	private String orgName;         //机构
@@ -34,6 +35,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String longitude;		// 经度
 	private String latitude;		// 纬度
 	private Date orderTime;		// 下单时间
+    private Date startTime;		// 下单时间
+    private Date endTime;		// 下单时间
 	private String serviceFrequency;	// 服务频次 weekly:1周1次 many:1周多次 fortnightly:2周1次
 	private Date serviceStart;		// 第一次服务日期
 	private Double serviceHour; //服务时长（小时）
@@ -68,7 +71,15 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 		this.masterId = masterId;
 	}
 
-	public String getOrderType() {
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getOrderType() {
 		return orderType;
 	}
 
@@ -116,7 +127,23 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 		this.majorSort = majorSort;
 	}
 
-	public String getOriginPrice() {
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getOriginPrice() {
 		return originPrice;
 	}
 
