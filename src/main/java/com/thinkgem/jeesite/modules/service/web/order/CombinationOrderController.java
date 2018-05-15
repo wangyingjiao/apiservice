@@ -39,4 +39,24 @@ public class CombinationOrderController extends BaseController {
 	@Autowired
 	private CombinationOrderService combinationOrderService;
 
+	/**
+	 * 组合订单列表
+	 * orgId  stationId  orderTime  masterId  orderContent
+	 * @param combinationOrderInfo
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "listDataCombination", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation("获取订单列表")
+	@RequiresPermissions("order_view")
+	public Result listDataCombination(@RequestBody(required = false) CombinationOrderInfo combinationOrderInfo, HttpServletRequest request, HttpServletResponse response) {
+		if(null == combinationOrderInfo){
+			combinationOrderInfo = new CombinationOrderInfo();
+		}
+		Page<CombinationOrderInfo> orderInfoPage = new Page<>(request, response);
+		Page<CombinationOrderInfo> page = combinationOrderService.listDataCombination(orderInfoPage, combinationOrderInfo);
+		return new SuccResult(page);
+	}
 }

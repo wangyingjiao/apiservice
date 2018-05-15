@@ -25,6 +25,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private static final long serialVersionUID = 1L;
 	private String masterId;		// 主订单ID
 	private String orderType;		// 订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
+	private String orderTypeName;		// 订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
 	private String orderNumber;		// 订单编号
 	private String orgId;		// 所属服务机构ID
 	private String stationId;		// 服务站id
@@ -332,7 +333,15 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	public void setOrderType(String orderType) {
 		this.orderType = orderType;
 	}
-	
+
+	public String getOrderTypeName() {
+		return orderTypeName;
+	}
+
+	public void setOrderTypeName(String orderTypeName) {
+		this.orderTypeName = orderTypeName;
+	}
+
 	@Length(min=0, max=32, message="订单编号长度必须介于 0 和 32 之间")
 	public String getOrderNumber() {
 		return orderNumber;

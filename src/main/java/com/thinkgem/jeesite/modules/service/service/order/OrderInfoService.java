@@ -223,6 +223,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		orderInfo.setNowId(info.getNowId());
 		OrderGoods goodsInfo = new OrderGoods();
+		//订单的类型
+		String orderType = orderInfo.getOrderType();
+		if ("common".equals(orderType)){
+			orderInfo.setOrderTypeName("普通订单");
+		}
+		if ("group_split_yes".equals(orderType)){
+			orderInfo.setOrderTypeName("组合订单（多次服务）");
+		}
+		if ("group_split_no".equals(orderType)){
+			orderInfo.setOrderTypeName("组合订单（单次服务）");
+		}
 		//获取服务项目的id集合
 		List<String> ids = new ArrayList<>();
 		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
@@ -419,24 +430,47 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		orderInfo.setOrderRemarkPics(orp);
-		//订单详情中对应的支付信息表
-		String masterId = orderInfo.getMasterId();
 		//如果是已支付的显示支付方式
 		if ("payed".equals(payStatus)) {
+			//订单详情中对应的支付信息表
+			String masterId = orderInfo.getMasterId();
+			//如果主订单ID为空
+			if (StringUtils.isBlank(masterId)) {
+				throw new ServiceException("主订单ID不可为空");
+			}
+			//根据masterId 查询支付表
+			OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
+			if (byMasterId == null) {
+				throw new ServiceException("支付信息为空");
+			}
 			if ("own".equals(orderInfo.getOrderSource())) {
-				//如果主订单ID为空
-				if (StringUtils.isBlank(masterId)) {
-					throw new ServiceException("主订单ID不可为空");
-				}
-				OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
-				if (byMasterId == null) {
-					throw new ServiceException("支付信息为空");
-				}
 				if ("cash".equals(byMasterId.getPayPlatform())) {
 					byMasterId.setPayPlatform("现金");
 				}
-				orderInfo.setOrderPayInfo(byMasterId);
+			}else if ("gasq".equals(orderInfo.getOrderSource())){
+				if ("cash".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("现金");
+				}
+				if ("wx_pub_qr".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("微信扫码");
+				}
+				if ("wx".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("微信");
+				}
+				if ("alipay_qr".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("支付宝扫码");
+				}
+				if ("alipay".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("支付宝");
+				}
+				if ("pos".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("银行卡");
+				}
+				if ("balance".equals(byMasterId.getPayPlatform())) {
+					byMasterId.setPayPlatform("余额");
+				}
 			}
+			orderInfo.setOrderPayInfo(byMasterId);
 		}
 
 		String orgVisable = orderInfo.getOrgVisable();

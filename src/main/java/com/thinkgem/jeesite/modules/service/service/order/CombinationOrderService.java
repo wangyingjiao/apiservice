@@ -50,4 +50,16 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 
 	@Autowired
 	OrderInfoDao orderInfoDao;
+	@Autowired
+	CombinationOrderDao combinationOrderDao;
+
+	//组合订单列表
+	public Page<CombinationOrderInfo> listDataCombination(Page<CombinationOrderInfo> page, CombinationOrderInfo combinationOrderInfo) {
+		User user = UserUtils.getUser();
+		combinationOrderInfo.getSqlMap().put("dsf", dataRoleFilterForOrder(user, "a"));
+		combinationOrderInfo.setPage(page);
+		List<CombinationOrderInfo> orderList = combinationOrderDao.listDataCombination(combinationOrderInfo);
+		page.setList(orderList);
+		return page;
+	}
 }

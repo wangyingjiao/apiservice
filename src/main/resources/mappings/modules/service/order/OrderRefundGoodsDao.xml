@@ -57,7 +57,7 @@
 		SELECT
 		<include refid="orderRefundGoodsColumns"/>
 		FROM order_refund_goods a
-		WHERE a.order_id = #{id}
+		WHERE a.master_id = #{masterId}
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	

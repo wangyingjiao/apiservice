@@ -25,4 +25,6 @@ import java.util.List;
 @MyBatisDao
 public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
 
+    // //组合订单列表
+    List<CombinationOrderInfo> listDataCombination(CombinationOrderInfo combinationOrderInfo);
 }
