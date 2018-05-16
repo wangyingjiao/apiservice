@@ -253,7 +253,7 @@
 		FROM basic_gasq_eshop a
 		LEFT JOIN basic_organization_eshop b on a.code=b.eshop_code
 		WHERE b.org_id=#{orgId}
-		ORDER BY a.create_date DESC
+		ORDER BY a.create_date DESC,a.name
 	</select>
 
 	<!--根据id获取商品-E店信息-->
@@ -371,7 +371,7 @@
 	</select>
 
     <select id="getGoodsEshop" resultType="SerItemCommodityEshop">
-        SELECT joint_goods_code AS jointGoodsCode FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+        SELECT joint_goods_code AS jointGoodsCode,id FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
     </select>
 
     <insert id="insertGoodsEshop">
