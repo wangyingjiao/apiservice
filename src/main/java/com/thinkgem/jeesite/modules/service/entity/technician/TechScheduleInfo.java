@@ -15,6 +15,7 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
     private String techId;		// 技师ID
     private List<String> techIdList;
     private Date scheduleDate;		// 日期
+    private String weekNum;      //周几
     private int scheduleWeek;		// 日期（周一，周二。。。1,2,3,4,5,6,7）
     private Date startTime;		// 起始时段
     private Date endTime;		// 结束时段
@@ -26,6 +27,14 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
     private String scheduleDateStr;  //日期展示用
     private String startTimeStr;    //起始时间展示用
     private String endTimeStr;      //结束时间展示用
+
+    public String getWeekNum() {
+        return weekNum;
+    }
+
+    public void setWeekNum(String weekNum) {
+        this.weekNum = weekNum;
+    }
 
     public String getScheduleDateStr() {
         return scheduleDateStr;

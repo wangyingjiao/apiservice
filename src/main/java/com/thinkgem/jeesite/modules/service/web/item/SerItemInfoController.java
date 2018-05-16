@@ -18,6 +18,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganizationEshop;
+import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
@@ -463,20 +464,32 @@ public class SerItemInfoController extends BaseController {
         if (StringUtils.isBlank(goodsId)) {
             return new FailResult("未找到商品ID");
         }
-        //查出当前商品有没有对接
-        List<SerItemCommodityEshop> commodityEshopList = serItemInfoService.getEshopGoodsList(serItemCommodity);
-        if (commodityEshopList.size()==0){
-            serItemCommodityService.delete(serItemCommodity);
-            SerItemInfo info = new SerItemInfo();
-            info.setId(serItemCommodity.getItemId());
-            List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
-            if (scLists.size() == 0) {
-                serItemInfoService.deleteSerItemInfo(info);
+
+        SerItemCommodity serItemCommodity1 = serItemCommodityService.get(serItemCommodity);
+        if (serItemCommodity1.getGoodsType().equals("single")) {
+            //查询此商品是否存在于组合商品内
+            int count = serItemCommodityService.findCombined(serItemCommodity);
+            if (count == 0) {
+                //查出当前商品有没有对接
+                List<SerItemCommodityEshop> commodityEshopList = serItemInfoService.getEshopGoodsList(serItemCommodity);
+                if (commodityEshopList.size() == 0) {
+                    serItemCommodityService.delete(serItemCommodity);
+                    SerItemInfo info = new SerItemInfo();
+                    info.setId(serItemCommodity.getItemId());
+                    List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
+                    if (scLists.size() == 0) {
+                        serItemInfoService.deleteSerItemInfo(info);
+                    }
+                    return new SuccResult("删除成功");
+                } else {
+                    return new FailResult("商品已对接，不可删除");
+                }
+            }else {
+                return new FailResult("此商品为组合商品的子商品，不可删除");
             }
-            return new SuccResult("删除成功");
         }else {
 
-            return new FailResult("商品已对接，不可删除");
+            return null;
         }
     }
 
@@ -729,6 +742,82 @@ public class SerItemInfoController extends BaseController {
             }
         }else {
             return new FailResult("对接失败");
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "listDataBySortId", method = {RequestMethod.POST, RequestMethod.GET})
+    @ApiOperation("根据所属分类获取商品列表")
+    //@RequiresPermissions("project_view")
+    public Result listDataBySortId(@RequestBody(required = false) CombinationCommodity combinationCommodity, HttpServletRequest request, HttpServletResponse response) {
+        if(null == combinationCommodity){
+            combinationCommodity = new CombinationCommodity();
+        }
+        User user = UserUtils.getUser();
+        if (user.getType().equals("sys")){
+            if (StringUtils.isEmpty(combinationCommodity.getOrgId())){
+                return new FailResult("请选择机构信息");
+            }
+        }else {
+            if (StringUtils.isEmpty(combinationCommodity.getSortId())){
+                return new FailResult("请选择分类信息");
+            }
+        }
+        List<CombinationCommodity> scList= serItemCommodityService.findCommodityBySortId(combinationCommodity);
+        return new SuccResult(scList);
+    }
+
+
+    //新增组合商品的项目
+    @ResponseBody
+    @RequestMapping(value = "saveCombinedData", method = {RequestMethod.POST})
+    @RequiresPermissions("project_insert")
+    @ApiOperation("新增保存组合商品服务项目")
+    public Result saveCombinedData(@RequestBody SerItemInfo serItemInfo) {
+        List<String> errList = errors(serItemInfo);
+        if (errList != null && errList.size() > 0) {
+            return new FailResult(errList);
+        }
+
+        List<String> haveTags = new ArrayList<>();
+        List<String> sysTags = serItemInfo.getSysTags();
+        //系统标签格式：系统标签1,系统标签2,系统标签3,
+        if (null != sysTags){
+            for(String sysTag : sysTags){
+                if(haveTags.contains(sysTag)){
+                    return new FailResult("标签重复");
+                }else{
+                    haveTags.add(sysTag);
+                }
+            }
+            String sys = JsonMapper.toJsonString(sysTags);
+            serItemInfo.setTags(sys);
+        }
+
+        List<String> customTags = serItemInfo.getCustomTags();
+        // 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
+        if (null != customTags){
+            for(String cusTag : customTags){
+                if(haveTags.contains(cusTag)){
+                    return new FailResult("标签重复");
+                }else{
+                    haveTags.add(cusTag);
+                }
+            }
+            String tags = JsonMapper.toJsonString(customTags);
+            serItemInfo.setCusTags(tags);
+        }
+
+        // 验证补单商品
+        /*boolean suppFlag = serItemInfoService.checkSuppGoods(serItemInfo);
+        if(suppFlag){
+            return new FailResult("新增补单商品失败");
+        }*/
+        int i = serItemInfoService.saveCombinedItem(serItemInfo);
+        if (i==1){
+            return new SuccResult("新增成功");
+        }else {
+            return new FailResult("新增失败");
         }
     }
 }

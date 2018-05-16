@@ -41,11 +41,50 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
     private String priceUnit;		//拼接后的单价
 	private List<String> goodIds;
 
+
 	private List<SerItemCommodityEshop> commodityEshops;
+
 	private String jointCode;
 	private String orgId;
 
+	private String goodsType;  //商品类型
+	private List<CombinationCommodity> combinationCommodities;
+	private String serviceType;    //服务类型
+	private int serviceNum;        //服务次数(多次服务)
+
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public int getServiceNum() {
+		return serviceNum;
+	}
+
+	public void setServiceNum(int serviceNum) {
+		this.serviceNum = serviceNum;
+	}
+
+	public List<CombinationCommodity> getCombinationCommodities() {
+		return combinationCommodities;
+	}
+
+	public void setCombinationCommodities(List<CombinationCommodity> combinationCommodities) {
+		this.combinationCommodities = combinationCommodities;
+	}
+
+	public String getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(String goodsType) {
+		this.goodsType = goodsType;
+	}
 
 	public String getOrgId() {
 		return orgId;

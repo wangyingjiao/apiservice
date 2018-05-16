@@ -14,7 +14,9 @@
 		a.sale AS "sale",
 		a.sort_num AS "sortNum",
 		a.custom_tags AS "cusTags",
-		a.sys_tags AS "tags"
+		a.sys_tags AS "tags",
+		a.goods_type AS "goodsType",
+		a.service_type AS "serviceType"
 	</sql>
 	
 	<sql id="serItemInfoJoins">
@@ -41,6 +43,7 @@
 	<select id="findList" resultMap="SerItemCommodityResultMap">
 		SELECT 
 			<include refid="serItemCommodityColumns"/>
+			,a.goods_type AS "goodsType"
 			<if test="goodsName != null and goodsName != ''">
 			,#{goodsName} AS goodsName
 		</if>
@@ -71,6 +74,9 @@
 			</if>
 			<if test="sortId != null and sortId !=''">
 				AND a.sort_id= #{sortId}
+			</if>
+			<if test="goodsType != null and goodsType !=''">
+				AND a.goods_type= #{goodsType}
 			</if>
 			<if test="orgId != null and orgId !=''">
 				AND a.org_id= #{orgId}
@@ -202,7 +208,11 @@
 			create_date,
 			update_by,
 			update_date,
-			del_flag
+			del_flag,
+			goods_type
+			<if test="serviceType != null and serviceType != ''">
+				,service_type
+			</if>
 		) VALUES (
 			#{id},
 			#{orgId},
@@ -220,7 +230,11 @@
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{delFlag}
+			#{delFlag},
+			#{goodsType}
+			<if test="serviceType != null and serviceType != ''">
+				,#{serviceType}
+			</if>
 		)
 	</insert>
 	

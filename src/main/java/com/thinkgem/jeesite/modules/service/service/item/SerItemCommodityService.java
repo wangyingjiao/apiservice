@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.service.service.item;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -90,4 +91,17 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		serItemCommodityEshop.setEshopCode(serItemCommodity.getEshopCode());
 		return serItemCommodityDao.getEshop(serItemCommodityEshop);
 	}
+
+    public List<CombinationCommodity> findCommodityBySortId(CombinationCommodity combinationCommodity) {
+		return serItemCommodityDao.findCommodityBySortId(combinationCommodity);
+    }
+
+	public void saveCombinationCommodity(CombinationCommodity combinationCommodity) {
+		combinationCommodity.preInsert();
+		serItemCommodityDao.insertCombinationCommodity(combinationCommodity);
+	}
+
+    public int findCombined(SerItemCommodity serItemCommodity) {
+	    return serItemCommodityDao.findCombined(serItemCommodity);
+    }
 }

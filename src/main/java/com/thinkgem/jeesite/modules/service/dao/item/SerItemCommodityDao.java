@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.item;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
+import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
@@ -58,4 +59,12 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     void insertGoodsEshop(SerItemCommodityEshop sice);
 
     void updateGoodEshop(SerItemCommodity serItemCommodity);
+
+    List<CombinationCommodity> findCommodityBySortId(CombinationCommodity combinationCommodity);
+
+    void insertCombinationCommodity(CombinationCommodity combinationCommodity);
+
+    List<CombinationCommodity> findCombinationCommodity(String id);
+
+    int findCombined(SerItemCommodity serItemCommodity);
 }

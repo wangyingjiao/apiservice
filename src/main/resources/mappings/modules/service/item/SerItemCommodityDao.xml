@@ -14,8 +14,11 @@
 		a.convert_hours AS "convertHours",
 		a.min_purchase AS "minPurchase",
 		a.start_per_num AS "startPerNum",
-		a.capping_per_num AS "cappingPerNum"
+		a.capping_per_num AS "cappingPerNum",
 		<!--a.joint_goods_code AS "jointGoodsCode"-->
+		a.goods_type AS "goodsType",
+		a.service_type AS "serviceType",
+		a.service_num AS "serviceNum"
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -87,7 +90,14 @@
 			create_date,
 			update_by,
 			update_date,
-			del_flag
+			del_flag,
+			goods_type
+			<if test="serviceType != null and serviceType != ''">
+				,service_type
+			</if>
+			<if test="serviceNum != null and serviceNum != 0">
+				,service_num
+			</if>
 		) VALUES (
 			#{id},
 			#{sortId},
@@ -106,7 +116,14 @@
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
-			#{delFlag}
+			#{delFlag},
+			#{goodsType}
+			<if test="serviceType != null and serviceType != ''">
+				,#{serviceType}
+			</if>
+			<if test="serviceNum != null and serviceNum != 0">
+				,#{serviceNum}
+			</if>
 		)
 	</insert>
 	
@@ -371,7 +388,7 @@
 	</select>
 
     <select id="getGoodsEshop" resultType="SerItemCommodityEshop">
-        SELECT joint_goods_code AS jointGoodsCode FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
+        SELECT joint_goods_code AS jointGoodsCode,id FROM ser_item_info_goods_eshop WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
     </select>
 
     <insert id="insertGoodsEshop">
@@ -398,4 +415,82 @@
 			joint_status = 'butt_butt'
 			WHERE goods_id = #{id} AND eshop_code = #{eshopCode}
 	</update>
+
+	<select id="findCommodityBySortId" resultType="CombinationCommodity">
+		SELECT
+        a.id AS "goodsId",
+        a.item_id AS "itemId",
+        a.name AS "goodsName",
+        a.unit AS "goodsUnit",
+        a.price AS "goodsPrice",
+        a.convert_hours AS "convertHours",
+		b.name AS "itemName",
+		b.id AS "itemId"
+		FROM ser_item_info_goods a LEFT JOIN ser_item_info b ON a.item_id = b.id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.goods_type = 'single'
+        <if test="sortId != null and sortId != ''">
+            AND a.sort_id = #{sortId}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND b.org_id = #{orgId}
+        </if>
+		<if test="goodsName != null and goodsName != ''">
+			AND a.name LIKE concat('%',#{goodsName},'%')
+		</if>
+		<if test="itemName != null and itemName != ''">
+			AND b.name LIKE concat('%',#{itemName},'%')
+		</if>
+		ORDER BY b.create_date DESC
+	</select>
+
+	<insert id="insertCombinationCommodity">
+		INSERT INTO ser_item_combination_goods(
+		id,
+		combination_goods_id,
+		item_id,
+		goods_id,
+		combination_price,
+		combination_num,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		del_flag
+		) VALUES (
+		#{id},
+		#{combinationGoodsId},
+		#{itemId},
+		#{goodsId},
+		#{combinationPrice},
+		#{combinationNum},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{delFlag}
+		)
+	</insert>
+
+	<select id="findCombinationCommodity" resultType="CombinationCommodity">
+		SELECT
+			a.id,
+			a.combination_goods_id AS "combinationGoodsId",
+			a.item_id AS "itemId",
+			a.goods_id AS "goodsId",
+			a.combination_price AS "combinationPrice",
+			a.combination_num AS "combinationNum",
+			d.name AS "itemName",
+			b.name AS "goodsName",
+			b.convert_hours AS "convertHours",
+			b.price AS "goodsPrice",
+			b.unit AS "goodsUnit"
+			FROM ser_item_combination_goods a
+			LEFT JOIN ser_item_info_goods b ON a.goods_id = b.id
+			LEFT JOIN ser_item_info d ON b.item_id = d.id
+			WHERE a.combination_goods_id = #{id} AND a.del_flag = 0
+	</select>
+
+    <select id="findCombined" resultType="int">
+        SELECT count(1) FROM ser_item_combination_goods WHERE goods_id = #{id} AND del_flag = 0
+    </select>
 </mapper>

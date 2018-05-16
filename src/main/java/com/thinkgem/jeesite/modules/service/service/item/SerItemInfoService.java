@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicGasqEshop;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
+import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.sort.SerSortInfo;
@@ -116,7 +117,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
              */
 
 			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
-
+            serItemInfo.setGoodsType("single");
 			super.save(serItemInfo);
 			if (commoditys != null) {
                 // 批量插入商品信息
@@ -141,6 +142,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 						commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
 						commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
 					}
+					commodity.setGoodsType("single");
                     serItemCommodityService.save(commodity);
 
                     if (goodsFlag) {
@@ -332,13 +334,26 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 	public SerItemInfo getData(String id) {
 		SerItemInfo serItemInfo = super.get(id);
 
-		List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
-		for (SerItemCommodity sic : commoditys){
-		    sic.setDoublePrice(sic.getPrice().toString());
-        }
-		serItemInfo.setCommoditys(commoditys);
+		if (serItemInfo.getGoodsType().equals("single")) {
+            List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+            for (SerItemCommodity sic : commoditys) {
+                sic.setDoublePrice(sic.getPrice().toString());
+            }
+            serItemInfo.setCommoditys(commoditys);
 
-		return serItemInfo;
+            return serItemInfo;
+        }else {
+            List<SerItemCommodity> commoditys = serItemCommodityDao.findListByItemId(serItemInfo);
+            if (commoditys.size()>0) {
+                SerItemCommodity serItemCommodity = commoditys.get(0);
+                List<CombinationCommodity> ccList = serItemCommodityDao.findCombinationCommodity(serItemCommodity.getId());
+                if (ccList.size()>0){
+                    serItemCommodity.setCombinationCommodities(ccList);
+                }
+                serItemInfo.setSerItemCommodity(serItemCommodity);
+            }
+            return serItemInfo;
+        }
 	}
 
 	@Transactional(readOnly = false)
@@ -759,5 +774,91 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 			}
 		}
 		return flag;
+	}
+
+	@Transactional(readOnly = false)
+	public int saveCombinedItem(SerItemInfo serItemInfo) {
+		try {
+			List<String> pictures = serItemInfo.getPictures();
+			if (null != pictures) {
+				List<String> picturesList = new ArrayList<String>();
+				for (String picture : pictures){
+					if (picture != null && !picture.equals("")){
+						picturesList.add(picture);
+					}
+				}
+				String picture1 = JsonMapper.toJsonString(picturesList);
+				serItemInfo.setPicture(picture1);
+			}
+			// add by wyr 保存服务项目图文详情 saveData方法里的 pictureDetails属性
+			List<String> pictureDetails = serItemInfo.getPictureDetails();
+			if (null != pictureDetails) {
+				List<String> pictureDetailsList = new ArrayList<String>();
+				for (String pictureDetail : pictureDetails){
+					if (pictureDetail != null && !pictureDetail.equals("")){
+						pictureDetailsList.add(pictureDetail);
+					}
+				}
+				String pictureDetail1 = JsonMapper.toJsonString(pictureDetailsList);
+				serItemInfo.setPictureDetail(pictureDetail1);
+			}
+			serItemInfo.preUpdate();
+			if (StringUtils.isEmpty(serItemInfo.getOrgId())) {
+				// add by wyr编辑项目服务需要获取当前的机构id
+				User user = UserUtils.getUser();
+				serItemInfo.setOrgId(user.getOrganization().getId());
+			}
+			SerItemCommodity commodity = serItemInfo.getSerItemCommodity();
+			/*
+			 * if (StringUtils.isNotBlank(serItemInfo.getId())) { //删除商品信息
+			 * //serItemCommodityDao.delSerItemCommodity(serItemInfo);
+			 *
+			 * //只删除前台删除的数据，其余商品新增或者编辑 List<SerItemCommodity> commodityListOld =
+			 * serItemCommodityDao.findListByItemId(serItemInfo);
+			 * if(commodityListOld != null){ commodityListOld.removeAll(commoditys);
+			 * if(commodityListOld.size() != 0){ for (SerItemCommodity commodityDel
+			 * : commodityListOld) { serItemCommodityDao.delete(commodityDel); } } }
+			 * }
+			 */
+
+			List<SerItemCommodity> sendGoodsList = new ArrayList<>();
+			serItemInfo.setGoodsType("combined");
+			serItemInfo.setServiceType(serItemInfo.getSerItemCommodity().getServiceType());
+			super.save(serItemInfo);
+			if (commodity != null){
+                List<CombinationCommodity> combinationCommodities = commodity.getCombinationCommodities();
+
+                commodity.setItemId(serItemInfo.getId());
+				commodity.setItemGoodName(serItemInfo.getName() + "(" + commodity.getName() + ")");
+				String s = ToDBC(commodity.getItemGoodName());
+				commodity.setItemGoodName(s);
+				commodity.setSortId(serItemInfo.getSortId());
+				if(serItemInfo.getSortId().length() < 3){
+					commodity.setType("num");
+					commodity.setConvertHours(0.0);
+					commodity.setStartPerNum(0);
+					commodity.setCappingPerNum(30);
+					commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
+				}else {
+					commodity.setMinPurchase(commodity.getMinPurchase() == 0 ? 1 : commodity.getMinPurchase());// DEFAULT
+					commodity.setStartPerNum(commodity.getStartPerNum() == 0 ? 1 : commodity.getStartPerNum());// DEFAULT
+					commodity.setCappingPerNum(commodity.getCappingPerNum() == 0 ? 30 : commodity.getCappingPerNum());// DEFAULT
+				}
+				commodity.setGoodsType("combined");
+                commodity.preInsert();
+				serItemCommodityDao.insert(commodity);
+				if (combinationCommodities.size()>0){
+				    for (CombinationCommodity combinationCommodity : combinationCommodities){
+                        combinationCommodity.setCombinationGoodsId(commodity.getId());
+                        serItemCommodityService.saveCombinationCommodity(combinationCommodity);
+                    }
+                }
+			}
+
+			return 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 }

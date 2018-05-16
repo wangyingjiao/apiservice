@@ -42,6 +42,34 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private String jointEshopCode;   //机构E店
 	private String flag="yes";   //是否需要对接
 
+	private String goodsType;
+	private String serviceType;
+	private SerItemCommodity serItemCommodity;    //组合商品
+
+	public SerItemCommodity getSerItemCommodity() {
+		return serItemCommodity;
+	}
+
+	public void setSerItemCommodity(SerItemCommodity serItemCommodity) {
+		this.serItemCommodity = serItemCommodity;
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public String getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(String goodsType) {
+		this.goodsType = goodsType;
+	}
+
 	public String getOrgName() {
 		return orgName;
 	}
