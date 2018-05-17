@@ -105,6 +105,7 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	    return serItemCommodityDao.findCombined(serItemCommodity);
     }
 
+	@Transactional(readOnly = false)
 	public void deleteCombined(SerItemCommodity serItemCommodity) {
 		serItemCommodityDao.deleteCombined(serItemCommodity);
 	}
