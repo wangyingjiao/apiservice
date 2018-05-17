@@ -2,11 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.CombinationOrderDao">
 
-
-
-
-
-
     <!--组合订单列表-->
     <select id="listDataCombination" resultType="CombinationOrderInfo">
         SELECT
@@ -58,8 +53,69 @@
         </choose>
     </select>
 
+    <!--根据masterId查询组合订单详情-->
+    <select id="getCombinationById" resultType="CombinationOrderInfo">
+        SELECT
+        a.id AS "id",
+        a.master_id AS "masterId",
+        a.order_type AS "orderType",
+        a.major_sort AS "majorSort",
+        a.order_status AS "orderStatus",
+        a.order_source AS "orderSource",
+        a.order_time AS "orderTime",
+        a.service_frequency AS serviceFrequency,
+        a.latitude AS latitude,
+        a.longitude AS longitude,
+        a.origin_price AS originPrice,
+        a.org_id AS "orgId",
+        org.name AS "orgName",
+        a.station_id AS "stationId",
+        sta.name AS "stationName",
+        a.joint_order_id AS "jointOrderId",
+        a.pay_price AS payPrice,
+        a.pay_status AS "payStatus",
+        pay.pay_number AS "payInfo.payNumber",
+        pay.pay_status AS "payInfo.payStatus",
+        pay.pay_method AS "payInfo.payMethod",
+        pay.pay_platform AS "payInfo.payPlatform",
+        pay.pay_account AS "payInfo.payAccount",
+        pay.pay_time AS "payInfo.payTime",
 
+        address.name AS "addressInfo.name",
+        address.phone AS "addressInfo.phone",
+        CONCAT(IFNULL(t1.name,''),IFNULL(t2.name,''),IFNULL(t3.name,''),IFNULL(address.placename,'')) AS "addressInfo.placename",
+        address.detail_address AS "addressInfo.detailAddress",
+        address.address AS "addressInfo.address",
 
+        a.service_hour AS "serviceHour",
+        a.service_start AS "serviceStart",
+        a.tech_id AS techId,
+        cust.name AS "customerName",
+        cust.phone AS "customerPhone",
+        a.customer_remark AS "customerRemark",
+        a.customer_remark_pic AS "customerRemarkPic",
+
+        a.order_content AS "orderContent",
+        a.cancel_reason AS "cancelReason",
+        a.cancel_reason_remark AS "cancelReasonRemark",
+        tech.name AS "tech.name",
+        tech.phone AS "tech.phone"
+        FROM
+        order_combination_info a
+        LEFT JOIN order_pay_info pay ON a.master_id = pay.master_id AND pay.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+
+        LEFT JOIN order_address address ON a.order_address_id = address.id AND address.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN sys_area t1 ON address.province_code = t1.code
+        LEFT JOIN sys_area t2 ON address.city_code = t2.code
+        LEFT JOIN sys_area t3 ON address.area_code = t3.code
+
+        LEFT JOIN customer_info cust ON a.customer_id = cust.id AND cust.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN tech_info tech ON a.tech_id = tech.id AND tech.del_flag = #{DEL_FLAG_NORMAL}
+
+        WHERE a.master_id = #{masterId} AND a.del_flag = #{DEL_FLAG_NORMAL}
+    </select>
 
     <select id="getOrderRemark" resultType="OrderInfo">
 		SELECT

@@ -5,11 +5,8 @@ package com.thinkgem.jeesite.modules.service.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
-import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
-import org.hibernate.validator.constraints.Length;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -54,6 +51,12 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String orderContent;		// 下单服务内容
 	private String cancelReason;//取消原因
 	private String cancelReasonRemark;//取消原因备注
+	private OrderAddress addressInfo;  //服务地址
+	private String customerName;	//用户姓名
+	private String customerPhone;	//用户电话
+	private OrderPayInfo payInfo;	//支付信息
+	private ServiceTechnicianInfo tech; //固定技师
+
 
 	public CombinationOrderInfo() {
 		super();
@@ -325,5 +328,45 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setCancelReasonRemark(String cancelReasonRemark) {
 		this.cancelReasonRemark = cancelReasonRemark;
+	}
+
+	public OrderAddress getAddressInfo() {
+		return addressInfo;
+	}
+
+	public void setAddressInfo(OrderAddress addressInfo) {
+		this.addressInfo = addressInfo;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getCustomerPhone() {
+		return customerPhone;
+	}
+
+	public void setCustomerPhone(String customerPhone) {
+		this.customerPhone = customerPhone;
+	}
+
+	public OrderPayInfo getPayInfo() {
+		return payInfo;
+	}
+
+	public void setPayInfo(OrderPayInfo payInfo) {
+		this.payInfo = payInfo;
+	}
+
+	public ServiceTechnicianInfo getTech() {
+		return tech;
+	}
+
+	public void setTech(ServiceTechnicianInfo tech) {
+		this.tech = tech;
 	}
 }
