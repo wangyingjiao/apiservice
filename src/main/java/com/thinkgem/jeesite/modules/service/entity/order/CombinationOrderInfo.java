@@ -32,8 +32,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String longitude;		// 经度
 	private String latitude;		// 纬度
 	private Date orderTime;		// 下单时间
-    private Date startTime;		// 下单时间
-    private Date endTime;		// 下单时间
+    private Date startTime;		//开始时间   列表查询条件
+    private Date endTime;		//结束时间  列表查询条件
 	private String serviceFrequency;	// 服务频次 weekly:1周1次 many:1周多次 fortnightly:2周1次
 	private Date serviceStart;		// 第一次服务日期
 	private Double serviceHour; //服务时长（小时）
