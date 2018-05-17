@@ -138,4 +138,20 @@
 		order_info a
 		WHERE a.id = #{orderId} AND a.del_flag = #{DEL_FLAG_NORMAL}
     </select>
+
+    <select id="getOrderDispatchList" resultType="OrderDispatch">
+        SELECT
+        a.id AS id,
+        a.tech_id AS techId,
+        b.name  AS techName,
+        b.head_pic  AS headPic,
+        b.sex  AS techSex,
+        b.phone  AS techPhone
+        FROM
+        order_dispatch a
+        LEFT JOIN tech_info b ON a.tech_id = b.id
+        WHERE a.order_id = #{orderId}
+        AND a.status = 'yes'
+        AND a.del_flag = #{DEL_FLAG_NORMAL}
+    </select>
 </mapper>

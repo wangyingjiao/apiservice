@@ -23,6 +23,7 @@ public class OpenCreateResponse extends DataEntity<OpenCreateResponse> {
 	private static final long serialVersionUID = 1L;
 	private boolean success;		//接单状态：true 已接单；false 拒单
 	private String service_order_id;		//接单时：返回自营服务的订单ID；拒单时：返回空 订单编号，不要ID
+	private String service_group_id;		//接单时：返回自营服务的订单ID；拒单时：返回空 订单编号，不要ID
 
 	public boolean isSuccess() {
 		return success;
@@ -40,4 +41,11 @@ public class OpenCreateResponse extends DataEntity<OpenCreateResponse> {
 		this.service_order_id = service_order_id;
 	}
 
+	public String getService_group_id() {
+		return service_group_id;
+	}
+
+	public void setService_group_id(String service_group_id) {
+		this.service_group_id = service_group_id;
+	}
 }

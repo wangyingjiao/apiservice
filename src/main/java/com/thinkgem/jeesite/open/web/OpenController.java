@@ -17,6 +17,8 @@ import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.open.entity.*;
+import com.thinkgem.jeesite.open.service.OpenCreateCombinationManyService;
+import com.thinkgem.jeesite.open.service.OpenCreateCombinationOnceService;
 import com.thinkgem.jeesite.open.service.OpenService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -41,6 +43,11 @@ public class OpenController extends BaseController {
 
 	@Autowired
 	private OpenService openService;
+	@Autowired
+	private OpenCreateCombinationManyService openCreateCombinationManyService;
+	@Autowired
+	private OpenCreateCombinationOnceService openCreateCombinationOnceService;
+
 	@Autowired
 	private MessageInfoService messageInfoService;
 
@@ -84,7 +91,30 @@ public class OpenController extends BaseController {
 	@RequestMapping(value = "create", method = {RequestMethod.POST})
 	public OpenResult create(OpenCreateRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			HashMap<String,Object> map = openService.openCreate(info);
+			HashMap<String,Object> map = null;
+			String order_type = info.getOrder_type();//订单类型：common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单
+			if(null == order_type){
+				OpenFailResult result =  new OpenFailResult("订单类型不能为空");
+				String openResponseJson = JsonMapper.toJsonString(result);
+				request.setAttribute("openResponseJson",openResponseJson);
+				request.setAttribute("openResponseCode","0");
+				return result;
+			}
+
+			if("common".equals(order_type)) {
+				map = openService.openCreate(info);
+			}else if("group_split_yes".equals(order_type)) {
+				map = openCreateCombinationManyService.openCreate(info);
+			}else if("group_split_no".equals(order_type)) {
+				map = openCreateCombinationOnceService.openCreate(info);
+			}else{
+				OpenFailResult result =  new OpenFailResult("订单类型有误");
+				String openResponseJson = JsonMapper.toJsonString(result);
+				request.setAttribute("openResponseJson",openResponseJson);
+				request.setAttribute("openResponseCode","0");
+				return result;
+			}
+
 			OpenCreateResponse responseRe = (OpenCreateResponse)map.get("response");
 
 			try {

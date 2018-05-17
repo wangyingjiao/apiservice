@@ -143,17 +143,71 @@ public class CombinationOrderController extends BaseController {
 	}
 
 	/**
-	 * 更换子订单技师
+	 * 子订单  更换技师  按钮
 	 * @param combinationOrderInfo
-	 * @return
+	 * @return 子订单技师列表
 	 */
 	@ResponseBody
-	@RequestMapping(value = "updateOrderTech", method = {RequestMethod.POST})
+	@RequestMapping(value = "initCombinationOrderTech", method = {RequestMethod.POST})
 	@RequiresPermissions("combination_order_tech")
-	public Result updateOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-
-		return new SuccResult("");
+	public Result initCombinationOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		// 订单ID不为空
+		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
+			return new FailResult("未找到订单信息");
+		}
+		try {
+			return new SuccResult(combinationOrderService.initCombinationOrderTech(combinationOrderInfo));
+		}catch (ServiceException ex){
+			return new FailResult("查看失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("未找到订单信息!");
+		}
 	}
+
+	/**
+	 * 子订单  更换技师  按钮
+	 * @param combinationOrderInfo
+	 * @return 子订单技师列表
+	 */
+	@ResponseBody
+	@RequestMapping(value = "addCombinationOrderTech", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_order_tech")
+	public Result addCombinationOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		// 订单ID不为空
+		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
+			return new FailResult("未找到订单信息");
+		}
+		try {
+			return new SuccResult(combinationOrderService.addCombinationOrderTech(combinationOrderInfo));
+		}catch (ServiceException ex){
+			return new FailResult("查看失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("未找到订单信息!");
+		}
+	}
+
+	/**
+	 * 子订单  更换技师  按钮
+	 * @param combinationOrderInfo
+	 * @return 子订单技师列表
+	 */
+	@ResponseBody
+	@RequestMapping(value = "dispatchCombinationOrderTech", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_order_tech")
+	public Result dispatchCombinationOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		// 订单ID不为空
+		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
+			return new FailResult("未找到订单信息");
+		}
+		try {
+			return new SuccResult(combinationOrderService.initCombinationOrderTech(combinationOrderInfo));
+		}catch (ServiceException ex){
+			return new FailResult("查看失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("未找到订单信息!");
+		}
+	}
+
 
 	/**
 	 * 查看备注

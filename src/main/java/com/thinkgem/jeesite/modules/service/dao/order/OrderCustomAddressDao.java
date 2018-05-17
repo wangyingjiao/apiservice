@@ -8,6 +8,8 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomAddress;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderCustomInfo;
 
+import java.util.List;
+
 
 /**
  * 客户信息DAO接口
@@ -22,4 +24,6 @@ public interface OrderCustomAddressDao extends CrudDao<OrderCustomAddress> {
     void updateDefaultYesById(OrderCustomAddress customAddress);
 
     void deleteAddressByCustomerId(OrderCustomInfo orderCustomInfo);
+
+    List<OrderCustomAddress> findCusAddrList(OrderCustomInfo serchCustomInfo);
 }

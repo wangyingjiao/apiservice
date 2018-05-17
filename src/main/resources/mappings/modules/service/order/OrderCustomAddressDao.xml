@@ -170,4 +170,29 @@
 		WHERE id = #{id}
 		AND customer_id = #{customerId}
 	</update>
+
+	<select id="findCusAddrList"  resultType="OrderCustomAddress">
+		SELECT
+			a.id AS "id",
+			a.customer_id AS "customerId",
+			a.address_name AS "addressName",
+			a.address_phone AS "addressPhone",
+			a.province_code AS "provinceCode",
+			a.city_code AS "cityCode",
+			a.area_code AS "areaCode",
+			a.placename AS "placename",
+			a.detail_address AS "detailAddress",
+			a.addr_longitude AS "addrLongitude",
+			a.addr_latitude AS "addrLatitude",
+			a.default_type AS "defaultType"
+		FROM customer_address a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.customer_id = #{customerId}
+			AND a.address_name = #{addressName}
+			AND a.address_phone = #{addressPhone}
+			AND a.addr_longitude = #{addrLongitude}
+			AND a.addr_latitude = #{addrLatitude}
+		</where>
+	</select>
 </mapper>

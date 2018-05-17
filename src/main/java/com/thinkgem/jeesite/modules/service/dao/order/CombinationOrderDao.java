@@ -31,4 +31,6 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
     CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo);
 
     OrderInfo getOrderRemark(CombinationOrderInfo combinationOrderInfo);
+
+    List<OrderDispatch> initCombinationOrderTech(CombinationOrderInfo combinationOrderInfo);
 }

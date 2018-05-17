@@ -672,6 +672,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null == store_id){
 			throw new ServiceException("门店ID不能为空");
 		}
+		String shop_name = info.getStore_name();//门店名称
+		String shop_phone = info.getStore_phone();//门店电话
+		String shop_addr = info.getStore_addr();//门店地址
+
 		String eshop_code = info.getEshop_code();//E店编码
 		if(null == eshop_code){
 			throw new ServiceException("E店编码不能为空");
@@ -688,7 +692,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(null == servie_time){
 			throw new ServiceException("服务时间不能为空");
 		}
-		String gasq_order_sn = info.getGasq_order_sn();
+		List<String> gasqOrderSnList = info.getGasq_order_sn();
+		if(gasqOrderSnList==null || gasqOrderSnList.size()!=1){
+			throw new ServiceException("国安社区订单SN不能为空");
+		}
+		String gasq_order_sn = gasqOrderSnList.get(0);
 		if(null == gasq_order_sn){
 			throw new ServiceException("国安社区订单SN不能为空");
 		}
@@ -808,18 +816,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else{
 			throw new ServiceException("未找到门店ID对应的服务站信息");
 		}
-		String shop_name = "";//门店名称
-		String shop_phone = "";//门店电话
-		String shop_addr = "";//门店地址
-
-		BasicStore basicStore = basicStoreDao.get(store_id);
-		if(basicStore != null){
-			shop_name = basicStore.getStoreName();
-			shop_phone = basicStore.getStorePhone();
-			shop_addr = basicStore.getAddress();
-		}else{
-			throw new ServiceException("未找到门店ID对应的门店信息");
-		}
 
 		//--------------------------------------------------
 		OrderInfo orderInfo = new OrderInfo();
@@ -930,70 +926,92 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
      * @return
      */
     private OrderCustomInfo openCreateForCustom(OpenCreateRequest info) {
-        String phone = info.getPhone();//用户电话
-        String province_code = info.getProvince_code();//省CODE
-        String city_code = info.getCity_code();//市CODE
-        String area_code = info.getArea_code();//区CODE
-        //String detailAddress = info.getAddress();//服务地址：小区+详细地址
+    	String loginMobile = info.getLogin_mobile();
+		String loginName = info.getLogin_name();
+
+		String name = info.getName();//用户
+		String phone = info.getPhone();//用户电话
+		String province_code = info.getProvince_code();//省CODE
+		String city_code = info.getCity_code();//市CODE
+		String area_code = info.getArea_code();//区CODE
 		String placename = info.getPlacename();////服务地址：小区
 		String detailAddress = info.getDetail_address();//服务地址：门牌号
+		String latitude = info.getLatitude();//服务地址：纬度
+		String longitude = info.getLongitude();//服务地址：经度
 
-        String latitude = info.getLatitude();//服务地址：纬度
-        String longitude = info.getLongitude();//服务地址：经度
+		String eshop_code = info.getEshop_code();//E店编码
+		if(null == eshop_code){
+			throw new ServiceException("E店编码不能为空");
+		}
+		//通过对接方E店CODE获取机构
+		List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(eshop_code);
+		String orgId = "";
+		if(null != organization && organization.size() > 0){
+			orgId = organization.get(0).getId();
+		}else{
+			throw new ServiceException("未找到E店CODE对应的机构信息");
+		}
+		User user = new User();
+		user.setId("gasq001");
 
-        String eshop_code = info.getEshop_code();//E店编码
-        if(null == eshop_code){
-            throw new ServiceException("E店编码不能为空");
-        }
-        //通过对接方E店CODE获取机构
-        List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(eshop_code);
-        String orgId = "";
-        if(null != organization && organization.size() > 0){
-            orgId = organization.get(0).getId();
-        }else{
-            throw new ServiceException("未找到E店CODE对应的机构信息");
-        }
-        //--------------------------------------
-        OrderCustomInfo orderCustomInfo = new OrderCustomInfo();
-        orderCustomInfo.setName("");//姓名
-        orderCustomInfo.setPhone(phone);//手机号
-        orderCustomInfo.setEmail("");//邮编
-        orderCustomInfo.setSource("gasq");//来源   本机构:own    国安社区:gasq',
-        orderCustomInfo.setOrgId(orgId);
+		// 判断是否在客户表存在
+		OrderCustomInfo serchCustomInfo = new OrderCustomInfo();
+		serchCustomInfo.setPhone(loginMobile);
+		serchCustomInfo.setOrgId(orgId);//机构ID
+		serchCustomInfo.setSource("gasq");// 来源   本机构:own    国安社区:gasq
+		List<OrderCustomInfo> cusInfoList = orderCustomInfoDao.findCusList(serchCustomInfo);
+		OrderCustomInfo orderCustomInfo = new OrderCustomInfo();
+		if (null == cusInfoList || cusInfoList.size()==0) {
+			orderCustomInfo.setName(loginName);//姓名
+			orderCustomInfo.setPhone(loginMobile);//手机号
+			orderCustomInfo.setEmail("");//邮编
+			orderCustomInfo.setSource("gasq");//来源   本机构:own    国安社区:gasq',
+			orderCustomInfo.setOrgId(orgId);
 
-        User user = new User();
-        user.setId("gasq001");
-        orderCustomInfo.setId(IdGen.uuid());
-        orderCustomInfo.setCreateBy(user);
-        orderCustomInfo.setCreateDate(new Date());
-        orderCustomInfo.setUpdateBy(user);
-        orderCustomInfo.setUpdateDate(orderCustomInfo.getCreateDate());
+			orderCustomInfo.setId(IdGen.uuid());
+			orderCustomInfo.setCreateBy(user);
+			orderCustomInfo.setCreateDate(new Date());
+			orderCustomInfo.setUpdateBy(user);
+			orderCustomInfo.setUpdateDate(orderCustomInfo.getCreateDate());
 
-        orderCustomInfoDao.insert(orderCustomInfo);
+			orderCustomInfoDao.insert(orderCustomInfo);
+		}else {
+			// 用户手机号不能重复
+			orderCustomInfo = cusInfoList.get(0);
+		}
 
-        // 客户地址表
+		//判断客户地址是否存在
+		OrderCustomAddress serchCustomAddress = new OrderCustomAddress();
+		serchCustomAddress.setCustomerId(orderCustomInfo.getId());
+		serchCustomAddress.setAddressName(name);
+		serchCustomAddress.setAddressPhone(phone);
+		serchCustomAddress.setAddrLatitude(latitude);//服务地址：纬度
+		serchCustomAddress.setAddrLongitude(longitude);//服务地址：经度
+		List<OrderCustomAddress> cusAddrList = orderCustomAddressDao.findCusAddrList(serchCustomInfo);
 		OrderCustomAddress orderCustomAddress = new OrderCustomAddress();
-		orderCustomAddress.setCustomerId(orderCustomInfo.getId());
-		orderCustomAddress.setAddressName("");
-		orderCustomAddress.setAddressPhone(phone);
-		orderCustomAddress.setProvinceCode(province_code);//省_区号
-		orderCustomAddress.setCityCode(city_code);//市_区号
-		orderCustomAddress.setAreaCode(area_code);//区_区号
-		orderCustomAddress.setPlacename(placename);//小区
-		orderCustomAddress.setDetailAddress(detailAddress);//详细地址
-		orderCustomAddress.setAddrLatitude(latitude);//服务地址：纬度
-		orderCustomAddress.setAddrLongitude(longitude);//服务地址：经度
-		orderCustomAddress.setDefaultType("yes");
+		if (null == cusAddrList || cusAddrList.size()==0) {
+			// 客户地址表
+			orderCustomAddress.setCustomerId(orderCustomInfo.getId());
+			orderCustomAddress.setAddressName(name);
+			orderCustomAddress.setAddressPhone(phone);
+			orderCustomAddress.setProvinceCode(province_code);//省_区号
+			orderCustomAddress.setCityCode(city_code);//市_区号
+			orderCustomAddress.setAreaCode(area_code);//区_区号
+			orderCustomAddress.setPlacename(placename);//小区
+			orderCustomAddress.setDetailAddress(detailAddress);//详细地址
+			orderCustomAddress.setAddrLatitude(latitude);//服务地址：纬度
+			orderCustomAddress.setAddrLongitude(longitude);//服务地址：经度
+			orderCustomAddress.setDefaultType("yes");
 
-		orderCustomAddress.setId(IdGen.uuid());
-		orderCustomAddress.setCreateBy(user);
-		orderCustomAddress.setCreateDate(new Date());
-		orderCustomAddress.setUpdateBy(user);
-		orderCustomAddress.setUpdateDate(orderCustomAddress.getCreateDate());
-
-		orderCustomAddressDao.insert(orderCustomAddress);
-
-
+			orderCustomAddress.setId(IdGen.uuid());
+			orderCustomAddress.setCreateBy(user);
+			orderCustomAddress.setCreateDate(new Date());
+			orderCustomAddress.setUpdateBy(user);
+			orderCustomAddress.setUpdateDate(orderCustomAddress.getCreateDate());
+			orderCustomAddressDao.insert(orderCustomAddress);
+		}else{
+			orderCustomAddress = cusAddrList.get(0);
+		}
 		List<OrderCustomAddress> orderCustomAddressList = new ArrayList<>();
 		orderCustomAddressList.add(orderCustomAddress);
 		orderCustomInfo.setAddressList(orderCustomAddressList);
@@ -1006,6 +1024,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	 * @return
 	 */
 	private OrderAddress openCreateForAddress(OpenCreateRequest info) {
+		String name = info.getName();//用户
 		String phone = info.getPhone();//用户电话
 		String province_code = info.getProvince_code();//省CODE
 		String city_code = info.getCity_code();//市CODE
@@ -1014,38 +1033,17 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String detailAddress = info.getDetail_address();//服务地址：门牌号
 
 		//省名称
-		String provinceName = "";
+		String provinceName = info.getProvince_name();
 		//市名称
-		String cityName = "";
+		String cityName = info.getCity_name();
 		//区名称
-		String areaName = "";
+		String areaName = info.getArea_name();
 
-		if(null != province_code) {
-			List<Area> provinceList = areaDao.getNameByCode(province_code);
-			if (provinceList != null && provinceList.size() > 0) {
-				provinceName = provinceList.get(0).getName();
-			}
-		}
-		if(null != city_code) {
-			List<Area> cityList = areaDao.getNameByCode(city_code);
-			if (cityList != null && cityList.size() > 0) {
-				cityName = cityList.get(0).getName();
-			}
-		}
-		if(null != area_code) {
-			List<Area> areaList = areaDao.getNameByCode(area_code);
-			if (areaList != null && areaList.size() > 0) {
-				areaName = areaList.get(0).getName();
-			}
-		}
-		String address = "";
-		if(StringUtils.isNotBlank(provinceName) && StringUtils.isNotBlank(cityName) && StringUtils.isNotBlank(areaName)){
-			address = provinceName + cityName + areaName + placename + detailAddress;
-		}
+		String address = provinceName + cityName + areaName + placename + detailAddress;
 
 		//--------------------------------------
 		OrderAddress orderAddress = new OrderAddress();
-		orderAddress.setName("");//姓名
+		orderAddress.setName(name);//姓名
 		orderAddress.setPhone(phone);//手机号
 		orderAddress.setZipcode("");//邮编
 		orderAddress.setProvinceCode(province_code);//省_区号

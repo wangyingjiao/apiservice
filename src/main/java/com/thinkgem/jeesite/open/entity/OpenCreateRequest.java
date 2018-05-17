@@ -22,8 +22,6 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private String phone;//用户电话
 	private List<String>  remark_pic;//订单备注(用户备注)
 	private String remark;//订单备注(用户备注)
-	private String gasq_order_id;//国安社区订单ID
-	private String gasq_order_sn;//国安社区订单SN
 	private String area_code;//区CODE
 	private String province_code;//省CODE
 	private String city_code;//市CODE
@@ -37,6 +35,18 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private String longitude;//服务地址：经度
 	private String sum_price;//订单总支付价格
 	private String order_type;//订单类型：common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单
+
+	private List<String> gasq_order_sn;//国安社区订单SN
+	private String name; // 服务信息：用户姓名
+	private String store_name;//门店名称
+	private String store_phone;//门店电话
+	private String store_addr;//门店地址
+	private String province_name;//省的名称
+	private String city_name;//市的名称
+	private String area_name;//区的名称
+	private String login_mobile;//登录帐号手机号
+	private String login_name;//登录帐号用户名
+	private String group_id;//订单组ID
 
 	public String getStore_id() {
 		return store_id;
@@ -76,22 +86,6 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
-	}
-
-	public String getGasq_order_id() {
-		return gasq_order_id;
-	}
-
-	public void setGasq_order_id(String gasq_order_id) {
-		this.gasq_order_id = gasq_order_id;
-	}
-
-	public String getGasq_order_sn() {
-		return gasq_order_sn;
-	}
-
-	public void setGasq_order_sn(String gasq_order_sn) {
-		this.gasq_order_sn = gasq_order_sn;
 	}
 
 	public String getArea_code() {
@@ -204,5 +198,93 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 
 	public void setDetail_address(String detail_address) {
 		this.detail_address = detail_address;
+	}
+
+	public List<String> getGasq_order_sn() {
+		return gasq_order_sn;
+	}
+
+	public void setGasq_order_sn(List<String> gasq_order_sn) {
+		this.gasq_order_sn = gasq_order_sn;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getStore_name() {
+		return store_name;
+	}
+
+	public void setStore_name(String store_name) {
+		this.store_name = store_name;
+	}
+
+	public String getStore_phone() {
+		return store_phone;
+	}
+
+	public void setStore_phone(String store_phone) {
+		this.store_phone = store_phone;
+	}
+
+	public String getStore_addr() {
+		return store_addr;
+	}
+
+	public void setStore_addr(String store_addr) {
+		this.store_addr = store_addr;
+	}
+
+	public String getProvince_name() {
+		return province_name;
+	}
+
+	public void setProvince_name(String province_name) {
+		this.province_name = province_name;
+	}
+
+	public String getCity_name() {
+		return city_name;
+	}
+
+	public void setCity_name(String city_name) {
+		this.city_name = city_name;
+	}
+
+	public String getArea_name() {
+		return area_name;
+	}
+
+	public void setArea_name(String area_name) {
+		this.area_name = area_name;
+	}
+
+	public String getLogin_mobile() {
+		return login_mobile;
+	}
+
+	public void setLogin_mobile(String login_mobile) {
+		this.login_mobile = login_mobile;
+	}
+
+	public String getLogin_name() {
+		return login_name;
+	}
+
+	public void setLogin_name(String login_name) {
+		this.login_name = login_name;
+	}
+
+	public String getGroup_id() {
+		return group_id;
+	}
+
+	public void setGroup_id(String group_id) {
+		this.group_id = group_id;
 	}
 }
