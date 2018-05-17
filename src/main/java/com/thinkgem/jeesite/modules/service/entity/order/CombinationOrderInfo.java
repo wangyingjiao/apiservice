@@ -46,10 +46,11 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
 	private String customerId;		// 客户ID
 	private String customerAddressId;		// 客户地址ID
-	private String customerRemark;		// 客户备注
-	private String customerRemarkPic;		// 客户备注图片
-	private List<String> customerRemarkPics;		// 客户备注图片
 	private String eshopCode;
+	private String shopId;
+	private String shopName;		// 门店名称
+	private String shopPhone;		// 门店电话
+	private String shopAddr;		// 门店地址
 	private String orderContent;		// 下单服务内容
 	private String cancelReason;//取消原因
 	private String cancelReasonRemark;//取消原因备注
@@ -271,36 +272,44 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 		this.customerAddressId = customerAddressId;
 	}
 
-	public String getCustomerRemark() {
-		return customerRemark;
-	}
-
-	public void setCustomerRemark(String customerRemark) {
-		this.customerRemark = customerRemark;
-	}
-
-	public String getCustomerRemarkPic() {
-		return customerRemarkPic;
-	}
-
-	public void setCustomerRemarkPic(String customerRemarkPic) {
-		this.customerRemarkPic = customerRemarkPic;
-	}
-
-	public List<String> getCustomerRemarkPics() {
-		return customerRemarkPics;
-	}
-
-	public void setCustomerRemarkPics(List<String> customerRemarkPics) {
-		this.customerRemarkPics = customerRemarkPics;
-	}
-
 	public String getEshopCode() {
 		return eshopCode;
 	}
 
 	public void setEshopCode(String eshopCode) {
 		this.eshopCode = eshopCode;
+	}
+
+	public String getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(String shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getShopName() {
+		return shopName;
+	}
+
+	public void setShopName(String shopName) {
+		this.shopName = shopName;
+	}
+
+	public String getShopPhone() {
+		return shopPhone;
+	}
+
+	public void setShopPhone(String shopPhone) {
+		this.shopPhone = shopPhone;
+	}
+
+	public String getShopAddr() {
+		return shopAddr;
+	}
+
+	public void setShopAddr(String shopAddr) {
+		this.shopAddr = shopAddr;
 	}
 
 	public String getOrderContent() {

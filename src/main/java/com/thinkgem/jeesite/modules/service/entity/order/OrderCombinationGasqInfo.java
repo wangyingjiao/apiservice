@@ -19,9 +19,9 @@ public class OrderCombinationGasqInfo extends DataEntity<OrderCombinationGasqInf
 
 	private static final long serialVersionUID = 1L;
 	private String masterId;		// 主订单ID
-    private String joint_order_sn;         //国安社区订单编号
-	private String order_group_id;		// 自营订单组编号 一次下单生成3个子订单，有相同的组ID
-	private String order_number;		// 自营订单编号
+    private String jointOrderSn;         //国安社区订单编号
+	private String orderGroupId;		// 自营订单组编号 一次下单生成3个子订单，有相同的组ID
+	private String orderNumber;		// 自营订单编号
 
 	public OrderCombinationGasqInfo() {
 	}
@@ -38,27 +38,27 @@ public class OrderCombinationGasqInfo extends DataEntity<OrderCombinationGasqInf
 		this.masterId = masterId;
 	}
 
-	public String getJoint_order_sn() {
-		return joint_order_sn;
+	public String getJointOrderSn() {
+		return jointOrderSn;
 	}
 
-	public void setJoint_order_sn(String joint_order_sn) {
-		this.joint_order_sn = joint_order_sn;
+	public void setJointOrderSn(String jointOrderSn) {
+		this.jointOrderSn = jointOrderSn;
 	}
 
-	public String getOrder_group_id() {
-		return order_group_id;
+	public String getOrderGroupId() {
+		return orderGroupId;
 	}
 
-	public void setOrder_group_id(String order_group_id) {
-		this.order_group_id = order_group_id;
+	public void setOrderGroupId(String orderGroupId) {
+		this.orderGroupId = orderGroupId;
 	}
 
-	public String getOrder_number() {
-		return order_number;
+	public String getOrderNumber() {
+		return orderNumber;
 	}
 
-	public void setOrder_number(String order_number) {
-		this.order_number = order_number;
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
 	}
 }

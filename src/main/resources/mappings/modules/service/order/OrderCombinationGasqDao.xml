@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderCombinationGasqDao">
+
+
+    <insert id="insert">
+        INSERT INTO order_combination_gasq(
+        id,
+        master_id,
+        joint_order_sn,
+        order_group_id,
+        order_number,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        del_flag
+        ) VALUES (
+        #{id},
+        #{masterId},
+        #{jointOrderSn},
+        #{orderGroupId},
+        #{orderNumber},
+        #{createBy.id},
+        #{createDate},
+        #{updateBy.id},
+        #{updateDate},
+        #{delFlag}
+        )
+    </insert>
+
+</mapper>
