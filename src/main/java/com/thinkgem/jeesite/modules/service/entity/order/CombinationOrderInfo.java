@@ -126,7 +126,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	public void setMajorSort(String majorSort) {
 		this.majorSort = majorSort;
 	}
-
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date getStartTime() {
         return startTime;
     }
@@ -134,7 +134,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
-
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date getEndTime() {
         return endTime;
     }

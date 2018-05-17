@@ -10,41 +10,41 @@
     <!--组合订单列表-->
     <select id="listDataCombination" resultType="CombinationOrderInfo">
         SELECT
-        a.id AS id,
-        a.master_id AS masterId,
-        a.org_id AS orgId,
-        org.name AS orgName,
-        a.station_id AS stationId,
-        sta.name AS stationName,
-        a.order_content AS orderContent,
-        a.pay_price AS payPrice,
-        a.order_status AS orderStatus,
-        a.order_source AS orderSource,
-        a.pay_status AS payStatus,
-        a.order_time AS orderTime
+            a.id AS id,
+            a.master_id AS masterId,
+            a.org_id AS orgId,
+            org.name AS orgName,
+            a.station_id AS stationId,
+            sta.name AS stationName,
+            a.order_content AS orderContent,
+            a.pay_price AS payPrice,
+            a.order_status AS orderStatus,
+            a.order_source AS orderSource,
+            a.pay_status AS payStatus,
+            a.order_time AS orderTime
         FROM order_combination_info a
         LEFT JOIN basic_organization org ON a.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
         LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
         <where>
-        a.del_flag = #{DEL_FLAG_NORMAL}
-        <if test="orgId != null and orgId !=''">
-        AND a.org_id = #{orgId}
-        </if>
-        <if test="stationId != null and stationId !=''">
-        AND a.station_id= #{stationId}
-        </if>
-        <if test="orderTime != null and orderTime != ''">
-        AND a.order_time &gt;= #{startTime}
-        </if>
-        <if test="orderTime != null and orderTime != ''">
-            AND a.order_time &lt;= #{endTime}
-        </if>
-        <if test="masterId != null and masterId != ''">
-        AND a.master_id LIKE concat('%',#{masterId},'%')
-        </if>
-        <if test="orderContent != null and orderContent !=''">
-        AND a.order_content LIKE concat('%',#{orderContent},'%')
-        </if>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="orgId != null and orgId !=''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="stationId != null and stationId !=''">
+                AND a.station_id= #{stationId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND a.order_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND a.order_time &lt;= #{endTime}
+            </if>
+            <if test="masterId != null and masterId != ''">
+                AND a.master_id LIKE concat('%',#{masterId},'%')
+            </if>
+            <if test="orderContent != null and orderContent !=''">
+                AND a.order_content LIKE concat('%',#{orderContent},'%')
+            </if>
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}
         </where>

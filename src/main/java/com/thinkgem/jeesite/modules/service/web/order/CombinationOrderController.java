@@ -49,8 +49,8 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "listDataCombination", method = {RequestMethod.POST, RequestMethod.GET})
-	@ApiOperation("获取订单列表")
-	@RequiresPermissions("order_view")
+	@ApiOperation("获取组合订单列表")
+	@RequiresPermissions("combination_view")
 	public Result listDataCombination(@RequestBody(required = false) CombinationOrderInfo combinationOrderInfo, HttpServletRequest request, HttpServletResponse response) {
 		if(null == combinationOrderInfo){
 			combinationOrderInfo = new CombinationOrderInfo();
@@ -60,7 +60,22 @@ public class CombinationOrderController extends BaseController {
 		return new SuccResult(page);
 	}
 
-
+	/**
+	 * 根据masterId查询组合订单详情
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "getCombinationById", method = {RequestMethod.POST, RequestMethod.GET})
+	@ApiOperation("组合订单详情")
+	@RequiresPermissions("combination_info")
+	public Result getCombinationById(@RequestBody(required = false) CombinationOrderInfo combinationOrderInfo) {
+		if(null == combinationOrderInfo){
+			combinationOrderInfo = new CombinationOrderInfo();
+		}
+		CombinationOrderInfo combinationById = combinationOrderService.getCombinationById(combinationOrderInfo);
+		return new SuccResult(combinationById);
+	}
 
 
 	/**

@@ -63,8 +63,14 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 		return page;
 	}
 
+	//组合订单详情
+	public CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo) {
 
 
+		CombinationOrderInfo combinationById = combinationOrderDao.getCombinationById(combinationOrderInfo);
+
+		return combinationById;
+	}
 
 
 

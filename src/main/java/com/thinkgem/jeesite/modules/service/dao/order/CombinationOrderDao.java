@@ -27,6 +27,8 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
 
     // //组合订单列表
     List<CombinationOrderInfo> listDataCombination(CombinationOrderInfo combinationOrderInfo);
+    //根据masterId查询组合订单详情
+    CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo);
 
     OrderInfo getOrderRemark(CombinationOrderInfo combinationOrderInfo);
 }
