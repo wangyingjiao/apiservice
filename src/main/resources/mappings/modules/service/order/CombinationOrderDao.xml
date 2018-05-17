@@ -94,9 +94,6 @@
         a.tech_id AS techId,
         cust.name AS "customerName",
         cust.phone AS "customerPhone",
-        a.customer_remark AS "customerRemark",
-        a.customer_remark_pic AS "customerRemarkPic",
-
         a.order_content AS "orderContent",
         a.cancel_reason AS "cancelReason",
         a.cancel_reason_remark AS "cancelReasonRemark",

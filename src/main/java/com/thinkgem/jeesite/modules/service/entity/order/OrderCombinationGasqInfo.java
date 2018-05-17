@@ -22,7 +22,7 @@ public class OrderCombinationGasqInfo extends DataEntity<OrderCombinationGasqInf
     private String jointOrderSn;         //国安社区订单编号
 	private String orderGroupId;		// 自营订单组编号 一次下单生成3个子订单，有相同的组ID
 	private String orderNumber;		// 自营订单编号
-
+	private List<OrderInfo> orderList;
 	public OrderCombinationGasqInfo() {
 	}
 
@@ -60,5 +60,13 @@ public class OrderCombinationGasqInfo extends DataEntity<OrderCombinationGasqInf
 
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
+	}
+
+	public List<OrderInfo> getOrderList() {
+		return orderList;
+	}
+
+	public void setOrderList(List<OrderInfo> orderList) {
+		this.orderList = orderList;
 	}
 }

@@ -2,6 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.OrderCombinationGasqDao">
 
+    <!--组合订单对接编号信息-->
+    <select id="getListbyMasterId" resultMap="OrderCombinationGasqMap">
+        SELECT
+        <include refid="OrderCombinationGasqInfo"/>
+        FROM order_combination_gasq a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.master_id=#{masterId}
+        </where>
+        GROUP By a.order_group_id
+        ORDER BY a.create_date DESC
+    </select>
+
+    <sql id="OrderCombinationGasqInfo">
+        a.id AS "id",
+        a.master_id AS "masterId",
+        a.joint_order_sn AS "jointOrderSn",
+        a.order_group_id AS "orderGroupId",
+        a.order_number AS "orderNumber"
+    </sql>
+
+    <resultMap type="OrderCombinationGasqInfo" id="OrderCombinationGasqMap">
+        <id column="id" property="id"/>
+        <result column="master_id" property="masterId"/>
+        <result column="joint_order_sn" property="jointOrderSn"/>
+        <result column="orderGroupId" property="orderGroupId"/>
+        <result column="orderNumber" property="orderNumber"/>
+        <!-- 项目关联商品 -->
+        <association property="orderList" column="{reqId=orderGroupId,orderNumber=orderNumber}" select="selectOrderById"></association>
+    </resultMap>
+    <!--订单-->
+    <select id="selectOrderById" parameterType="java.util.Map" resultType="OrderInfo">
+        select
+            a.id AS "id",
+            a.order_number AS "orderNumber",
+            a.service_status AS "serviceStatus",
+            a.order_time AS "orderTime",
+            a.service_time AS "serviceTime",
+            a.finish_time AS "finishTime",
+            a.order_status AS "orderStatus",
+            a.joint_order_id AS "jointOrderId"
+        from order_info a
+        LEFT JOIN order_combination_gasq b on a.order_number= b.order_number
+        where b.order_group_id=#{reqId}
+        and a.del_flag = '0'
+    </select>
 
     <insert id="insert">
         INSERT INTO order_combination_gasq(

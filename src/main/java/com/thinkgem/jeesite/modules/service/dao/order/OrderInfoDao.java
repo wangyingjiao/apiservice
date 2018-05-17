@@ -97,7 +97,4 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<OrderGoods> listNotRefundOrderGoodsByOrderId(OrderInfo info);
 
     List<OrderGoods> listRefundOrderGoodsByOrderIdGoods(OrderInfo info);
-
-    //组合订单详情 根据masterId获取订单列表
-    List<OrderInfo> getComOrderByMasterId(CombinationOrderInfo combinationOrderInfo);
 }
