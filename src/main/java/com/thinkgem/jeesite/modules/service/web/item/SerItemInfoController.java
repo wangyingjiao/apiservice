@@ -319,34 +319,68 @@ public class SerItemInfoController extends BaseController {
             return new FailResult("未找到项目ID");
         }
 
-        List<SerItemCommodity> scList = serItemInfoService.getListByInfoId(info);
-        if (scList.size()==1){
-            List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(scList.get(0));
-            if (siceList.size()==0){
-                serItemInfoService.delete(info);
-                return new SuccResult("删除成功");
-            }else {
-                return new FailResult("项目中有已对接的商品，不可删除");
-            }
-        }else {
-            int i = 0;
-            for (SerItemCommodity serItemCommodity : scList) {
-                List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(serItemCommodity);
-                if (siceList.size() == 0) {
-                    serItemCommodityService.delete(serItemCommodity);
+        SerItemInfo serItemInfo = serItemInfoService.get(info);
+        if (serItemInfo.getGoodsType().equals("single")) {
+            List<SerItemCommodity> scList = serItemInfoService.getListByInfoId(info);
+            if (scList.size() == 1) {
+                SerItemCommodity serItemCommodity = scList.get(0);
+                int count = serItemCommodityService.findCombined(serItemCommodity);
+                if (count == 0) {
+                    List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(scList.get(0));
+                    if (siceList.size() == 0) {
+                        serItemInfoService.delete(info);
+                        return new SuccResult("删除成功");
+                    } else {
+                        return new FailResult("项目中有已对接的商品，不可删除");
+                    }
                 }else {
-                    i++;
+                    return new FailResult("项目中有组合商品的子商品，不可删除");
+                }
+            } else {
+                int i = 0;
+                int j = 0;
+                for (SerItemCommodity serItemCommodity : scList) {
+                    int count = serItemCommodityService.findCombined(serItemCommodity);
+                    if (count == 0) {
+                        List<SerItemCommodityEshop> siceList = serItemInfoService.getEshopGoodsList(serItemCommodity);
+                        if (siceList.size() == 0) {
+                            serItemCommodityService.delete(serItemCommodity);
+                        } else {
+                            i++;
+                        }
+                    }else {
+                        j++;
+                    }
+                }
+                if (scList.size() == i) {
+                    return new FailResult("项目中有已对接的商品，不可删除");
+                }
+                if (scList.size() == j){
+                    return new FailResult("项目中有组合商品的子商品，不可删除");
+                }
+                List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
+                if (scLists.size() == 0) {
+                    serItemInfoService.deleteSerItemInfo(info);
+                    return new SuccResult("删除成功");
+                } else {
+                    return new SuccResult(3, "部分商品删除成功");
                 }
             }
-            if (scList.size() == i){
-                return new FailResult("项目中有已对接的商品，不可删除");
-            }
-            List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
-            if (scLists.size() == 0) {
+        }else {
+            List<SerItemCommodity> scList = serItemInfoService.getListByInfoId(info);
+            SerItemCommodity serItemCommodity = scList.get(0);
+            //查出当前商品有没有对接
+            List<SerItemCommodityEshop> commodityEshopList = serItemInfoService.getEshopGoodsList(serItemCommodity);
+            if (commodityEshopList.size() == 0) {
+                serItemCommodityService.delete(serItemCommodity);
+                serItemCommodityService.deleteCombined(serItemCommodity);
+                //List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
+                //if (scLists.size() == 0) {
                 serItemInfoService.deleteSerItemInfo(info);
+                //}
                 return new SuccResult("删除成功");
             } else {
-                return new SuccResult(3, "部分商品删除成功");
+                return new FailResult("商品已对接，不可删除");
             }
         }
     }
