@@ -620,6 +620,7 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
 
                 sdi.setSevenDate(sdf.format(date));  //给七天日期赋值
                 int weekNum = DateUtils.getWeekNum(date);  //判断当前循环的日期是周几
+                sdi.setWeekNum(weekNum);
                 sti.setWeekNum(weekNum);
                 ScheduleDateInfo sdi1 = serviceTechnicianInfoDao.getWorkTime(sti);  //根据技师ID和周几查询技师工作时间
                 if (sdi1 != null){

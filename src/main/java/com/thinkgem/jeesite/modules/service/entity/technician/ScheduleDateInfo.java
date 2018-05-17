@@ -12,7 +12,16 @@ public class ScheduleDateInfo extends DataEntity<ScheduleDateInfo> {
     private String sevenDate;
     private String workBeginTime;     //工作时间
     private String workEndTime;
+    private int weekNum;
     private List<TechScheduleInfo> techScheduleInfos;   //排期集合
+
+    public int getWeekNum() {
+        return weekNum;
+    }
+
+    public void setWeekNum(int weekNum) {
+        this.weekNum = weekNum;
+    }
 
     public String getSevenDate() {
         return sevenDate;

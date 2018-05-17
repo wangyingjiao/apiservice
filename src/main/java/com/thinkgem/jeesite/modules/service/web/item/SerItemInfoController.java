@@ -488,8 +488,21 @@ public class SerItemInfoController extends BaseController {
                 return new FailResult("此商品为组合商品的子商品，不可删除");
             }
         }else {
-
-            return null;
+            //查出当前商品有没有对接
+            List<SerItemCommodityEshop> commodityEshopList = serItemInfoService.getEshopGoodsList(serItemCommodity);
+            if (commodityEshopList.size() == 0) {
+                serItemCommodityService.delete(serItemCommodity);
+                serItemCommodityService.deleteCombined(serItemCommodity);
+                SerItemInfo info = new SerItemInfo();
+                info.setId(serItemCommodity.getItemId());
+                //List<SerItemCommodity> scLists = serItemInfoService.getListByInfoId(info);
+                //if (scLists.size() == 0) {
+                    serItemInfoService.deleteSerItemInfo(info);
+                //}
+                return new SuccResult("删除成功");
+            } else {
+                return new FailResult("商品已对接，不可删除");
+            }
         }
     }
 
