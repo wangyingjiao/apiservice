@@ -56,7 +56,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String customerPhone;	//用户电话
 	private OrderPayInfo payInfo;	//支付信息
 	private ServiceTechnicianInfo tech; //固定技师
-
+	private List<OrderCombinationFrequencyInfo> freList;	//服务时间
+	private List<OrderInfo> order;
 
 	public CombinationOrderInfo() {
 		super();
@@ -368,5 +369,21 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setTech(ServiceTechnicianInfo tech) {
 		this.tech = tech;
+	}
+
+	public List<OrderCombinationFrequencyInfo> getFreList() {
+		return freList;
+	}
+
+	public void setFreList(List<OrderCombinationFrequencyInfo> freList) {
+		this.freList = freList;
+	}
+
+	public List<OrderInfo> getOrder() {
+		return order;
+	}
+
+	public void setOrder(List<OrderInfo> order) {
+		this.order = order;
 	}
 }

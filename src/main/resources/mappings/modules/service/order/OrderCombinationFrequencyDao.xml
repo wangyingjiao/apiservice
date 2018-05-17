@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.FrequencyDao">
+
+    <!--组合订单列表-->
+    <select id="getFrequencyList" resultType="OrderCombinationFrequencyInfo">
+        SELECT
+            a.id AS id,
+            a.master_id AS masterId,
+            a.week AS week,
+            a.start_time AS startTime,
+            a.end_time AS endTime
+        FROM order_combination_frequency a
+        where
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.master_id = #{masterId}
+    </select>
+
+</mapper>

@@ -409,6 +409,16 @@ origin_price,
 		</where>
 		ORDER BY create_date DESC
 	</select>
+	<!--组合订单详情 根据masterId获取订单列表-->
+	<select id="getComOrderByMasterId" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		where>
+			a.del_flag = '0'
+			AND a.master_id=#{masterId}
+	</select>
+
 
 	<select id="formData" resultType="OrderInfo">
 		SELECT

@@ -52,6 +52,8 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 	OrderInfoDao orderInfoDao;
 	@Autowired
 	CombinationOrderDao combinationOrderDao;
+	@Autowired
+	FrequencyDao frequencyDao;
 
 	//组合订单列表
 	public Page<CombinationOrderInfo> listDataCombination(Page<CombinationOrderInfo> page, CombinationOrderInfo combinationOrderInfo) {
@@ -65,10 +67,11 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 
 	//组合订单详情
 	public CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo) {
-
-
 		CombinationOrderInfo combinationById = combinationOrderDao.getCombinationById(combinationOrderInfo);
-
+		List<OrderCombinationFrequencyInfo> frequencyList = frequencyDao.getFrequencyList(combinationOrderInfo);
+		combinationById.setFreList(frequencyList);
+		List<OrderInfo> comOrderByMasterId = orderInfoDao.getComOrderByMasterId(combinationOrderInfo);
+		combinationById.setOrder(comOrderByMasterId);
 		return combinationById;
 	}
 

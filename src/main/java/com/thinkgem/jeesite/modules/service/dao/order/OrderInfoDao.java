@@ -6,10 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderRefundGoods;
+import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
@@ -100,4 +97,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<OrderGoods> listNotRefundOrderGoodsByOrderId(OrderInfo info);
 
     List<OrderGoods> listRefundOrderGoodsByOrderIdGoods(OrderInfo info);
+
+    //组合订单详情 根据masterId获取订单列表
+    List<OrderInfo> getComOrderByMasterId(CombinationOrderInfo combinationOrderInfo);
 }
