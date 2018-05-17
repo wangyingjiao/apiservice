@@ -304,6 +304,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return  list;
 	}
+	/**
+	 * 获取今天后15天的日期数组  减去开始两天
+	 * @return
+	 */
+	public static List<Date> getAfterFifteenDaysSubtractionTwoDay() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		day = DateUtils.addDays(day,1);
+		for(int i=0;i<13;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
+	}
 
 	/**
 	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回false
@@ -529,7 +543,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
        // System.out.println(getDateAndRandomTenNum("01"));
 
-		/*System.out.println(getAfterFifteenDays().size());
+		/*System.out.println(getAfterFifteenDaysSubtractionTwoDay().size());
 		for(Date d : getAfterFifteenDays()){
 			System.out.println(formatDate(d, "yyyy-MM-dd HH:mm:ss"));
 		}*/
@@ -543,7 +557,11 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			System.out.println(info);
 		}*/
 
-		System.out.println(getDistanceSecondOfTwoDate(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));
+		//System.out.println(getDistanceSecondOfTwoDate(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));
+		//System.out.println(getAfterFifteenDaysSubtractionTwoDay().size());
+		for(Date d : getAfterFifteenDaysSubtractionTwoDay()){
+			System.out.println(formatDate(d, "yyyy-MM-dd HH:mm:ss"));
+		}
 	}
 
 	/**
