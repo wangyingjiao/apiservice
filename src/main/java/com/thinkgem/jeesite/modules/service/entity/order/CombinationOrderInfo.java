@@ -29,7 +29,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String stationName;         //服务站
 	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
 	private String combinationGoodsId;//组合商品ID
-	private String combinationGoodsName;//组合商品ID
+	private String combinationGoodsName;//组合商品名称
 	private int combinationGoodsNum;//组合商品数量
 	private String originPrice;		// 订单总价原价
 	private String payPrice;		// 实际付款价格
@@ -43,8 +43,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private Date serviceStart;		// 第一次服务日期
 	private Double serviceHour; //服务时长（小时）
 	private String techId; //固定技师ID
-	private String bespeakTotal; //可预约次数
-	private String bespeakNum; //已预约次数
+	private int bespeakTotal; //可预约次数
+	private int bespeakNum; //已预约次数
 	private String orderStatus;		// 订单状态(dispatched:已下单;cancel:已取消;success:已成功;close:已关闭)
 	private String orderSource;		// 订单来源(own:本机构 gasq:国安社区)
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
@@ -436,23 +436,23 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 		this.combinationGoodsName = combinationGoodsName;
 	}
 
-	public String getBespeakTotal() {
-		return bespeakTotal;
-	}
+    public int getBespeakTotal() {
+        return bespeakTotal;
+    }
 
-	public void setBespeakTotal(String bespeakTotal) {
-		this.bespeakTotal = bespeakTotal;
-	}
+    public void setBespeakTotal(int bespeakTotal) {
+        this.bespeakTotal = bespeakTotal;
+    }
 
-	public String getBespeakNum() {
-		return bespeakNum;
-	}
+    public int getBespeakNum() {
+        return bespeakNum;
+    }
 
-	public void setBespeakNum(String bespeakNum) {
-		this.bespeakNum = bespeakNum;
-	}
+    public void setBespeakNum(int bespeakNum) {
+        this.bespeakNum = bespeakNum;
+    }
 
-	public CombinationCommodity getCombinationCommodity() {
+    public CombinationCommodity getCombinationCommodity() {
 		return combinationCommodity;
 	}
 
