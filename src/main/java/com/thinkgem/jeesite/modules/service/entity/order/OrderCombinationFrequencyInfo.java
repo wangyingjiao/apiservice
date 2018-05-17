@@ -44,7 +44,7 @@ public class OrderCombinationFrequencyInfo extends DataEntity<OrderCombinationFr
 	public void setWeek(int week) {
 		this.week = week;
 	}
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "HH:mm")
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -52,7 +52,7 @@ public class OrderCombinationFrequencyInfo extends DataEntity<OrderCombinationFr
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "HH:mm")
 	public Date getEndTime() {
 		return endTime;
 	}

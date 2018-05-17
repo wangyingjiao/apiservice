@@ -71,7 +71,7 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 		List<OrderCombinationFrequencyInfo> frequencyList = frequencyDao.getFrequencyList(combinationOrderInfo);
 		combinationById.setFreList(frequencyList);
 		List<OrderInfo> comOrderByMasterId = orderInfoDao.getComOrderByMasterId(combinationOrderInfo);
-		combinationById.setOrder(comOrderByMasterId);
+		combinationById.setOrderList(comOrderByMasterId);
 		return combinationById;
 	}
 

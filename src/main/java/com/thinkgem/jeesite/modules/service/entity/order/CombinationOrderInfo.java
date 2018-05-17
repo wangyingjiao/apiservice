@@ -59,7 +59,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private OrderPayInfo payInfo;	//支付信息
 	private ServiceTechnicianInfo tech; //固定技师
 	private List<OrderCombinationFrequencyInfo> freList;	//服务时间
-	private List<OrderInfo> order;
+	private List<OrderInfo> orderList;
 
 	private String techName;// 技师姓名，技师列表查询用
 
@@ -375,15 +375,15 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 		this.freList = freList;
 	}
 
-	public List<OrderInfo> getOrder() {
-		return order;
-	}
+    public List<OrderInfo> getOrderList() {
+        return orderList;
+    }
 
-	public void setOrder(List<OrderInfo> order) {
-		this.order = order;
-	}
+    public void setOrderList(List<OrderInfo> orderList) {
+        this.orderList = orderList;
+    }
 
-	public String getTechName() {
+    public String getTechName() {
 		return techName;
 	}
 

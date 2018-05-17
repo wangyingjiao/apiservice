@@ -414,8 +414,8 @@ origin_price,
 		SELECT
 		<include refid="orderInfoColumns"/>
 		FROM order_info a
-		where>
-			a.del_flag = '0'
+		where
+			a.del_flag =  #{DEL_FLAG_NORMAL}
 			AND a.master_id=#{masterId}
 	</select>
 
