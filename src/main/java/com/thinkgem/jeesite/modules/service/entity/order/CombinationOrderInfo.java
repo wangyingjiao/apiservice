@@ -19,6 +19,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	private static final long serialVersionUID = 1L;
 	private String masterId;		// 主订单ID
+	private String jointGroupId; //对接组合订单ID
     private String orderId;         //订单id
 	private String orderType;		// 订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
 	private String orgId;		// 所属服务机构ID
@@ -26,6 +27,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String stationId;		// 服务站id
 	private String stationName;         //服务站
 	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
+	private String combinationGoodsId;//组合商品ID
+	private int combinationGoodsNum;//组合商品数量
 	private String originPrice;		// 订单总价原价
 	private String payPrice;		// 实际付款价格
 	private String orderAddressId;		// 订单地址ID
@@ -40,7 +43,6 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String techId; //固定技师ID
 	private String orderStatus;		// 订单状态(dispatched:已下单;cancel:已取消;success:已成功;close:已关闭)
 	private String orderSource;		// 订单来源(own:本机构 gasq:国安社区)
-	private String jointOrderId;//对接订单ID
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
 	private String customerId;		// 客户ID
 	private String customerAddressId;		// 客户地址ID
@@ -58,6 +60,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private ServiceTechnicianInfo tech; //固定技师
 	private List<OrderCombinationFrequencyInfo> freList;	//服务时间
 	private List<OrderInfo> order;
+
+	private String techName;// 技师姓名，技师列表查询用
 
 	public CombinationOrderInfo() {
 		super();
@@ -243,14 +247,6 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 		this.orderSource = orderSource;
 	}
 
-	public String getJointOrderId() {
-		return jointOrderId;
-	}
-
-	public void setJointOrderId(String jointOrderId) {
-		this.jointOrderId = jointOrderId;
-	}
-
 	public String getPayStatus() {
 		return payStatus;
 	}
@@ -385,5 +381,37 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setOrder(List<OrderInfo> order) {
 		this.order = order;
+	}
+
+	public String getTechName() {
+		return techName;
+	}
+
+	public void setTechName(String techName) {
+		this.techName = techName;
+	}
+
+	public String getJointGroupId() {
+		return jointGroupId;
+	}
+
+	public void setJointGroupId(String jointGroupId) {
+		this.jointGroupId = jointGroupId;
+	}
+
+	public String getCombinationGoodsId() {
+		return combinationGoodsId;
+	}
+
+	public void setCombinationGoodsId(String combinationGoodsId) {
+		this.combinationGoodsId = combinationGoodsId;
+	}
+
+	public int getCombinationGoodsNum() {
+		return combinationGoodsNum;
+	}
+
+	public void setCombinationGoodsNum(int combinationGoodsNum) {
+		this.combinationGoodsNum = combinationGoodsNum;
 	}
 }
