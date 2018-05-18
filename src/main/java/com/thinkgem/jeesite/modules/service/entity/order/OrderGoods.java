@@ -22,6 +22,7 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 	private static final long serialVersionUID = 1L;
 	private String orderId;		// 订单ID
 	private String sortId;
+	private String sortName;
 	private String itemId;		// 服务项目ID
 	private String itemName;		// 项目名称
 	private String picture;			//服务图片
@@ -83,6 +84,14 @@ public class OrderGoods extends DataEntity<OrderGoods> {
 
 	public void setSortId(String sortId) {
 		this.sortId = sortId;
+	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
 	}
 
 	@Length(min=1, max=32, message="服务项目ID长度必须介于 1 和 32 之间")

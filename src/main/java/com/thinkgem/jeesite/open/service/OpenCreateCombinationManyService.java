@@ -246,8 +246,8 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 		String sortItemNames = "";//服务分类+服务项目
 		String goodsNames = "";//商品名称
 
-		int techDispatchNum = 0;//派人数量
 		double serviceHour = 0.0;//建议服务时长（小时）
+		double orderTotalTime = 0.0;//订单所需时间
 
 		if(null != serviceInfos && serviceInfos.size() > 0){
 			OrderGoods goods = new OrderGoods();
@@ -299,11 +299,17 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 				goods.setConvertHours(commodity.getConvertHours());		// 折算时长
 
 				orderGoods.add(goods);
+
+				Double goodsTime = commodity.getConvertHours() * buy_num;//折算时长 * 订购商品数
+				orderTotalTime = orderTotalTime + goodsTime;//订单商品总时长
+
 				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
 				originPrice = originPrice.add(price);//商品总价
 				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
 				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
 			}
+			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime);//建议服务时长（小时） = 订单商品总时长/ 1
+			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
 			throw new ServiceException("商品信息不能为空");
 		}
@@ -325,6 +331,8 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 		combinationOrderInfo.setLatitude(latitude);                //服务地址  纬度
 		combinationOrderInfo.setLongitude(longitude);         //服务地址  经度
 		combinationOrderInfo.setOrderTime(DateUtils.parseDate(DateUtils.getDateTime()));    //下单时间
+		combinationOrderInfo.setServiceNum(1);
+		combinationOrderInfo.setServiceHour(serviceHour);//建议服务时长（小时）
 		combinationOrderInfo.setBespeakTotal(gasqOrderSnList.size());//可预约次数
 		combinationOrderInfo.setBespeakNum(0);//预约次数
 		combinationOrderInfo.setOrderStatus("dispatched");   // 订单状态(dispatched:已下单;cancel:已取消;success:已成功;close:已关闭)

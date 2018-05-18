@@ -450,4 +450,5 @@ public class OpenSendUtil {
 		sysJointWaitDao.insert(waitInfo);
 	}
 
+
 }

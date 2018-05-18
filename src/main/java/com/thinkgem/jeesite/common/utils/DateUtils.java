@@ -318,6 +318,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return  list;
 	}
+	/**
+	 * 获取一周后两周的日期数组
+	 * @return
+	 */
+	public static List<Date> getWeekLaterTwoWeekDays() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		day = DateUtils.addDays(day,7);
+		list.add(day);
+		for(int i=0;i<13;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
+	}
+
 
 	/**
 	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回false
@@ -486,84 +502,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return null;
 	}
 	/**
-	 * @param args
-	 * @throws ParseException
-	 */
-	public static void main(String[] args) throws ParseException {
-//		System.out.println(formatDate(parseDate("2010/3/6")));
-//		System.out.println(getDate("yyyy年MM月dd日 E"));
-//		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
-//		System.out.println(time/(24*60*60*1000));
-		//System.out.println(getDistanceOfTwoDate1(parseDate("2010-3-6 8:01:00"),parseDate("2010-3-6 8:01:00")));
-
-		//String week = DateUtils.formatDate(parseDate("2018-1-3 8:01:00"),"E");
-
-
-/*
-
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 07:00:00")));//不重复    返回 true
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 08:00:00")));// 不重复    返回 true
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 09:00:00")));// 重复    返回 false
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 10:00:00")));// 重复    返回 false
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 06:00:00"),parseDate("2018-01-01 11:00:00")));//重复    返回 false
-
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 09:00:00")));// 重复    返回 false
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00")));// 重复    返回 false
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 11:00:00")));// 重复    返回 false
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 09:10:00")));//重复    返回 false
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 10:00:00")));//重复    返回 false
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 08:00:00"),
-				parseDate("2018-01-01 09:00:00"),parseDate("2018-01-01 11:00:00")));//重复    返回 false
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 08:00:00"),
-				parseDate("2018-01-01 10:00:00"),parseDate("2018-01-01 11:00:00")));//不重复    返回 true
-
-		System.out.println(findDatesRepeatTime(parseDate("2018-01-01 08:00:00"),parseDate("2018-01-01 10:00:00"),
-				parseDate("2018-01-01 11:00:00"),parseDate("2018-01-01 12:00:00")));// 不重复    返回 true
-*/
-
-
-
-       // System.out.println(getDateAndRandomTenNum("01"));
-
-		/*System.out.println(getAfterFifteenDays().size());
-		for(Date d : getAfterFifteenDays()){
-			System.out.println(formatDate(d, "yyyy-MM-dd HH:mm:ss"));
-		}*/
-
-		//System.out.println(getHeafHourTimeList(parseDate("2018-01-01 08:30:00"),parseDate("2018-01-01 10:00:00")));
-		//System.out.println(timeBeforeNow(parseDate("2018-01-01 18:00:00")));
-		//System.out.println(getWeekL(parseDate("2018-01-24 23:00:01")));
-		/*List<Date> list = new ArrayList<>();
-		list = getAfterFifteenDays();
-		for(Date info : list){
-			System.out.println(info);
-		}*/
-		List<Date> list = null;
-		list = getAfterSevenDays();
-		for(Date info : list){
-			System.out.println(info);
-		}
-	}
-
-	/**
 	 * 取得同一天 某时间段内半小时和整点数据 包含前边界 不包括后边界
 	 * @param startTime
 	 * @param endTime
@@ -693,6 +631,40 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			return parseDate(formatDate(date, "yyyy-MM-dd")+" 23:59:59");
 		}
 		return date2;
+	}
+
+	/**
+	 * 返回时间数组
+	 * @param serviceStart 开始年月日
+	 * @param serviceStartBeginTime 开始时分
+	 * @param serviceNum 生成个数
+	 * @param serviceHour 每次增加小时数
+	 * @return
+	 */
+	public static List<Date> listTimeByFrequency(Date serviceStart, Date serviceStartBeginTime, int serviceNum, Double serviceHour) {
+		Double serviceSecond = serviceHour * 3600;//每次增加秒数
+		String startTimeStr = DateUtils.formatDate(serviceStart,"yyyy-MM-dd") + " "
+				+  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
+		Date startTime = DateUtils.parseDate(startTimeStr);//首次时间
+		List<Date> list = new ArrayList<>();
+		list.add(startTime);
+		for(int i=0;i<serviceNum-1;i++){
+			startTime = DateUtils.addSeconds(startTime,serviceSecond.intValue());
+			list.add(startTime);
+		}
+		return list;
+	}
+
+	/**
+	 * @param args
+	 * @throws ParseException
+	 */
+	public static void main(String[] args) throws ParseException {
+		List<Date> list = null;
+		list = listTimeByFrequency(parseDate("2018-05-08"),parseDate("16:00","HH:mm"),4,1.5);
+		for(Date info : list){
+			System.out.println(info);
+		}
 	}
 
 }

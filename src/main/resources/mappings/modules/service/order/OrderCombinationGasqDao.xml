@@ -75,4 +75,25 @@
         )
     </insert>
 
+    <select id="listFreeGasqSn" resultType="OrderCombinationGasqInfo">
+        select
+            a.id AS "id",
+            a.master_id AS "masterId",
+            a.joint_order_sn AS "jointOrderSn",
+            a.order_group_id AS "orderGroupId",
+            a.order_number AS "orderNumber"
+         from order_combination_gasq a
+         WHERE
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.master_id = #{masterId}
+            AND a.order_group_id IS NULL
+            AND a.order_number IS NULL
+    </select>
+    <update id="updateOrderGroup">
+        UPDATE order_combination_gasq
+        SET
+        order_group_id = #{orderGroupId},
+        order_number = #{orderNumber}
+        WHERE id = #{id}
+    </update>
 </mapper>

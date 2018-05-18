@@ -306,4 +306,72 @@
         )
     </insert>
 
+    <select id="getCombinationByMasterId"  resultType="CombinationOrderInfo">
+        SELECT
+        a.id AS "id",
+        a.master_id AS "masterId",
+        a.order_type AS "orderType",
+        a.major_sort AS "majorSort",
+        a.order_status AS "orderStatus",
+        a.order_source AS "orderSource",
+        a.bespeak_total AS "bespeakTotal",
+        a.bespeak_num AS "bespeakNum",
+        a.order_time AS "orderTime",
+        a.service_frequency AS serviceFrequency,
+        a.latitude AS latitude,
+        a.longitude AS longitude,
+        a.origin_price AS originPrice,
+        a.org_id AS "orgId",
+        a.station_id AS "stationId",
+        a.joint_group_id AS "jointGroupId",
+        a.combination_goods_id AS "combinationGoodsId",
+        a.combination_goods_name AS "combinationGoodsName",
+        a.combination_goods_num AS "combinationGoodsNum",
+        a.pay_price AS payPrice,
+        a.pay_status AS "payStatus",
+        a.service_hour AS "serviceHour",
+        a.service_start AS "serviceStart",
+        a.tech_id AS techId,
+        a.order_content AS "orderContent",
+        a.cancel_reason AS "cancelReason",
+        a.cancel_reason_remark AS "cancelReasonRemark"
+        FROM
+        order_combination_info a
+        WHERE a.master_id = #{masterId}
+        AND a.del_flag = '0'
+    </select>
+
+
+    <select id="listFrequencyByTechWeek" resultType="OrderCombinationFrequencyInfo">
+        select
+        a.start_time AS "startTime",
+        a.end_time AS "endTime"
+        from  order_combination_frequency a ,order_combination_info o
+        WHERE
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        AND o.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.week = #{serchWeek}
+        AND o.master_id = a.master_id
+        AND o.tech_id = #{techId}
+        AND o.bespeak_total &gt; o.bespeak_num
+        AND o.order_status = 'dispatched'
+    </select>
+
+    <update id="updateManyByMasterId">
+        UPDATE
+        order_combination_info
+        SET
+        service_frequency = #{serviceFrequency},
+        service_num = #{serviceNum},
+        service_start = #{serviceStart},
+        tech_id = #{techId}
+        WHERE master_id = #{masterId}
+    </update>
+    <update id="updateBespeakByMasterId">
+        UPDATE
+        order_combination_info
+        SET
+        bespeak_num = bespeak_num + service_num
+        WHERE master_id = #{masterId}
+    </update>
 </mapper>

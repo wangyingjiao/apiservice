@@ -461,4 +461,14 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		return sortId;
 	}
+
+	public List<TechScheduleInfo> listTechScheduleByTechWeekTime(String techId, int week, Date date, String holiday) {
+		TechScheduleInfo serchInfo = new TechScheduleInfo();
+		serchInfo.setTechId(techId);
+		serchInfo.setScheduleWeek(week);
+		serchInfo.setScheduleDate(DateUtils.getDateFirstTime(date));
+		serchInfo.setType(holiday);
+		List<TechScheduleInfo> list = dao.listTechScheduleByTechWeekTime(serchInfo);
+		return list;
+	}
 }

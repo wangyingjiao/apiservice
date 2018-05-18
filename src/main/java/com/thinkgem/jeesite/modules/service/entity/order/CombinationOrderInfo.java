@@ -69,9 +69,13 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private ServiceTechnicianInfo tech; //固定技师
 	private List<OrderCombinationFrequencyInfo> freList;	//服务时间
 	private List<OrderCombinationGasqInfo> orderCombinationGasqInfos; //组合订单集合
+	private CombinationCommodity combinationCommodity;	//组合商品
+
 	private List<CombinationCommodity> combinationCommoditys;	//组合商品-子商品集合
 	private List<CombinationOrderInfo> combinationOrderInfos;	//组合商品详情中列表使用
 	private String techName;// 技师姓名，技师列表查询用
+	private String techPhone;// 技师手机
+	private int serchWeek;//查询可用时间是使用周几
 	private String unit;// 商品单位
 	private BigDecimal price;// 商品单价
 	private BigDecimal sum;// 小计
@@ -444,6 +448,14 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 		this.techName = techName;
 	}
 
+	public String getTechPhone() {
+		return techPhone;
+	}
+
+	public void setTechPhone(String techPhone) {
+		this.techPhone = techPhone;
+	}
+
 	public String getJointGroupId() {
 		return jointGroupId;
 	}
@@ -522,5 +534,13 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setCombinationOrderInfos(List<CombinationOrderInfo> combinationOrderInfos) {
 		this.combinationOrderInfos = combinationOrderInfos;
+	}
+
+	public int getSerchWeek() {
+		return serchWeek;
+	}
+
+	public void setSerchWeek(int serchWeek) {
+		this.serchWeek = serchWeek;
 	}
 }

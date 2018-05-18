@@ -38,6 +38,10 @@ public class CombinationOrderController extends BaseController {
 
 	@Autowired
 	private CombinationOrderService combinationOrderService;
+	@Autowired
+	private CombinationSaveRegularDateService combinationSaveRegularDateService;
+	@Autowired
+	private MessageInfoService messageInfoService;
 
 	/**
 	 * 组合订单列表
@@ -79,28 +83,71 @@ public class CombinationOrderController extends BaseController {
 
 
 	/**
-	 * 设置固定时间
+	 * 设置固定时间- 查询服务日期
 	 * @param combinationOrderInfo
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "initSetRegularDate", method = {RequestMethod.POST})
+	@RequestMapping(value = "saveRegularDateDateList", method = {RequestMethod.POST})
 	@RequiresPermissions("combination_start_time")
-	public Result initSetRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+	public Result saveRegularDateDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderTimeList>  list = combinationSaveRegularDateService.saveRegularDateDateList(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			//return new FailResult("获取时间列表失败!");
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderTimeList>());
+		}
+	}
 
-		return new SuccResult("");
+	/**
+	 * 设置固定时间- 查询服务技师
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "saveRegularDateTechList", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_start_time")
+	public Result saveRegularDateTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderDispatch> list = combinationSaveRegularDateService.saveRegularDateTechList(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderDispatch>());
+		}
 	}
 	/**
-	 * 设置固定时间
+	 * 设置固定时间 - 保存
 	 * @param combinationOrderInfo
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "saveRegularTime", method = {RequestMethod.POST})
+	@RequestMapping(value = "saveRegularDate", method = {RequestMethod.POST})
 	@RequiresPermissions("combination_start_time")
-	public Result saveRegularTime(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+	public Result saveRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
+			if(flag){
+				return new FailResult("时间或服务技师目前暂不可用!");
+			}
+			List<OrderInfo> list = combinationSaveRegularDateService.saveRegularDate(combinationOrderInfo);
 
-		return new SuccResult("");
+			try {
+				for(OrderInfo info : list){
+					info.setCreateBy(UserUtils.getUser());
+					messageInfoService.insert(info, "orderCreate");//新增
+				}
+			}catch (Exception e){
+				logger.error("订单创建-推送消息失败-系统异常");
+			}
+
+			return new SuccResult("设置成功");
+		}catch (Exception e){
+			e.printStackTrace();
+			return new FailResult("设置失败!");
+		}
 	}
 
 	/**

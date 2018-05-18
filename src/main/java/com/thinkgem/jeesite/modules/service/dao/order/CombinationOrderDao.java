@@ -6,10 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
-import com.thinkgem.jeesite.modules.service.entity.order.CombinationOrderInfo;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
-import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
@@ -38,4 +35,12 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
     List<OrderDispatch> initCombinationOrderTech(CombinationOrderInfo combinationOrderInfo);
     //判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched
     int getComCount(ServiceTechnicianInfo info);
+
+    CombinationOrderInfo getCombinationByMasterId(String masterId);
+
+    List<OrderCombinationFrequencyInfo> listFrequencyByTechWeek(CombinationOrderInfo serchCombinationInfo);
+
+    void updateManyByMasterId(CombinationOrderInfo updateCombinationOrderInfo);
+
+    void updateBespeakByMasterId(CombinationOrderInfo updateCombinationOrderInfo);
 }

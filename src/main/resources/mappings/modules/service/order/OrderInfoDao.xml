@@ -943,4 +943,23 @@ origin_price,
 			#{refundGoods}
 		</foreach>
 	</select>
+	<select id="listTechScheduleByTechWeekTime"  resultType="TechScheduleInfo">
+		SELECT
+		a.id AS "id",
+		a.tech_id AS "techId",
+		a.schedule_date AS "scheduleDate",
+		a.schedule_week AS "scheduleWeek",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.type_id AS "typeId",
+		a.type AS "type",
+		a.remark AS "remark"
+		FROM  tech_schedule a
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.tech_id  = #{techId}
+		AND a.schedule_week = #{scheduleWeek}
+		AND a.type = #{type}
+		AND a.schedule_date &gt;= #{scheduleDate}
+	</select>
 </mapper>
