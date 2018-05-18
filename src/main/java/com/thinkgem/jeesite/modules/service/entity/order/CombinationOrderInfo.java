@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String techId; //固定技师ID
 	private int bespeakTotal; //可预约次数
 	private int bespeakNum; //已预约次数
+	private int surplusNum; //剩余预约次数
 	private String orderStatus;		// 订单状态(dispatched:已下单;cancel:已取消;success:已成功;close:已关闭)
 	private String orderSource;		// 订单来源(own:本机构 gasq:国安社区)
 	private String payStatus;		// 支付状态（waitpay:待支付  payed：已支付）
@@ -66,8 +68,12 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private ServiceTechnicianInfo tech; //固定技师
 	private List<OrderCombinationFrequencyInfo> freList;	//服务时间
 	private List<OrderCombinationGasqInfo> orderCombinationGasqInfos; //组合订单集合
-	private CombinationCommodity combinationCommodity;	//组合商品
+	private List<CombinationCommodity> combinationCommoditys;	//组合商品-子商品集合
+	private List<CombinationOrderInfo> combinationOrderInfos;	//组合商品详情中列表使用
 	private String techName;// 技师姓名，技师列表查询用
+	private String unit;// 商品单位
+	private BigDecimal price;// 商品单价
+	private BigDecimal sum;// 小计
 
 	public CombinationOrderInfo() {
 		super();
@@ -75,6 +81,30 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public CombinationOrderInfo(String id){
 		super(id);
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public BigDecimal getSum() {
+		return sum;
+	}
+
+	public void setSum(BigDecimal sum) {
+		this.sum = sum;
 	}
 
 	public String getMasterId() {
@@ -461,11 +491,27 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
         this.bespeakNum = bespeakNum;
     }
 
-    public CombinationCommodity getCombinationCommodity() {
-		return combinationCommodity;
+	public int getSurplusNum() {
+		return surplusNum;
 	}
 
-	public void setCombinationCommodity(CombinationCommodity combinationCommodity) {
-		this.combinationCommodity = combinationCommodity;
+	public void setSurplusNum(int surplusNum) {
+		this.surplusNum = surplusNum;
+	}
+
+	public List<CombinationCommodity> getCombinationCommoditys() {
+		return combinationCommoditys;
+	}
+
+	public void setCombinationCommoditys(List<CombinationCommodity> combinationCommoditys) {
+		this.combinationCommoditys = combinationCommoditys;
+	}
+
+	public List<CombinationOrderInfo> getCombinationOrderInfos() {
+		return combinationOrderInfos;
+	}
+
+	public void setCombinationOrderInfos(List<CombinationOrderInfo> combinationOrderInfos) {
+		this.combinationOrderInfos = combinationOrderInfos;
 	}
 }

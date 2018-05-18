@@ -31,6 +31,13 @@
 		<include refid="serItemCommodityJoins"/>
 		WHERE a.id = #{id}
 	</select>
+    <!--根据id获取详情-->
+	<select id="getGoodsByGoodsId" resultType="SerItemCommodity">
+		SELECT
+		<include refid="serItemCommodityColumns"/>
+		FROM ser_item_info_goods a
+		WHERE a.id = #{combinationGoodsId}
+	</select>
 	
 	<select id="findList" resultType="SerItemCommodity">
 		SELECT 

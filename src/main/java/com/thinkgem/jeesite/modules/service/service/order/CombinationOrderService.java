@@ -7,7 +7,11 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.modules.service.dao.item.CombinationCommodityDao;
+import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
+import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -33,7 +38,11 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 	@Autowired
 	CombinationOrderDao combinationOrderDao;
 	@Autowired
+    CombinationCommodityDao combinationCommodityDao;
+	@Autowired
 	FrequencyDao frequencyDao;
+	@Autowired
+	SerItemCommodityDao serItemCommodityDao;
 
 
 	@Autowired
@@ -54,19 +63,44 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 		CombinationOrderInfo combinationById = combinationOrderDao.getCombinationById(combinationOrderInfo);
 		List<OrderCombinationFrequencyInfo> frequencyList = frequencyDao.getFrequencyList(combinationOrderInfo);
 		combinationById.setFreList(frequencyList);
+		//根据masterId获取组合订单的订单集合
         List<OrderCombinationGasqInfo> listbyMasterId = orderCombinationGasqDao.getListbyMasterId(combinationOrderInfo);
         combinationById.setOrderCombinationGasqInfos(listbyMasterId);
+        //计算预约次数 组合并拆单
+        if ("group_split_yes".equalsIgnoreCase(combinationById.getOrderType())) {
+            int bespeakNum = combinationById.getBespeakNum();
+            int bespeakTotal = combinationById.getBespeakTotal();
+            int surplusNum = 0;
+            if (bespeakTotal > bespeakNum) {
+                surplusNum = bespeakTotal - bespeakNum;
+            }
+            combinationById.setSurplusNum(surplusNum);
+        }
+        //根据com表中goodId获取所有组合商品-子商品
+		List<CombinationCommodity> listByGoodsId = combinationCommodityDao.findListByGoodsId(combinationById);
+		List<CombinationCommodity> comGoods=new ArrayList<CombinationCommodity>();
+        for (CombinationCommodity commodity:listByGoodsId){
+			//根据单个子商品的id 获取名称集合
+			CombinationCommodity comGood = combinationCommodityDao.getComGood(commodity);
+			comGoods.add(comGood);
+		}
+		CombinationOrderInfo info=new CombinationOrderInfo();
+		List<CombinationOrderInfo> list=new ArrayList<CombinationOrderInfo>();
+		//name 数量 总计 商品集合
+		info.setCombinationCommoditys(comGoods);
+		info.setCombinationGoodsName(combinationById.getCombinationGoodsName());
+		info.setCombinationGoodsNum(combinationById.getCombinationGoodsNum());
+		//价格  单位
+		SerItemCommodity goodsByGoodsId = serItemCommodityDao.getGoodsByGoodsId(combinationById);
+		info.setUnit(goodsByGoodsId.getUnit());
+		info.setPrice(goodsByGoodsId.getPrice());
+		BigDecimal bigDecimal = new BigDecimal(combinationById.getCombinationGoodsNum());
+		BigDecimal multiply = bigDecimal.multiply(goodsByGoodsId.getPrice());
+		info.setSum(multiply);
+		list.add(info);
+		combinationById.setCombinationOrderInfos(list);
         return combinationById;
 	}
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * 查看备注

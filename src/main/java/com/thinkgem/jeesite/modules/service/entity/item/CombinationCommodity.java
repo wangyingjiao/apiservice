@@ -5,7 +5,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 import java.math.BigDecimal;
 
 /**
- * 服务项目组合商品-子商品信息Entity
+ * 组合商品-子商品信息Entity
  * @author a
  * @version 2018-05-15
  */

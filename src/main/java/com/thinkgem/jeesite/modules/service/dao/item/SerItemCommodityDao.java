@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.CombinationOrderInfo;
 
 import java.util.List;
 
@@ -69,4 +70,6 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     int findCombined(SerItemCommodity serItemCommodity);
 
     void deleteCombined(SerItemCommodity serItemCommodity);
+
+    SerItemCommodity getGoodsByGoodsId(CombinationOrderInfo combinationOrderInfo);
 }

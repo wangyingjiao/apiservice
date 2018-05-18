@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.service.dao.item.CombinationCommodityDao">
+
+	<sql id="CombinationCommodityColumns">
+		a.id AS "id",
+		a.combination_goods_id AS "combinationGoodsId",
+		a.item_id AS "itemId",
+		a.goods_id AS "goodsId",
+		a.combination_price AS "combinationPrice",
+		a.combination_num AS "combinationNum"
+	</sql>
+    <!--根据combination_goods_id查询集合-->
+	<select id="findListByGoodsId" resultType="CombinationCommodity">
+		SELECT
+		a.id AS "id",
+		a.combination_goods_id AS "combinationGoodsId",
+		a.item_id AS "itemId",
+		a.goods_id AS "goodsId",
+		a.combination_price AS "combinationPrice",
+		a.combination_num AS "combinationNum"
+		FROM ser_item_combination_goods a
+		WHERE a.combination_goods_id = #{combinationGoodsId}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<!--根据ser_item_combination_goods的id查询出子商品的服务名称商品名称-->
+	<select id="getComGood" resultType="CombinationCommodity">
+		SELECT
+		a.id AS "id",
+		a.combination_goods_id AS "combinationGoodsId",
+		a.item_id AS "itemId",
+		a.goods_id AS "goodsId",
+		a.combination_price AS "combinationPrice",
+		a.combination_num AS "combinationNum",
+		b.name AS "goodsName",
+		c.name AS "itemName"
+		FROM ser_item_combination_goods a
+		LEFT JOIN ser_item_info_goods b on a.goods_id=b.id AND b.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN ser_item_info c on a.item_id=c.id AND c.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+</mapper>
