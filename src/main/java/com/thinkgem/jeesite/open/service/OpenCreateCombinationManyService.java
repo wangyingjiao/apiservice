@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -225,6 +226,21 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 			throw new ServiceException("订单类型不能为空");
 		}
 
+		//通过对接方E店CODE获取机构
+		String orgId = orderCustomInfo.getOrgId();
+
+		//通过门店ID获取服务站
+		BasicServiceStation stationSerch = new BasicServiceStation();
+		stationSerch.setStoreId(store_id);
+		stationSerch.setOrgId(orgId);
+		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
+		String stationId = "";
+		if(null != stations && stations.size() > 0){
+			stationId = stations.get(0).getId();
+		}else{
+			throw new ServiceException("未找到门店ID对应的服务站信息");
+		}
+
 		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
 		BigDecimal originPrice = new BigDecimal(0);//商品总价
 		String sortItemNames = "";//服务分类+服务项目
@@ -249,6 +265,18 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 				String pay_price = openServiceInfo.getPay_price();
 				if(null == pay_price){
 					throw new ServiceException("服务项目单价不能为空");
+				}
+
+				//验证对接状态
+				SerItemCommodityEshop serchGoodsEshop = new SerItemCommodityEshop();
+				serchGoodsEshop.setEshopCode(eshop_code);
+				serchGoodsEshop.setGoodsId(cate_goods_id);
+				serchGoodsEshop.setOrgId(orgId);
+				serchGoodsEshop.setJointStatus("butt_success");
+				serchGoodsEshop.setEnabledStatus("yes");
+				SerItemCommodityEshop goodsEshop = orderGoodsDao.checkJointStatus(serchGoodsEshop);
+				if(null == goodsEshop){
+					throw new ServiceException("未找到自营服务服务商品ID对接的商品信息");
 				}
 
 				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
@@ -280,21 +308,6 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 			throw new ServiceException("商品信息不能为空");
 		}
 
-		//通过对接方E店CODE获取机构
-		String orgId = orderCustomInfo.getOrgId();
-
-		//通过门店ID获取服务站
-		BasicServiceStation stationSerch = new BasicServiceStation();
-		stationSerch.setStoreId(store_id);
-		stationSerch.setOrgId(orgId);
-		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
-		String stationId = "";
-		if(null != stations && stations.size() > 0){
-			stationId = stations.get(0).getId();
-		}else{
-			throw new ServiceException("未找到门店ID对应的服务站信息");
-		}
-
 		//--------------------------------------------------
 		CombinationOrderInfo combinationOrderInfo = new CombinationOrderInfo();
 		combinationOrderInfo.setMasterId(masterInfo.getId());//主订单ID
@@ -304,6 +317,7 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 		combinationOrderInfo.setStationId(stationId);        //服务站id
 		combinationOrderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)  `
 		combinationOrderInfo.setCombinationGoodsId(orderGoods.get(0).getGoodsId());//下单组合商品ID
+		combinationOrderInfo.setCombinationGoodsName(orderGoods.get(0).getGoodsName());//下单组合商品
 		combinationOrderInfo.setCombinationGoodsNum(orderGoods.get(0).getGoodsNum());//下单数量
 		combinationOrderInfo.setPayPrice(sum_price);            //实际付款价格
 		combinationOrderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
@@ -311,6 +325,8 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 		combinationOrderInfo.setLatitude(latitude);                //服务地址  纬度
 		combinationOrderInfo.setLongitude(longitude);         //服务地址  经度
 		combinationOrderInfo.setOrderTime(DateUtils.parseDate(DateUtils.getDateTime()));    //下单时间
+		combinationOrderInfo.setBespeakTotal(gasqOrderSnList.size());//可预约次数
+		combinationOrderInfo.setBespeakNum(0);//预约次数
 		combinationOrderInfo.setOrderStatus("dispatched");   // 订单状态(dispatched:已下单;cancel:已取消;success:已成功;close:已关闭)
 		combinationOrderInfo.setOrderSource("gasq");  // 订单来源(own:本机构 gasq:国安社区)
 		combinationOrderInfo.setPayStatus("waitpay");   //支付状态（waitpay:待支付  payed：已支付） 冗余字段

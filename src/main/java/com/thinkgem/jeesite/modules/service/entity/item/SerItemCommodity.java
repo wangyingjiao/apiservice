@@ -54,6 +54,14 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
 
+	private String jointGoodsCode;		//对接方商品CODE
+	private String selfCode;		//自营商品CODE
+
+	private Boolean commodityChecked = false;
+
+	private int goodsNum;		// 商品数量
+	private BigDecimal goodsPrice;		// 商品价格
+
 	public String getServiceType() {
 		return serviceType;
 	}
@@ -182,9 +190,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 		this.jointGoodsCode = jointGoodsCode;
 	}
 
-	private String jointGoodsCode;		//对接方商品CODE
-	private String selfCode;		//自营商品CODE
-
 	public String getSelfCode() {
 		return selfCode;
 	}
@@ -264,7 +269,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 		this.minPurchase = minPurchase;
 	}
 
-	private Boolean commodityChecked = false;
 	@JsonInclude
 	public Boolean getCommodityChecked() {
 		return commodityChecked;
@@ -304,5 +308,21 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	public void setMajorSort(String majorSort) {
 		this.majorSort = majorSort;
+	}
+
+	public int getGoodsNum() {
+		return goodsNum;
+	}
+
+	public void setGoodsNum(int goodsNum) {
+		this.goodsNum = goodsNum;
+	}
+
+	public BigDecimal getGoodsPrice() {
+		return goodsPrice;
+	}
+
+	public void setGoodsPrice(BigDecimal goodsPrice) {
+		this.goodsPrice = goodsPrice;
 	}
 }

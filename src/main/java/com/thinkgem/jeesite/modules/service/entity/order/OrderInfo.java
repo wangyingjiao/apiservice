@@ -123,6 +123,11 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private boolean orderAllRefundFlag;// 订单是否全部退款
 	private List<String> refundGoodsList;
 
+	private String combinationOrderContent;
+	private String combinationGoodsId;
+	private String combinationGoodsName;
+	private int combinationGoodsNum;
+
 	public List<String> getRefundGoodsList() {
 		return refundGoodsList;
 	}
@@ -908,5 +913,37 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setOrgVisable(String orgVisable) {
 		this.orgVisable = orgVisable;
+	}
+
+	public String getCombinationOrderContent() {
+		return combinationOrderContent;
+	}
+
+	public void setCombinationOrderContent(String combinationOrderContent) {
+		this.combinationOrderContent = combinationOrderContent;
+	}
+
+	public String getCombinationGoodsId() {
+		return combinationGoodsId;
+	}
+
+	public void setCombinationGoodsId(String combinationGoodsId) {
+		this.combinationGoodsId = combinationGoodsId;
+	}
+
+	public String getCombinationGoodsName() {
+		return combinationGoodsName;
+	}
+
+	public void setCombinationGoodsName(String combinationGoodsName) {
+		this.combinationGoodsName = combinationGoodsName;
+	}
+
+	public int getCombinationGoodsNum() {
+		return combinationGoodsNum;
+	}
+
+	public void setCombinationGoodsNum(int combinationGoodsNum) {
+		this.combinationGoodsNum = combinationGoodsNum;
 	}
 }

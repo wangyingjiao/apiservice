@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -123,19 +124,6 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 			throw new ServiceException("保存客户表信息失败");
 		}
 
-		// order_combination_info  组合订单信息 -------------------------------------------------------------------------------
-		CombinationOrderInfo combinationInfo = new CombinationOrderInfo();
-		try{
-			combinationInfo = openCreateForCombination(info, masterInfo, orderAddress, orderCustomInfo);
-		}catch (ServiceException ex){
-			throw new ServiceException(ex.getMessage());
-		}catch (Exception e){
-			throw new ServiceException("保存组合订单信息表信息失败!");
-		}
-		if(null == combinationInfo){
-			throw new ServiceException("保存组合订单信息表信息失败!");
-		}
-
 		// order_info  子订单信息 -------------------------------------------------------------------------------
 		OrderInfo orderInfo = new OrderInfo();
 		try{
@@ -147,6 +135,19 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 		}
 		if(null == orderInfo){
 			throw new ServiceException("保存子订单信息表信息失败!");
+		}
+
+		// order_combination_info  组合订单信息 -------------------------------------------------------------------------------
+		CombinationOrderInfo combinationInfo = new CombinationOrderInfo();
+		try{
+			combinationInfo = openCreateForCombination(info, orderInfo);
+		}catch (ServiceException ex){
+			throw new ServiceException(ex.getMessage());
+		}catch (Exception e){
+			throw new ServiceException("保存组合订单信息表信息失败!");
+		}
+		if(null == combinationInfo){
+			throw new ServiceException("保存组合订单信息表信息失败!");
 		}
 
 		// order_dispatch -派单表----------------------------------------------------------------------------------
@@ -361,7 +362,20 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 			throw new ServiceException("订单类型不能为空");
 		}
 
-		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
+		//通过对接方E店CODE获取机构
+		String orgId = orderCustomInfo.getOrgId();
+		//通过门店ID获取服务站
+		BasicServiceStation stationSerch = new BasicServiceStation();
+		stationSerch.setStoreId(store_id);
+		stationSerch.setOrgId(orgId);
+		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
+		String stationId = "";
+		if(null != stations && stations.size() > 0){
+			stationId = stations.get(0).getId();
+		}else{
+			throw new ServiceException("未找到门店ID对应的服务站信息");
+		}
+
 		BigDecimal originPrice = new BigDecimal(0);//商品总价
 		BigDecimal openPrice = new BigDecimal(0);//对接总价
 		String sortItemNames = "";//服务分类+服务项目
@@ -370,6 +384,13 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 		int techDispatchNum = 0;//派人数量
 		double orderTotalTime = 0.0;//订单所需时间
 		double serviceHour = 0.0;//建议服务时长（小时）
+		String combinationGoodsId="";//组合商品ID
+		String combinationGoodsName="";//组合商品名称
+		int combinationGoodsNum=0;//组合商品数量
+		String combinationOrderContent="";//组合商品内容
+
+		String orderGoodsMajorSort="";
+		String orderGoodsSortId="";
 
 		if(null != serviceInfos && serviceInfos.size() > 0){
 			OrderGoods goods = new OrderGoods();
@@ -389,32 +410,32 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 					throw new ServiceException("服务项目单价不能为空");
 				}
 
+				//验证对接状态
+				SerItemCommodityEshop serchGoodsEshop = new SerItemCommodityEshop();
+				serchGoodsEshop.setEshopCode(eshop_code);
+				serchGoodsEshop.setGoodsId(cate_goods_id);
+				serchGoodsEshop.setOrgId(orgId);
+				serchGoodsEshop.setJointStatus("butt_success");
+				serchGoodsEshop.setEnabledStatus("yes");
+				SerItemCommodityEshop goodsEshop = orderGoodsDao.checkJointStatus(serchGoodsEshop);
+				if(null == goodsEshop){
+					throw new ServiceException("未找到自营服务服务商品ID对接的商品信息");
+				}
+
 				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
 				if(null == commodity){
 					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
 				}
-				goods = new OrderGoods();
-				goods.setSortId(commodity.getSortId());//服务分类ID
-				goods.setItemId(commodity.getItemId());//服务项目ID
-				goods.setItemName(commodity.getItemName());//项目名称
-				goods.setGoodsId(commodity.getId());//商品ID
-				goods.setGoodsName(commodity.getName());//商品名称
-				goods.setGoodsNum(buy_num);//订购商品数
-				goods.setGoodsType(commodity.getType());
-				goods.setGoodsUnit(commodity.getUnit());
-				goods.setPayPrice(pay_price);//对接后单价
-				goods.setOriginPrice(commodity.getPrice().toString());//原价
-				goods.setMajorSort(commodity.getMajorSort());
-
-				goods.setConvertHours(commodity.getConvertHours());		// 折算时长
-				goods.setStartPerNum(commodity.getStartPerNum());   		//起步人数（第一个4小时时长派人数量）
-				goods.setCappingPerNum(commodity.getCappingPerNum());		//封项人数
-
-				orderGoods.add(goods);
 				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
 				originPrice = originPrice.add(price);//商品总价
 				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
 				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
+
+				combinationGoodsId = cate_goods_id;//组合商品ID
+				combinationGoodsName = commodity.getName();//组合商品名称
+				combinationGoodsNum = buy_num;//组合商品数量
+				orderGoodsMajorSort = commodity.getMajorSort();
+				orderGoodsSortId = commodity.getSortId();
 
 				int goodsNum = buy_num;		// 订购商品数
 				Double convertHours = commodity.getConvertHours();		// 折算时长
@@ -439,24 +460,35 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 					techDispatchNum = techNum;
 				}
 			}
+			combinationOrderContent=sortItemNames + goodsNames;//组合商品内容
 			BigDecimal serviceHourBigD = new BigDecimal(orderTotalTime/techDispatchNum);//建议服务时长（小时） = 订单商品总时长/ 派人数量
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
 			throw new ServiceException("商品信息不能为空");
 		}
 
-		//通过对接方E店CODE获取机构
-		String orgId = orderCustomInfo.getOrgId();
-		//通过门店ID获取服务站
-		BasicServiceStation stationSerch = new BasicServiceStation();
-		stationSerch.setStoreId(store_id);
-		stationSerch.setOrgId(orgId);
-		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
-		String stationId = "";
-		if(null != stations && stations.size() > 0){
-			stationId = stations.get(0).getId();
-		}else{
-			throw new ServiceException("未找到门店ID对应的服务站信息");
+		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
+		//根据组合商品ID返回子商品信息
+		List<SerItemCommodity> sonGoodsList = orderGoodsDao.listGoodsByCombination(combinationGoodsId);
+		for(SerItemCommodity commodity : sonGoodsList){
+			OrderGoods goods = new OrderGoods();
+			goods.setSortId(commodity.getSortId());//服务分类ID
+			goods.setItemId(commodity.getItemId());//服务项目ID
+			goods.setItemName(commodity.getItemName());//项目名称
+			goods.setGoodsId(commodity.getId());//商品ID
+			goods.setGoodsName(commodity.getName());//商品名称
+			goods.setGoodsNum(commodity.getGoodsNum() * combinationGoodsNum);//订购商品数
+			goods.setGoodsType(commodity.getType());
+			goods.setGoodsUnit(commodity.getUnit());
+			goods.setPayPrice(commodity.getGoodsPrice().toString());//对接后单价
+			goods.setOriginPrice(commodity.getPrice().toString());//原价
+			goods.setMajorSort(commodity.getMajorSort());
+
+			goods.setConvertHours(commodity.getConvertHours());		// 折算时长
+			goods.setStartPerNum(commodity.getStartPerNum());   		//起步人数（第一个4小时时长派人数量）
+			goods.setCappingPerNum(commodity.getCappingPerNum());		//封项人数
+
+			orderGoods.add(goods);
 		}
 
 		//--------------------------------------------------
@@ -466,7 +498,7 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 		orderInfo.setOrderNumber(DateUtils.getDateAndRandomTenNum("01")); // 订单编号
 		orderInfo.setOrgId(orgId);  //所属服务机构ID
 		orderInfo.setStationId(stationId);        //服务站id
-		orderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)
+		orderInfo.setMajorSort(orderGoodsMajorSort);               //分类(all:全部 clean:保洁 repair:家修)
 		orderInfo.setPayPrice(sum_price);            //实际付款价格
 		orderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
 		orderInfo.setOrderAddressId(orderAddress.getId());  // 订单地址ID
@@ -503,9 +535,12 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 
 		orderInfoDao.insert(orderInfo);
 
-		//orderInfo.setOpenPrice(openPrice);
 		orderInfo.setGoodsInfoList(orderGoods);//商品信息
-		orderInfo.setGoodsSortId(orderGoods.get(0).getSortId());
+		orderInfo.setGoodsSortId(orderGoodsSortId);
+		orderInfo.setCombinationGoodsId(combinationGoodsId);
+		orderInfo.setCombinationGoodsName(combinationGoodsName);
+		orderInfo.setCombinationGoodsNum(combinationGoodsNum);
+		orderInfo.setCombinationOrderContent(combinationOrderContent);
 
 		try {
 			List<OrderDispatch> techList = openCreateForOrderFindDispatchList(orderInfo,techDispatchNum,serviceSecond);//获取派单技师
@@ -565,143 +600,49 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 	/**
 	 * 订单创建 - 组合订单信息
 	 * @param info
-	 * @param masterInfo
-	 * @param orderAddress
+	 * @param orderInfo
 	 * @return
 	 */
-	private CombinationOrderInfo openCreateForCombination(OpenCreateRequest info, OrderMasterInfo masterInfo, OrderAddress orderAddress, OrderCustomInfo orderCustomInfo) {
+	private CombinationOrderInfo openCreateForCombination(OpenCreateRequest info, OrderInfo orderInfo) {
 		String group_id = info.getGroup_id();
 		if(null == group_id){
 			throw new ServiceException("组合订单ID不能为空");
 		}
-		String store_id = info.getStore_id();//门店ID
-		if(null == store_id){
-			throw new ServiceException("门店ID不能为空");
-		}
-		String shop_name = info.getStore_name();//门店名称
-		String shop_phone = info.getStore_phone();//门店电话
-		String shop_addr = info.getStore_addr();//门店地址
-
-		String eshop_code = info.getEshop_code();//E店编码
-		if(null == eshop_code){
-			throw new ServiceException("E店编码不能为空");
-		}
-		String remark = info.getRemark();//订单备注(用户备注)
-		List<String> remark_pic = info.getRemark_pic();//订单备注(用户备注)
-		String remark_pic_String = "";
-		if(null != remark_pic){
-			remark_pic_String = JsonMapper.toJsonString(remark_pic);
-		}
-		List<OpenServiceInfo> serviceInfos = info.getService_info();
-
 		List<String> gasqOrderSnList = info.getGasq_order_sn();
 		if(gasqOrderSnList==null || gasqOrderSnList.size()!=1){
 			throw new ServiceException("国安社区订单SN不能为空");
 		}
-		String latitude = info.getLatitude();//服务地址：纬度
-		String longitude = info.getLongitude();//服务地址：经度
-		String sum_price = info.getSum_price();//订单总支付价格
-		String order_type = info.getOrder_type();//订单类型：common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单
-		if(null == order_type){
-			throw new ServiceException("订单类型不能为空");
-		}
-
-		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
-		BigDecimal originPrice = new BigDecimal(0);//商品总价
-		String sortItemNames = "";//服务分类+服务项目
-		String goodsNames = "";//商品名称
-
-		int techDispatchNum = 0;//派人数量
-		double serviceHour = 0.0;//建议服务时长（小时）
-
-		if(null != serviceInfos && serviceInfos.size() > 0){
-			OrderGoods goods = new OrderGoods();
-			for(OpenServiceInfo openServiceInfo : serviceInfos){
-
-				String key = openServiceInfo.getCate_goods_id();
-				String cate_goods_id = key.substring(key.indexOf(Global.getConfig("openSendPath_goods_split")) + 1);
-				if(null == cate_goods_id){
-					throw new ServiceException("自营服务服务商品ID不能为空");
-				}
-				int buy_num = openServiceInfo.getBuy_num();
-				if(0 == buy_num){
-					throw new ServiceException("购买数量不能为空");
-				}
-				String pay_price = openServiceInfo.getPay_price();
-				if(null == pay_price){
-					throw new ServiceException("服务项目单价不能为空");
-				}
-
-				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
-				if(null == commodity){
-					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
-				}
-				goods = new OrderGoods();
-				goods.setSortId(commodity.getSortId());//服务分类ID
-				goods.setItemId(commodity.getItemId());//服务项目ID
-				goods.setItemName(commodity.getItemName());//项目名称
-				goods.setGoodsId(commodity.getId());//商品ID
-				goods.setGoodsName(commodity.getName());//商品名称
-				goods.setGoodsNum(buy_num);//订购商品数
-				goods.setGoodsType(commodity.getType());
-				goods.setGoodsUnit(commodity.getUnit());
-				goods.setPayPrice(pay_price);//对接后单价
-				goods.setOriginPrice(commodity.getPrice().toString());//原价
-				goods.setMajorSort(commodity.getMajorSort());
-
-				goods.setConvertHours(commodity.getConvertHours());		// 折算时长
-
-				orderGoods.add(goods);
-				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
-				originPrice = originPrice.add(price);//商品总价
-				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
-				goodsNames = goodsNames + "+" + commodity.getName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
-			}
-		}else{
-			throw new ServiceException("商品信息不能为空");
-		}
-
-		//通过对接方E店CODE获取机构
-		String orgId = orderCustomInfo.getOrgId();
-
-		//通过门店ID获取服务站
-		BasicServiceStation stationSerch = new BasicServiceStation();
-		stationSerch.setStoreId(store_id);
-		stationSerch.setOrgId(orgId);
-		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
-		String stationId = "";
-		if(null != stations && stations.size() > 0){
-			stationId = stations.get(0).getId();
-		}else{
-			throw new ServiceException("未找到门店ID对应的服务站信息");
-		}
+		List<OpenServiceInfo> serviceInfos = info.getService_info();
 
 		//--------------------------------------------------
 		CombinationOrderInfo combinationOrderInfo = new CombinationOrderInfo();
-		combinationOrderInfo.setMasterId(masterInfo.getId());//主订单ID
+		combinationOrderInfo.setMasterId(orderInfo.getMasterId());//主订单ID
 		combinationOrderInfo.setJointGroupId(group_id);
-		combinationOrderInfo.setOrderType(order_type);//订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
-		combinationOrderInfo.setOrgId(orgId);  //所属服务机构ID
-		combinationOrderInfo.setStationId(stationId);        //服务站id
-		combinationOrderInfo.setMajorSort(orderGoods.get(0).getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)  `
-		combinationOrderInfo.setCombinationGoodsId(orderGoods.get(0).getGoodsId());//下单组合商品ID
-		combinationOrderInfo.setCombinationGoodsNum(orderGoods.get(0).getGoodsNum());//下单数量
-		combinationOrderInfo.setPayPrice(sum_price);            //实际付款价格
-		combinationOrderInfo.setOriginPrice(originPrice.toString());              //总价（原价）
-		combinationOrderInfo.setOrderAddressId(orderAddress.getId());  // 订单地址ID
-		combinationOrderInfo.setLatitude(latitude);                //服务地址  纬度
-		combinationOrderInfo.setLongitude(longitude);         //服务地址  经度
-		combinationOrderInfo.setOrderTime(DateUtils.parseDate(DateUtils.getDateTime()));    //下单时间
+		combinationOrderInfo.setOrderType(orderInfo.getOrderType());//订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
+		combinationOrderInfo.setOrgId(orderInfo.getOrgId());  //所属服务机构ID
+		combinationOrderInfo.setStationId(orderInfo.getStationId());        //服务站id
+		combinationOrderInfo.setMajorSort(orderInfo.getMajorSort());               //分类(all:全部 clean:保洁 repair:家修)  `
+		combinationOrderInfo.setCombinationGoodsId(orderInfo.getCombinationGoodsId());//下单组合商品ID
+		combinationOrderInfo.setCombinationGoodsName(orderInfo.getCombinationGoodsName());//下单组合商品
+		combinationOrderInfo.setCombinationGoodsNum(orderInfo.getCombinationGoodsNum());//下单数量
+		combinationOrderInfo.setPayPrice(orderInfo.getPayPrice());            //实际付款价格
+		combinationOrderInfo.setOriginPrice(orderInfo.getOriginPrice());              //总价（原价）
+		combinationOrderInfo.setOrderAddressId(orderInfo.getOrderAddressId());  // 订单地址ID
+		combinationOrderInfo.setLatitude(orderInfo.getLatitude());                //服务地址  纬度
+		combinationOrderInfo.setLongitude(orderInfo.getLongitude());         //服务地址  经度
+		combinationOrderInfo.setOrderTime(orderInfo.getOrderTime());    //下单时间
+		combinationOrderInfo.setServiceHour(orderInfo.getServiceHour());//服务时长（小时）',
+		combinationOrderInfo.setServiceStart(orderInfo.getServiceTime());//第一次服务日期',
 		combinationOrderInfo.setOrderStatus("dispatched");   // 订单状态(dispatched:已下单;cancel:已取消;success:已成功;close:已关闭)
 		combinationOrderInfo.setOrderSource("gasq");  // 订单来源(own:本机构 gasq:国安社区)
 		combinationOrderInfo.setPayStatus("waitpay");   //支付状态（waitpay:待支付  payed：已支付） 冗余字段
-		combinationOrderInfo.setCustomerId(orderCustomInfo.getId());    // 客户ID
-		combinationOrderInfo.setOrderContent(sortItemNames + goodsNames);  //下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
-		combinationOrderInfo.setShopId(store_id);
-		combinationOrderInfo.setShopName(shop_name);
-		combinationOrderInfo.setShopPhone(shop_phone);
-		combinationOrderInfo.setShopAddr(shop_addr);
-		combinationOrderInfo.setEshopCode(eshop_code);
+		combinationOrderInfo.setCustomerId(orderInfo.getCustomerId());    // 客户ID
+		combinationOrderInfo.setOrderContent(orderInfo.getCombinationOrderContent());  //下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2
+		combinationOrderInfo.setShopId(orderInfo.getShopId());
+		combinationOrderInfo.setShopName(orderInfo.getShopName());
+		combinationOrderInfo.setShopPhone(orderInfo.getShopPhone());
+		combinationOrderInfo.setShopAddr(orderInfo.getShopAddr());
+		combinationOrderInfo.setEshopCode(orderInfo.getEshopCode());
 
 		User user = new User();
 		user.setId("gasq001");
@@ -712,18 +653,18 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 		combinationOrderInfo.setUpdateDate(combinationOrderInfo.getCreateDate());
 		combinationOrderDao.insert(combinationOrderInfo);
 
-		for(String gasqOrderSn : gasqOrderSnList){
-			OrderCombinationGasqInfo gasqInfo = new OrderCombinationGasqInfo();
-			gasqInfo.setMasterId(masterInfo.getId());// 主订单ID
-			gasqInfo.setJointOrderSn(gasqOrderSn);//国安社区订单编号
+		OrderCombinationGasqInfo gasqInfo = new OrderCombinationGasqInfo();
+		gasqInfo.setMasterId(orderInfo.getMasterId());// 主订单ID
+		gasqInfo.setJointOrderSn(orderInfo.getJointOrderId());//国安社区订单编号
+		gasqInfo.setOrderGroupId(IdGen.uuid());
+		gasqInfo.setOrderNumber(orderInfo.getOrderNumber());
+		gasqInfo.setId(IdGen.uuid());
+		gasqInfo.setCreateBy(user);
+		gasqInfo.setCreateDate(new Date());
+		gasqInfo.setUpdateBy(user);
+		gasqInfo.setUpdateDate(gasqInfo.getCreateDate());
+		orderCombinationGasqDao.insert(gasqInfo);
 
-			gasqInfo.setId(IdGen.uuid());
-			gasqInfo.setCreateBy(user);
-			gasqInfo.setCreateDate(new Date());
-			gasqInfo.setUpdateBy(user);
-			gasqInfo.setUpdateDate(gasqInfo.getCreateDate());
-			orderCombinationGasqDao.insert(gasqInfo);
-		}
 		return combinationOrderInfo;
 	}
 

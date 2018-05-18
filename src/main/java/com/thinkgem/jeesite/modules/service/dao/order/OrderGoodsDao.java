@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.dao.order;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
@@ -38,4 +39,8 @@ public interface OrderGoodsDao extends CrudDao<OrderGoods> {
     int deleteById(OrderGoods orderGoods);
 
     SerItemCommodity findItemGoodsByGasqGoodId(String gasq_product_id);
+
+    SerItemCommodityEshop checkJointStatus(SerItemCommodityEshop serchGoodsEshop);
+
+    List<SerItemCommodity> listGoodsByCombination(String combinationGoodsId);
 }

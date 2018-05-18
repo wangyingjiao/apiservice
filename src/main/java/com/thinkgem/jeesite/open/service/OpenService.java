@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
+import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -708,6 +709,20 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("订单类型不能为空");
 		}
 
+		//通过对接方E店CODE获取机构
+		String orgId = orderCustomInfo.getOrgId();
+		//通过门店ID获取服务站
+		BasicServiceStation stationSerch = new BasicServiceStation();
+		stationSerch.setStoreId(store_id);
+		stationSerch.setOrgId(orgId);
+		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
+		String stationId = "";
+		if(null != stations && stations.size() > 0){
+			stationId = stations.get(0).getId();
+		}else{
+			throw new ServiceException("未找到门店ID对应的服务站信息");
+		}
+
 		ArrayList<OrderGoods> orderGoods = new ArrayList<>();//商品信息
 		BigDecimal originPrice = new BigDecimal(0);//商品总价
 		BigDecimal openPrice = new BigDecimal(0);//对接总价
@@ -734,6 +749,18 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				String pay_price = openServiceInfo.getPay_price();
 				if(null == pay_price){
 					throw new ServiceException("服务项目单价不能为空");
+				}
+
+				//验证对接状态
+				SerItemCommodityEshop serchGoodsEshop = new SerItemCommodityEshop();
+				serchGoodsEshop.setEshopCode(eshop_code);
+				serchGoodsEshop.setGoodsId(cate_goods_id);
+				serchGoodsEshop.setOrgId(orgId);
+				serchGoodsEshop.setJointStatus("butt_success");
+				serchGoodsEshop.setEnabledStatus("yes");
+				SerItemCommodityEshop goodsEshop = orderGoodsDao.checkJointStatus(serchGoodsEshop);
+				if(null == goodsEshop){
+					throw new ServiceException("未找到自营服务服务商品ID对接的商品信息");
 				}
 
 				SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(cate_goods_id);
@@ -792,29 +819,6 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			serviceHour = serviceHourBigD.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
 		}else{
 			throw new ServiceException("商品信息不能为空");
-		}
-
-		//通过对接方E店CODE获取机构
-        String orgId = orderCustomInfo.getOrgId();
-		/*BasicOrganization organizationSerch = new BasicOrganization();
-		organizationSerch.setJointEshopCode(eshop_code);
-		List<BasicOrganization> organization = basicOrganizationDao.getOrganizationListByJointEshopCode(organizationSerch);
-		String orgId = "";
-		if(null != organization && organization.size() > 0){
-			orgId = organization.get(0).getId();
-		}else{
-			throw new ServiceException("未找到E店CODE对应的机构信息");
-		}*/
-		//通过门店ID获取服务站
-		BasicServiceStation stationSerch = new BasicServiceStation();
-		stationSerch.setStoreId(store_id);
-		stationSerch.setOrgId(orgId);
-		List<BasicServiceStation> stations = basicServiceStationDao.getStationListByStoreIdUseable(stationSerch);
-		String stationId = "";
-		if(null != stations && stations.size() > 0){
-			stationId = stations.get(0).getId();
-		}else{
-			throw new ServiceException("未找到门店ID对应的服务站信息");
 		}
 
 		//--------------------------------------------------
