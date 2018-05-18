@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.service.entity.item;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 组合商品-子商品信息Entity
@@ -27,6 +28,34 @@ public class CombinationCommodity extends DataEntity<CombinationCommodity> {
     private String sortId;     //分类ID
     private boolean check = false;  //是否被选中
     private BigDecimal convertHours;  //折算时长
+    private String jointGoodsCode;   //对接商品code
+
+    private List<SerItemCommodityEshop> serItemCommodityEshops;
+    private List<CombinationCommodity> combinationCommodities;
+
+    public List<CombinationCommodity> getCombinationCommodities() {
+        return combinationCommodities;
+    }
+
+    public void setCombinationCommodities(List<CombinationCommodity> combinationCommodities) {
+        this.combinationCommodities = combinationCommodities;
+    }
+
+    public String getJointGoodsCode() {
+        return jointGoodsCode;
+    }
+
+    public void setJointGoodsCode(String jointGoodsCode) {
+        this.jointGoodsCode = jointGoodsCode;
+    }
+
+    public List<SerItemCommodityEshop> getSerItemCommodityEshops() {
+        return serItemCommodityEshops;
+    }
+
+    public void setSerItemCommodityEshops(List<SerItemCommodityEshop> serItemCommodityEshops) {
+        this.serItemCommodityEshops = serItemCommodityEshops;
+    }
 
     public String getOrgId() {
         return orgId;

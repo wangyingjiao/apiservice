@@ -519,7 +519,7 @@ public class SerItemInfoController extends BaseController {
                     return new FailResult("商品已对接，不可删除");
                 }
             }else {
-                return new FailResult("此商品为组合商品的子商品，不可删除");
+                return new FailResult("组合商品中包含该商品，不可删除");
             }
         }else {
             //查出当前商品有没有对接
@@ -727,6 +727,12 @@ public class SerItemInfoController extends BaseController {
                     serItemCommodity.setId(goodId);
                     SerItemCommodityEshop serItemCommodityEshop1 = serItemCommodityService.getGoodsEshop(serItemCommodity);
                     SerItemCommodity sic = serItemCommodityService.get(serItemCommodity);
+                    List<CombinationCommodity> ccList = new ArrayList<>();
+                    if (sic.getGoodsType().equals("combined")) {
+                        //查询该商品下子商品的ID和对接ID
+                        sic.setEshopCode(serItemCommodity.getEshopCode());
+                        ccList = serItemCommodityService.commodJointList(sic);
+                    }
                     SerItemInfo sii = new SerItemInfo();
                     sii.setId(sic.getItemId());
                     sii = serItemInfoService.get(sii);
@@ -752,6 +758,10 @@ public class SerItemInfoController extends BaseController {
                     sendGoods.setName(sic.getName());// 商品名称格式：项目名称（商品名）
                     sendGoods.setPrice(sic.getPrice());// 商品价格
                     sendGoods.setCommodityEshops(siceList);
+                    if (ccList != null && ccList.size()>0) {
+                        sendGoods.setCombinationCommodities(ccList);  //这个商品下的子商品ID和对接ID
+                    }
+                    sendGoods.setConvertHours(sic.getConvertHours());  //折算时长
                     sendGoods.setUnit(sic.getUnit());// 商品单位格式：次/个/间
                     sendGoods.setSelfCode(
                             sii.getSortId() + Global.getConfig("openSendPath_goods_split") + sic.getId()); // 自营平台商品code
@@ -805,10 +815,14 @@ public class SerItemInfoController extends BaseController {
             if (StringUtils.isEmpty(combinationCommodity.getOrgId())){
                 return new FailResult("请选择机构信息");
             }
+            if (StringUtils.isEmpty(combinationCommodity.getSortId())){
+                return new FailResult("请选择分类信息");
+            }
         }else {
             if (StringUtils.isEmpty(combinationCommodity.getSortId())){
                 return new FailResult("请选择分类信息");
             }
+            combinationCommodity.setOrgId(user.getOrganization().getId());
         }
         List<CombinationCommodity> scList= serItemCommodityService.findCommodityBySortId(combinationCommodity);
         return new SuccResult(scList);
@@ -866,5 +880,27 @@ public class SerItemInfoController extends BaseController {
         }else {
             return new FailResult("新增失败");
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "verificationJoint", method = {RequestMethod.POST})
+    //@RequiresPermissions("project_insert")
+    @ApiOperation("验证未对接的组合商品下子商品是否全部对接")
+    public Result verificationJoint(@RequestBody CombinationCommodity serItemCommodityEshops) {
+        //============待修改==========
+        if (serItemCommodityEshops.getSerItemCommodityEshops().size() == 0){
+            return new FailResult("请选择商品");
+        }
+        List<SerItemCommodityEshop> siceList = new ArrayList<>();
+        for (SerItemCommodityEshop serItemCommodityEshop : serItemCommodityEshops.getSerItemCommodityEshops()){
+            if (serItemCommodityEshop.getGoodsType().equals("combined")){
+                List<CombinationCommodity> combinedList = serItemCommodityService.findCombinedList(serItemCommodityEshop.getId());
+                int count = serItemCommodityService.findCombinedJoint(serItemCommodityEshop);  //查询该商品下的子商品是否已经对接成功
+                if (combinedList.size() != count){
+                    siceList.add(serItemCommodityEshop);
+                }
+            }
+        }
+        return new SuccResult(siceList);
     }
 }

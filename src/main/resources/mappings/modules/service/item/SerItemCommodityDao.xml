@@ -365,7 +365,8 @@
 			s.name AS sortName,
 			s.major_sort AS majorSort,
 			g.price,
-			g.unit
+			g.unit,
+			g.goods_type AS goodsType
 			FROM ser_item_info i RIGHT JOIN ser_item_info_goods g ON i.id = g.item_id AND i.del_flag = #{DEL_FLAG_NORMAL}
 			LEFT JOIN ser_sort_info s ON g.sort_id = s.id AND s.del_flag = #{DEL_FLAG_NORMAL}
 			WHERE g.del_flag = #{DEL_FLAG_NORMAL}
@@ -508,4 +509,37 @@
 		UPDATE ser_item_combination_goods SET del_flag = #{DEL_FLAG_DELETE}
 		WHERE combination_goods_id = #{id} AND del_flag = #{DEL_FLAG_NORMAL}
 	</update>
+
+	<select id="findCombinedList" resultType="CombinationCommodity">
+		SELECT a.id,
+				a.combination_goods_id AS "combinationGoodsId",
+				a.item_id AS "itemId",
+				a.goods_id AS "goodsId",
+				a.combination_price AS "combinationPrice",
+				a.combination_num AS "combinationNum"
+				FROM ser_item_combination_goods a
+				WHERE a.combination_goods_id = #{id} AND a.del_flag = 0
+	</select>
+
+	<select id="findCombinedJoint" resultType="int">
+		SELECT COUNT(1) FROM ser_item_combination_goods a
+		 	LEFT JOIN ser_item_info_goods_eshop b ON a.goods_id = b.goods_id
+		 	WHERE a.combination_goods_id = #{id}
+		 	AND a.del_flag = 0
+		 	AND b.joint_goods_code IS NOT null
+		 	AND b.joint_status = 'butt_success'
+		 	AND b.enabled_status = 'yes'
+		 	AND b.eshop_code = #{eshopCode}
+	</select>
+
+	<select id="commodJointList" resultType="CombinationCommodity">
+		SELECT a.goods_id AS "goodsId",
+				b.joint_goods_code AS "jointGoodsCode"
+				FROM ser_item_combination_goods a
+				LEFT JOIN ser_item_info_goods_eshop b ON a.goods_id = b.goods_id
+				WHERE a.combination_goods_id = #{id}
+				AND a.del_flag = 0
+				AND b.eshop_code = #{eshopCode}
+
+	</select>
 </mapper>

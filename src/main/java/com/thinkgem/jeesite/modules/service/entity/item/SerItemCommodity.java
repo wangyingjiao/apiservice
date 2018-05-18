@@ -51,8 +51,17 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private List<CombinationCommodity> combinationCommodities;
 	private String serviceType;    //服务类型
 	private int serviceNum;        //服务次数(多次服务)
+	private List<SerItemInfo> serItemInfos;
 
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
+
+	public List<SerItemInfo> getSerItemInfos() {
+		return serItemInfos;
+	}
+
+	public void setSerItemInfos(List<SerItemInfo> serItemInfos) {
+		this.serItemInfos = serItemInfos;
+	}
 
 	private String jointGoodsCode;		//对接方商品CODE
 	private String selfCode;		//自营商品CODE

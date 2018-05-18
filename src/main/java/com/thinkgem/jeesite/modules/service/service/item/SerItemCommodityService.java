@@ -56,6 +56,14 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 		serItemCommodityEshop.setPage(serItemCommodityEshopPage);
 		List<SerItemCommodityEshop> list = serItemCommodityDao.findCommodityList(serItemCommodityEshop);
 		for (SerItemCommodityEshop sic : list){
+			if (sic.getGoodsType().equals("combined")) {   //如果是组合商品
+                sic.setEshopCode(serItemCommodityEshop.getEshopCode());
+                List<CombinationCommodity> combinedList = serItemCommodityDao.findCombinedList(sic.getId());
+                int count = serItemCommodityDao.findCombinedJoint(sic);  //查询该商品下的子商品是否已经对接成功
+                if (combinedList.size() != count){
+                    sic.setCheck(false);
+                }
+			}
 		    sic.setNewName(sic.getItemName()+"("+sic.getGoodsName()+")");
 		    sic.setUnivalence(sic.getPrice()+"元/"+sic.getUnit());
         }
@@ -109,4 +117,16 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
 	public void deleteCombined(SerItemCommodity serItemCommodity) {
 		serItemCommodityDao.deleteCombined(serItemCommodity);
 	}
+
+	public List<CombinationCommodity> findCombinedList(String id) {
+		return serItemCommodityDao.findCombinedList(id);
+	}
+
+    public int findCombinedJoint(SerItemCommodityEshop serItemCommodityEshop) {
+	    return serItemCommodityDao.findCombinedJoint(serItemCommodityEshop);
+    }
+
+    public List<CombinationCommodity> commodJointList(SerItemCommodity serItemCommodity) {
+	    return serItemCommodityDao.commodJointList(serItemCommodity);
+    }
 }

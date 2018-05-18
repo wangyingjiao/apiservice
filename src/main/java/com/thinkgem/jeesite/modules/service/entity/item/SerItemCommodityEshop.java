@@ -37,6 +37,26 @@ public class SerItemCommodityEshop extends DataEntity<SerItemCommodityEshop> {
     private BigDecimal price;		// 价格
     private String unit;		// 商品单位
 
+    private String goodsType;   //商品类型
+
+    private boolean check = true;    //是否禁选
+
+    public boolean isCheck() {
+        return check;
+    }
+
+    public void setCheck(boolean check) {
+        this.check = check;
+    }
+
+    public String getGoodsType() {
+        return goodsType;
+    }
+
+    public void setGoodsType(String goodsType) {
+        this.goodsType = goodsType;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }

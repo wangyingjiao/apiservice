@@ -71,5 +71,11 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
 
     void deleteCombined(SerItemCommodity serItemCommodity);
 
+    List<CombinationCommodity> findCombinedList(String id);
+
+    int findCombinedJoint(SerItemCommodityEshop sic);
+
+    List<CombinationCommodity> commodJointList(SerItemCommodity serItemCommodity);
+
     SerItemCommodity getGoodsByGoodsId(CombinationOrderInfo combinationOrderInfo);
 }
