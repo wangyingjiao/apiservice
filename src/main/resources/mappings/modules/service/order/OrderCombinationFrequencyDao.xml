@@ -16,4 +16,30 @@
             AND a.master_id = #{masterId}
     </select>
 
+    <insert id="insert">
+        INSERT INTO order_combination_frequency(
+        id,
+        master_id,
+        week,
+        start_time,
+        end_time,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        del_flag
+        ) VALUES (
+        #{id},
+        #{masterId},
+        #{week},
+        #{startTime},
+        #{endTime},
+        #{createBy.id},
+        #{createDate},
+        #{updateBy.id},
+        #{updateDate},
+        #{delFlag}
+        )
+    </insert>
+
 </mapper>
