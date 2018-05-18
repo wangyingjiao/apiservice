@@ -2,6 +2,44 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.service.dao.order.CombinationOrderDao">
 
+    <sql id="CombinationOrderColumns">
+        a.id AS "id",
+        a.master_id AS "masterId",
+        a.joint_group_id AS "jointGroupId",
+        a.order_type AS "orderType",
+        a.org_id AS "orgId",
+        a.station_id AS "stationId",
+        a.major_sort AS "majorSort",
+        a.combination_goods_id AS "combinationGoodsId",
+        a.combination_goods_name AS "combinationGoodsName",
+        a.combination_goods_num AS "combinationGoodsNum",
+        a.pay_price AS "payPrice",
+        a.origin_price AS "originPrice",
+        a.order_address_id AS "orderAddressId",
+        a.latitude AS "latitude",
+        a.longitude AS "longitude",
+        a.order_time AS "orderTime",
+        a.service_frequency AS "serviceFrequency",
+        a.service_num AS "serviceNum",
+        a.service_hour AS "serviceHour",
+        a.service_start AS "serviceStart",
+        a.tech_id AS "techId",
+        a.bespeak_total AS "bespeakTotal",
+        a.bespeak_num AS "bespeakNum",
+        a.order_status AS "orderStatus",
+        a.order_source AS "orderSource",
+        a.pay_status AS "payStatus",
+        a.customer_id AS "customerId",
+        a.eshop_code AS "eshopCode",
+        a.shop_id AS "shopId",
+        a.shop_name AS "shopName",
+        a.shop_phone AS "shopPhone",
+        a.shop_addr AS "shopAddr",
+        a.order_content AS "orderContent",
+        a.cancel_reason AS "cancelReason",
+        a.cancel_reason_remark AS "cancelReasonRemark"
+    </sql>
+
     <!--组合订单列表-->
     <select id="listDataCombination" resultType="CombinationOrderInfo">
         SELECT
@@ -122,6 +160,15 @@
         LEFT JOIN customer_info cust ON a.customer_id = cust.id AND cust.del_flag = #{DEL_FLAG_NORMAL}
         LEFT JOIN tech_info tech ON a.tech_id = tech.id AND tech.del_flag = #{DEL_FLAG_NORMAL}
 
+        WHERE a.master_id = #{masterId} AND a.del_flag = #{DEL_FLAG_NORMAL}
+    </select>
+
+    <!--根据masterId获取组合订单-->
+    <select id="getCombinationByMasterId" resultType="CombinationOrderInfo">
+        SELECT
+        <include refid="CombinationOrderColumns"/>
+        FROM
+        order_combination_info a
         WHERE a.master_id = #{masterId} AND a.del_flag = #{DEL_FLAG_NORMAL}
     </select>
 

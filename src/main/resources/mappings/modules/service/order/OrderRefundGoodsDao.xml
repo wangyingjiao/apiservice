@@ -52,7 +52,7 @@
 		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
-	<!--app根据orderid查询出所有的退货单表-->
+	<!--app根据masterId查询出所有的退货单表-->
 	<select id="getRefundGoodsByOrderId" resultType="OrderRefundGoods">
 		SELECT
 		<include refid="orderRefundGoodsColumns"/>

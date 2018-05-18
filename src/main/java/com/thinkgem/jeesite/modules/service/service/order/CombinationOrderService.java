@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.modules.service.dao.item.CombinationCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
@@ -62,6 +63,11 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 	public CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo) {
 		CombinationOrderInfo combinationById = combinationOrderDao.getCombinationById(combinationOrderInfo);
 		List<OrderCombinationFrequencyInfo> frequencyList = frequencyDao.getFrequencyList(combinationOrderInfo);
+		if (frequencyList != null && frequencyList.size() > 0) {
+			for (OrderCombinationFrequencyInfo frequencyInfo : frequencyList) {
+				frequencyInfo.setTimeArea(DateUtils.formatDate(frequencyInfo.getStartTime(),"HH:mm")+"-"+DateUtils.formatDate(frequencyInfo.getEndTime(),"HH:mm"));
+			}
+		}
 		combinationById.setFreList(frequencyList);
 		//根据masterId获取组合订单的订单集合
         List<OrderCombinationGasqInfo> listbyMasterId = orderCombinationGasqDao.getListbyMasterId(combinationOrderInfo);

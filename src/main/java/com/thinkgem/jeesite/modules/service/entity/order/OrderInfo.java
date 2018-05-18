@@ -32,6 +32,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String majorSort;		// 分类(all:全部 clean:保洁 repair:家修)
 	private String originPrice;		// 订单总价原价
 	private String majorSortName;	//app订单类型名称
+	private String payable;	//应付 app使用
+	private String realPayment;	//实付  app使用
 	private String payPrice;		// 实际付款价格
 	private String orderAddressId;		// 订单地址ID
 	private String longitude;		// 经度
@@ -125,7 +127,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	private String combinationOrderContent;
 	private String combinationGoodsId;
-	private String combinationGoodsName;
+	private String combinationGoodsName; //组合商品名称
+	private String jointGroupId;		// 对接订单组ID（组合订单）
 	private int combinationGoodsNum;
 
 	public List<String> getRefundGoodsList() {
@@ -945,5 +948,29 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setCombinationGoodsNum(int combinationGoodsNum) {
 		this.combinationGoodsNum = combinationGoodsNum;
+	}
+
+	public String getJointGroupId() {
+		return jointGroupId;
+	}
+
+	public void setJointGroupId(String jointGroupId) {
+		this.jointGroupId = jointGroupId;
+	}
+
+	public String getPayable() {
+		return payable;
+	}
+
+	public void setPayable(String payable) {
+		this.payable = payable;
+	}
+
+	public String getRealPayment() {
+		return realPayment;
+	}
+
+	public void setRealPayment(String realPayment) {
+		this.realPayment = realPayment;
 	}
 }

@@ -22,7 +22,7 @@ public class OrderCombinationFrequencyInfo extends DataEntity<OrderCombinationFr
     private int week;         //工作日期（周一，周二。。。）
     private Date startTime;		// 起始时段
     private Date endTime;		// 结束时段
-
+	private String timeArea;		// 拼接时间段
 	public OrderCombinationFrequencyInfo() {}
 
 	public OrderCombinationFrequencyInfo(String id) {
@@ -59,5 +59,13 @@ public class OrderCombinationFrequencyInfo extends DataEntity<OrderCombinationFr
 
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
+	}
+
+	public String getTimeArea() {
+		return timeArea;
+	}
+
+	public void setTimeArea(String timeArea) {
+		this.timeArea = timeArea;
 	}
 }

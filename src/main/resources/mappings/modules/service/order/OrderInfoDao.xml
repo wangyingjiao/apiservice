@@ -445,6 +445,7 @@ origin_price,
 			pay.pay_platform AS "payInfo.payPlatform",
 			pay.pay_account AS "payInfo.payAccount",
 			pay.pay_time AS "payInfo.payTime",
+			a.service_hour AS "serviceHour",
 
 			address.name AS "addressInfo.name",
 			address.phone AS "addressInfo.phone",

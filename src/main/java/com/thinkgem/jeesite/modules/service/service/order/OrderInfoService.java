@@ -74,6 +74,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	SerItemCommodityDao serItemCommodityDao;
 	@Autowired
 	SerSortInfoDao serSortInfoDao;
+	@Autowired
+	CombinationOrderDao combinationOrderDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -227,12 +229,30 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String orderType = orderInfo.getOrderType();
 		if ("common".equals(orderType)){
 			orderInfo.setOrderTypeName("普通订单");
+			//如果是普通订单 应付是订单中的价格
+			orderInfo.setPayable(orderInfo.getPayPrice());
 		}
 		if ("group_split_yes".equals(orderType)){
 			orderInfo.setOrderTypeName("组合订单（多次服务）");
 		}
 		if ("group_split_no".equals(orderType)){
 			orderInfo.setOrderTypeName("组合订单（单次服务）");
+		}
+		//如果是组合订单 应付是组合订单中的价格 用masterId去查组合订单表
+		//展示订单类型、组合商品名称、订单组ID、对接订单组ID
+		if (!"common".equals(orderType)){
+			CombinationOrderInfo combinationByMasterId = combinationOrderDao.getCombinationByMasterId(orderInfo);
+			orderInfo.setCombinationGoodsName(combinationByMasterId.getCombinationGoodsName());
+			orderInfo.setJointGroupId(combinationByMasterId.getJointGroupId());
+			orderInfo.setPayable(combinationByMasterId.getPayPrice());
+		}
+		//保持支付表与订单表中支付状态一致  支付按钮的出现时机
+		String payStatus1 = orderInfo.getPayInfo().getPayStatus();
+		orderInfo.setPayStatus(payStatus1);
+		if ("payed".equals(orderInfo.getPayInfo().getPayStatus())){
+			orderInfo.setRealPayment(orderInfo.getPayInfo().getPayAccount());
+		}else {
+			orderInfo.setRealPayment(Integer.toString(0));
 		}
 		//获取服务项目的id集合
 		List<String> ids = new ArrayList<>();
@@ -430,8 +450,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			}
 		}
 		orderInfo.setOrderRemarkPics(orp);
-		//如果是已支付的显示支付方式
-		if ("payed".equals(payStatus)) {
+		//如果是来源是本机构的已支付的显示支付方式
+		if ("payed".equals(payStatus) && "own".equals(orderInfo.getOrderSource())) {
 			//订单详情中对应的支付信息表
 			String masterId = orderInfo.getMasterId();
 			//如果主订单ID为空
@@ -443,32 +463,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 			if (byMasterId == null) {
 				throw new ServiceException("支付信息为空");
 			}
-			if ("own".equals(orderInfo.getOrderSource())) {
-				if ("cash".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("现金");
-				}
-			}else if ("gasq".equals(orderInfo.getOrderSource())){
-				if ("cash".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("现金");
-				}
-				if ("wx_pub_qr".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("微信扫码");
-				}
-				if ("wx".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("微信");
-				}
-				if ("alipay_qr".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("支付宝扫码");
-				}
-				if ("alipay".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("支付宝");
-				}
-				if ("pos".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("银行卡");
-				}
-				if ("balance".equals(byMasterId.getPayPlatform())) {
-					byMasterId.setPayPlatform("余额");
-				}
+			if ("cash".equals(byMasterId.getPayPlatform())) {
+				byMasterId.setPayPlatform("现金");
 			}
 			orderInfo.setOrderPayInfo(byMasterId);
 		}
@@ -552,31 +548,32 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if (StringUtils.isBlank(payStatus) || "payed".equals(payStatus)){
 			throw new ServiceException("订单已经支付，无需再次支付");
 		}
-		if (!orderInfo.getPayPrice().equals(info.getPayPrice())){
-            throw new ServiceException("当前支付价格与订单实际价格不一致，请重新支付");
-        }
-		info.appPreUpdate();
-		info.setPayStatus("payed");
-		i = dao.appUpdatePay(info);
-		//根据主订单id  master_id查询出对应的支付信息
+		//判断价格 master_id查询出对应的支付信息
 		OrderPayInfo byMasterId = orderPayInfoDao.getByMasterId(masterId);
 		if (byMasterId == null){
 			throw new ServiceException("支付信息为空");
 		}
+		if (!orderInfo.getPayPrice().equals(byMasterId.getPayAccount())){
+			throw new ServiceException("当前支付价格与订单实际价格不一致，请重新支付");
+		}
 		//支付信息中的支付状态
 		String payStatus1 = byMasterId.getPayStatus();
+		if (StringUtils.isBlank(payStatus1) || "payed".equals(payStatus1)){
+			throw new ServiceException("订单已经支付，无需再次支付");
+		}
+		info.appPreUpdate();
+		info.setPayStatus("payed");
+		i = dao.appUpdatePay(info);
 		//修改支付信息中的订单状态
 		if (i>0) {
-			if (StringUtils.isNotBlank(payStatus1) && "waitpay".equals(payStatus1)) {
-				byMasterId.appPreUpdate();
-				byMasterId.setPayPlatform("cash");
-				byMasterId.setPayMethod("offline");
-				byMasterId.setPayTime(new Date());
-				byMasterId.setPayTech(nowId);
-				byMasterId.setPayStatus("payed");
-				byMasterId.appPreUpdate();
-				i = orderPayInfoDao.update(byMasterId);
-			}
+			byMasterId.appPreUpdate();
+			byMasterId.setPayPlatform("cash");
+			byMasterId.setPayMethod("offline");
+			byMasterId.setPayTime(new Date());
+			byMasterId.setPayTech(nowId);
+			byMasterId.setPayStatus("payed");
+			byMasterId.appPreUpdate();
+			i = orderPayInfoDao.update(byMasterId);
 		}else {
 			throw new ServiceException("支付失败");
 		}
@@ -635,8 +632,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
         if (!"own".equals(orderInfo.getOrderSource())){
             throw new ServiceException("订单来源不是本机构，不可补单");
         }
-        //查询支付表 orderId
-        OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayInfoByOrderId(orderInfo);
+        //查询支付表 masterId
+        OrderPayInfo payInfoByOrderId = orderPayInfoDao.getByMasterId(orderInfo.getMasterId());
         if (payInfoByOrderId == null){
             throw new ServiceException("未找到支付表");
         }
