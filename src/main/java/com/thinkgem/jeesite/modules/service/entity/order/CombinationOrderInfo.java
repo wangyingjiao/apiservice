@@ -44,6 +44,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private Date serviceStart;		// 第一次服务日期
 	private int serviceNum;//预约个数
 	private Double serviceHour; //单次建议服务时长（小时）
+	private Double serviceAllHour;//预约个数*单次建议服务时长
 	private String techId; //固定技师ID
 	private int bespeakTotal; //可预约次数
 	private int bespeakNum; //已预约次数
@@ -89,6 +90,14 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setUnit(String unit) {
 		this.unit = unit;
+	}
+
+	public Double getServiceAllHour() {
+		return serviceAllHour;
+	}
+
+	public void setServiceAllHour(Double serviceAllHour) {
+		this.serviceAllHour = serviceAllHour;
 	}
 
 	public BigDecimal getPrice() {

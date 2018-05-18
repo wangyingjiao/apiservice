@@ -7,6 +7,8 @@
         SELECT
             a.id AS id,
             a.master_id AS masterId,
+            a.combination_goods_name AS combinationGoodsName,
+            a.joint_group_id AS jointGroupId,
             a.org_id AS orgId,
             org.name AS orgName,
             a.station_id AS stationId,
@@ -39,6 +41,9 @@
             </if>
             <if test="orderContent != null and orderContent !=''">
                 AND a.order_content LIKE concat('%',#{orderContent},'%')
+            </if>
+            <if test="jointGroupId != null and jointGroupId !=''">
+                AND a.joint_group_id LIKE concat('%',#{jointGroupId},'%')
             </if>
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}
@@ -79,6 +84,7 @@
         a.combination_goods_num AS "combinationGoodsNum",
         a.pay_price AS payPrice,
         a.pay_status AS "payStatus",
+        a.service_num AS "serviceNum",
         pay.pay_number AS "payInfo.payNumber",
         pay.pay_status AS "payInfo.payStatus",
         pay.pay_method AS "payInfo.payMethod",

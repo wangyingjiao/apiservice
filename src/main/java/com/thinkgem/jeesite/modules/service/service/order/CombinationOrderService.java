@@ -75,6 +75,9 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
                 surplusNum = bespeakTotal - bespeakNum;
             }
             combinationById.setSurplusNum(surplusNum);
+            BigDecimal serviceNum = new BigDecimal(combinationById.getServiceNum());
+            BigDecimal multiply = serviceNum.multiply(new BigDecimal(combinationById.getServiceHour()));
+            combinationById.setServiceAllHour(multiply.doubleValue());
         }
         //根据com表中goodId获取所有组合商品-子商品
 		List<CombinationCommodity> listByGoodsId = combinationCommodityDao.findListByGoodsId(combinationById);
