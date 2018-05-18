@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.service.dao.order.CombinationOrderDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.skill.SerSkillTechnicianDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianFamilyMembersDao;
@@ -62,6 +63,8 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
     private AreaDao areaDao;
     @Autowired
     private DictDao dictDao;
+    @Autowired
+    private CombinationOrderDao combinationOrderDao;
     @Autowired
     private ServiceStationService serviceStationService;
 
@@ -336,8 +339,18 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
         info.preUpdate();
         dao.updatePlus(info);
     }
+    //判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched
+    public int getComCount(ServiceTechnicianInfo info) {
+        return combinationOrderDao.getComCount(info);
+    }
+
     @Transactional(readOnly = false)
     public void saveOther(ServiceTechnicianInfo info) {
+        //判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched
+        int comCount = combinationOrderDao.getComCount(info);
+        if (comCount > 0){
+            throw new ServiceException("该技师已有组合订单不可编辑为离职状态.");
+        }
         info.preUpdate();
         dao.updateOther(info);
     }

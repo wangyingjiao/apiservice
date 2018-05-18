@@ -172,6 +172,18 @@
         WHERE a.master_id = #{masterId} AND a.del_flag = #{DEL_FLAG_NORMAL}
     </select>
 
+    <!--判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched-->
+    <select id="getComCount" resultType="int">
+        SELECT
+            count(1) AS num
+        FROM
+        order_combination_info a
+        WHERE a.tech_id = #{id}
+        AND a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.order_status = 'dispatched'
+        AND a.bespeak_total > a.bespeak_num
+    </select>
+
     <select id="getOrderRemark" resultType="OrderInfo">
 		SELECT
 			a.customer_remark AS "customerRemark",

@@ -156,6 +156,10 @@ public class ServiceTechnicianInfoController extends BaseController {
         if(serviceTechnicianInfoService.getOrderTechRelation(serviceTechnicianInfo) > 0){
             return new FailResult("服务人员有未完成订单,不可删除.");
         }
+        int comCount = serviceTechnicianInfoService.getComCount(serviceTechnicianInfo);
+        if (comCount > 0){
+            return new FailResult("该技师已有组合订单,不可删除.");
+        }
         //删除技师
         serviceTechnicianInfoService.delete(serviceTechnicianInfo);
 

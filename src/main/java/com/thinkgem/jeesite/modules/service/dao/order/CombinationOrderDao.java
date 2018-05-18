@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderGoods;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianHoliday;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 
@@ -35,4 +36,6 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
     OrderInfo getOrderRemark(CombinationOrderInfo combinationOrderInfo);
 
     List<OrderDispatch> initCombinationOrderTech(CombinationOrderInfo combinationOrderInfo);
+    //判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched
+    int getComCount(ServiceTechnicianInfo info);
 }
