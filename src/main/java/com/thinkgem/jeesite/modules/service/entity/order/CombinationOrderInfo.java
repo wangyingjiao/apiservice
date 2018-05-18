@@ -41,7 +41,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
     private Date endTime;		//结束时间  列表查询条件
 	private String serviceFrequency;	// 服务频次 weekly:1周1次 many:1周多次 fortnightly:2周1次
 	private Date serviceStart;		// 第一次服务日期
-	private Double serviceHour; //服务时长（小时）
+	private int serviceNum;//预约个数
+	private Double serviceHour; //单次建议服务时长（小时）
 	private String techId; //固定技师ID
 	private int bespeakTotal; //可预约次数
 	private int bespeakNum; //已预约次数
@@ -218,6 +219,14 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setServiceStart(Date serviceStart) {
 		this.serviceStart = serviceStart;
+	}
+
+	public int getServiceNum() {
+		return serviceNum;
+	}
+
+	public void setServiceNum(int serviceNum) {
+		this.serviceNum = serviceNum;
 	}
 
 	public Double getServiceHour() {
