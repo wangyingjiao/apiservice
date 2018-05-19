@@ -358,7 +358,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			try {
 				removeBusyTechByWeekTime(frequency, techList, techDispatchNum, serviceSecond);
 			}catch (Exception e){
-				logger.error(responseRe.getLabel()+"未找到服务时间点列表");
+				logger.error(responseRe.getLabel()+"去除忙碌技师失败");
 			}
 
 		}
@@ -861,15 +861,6 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();//服务时间
 		Date serviceStart = combinationOrderInfo.getServiceStart();// 第一次选择日期
 		String techId = combinationOrderInfo.getTechId();
-		ServiceTechnicianInfo techInfo = technicianInfoDao.get(techId);
-		//获取组合信息
-		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
-		combinationInfo.setMasterId(masterId);
-		combinationInfo.setServiceNum(serviceNum);
-		combinationInfo.setServiceFrequency(serviceFrequency);
-		combinationInfo.setServiceStart(serviceStart);
-		combinationInfo.setTechId(techId);
-		combinationInfo.setTechPhone(techInfo.getPhone());
 
 		// 更新 组合订单信息order_combination_info
 		CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
@@ -880,76 +871,27 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		updateCombinationOrderInfo.setTechId(techId);
 		combinationOrderDao.updateManyByMasterId(updateCombinationOrderInfo);
 
+		//删除 旧的组合订单服务时间order_combination_frequency
+		frequencyDao.deleteOldFrequencyByMasterId(masterId);
 		// 新增 组合订单服务时间order_combination_frequency
 		for(OrderCombinationFrequencyInfo frequency : freList){
 			frequency.setMasterId(masterId);
+			String startTimeStr = frequency.getTimeArea().split("-")[0];
+			String endTimeStr = frequency.getTimeArea().split("-")[1];
+			Date startTime = null;
+			Date endTime = null;
+			try {
+				startTime = DateUtils.parseDate(startTimeStr,"HH:mm");
+				endTime = DateUtils.parseDate(endTimeStr,"HH:mm");
+			} catch (ParseException e) {
+
+			}
+			frequency.setStartTime(startTime);
+			frequency.setEndTime(endTime);
 			frequency.preInsert();
 			frequencyDao.insert(frequency);
 
 		}
 		return null;
 	}
-
-
-	/**
-	 * 设置固定时间- 查询服务技师
-	 * @param combinationOrderInfo(serviceNum，masterId，freList)
-	 * @return
-	 */
-	public List<OrderDispatch> updateRegularTechTechList(CombinationOrderInfo combinationOrderInfo) {
-		String techName = combinationOrderInfo.getTechName();//查询条件
-		int serviceNum = combinationOrderInfo.getServiceNum();//预约个数
-		String masterId = combinationOrderInfo.getMasterId();
-		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();
-
-		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
-		SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(combinationInfo.getCombinationGoodsId());
-		int techDispatchNum = 1;//派人数量
-		double serviceHour =combinationInfo.getServiceHour();//单次建议服务时长
-		String stationId = combinationInfo.getStationId();//服务站ID
-		String orgId = combinationInfo.getOrgId();//机构
-		Double serviceSecond = (serviceHour * serviceNum * 3600);
-
-		//技能
-		SerSkillSort serchSkillSort = new SerSkillSort();
-		serchSkillSort.setOrgId(orgId);
-		serchSkillSort.setSortId(commodity.getSortId());
-		String skillId = "";
-		List<SerSkillSort> skillSortList = orderInfoDao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
-		if (skillSortList != null && skillSortList.size() == 1) {
-			skillId = skillSortList.get(0).getSkillId();
-		} else {
-			logger.error("未找到商品需求的技能信息");
-			return null;
-		}
-
-		//取得技师List
-		OrderDispatch serchInfo = new OrderDispatch();
-		//展示当前下单客户所在服务站的所有可服务的技师
-		serchInfo.setStationId(stationId);
-		//（1）会此技能的
-		serchInfo.setSkillId(skillId);
-		//（2）上线、在职
-		serchInfo.setTechStatus("yes");
-		serchInfo.setJobStatus("online");
-		//自动派单 全职 ; 手动派单没有条件
-		serchInfo.setJobNature("full_time");
-		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
-		if(techList.size() < techDispatchNum){//技师数量不够
-			logger.error("技师数量不够");
-			return null;
-		}
-
-		for(OrderCombinationFrequencyInfo frequency : freList){
-			OrderTimeList responseRe = new OrderTimeList();
-			try {
-				removeBusyTechByWeekTime(frequency, techList, techDispatchNum, serviceSecond);
-			}catch (Exception e){
-				logger.error(responseRe.getLabel()+"未找到服务时间点列表");
-			}
-
-		}
-		return techList;
-	}
-
 }

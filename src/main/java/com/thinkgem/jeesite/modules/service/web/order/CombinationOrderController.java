@@ -42,6 +42,8 @@ public class CombinationOrderController extends BaseController {
 	@Autowired
 	private CombinationSaveRegularDateService combinationSaveRegularDateService;
 	@Autowired
+	private CombinationSaveRegularTechService combinationSaveRegularTechService;
+	@Autowired
 	private MessageInfoService messageInfoService;
 
 	/**
@@ -188,7 +190,7 @@ public class CombinationOrderController extends BaseController {
 	//@RequiresPermissions("combination_regular_tech")
 	public Result updateRegularTechTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
-			List<OrderDispatch> list = combinationSaveRegularDateService.updateRegularTechTechList(combinationOrderInfo);
+			List<OrderDispatch> list = combinationSaveRegularTechService.updateRegularTechTechList(combinationOrderInfo);
 			return new SuccResult(list);
 		}catch (Exception e){
 			e.printStackTrace();
@@ -205,8 +207,18 @@ public class CombinationOrderController extends BaseController {
 	@RequestMapping(value = "updateRegularTechSave", method = {RequestMethod.POST})
 	//@RequiresPermissions("combination_regular_tech")
 	public Result updateRegularTechSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			boolean flag = combinationSaveRegularTechService.checkRegularDateTech(combinationOrderInfo);
+			if(flag){
+				return new FailResult("服务技师目前暂不可用!");
+			}
+			List<OrderInfo> list = combinationSaveRegularTechService.updateRegularTechSave(combinationOrderInfo);
 
-		return new SuccResult("");
+			return new SuccResult("更换成功");
+		}catch (Exception e){
+			e.printStackTrace();
+			return new FailResult("更换失败!");
+		}
 	}
 	/**
 	 * 更换子订单时间
@@ -221,71 +233,52 @@ public class CombinationOrderController extends BaseController {
 		return new SuccResult("");
 	}
 
-	/**
-	 * 子订单  更换技师  按钮
-	 * @param combinationOrderInfo
-	 * @return 子订单技师列表
-	 */
-	@ResponseBody
-	@RequestMapping(value = "initCombinationOrderTech", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_order_tech")
-	public Result initCombinationOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-		// 订单ID不为空
-		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
-			return new FailResult("未找到订单信息");
-		}
-		try {
-			return new SuccResult(combinationOrderService.initCombinationOrderTech(combinationOrderInfo));
-		}catch (ServiceException ex){
-			return new FailResult("查看失败-"+ex.getMessage());
-		}catch (Exception e){
-			return new FailResult("未找到订单信息!");
-		}
-	}
-
-	/**
-	 * 子订单  更换技师  按钮
-	 * @param combinationOrderInfo
-	 * @return 子订单技师列表
-	 */
-	@ResponseBody
-	@RequestMapping(value = "addCombinationOrderTech", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_order_tech")
-	public Result addCombinationOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-		// 订单ID不为空
-		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
-			return new FailResult("未找到订单信息");
-		}
-		try {
-			return new SuccResult(combinationOrderService.addCombinationOrderTech(combinationOrderInfo));
-		}catch (ServiceException ex){
-			return new FailResult("查看失败-"+ex.getMessage());
-		}catch (Exception e){
-			return new FailResult("未找到订单信息!");
-		}
-	}
-
-	/**
-	 * 子订单  更换技师  按钮
-	 * @param combinationOrderInfo
-	 * @return 子订单技师列表
-	 */
-	@ResponseBody
-	@RequestMapping(value = "dispatchCombinationOrderTech", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_order_tech")
-	public Result dispatchCombinationOrderTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-		// 订单ID不为空
-		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
-			return new FailResult("未找到订单信息");
-		}
-		try {
-			return new SuccResult(combinationOrderService.initCombinationOrderTech(combinationOrderInfo));
-		}catch (ServiceException ex){
-			return new FailResult("查看失败-"+ex.getMessage());
-		}catch (Exception e){
-			return new FailResult("未找到订单信息!");
-		}
-	}
+//	/**
+//	 * 子订单  更换技师  按钮
+//	 * @param combinationOrderInfo
+//	 * @return 子订单技师列表
+//	 */
+//	@ResponseBody
+//	@RequestMapping(value = "updateOrderTechInit", method = {RequestMethod.POST})
+//	//@RequiresPermissions("combination_order_tech")
+//	public Result updateOrderTechInit(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+//
+//	}
+//
+//	/**
+//	 * 子订单  更换技师 增加 改派 技师列表
+//	 * @param combinationOrderInfo
+//	 * @return 子订单增加 改派 技师列表
+//	 */
+//	@ResponseBody
+//	@RequestMapping(value = "updateOrderTechTechList", method = {RequestMethod.POST})
+//	//@RequiresPermissions("combination_order_tech")
+//	public Result updateOrderTechTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+//
+//	}
+//
+//	/**
+//	 * 子订单  更换技师 增加保存按钮
+//	 * @param combinationOrderInfo
+//	 * @return
+//	 */
+//	@ResponseBody
+//	@RequestMapping(value = "updateOrderTechAddSave", method = {RequestMethod.POST})
+//	//@RequiresPermissions("combination_order_tech")
+//	public Result updateOrderTechAddSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+//
+//	}
+//	/**
+//	 * 子订单  更换技师  改派保存按钮
+//	 * @param combinationOrderInfo
+//	 * @return
+//	 */
+//	@ResponseBody
+//	@RequestMapping(value = "updateOrderTechDispatchSave", method = {RequestMethod.POST})
+//	//@RequiresPermissions("combination_order_tech")
+//	public Result updateOrderTechDispatchSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+//
+//	}
 
 
 	/**
@@ -294,9 +287,9 @@ public class CombinationOrderController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "getOrderRemark", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_order_remark")
-	public Result getOrderRemark(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+	@RequestMapping(value = "formOrderRemark", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_remark")
+	public Result formOrderRemark(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		// 订单ID不为空
 		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
 			return new FailResult("未找到订单信息");

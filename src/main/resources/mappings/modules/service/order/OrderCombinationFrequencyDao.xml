@@ -42,4 +42,8 @@
         )
     </insert>
 
+    <update id="deleteOldFrequencyByMasterId">
+        DELETE FROM order_combination_frequency
+        WHERE master_id = #{masterId}
+    </update>
 </mapper>

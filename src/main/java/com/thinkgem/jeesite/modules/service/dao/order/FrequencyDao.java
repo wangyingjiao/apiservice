@@ -20,4 +20,6 @@ public interface FrequencyDao extends CrudDao<OrderCombinationFrequencyInfo> {
 
     // 根据masterId获取组合订单的服务时间
     List<OrderCombinationFrequencyInfo> getFrequencyList(CombinationOrderInfo combinationOrderInfo);
+
+    void deleteOldFrequencyByMasterId(String masterId);
 }
