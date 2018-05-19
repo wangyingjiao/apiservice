@@ -871,6 +871,7 @@
             a.end_time AS endTimeStr,
             a.type_id AS typeId,
             a.type,
+            a.master_id AS  masterId,
             a.remark
             FROM tech_schedule a
             WHERE a.tech_id = #{id}

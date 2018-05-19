@@ -19,8 +19,10 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
     private int scheduleWeek;		// 日期（周一，周二。。。1,2,3,4,5,6,7）
     private Date startTime;		// 起始时段
     private Date endTime;		// 结束时段
-    private String typeId;		// 休假ID或订单ID
-    private String type;        //holiday：休假  order：订单
+    private String typeId;		// 休假ID或订单ID或groupID
+    private String type;        //holiday：休假  order：订单 master:组合订单
+    private String masterId;        //holiday：休假  order：订单 master:组合订单
+    private String orderType;        //holiday：休假  order：订单 master:组合订单
     private String remark;      //备注信息
     private String reviewStatus;      //app新增休假时使用 参数传递使用
 
@@ -84,6 +86,14 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
         this.techId = techId;
     }
 
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
     public Date getScheduleDate() {
         return scheduleDate;
     }
@@ -130,6 +140,14 @@ public class TechScheduleInfo  extends DataEntity<TechScheduleInfo> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getMasterId() {
+        return masterId;
+    }
+
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
     }
 
     public String getRemark() {
