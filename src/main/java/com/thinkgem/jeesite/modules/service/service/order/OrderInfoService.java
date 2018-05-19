@@ -241,7 +241,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		//如果是组合订单 应付是组合订单中的价格 用masterId去查组合订单表
 		//展示订单类型、组合商品名称、订单组ID、对接订单组ID
 		if (!"common".equals(orderType)){
-			CombinationOrderInfo combinationByMasterId = combinationOrderDao.getCombinationOrderByMasterId(orderInfo);
+			CombinationOrderInfo combinationByMasterId = combinationOrderDao.getCombinationByMasterId(orderInfo.getMasterId());
 			orderInfo.setCombinationGoodsName(combinationByMasterId.getCombinationGoodsName());
 			orderInfo.setJointGroupId(combinationByMasterId.getJointGroupId());
 			orderInfo.setPayable(combinationByMasterId.getPayPrice());

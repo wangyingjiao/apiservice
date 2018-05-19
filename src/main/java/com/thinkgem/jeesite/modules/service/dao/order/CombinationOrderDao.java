@@ -27,15 +27,13 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
     List<CombinationOrderInfo> listDataCombination(CombinationOrderInfo combinationOrderInfo);
     //根据masterId查询组合订单详情
     CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo);
-    //根据masterId获取组合订单
-    CombinationOrderInfo getCombinationOrderByMasterId(OrderInfo orderInfo);
 
     OrderInfo getOrderRemark(CombinationOrderInfo combinationOrderInfo);
 
     List<OrderDispatch> initCombinationOrderTech(CombinationOrderInfo combinationOrderInfo);
     //判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched
     int getComCount(ServiceTechnicianInfo info);
-
+    //根据masterId获取组合订单
     CombinationOrderInfo getCombinationByMasterId(String masterId);
 
     List<OrderCombinationFrequencyInfo> listFrequencyByTechWeek(CombinationOrderInfo serchCombinationInfo);

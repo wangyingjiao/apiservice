@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianFami
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianWorkTimeDao;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.CombinationOrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillInfo;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillTechnician;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
@@ -645,7 +646,16 @@ public class ServiceTechnicianInfoService extends CrudService<ServiceTechnicianI
                 sti.setSchedulebeginTime(dateFirstTime);
                 sti.setScheduleEndTime(dateLastTime);
                 List<TechScheduleInfo> tsiList = serviceTechnicianInfoDao.getScheduleList(sti);  //查询当前技师的排期信息
+                //如果type是master
                 if (tsiList.size() > 0){
+                    for (TechScheduleInfo techScheduleInfo:tsiList){
+                        if ("master".equals(techScheduleInfo.getType())){
+                            String masterId = techScheduleInfo.getMasterId();
+                            //根据masterId去查询组合订单表
+                            CombinationOrderInfo combinationByMasterId = combinationOrderDao.getCombinationByMasterId(masterId);
+                            techScheduleInfo.setOrderType(combinationByMasterId.getOrderType());
+                        }
+                    }
                     sdi.setTechScheduleInfos(tsiList);
                 }
                 Calendar c = Calendar.getInstance();

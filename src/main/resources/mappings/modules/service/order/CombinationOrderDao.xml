@@ -163,15 +163,6 @@
         WHERE a.master_id = #{masterId} AND a.del_flag = #{DEL_FLAG_NORMAL}
     </select>
 
-    <!--根据masterId获取组合订单-->
-    <select id="getCombinationOrderByMasterId" resultType="CombinationOrderInfo">
-        SELECT
-        <include refid="CombinationOrderColumns"/>
-        FROM
-        order_combination_info a
-        WHERE a.master_id = #{masterId} AND a.del_flag = #{DEL_FLAG_NORMAL}
-    </select>
-
     <!--判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched-->
     <select id="getComCount" resultType="int">
         SELECT
@@ -306,35 +297,10 @@
         )
     </insert>
 
+    <!--根据masterId获取组合订单-->
     <select id="getCombinationByMasterId"  resultType="CombinationOrderInfo">
         SELECT
-        a.id AS "id",
-        a.master_id AS "masterId",
-        a.order_type AS "orderType",
-        a.major_sort AS "majorSort",
-        a.order_status AS "orderStatus",
-        a.order_source AS "orderSource",
-        a.bespeak_total AS "bespeakTotal",
-        a.bespeak_num AS "bespeakNum",
-        a.order_time AS "orderTime",
-        a.service_frequency AS serviceFrequency,
-        a.latitude AS latitude,
-        a.longitude AS longitude,
-        a.origin_price AS originPrice,
-        a.org_id AS "orgId",
-        a.station_id AS "stationId",
-        a.joint_group_id AS "jointGroupId",
-        a.combination_goods_id AS "combinationGoodsId",
-        a.combination_goods_name AS "combinationGoodsName",
-        a.combination_goods_num AS "combinationGoodsNum",
-        a.pay_price AS payPrice,
-        a.pay_status AS "payStatus",
-        a.service_hour AS "serviceHour",
-        a.service_start AS "serviceStart",
-        a.tech_id AS techId,
-        a.order_content AS "orderContent",
-        a.cancel_reason AS "cancelReason",
-        a.cancel_reason_remark AS "cancelReasonRemark"
+        <include refid="CombinationOrderColumns"/>
         FROM
         order_combination_info a
         WHERE a.master_id = #{masterId}
