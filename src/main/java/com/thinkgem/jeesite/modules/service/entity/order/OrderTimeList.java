@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.service.entity.order;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.service.entity.technician.AppServiceTechnicianInfo;
+import com.thinkgem.jeesite.modules.sys.entity.KeyValueEntity;
 import org.hibernate.validator.constraints.Length;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ public class OrderTimeList {
 	private String value ;//id
 	private String label;//年月日
 	private List<OrderDispatch> serviceTime;//时间
+	private List<KeyValueEntity> hoursList;
 
 	public String getValue() {
 		return value;
@@ -46,5 +48,13 @@ public class OrderTimeList {
 
 	public void setServiceTime(List<OrderDispatch> serviceTime) {
 		this.serviceTime = serviceTime;
+	}
+
+	public List<KeyValueEntity> getHoursList() {
+		return hoursList;
+	}
+
+	public void setHoursList(List<KeyValueEntity> hoursList) {
+		this.hoursList = hoursList;
 	}
 }

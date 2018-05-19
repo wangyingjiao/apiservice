@@ -229,7 +229,8 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 				techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
 				techScheduleInfo.setEndTime(orderInfo.getFinishTime());//结束时段
 				techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
-				techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+				techScheduleInfo.setMasterId(orderInfo.getMasterId());
+				techScheduleInfo.setType("master");//'holiday：休假  order：订单'
 
 				User user = new User();
 				user.setId("gasq001");

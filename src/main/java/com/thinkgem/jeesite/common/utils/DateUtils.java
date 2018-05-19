@@ -660,11 +660,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws ParseException {
-		List<Date> list = null;
+		/*List<Date> list = null;
 		list = listTimeByFrequency(parseDate("2018-05-08"),parseDate("16:00","HH:mm"),4,1.5);
 		for(Date info : list){
 			System.out.println(info);
-		}
+		}*/
+
+		String str = getWeekL(parseDate("2018-05-08"));
+		System.out.println(str);
 	}
 
 }

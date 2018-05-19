@@ -20,11 +20,13 @@ import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
+import com.thinkgem.jeesite.modules.sys.entity.KeyValueEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -54,6 +56,45 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 	private ServiceTechnicianInfoDao technicianInfoDao;
 	@Autowired
 	private OrderToolsService orderToolsService;
+
+	public static List<OrderTimeList> saveRegularDateWeekList() {
+		List<Date> dateList = DateUtils.getWeekLaterTwoWeekDays();
+		List<OrderTimeList> list = new ArrayList<>();
+		List<String> weekList = new ArrayList<>();
+		HashMap<String, List<KeyValueEntity>> map = new HashMap<>();
+		for(Date date : dateList){
+			String week = String.valueOf(DateUtils.getWeekNum(date));
+			if(weekList.contains(week)){
+				List<KeyValueEntity> keyValueEntityList = map.get(week);
+				KeyValueEntity keyValueEntity = new KeyValueEntity();
+				keyValueEntity.setKey(DateUtils.formatDate(date,"yyyy-MM-dd"));
+				keyValueEntity.setValue(DateUtils.formatDate(date,"yyyy-MM-dd") + "(" + DateUtils.getWeekL(date) + ")");
+				keyValueEntityList.add(keyValueEntity);
+				map.put(week,keyValueEntityList);
+			}else{
+				List<KeyValueEntity> keyValueEntityList = new ArrayList<>();
+				KeyValueEntity keyValueEntity = new KeyValueEntity();
+				keyValueEntity.setKey(DateUtils.formatDate(date,"yyyy-MM-dd"));
+				keyValueEntity.setValue(DateUtils.formatDate(date,"yyyy-MM-dd") + "(" + DateUtils.getWeekL(date) + ")");
+				keyValueEntityList.add(keyValueEntity);
+				map.put(week,keyValueEntityList);
+				weekList.add(week);
+			}
+
+		}
+
+		Iterator iter = map.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry entry = (Map.Entry) iter.next();
+
+			OrderTimeList orderTime = new OrderTimeList();
+			orderTime.setLabel(entry.getKey().toString());
+			orderTime.setHoursList((List<KeyValueEntity>)entry.getValue());
+			list.add(orderTime);
+		}
+
+		return  list;
+	}
 
 	/**
 	 * 设置固定时间- 查询服务日期
@@ -112,7 +153,14 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				//该日服务时间点列表
 				List<OrderDispatch> hours = listHourByWeek(i, dateList,techList, techDispatchNum,serviceSecond);
 				if(hours!= null && hours.size()>0){
-					responseRe.setServiceTime(hours);
+					List<KeyValueEntity> hoursList = new ArrayList<>();
+					for(int j=0;j<hours.size();j++){
+						KeyValueEntity keyValueEntity = new KeyValueEntity();
+						keyValueEntity.setKey(String.valueOf(j));
+						keyValueEntity.setValue(hours.get(j).getServiceTimeStr());
+						hoursList.add(keyValueEntity);
+					}
+					responseRe.setHoursList(hoursList);
 					list.add(responseRe);
 				}
 			}catch (Exception e){
@@ -241,7 +289,15 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		List<OrderDispatch> listRe = new ArrayList<>();
 		for(String time : list){
 			OrderDispatch info = new OrderDispatch();
-			info.setServiceTimeStr(time);
+			Date startDate = null;
+			try {
+				startDate = DateUtils.parseDate(time,"HH:mm");
+			} catch (ParseException e) {
+				return null;
+			}
+			Date endDate = DateUtils.addSeconds(startDate, serviceSecond.intValue());
+			String timeStr = time + "-" + DateUtils.formatDate(endDate,"HH:mm");
+			info.setServiceTimeStr(timeStr);
 			listRe.add(info);
 		}
 
@@ -250,7 +306,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 	/**
 	 * 设置固定时间- 查询服务技师
-	 * @param combinationOrderInfo(itemId)
+	 * @param combinationOrderInfo(serviceNum，masterId，freList)
 	 * @return
 	 */
 	public List<OrderDispatch> saveRegularDateTechList(CombinationOrderInfo combinationOrderInfo) {
@@ -311,7 +367,13 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 	private void removeBusyTechByWeekTime(OrderCombinationFrequencyInfo frequencyInfo, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
 		int week = frequencyInfo.getWeek();
-		Date selectTime = frequencyInfo.getStartTime();
+		String selectTimeStr = frequencyInfo.getTimeArea().split("-")[0];
+		Date selectTime = null;
+		try {
+			selectTime = DateUtils.parseDate(selectTimeStr,"HH:mm");
+		} catch (ParseException e) {
+			return;
+		}
 		Iterator<OrderDispatch> it = techList.iterator();
 		while(it.hasNext()) {//循环技师List 取得可用时间
 			OrderDispatch tech = it.next();
@@ -434,7 +496,13 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 		for(OrderCombinationFrequencyInfo frequencyInfo : freList) {
 			int week = frequencyInfo.getWeek();
-			Date selectTime = frequencyInfo.getStartTime();
+			String selectTimeStr = frequencyInfo.getTimeArea().split("-")[0];
+			Date selectTime = null;
+			try {
+				selectTime = DateUtils.parseDate(selectTimeStr,"HH:mm");
+			} catch (ParseException e) {
+				return true;
+			}
 
 
 			//-----------------取得技师 周几可用工作时间 并且转成时间点列表 开始----------------------------------------------------------
@@ -519,7 +587,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 	}
 	/**
 	 * 设置固定时间- 保存
-	 * @param combinationOrderInfo(itemId)
+	 * @param combinationOrderInfo(serviceNum，masterId，freList，serviceFrequency，serviceStart，techId)
 	 * @return
 	 */
 	@Transactional(readOnly = false)
@@ -555,6 +623,18 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		// 新增 组合订单服务时间order_combination_frequency
 		for(OrderCombinationFrequencyInfo frequency : freList){
 			frequency.setMasterId(masterId);
+			String startTimeStr = frequency.getTimeArea().split("-")[0];
+			String endTimeStr = frequency.getTimeArea().split("-")[1];
+			Date startTime = null;
+			Date endTime = null;
+			try {
+				startTime = DateUtils.parseDate(startTimeStr,"HH:mm");
+				endTime = DateUtils.parseDate(endTimeStr,"HH:mm");
+			} catch (ParseException e) {
+
+			}
+			frequency.setStartTime(startTime);
+			frequency.setEndTime(endTime);
 			frequency.preInsert();
 			frequencyDao.insert(frequency);
 
@@ -590,7 +670,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		}
 
 		// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
-		openCreateForTechSchedule( combinationInfo.getTechId(), serviceStartBeginTime, serviceStartEndTime , groupId);
+		openCreateForTechSchedule( combinationInfo.getTechId(), serviceStartBeginTime, serviceStartEndTime , groupId, masterId);
 
 		//更新已预约次数
 		CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();
@@ -687,7 +767,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 	 * @param serviceStartEndTime
 	 * @param groupId
 	 */
-	private void openCreateForTechSchedule(String techId, Date serviceStartBeginTime, Date serviceStartEndTime, String groupId) {
+	private void openCreateForTechSchedule(String techId, Date serviceStartBeginTime, Date serviceStartEndTime, String groupId, String masterId) {
 		TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
 		techScheduleInfo.setTechId(techId);//技师ID
 		techScheduleInfo.setScheduleDate(serviceStartBeginTime);//日期
@@ -696,7 +776,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		techScheduleInfo.setStartTime(serviceStartBeginTime);//起始时段
 		techScheduleInfo.setEndTime(serviceStartEndTime);//结束时段
 		techScheduleInfo.setTypeId(groupId);//休假ID或订单ID
-		techScheduleInfo.setType("group");//'holiday：休假  order：订单'
+		techScheduleInfo.setType("master");//'holiday：休假  order：订单'
+		techScheduleInfo.setMasterId(masterId);
 		techScheduleInfo.preInsert();
 		techScheduleDao.insertSchedule(techScheduleInfo);
 	}
@@ -763,6 +844,112 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		orderInfoDao.insert(orderInfo);
 
 		return orderInfo;
+	}
+
+
+
+	/**
+	 * 更换固定时间 - 保存
+	 * @param combinationOrderInfo(serviceNum，masterId，freList，serviceFrequency，serviceStart，techId)
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public List<OrderInfo> updateRegularDate(CombinationOrderInfo combinationOrderInfo) {
+		String masterId = combinationOrderInfo.getMasterId();
+		int serviceNum = combinationOrderInfo.getServiceNum();//预约个数
+		String serviceFrequency = combinationOrderInfo.getServiceFrequency();//服务频次
+		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();//服务时间
+		Date serviceStart = combinationOrderInfo.getServiceStart();// 第一次选择日期
+		String techId = combinationOrderInfo.getTechId();
+		ServiceTechnicianInfo techInfo = technicianInfoDao.get(techId);
+		//获取组合信息
+		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
+		combinationInfo.setMasterId(masterId);
+		combinationInfo.setServiceNum(serviceNum);
+		combinationInfo.setServiceFrequency(serviceFrequency);
+		combinationInfo.setServiceStart(serviceStart);
+		combinationInfo.setTechId(techId);
+		combinationInfo.setTechPhone(techInfo.getPhone());
+
+		// 更新 组合订单信息order_combination_info
+		CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
+		updateCombinationOrderInfo.setMasterId(masterId);
+		updateCombinationOrderInfo.setServiceNum(serviceNum);
+		updateCombinationOrderInfo.setServiceFrequency(serviceFrequency);
+		updateCombinationOrderInfo.setServiceStart(serviceStart);
+		updateCombinationOrderInfo.setTechId(techId);
+		combinationOrderDao.updateManyByMasterId(updateCombinationOrderInfo);
+
+		// 新增 组合订单服务时间order_combination_frequency
+		for(OrderCombinationFrequencyInfo frequency : freList){
+			frequency.setMasterId(masterId);
+			frequency.preInsert();
+			frequencyDao.insert(frequency);
+
+		}
+		return null;
+	}
+
+
+	/**
+	 * 设置固定时间- 查询服务技师
+	 * @param combinationOrderInfo(serviceNum，masterId，freList)
+	 * @return
+	 */
+	public List<OrderDispatch> updateRegularTechTechList(CombinationOrderInfo combinationOrderInfo) {
+		String techName = combinationOrderInfo.getTechName();//查询条件
+		int serviceNum = combinationOrderInfo.getServiceNum();//预约个数
+		String masterId = combinationOrderInfo.getMasterId();
+		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();
+
+		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
+		SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(combinationInfo.getCombinationGoodsId());
+		int techDispatchNum = 1;//派人数量
+		double serviceHour =combinationInfo.getServiceHour();//单次建议服务时长
+		String stationId = combinationInfo.getStationId();//服务站ID
+		String orgId = combinationInfo.getOrgId();//机构
+		Double serviceSecond = (serviceHour * serviceNum * 3600);
+
+		//技能
+		SerSkillSort serchSkillSort = new SerSkillSort();
+		serchSkillSort.setOrgId(orgId);
+		serchSkillSort.setSortId(commodity.getSortId());
+		String skillId = "";
+		List<SerSkillSort> skillSortList = orderInfoDao.getSkillIdBySortId(serchSkillSort);//通过服务分类ID取得技能ID
+		if (skillSortList != null && skillSortList.size() == 1) {
+			skillId = skillSortList.get(0).getSkillId();
+		} else {
+			logger.error("未找到商品需求的技能信息");
+			return null;
+		}
+
+		//取得技师List
+		OrderDispatch serchInfo = new OrderDispatch();
+		//展示当前下单客户所在服务站的所有可服务的技师
+		serchInfo.setStationId(stationId);
+		//（1）会此技能的
+		serchInfo.setSkillId(skillId);
+		//（2）上线、在职
+		serchInfo.setTechStatus("yes");
+		serchInfo.setJobStatus("online");
+		//自动派单 全职 ; 手动派单没有条件
+		serchInfo.setJobNature("full_time");
+		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
+		if(techList.size() < techDispatchNum){//技师数量不够
+			logger.error("技师数量不够");
+			return null;
+		}
+
+		for(OrderCombinationFrequencyInfo frequency : freList){
+			OrderTimeList responseRe = new OrderTimeList();
+			try {
+				removeBusyTechByWeekTime(frequency, techList, techDispatchNum, serviceSecond);
+			}catch (Exception e){
+				logger.error(responseRe.getLabel()+"未找到服务时间点列表");
+			}
+
+		}
+		return techList;
 	}
 
 }

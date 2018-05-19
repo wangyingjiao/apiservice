@@ -255,7 +255,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	public void setServiceFrequency(String serviceFrequency) {
 		this.serviceFrequency = serviceFrequency;
 	}
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	public Date getServiceStart() {
 		return serviceStart;
 	}

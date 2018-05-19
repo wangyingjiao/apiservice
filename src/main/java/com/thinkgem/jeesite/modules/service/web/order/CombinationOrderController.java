@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
@@ -89,11 +90,15 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "saveRegularDateDateList", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_start_time")
+	//@RequiresPermissions("combination_start_time")
 	public Result saveRegularDateDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderTimeList>  list = combinationSaveRegularDateService.saveRegularDateDateList(combinationOrderInfo);
-			return new SuccResult(list);
+			HashMap data = new HashMap();
+			data.put("weekList",list);
+			List<OrderTimeList> dateList = combinationSaveRegularDateService.saveRegularDateWeekList();
+			data.put("dateList",dateList);
+			return new SuccResult(data);
 		}catch (Exception e){
 			//return new FailResult("获取时间列表失败!");
 			e.printStackTrace();
@@ -108,7 +113,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "saveRegularDateTechList", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_start_time")
+	//@RequiresPermissions("combination_start_time")
 	public Result saveRegularDateTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderDispatch> list = combinationSaveRegularDateService.saveRegularDateTechList(combinationOrderInfo);
@@ -125,7 +130,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "saveRegularDate", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_start_time")
+	//@RequiresPermissions("combination_start_time")
 	public Result saveRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
@@ -151,31 +156,58 @@ public class CombinationOrderController extends BaseController {
 	}
 
 	/**
-	 * 更换固定时间
+	 * 更换固定时间 - 保存
 	 * @param combinationOrderInfo
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "updateRegularTime", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_regular_time")
-	public Result updateRegularTime(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+	@RequestMapping(value = "updateRegularDate", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_regular_time")
+	public Result updateRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
+			if(flag){
+				return new FailResult("时间或服务技师目前暂不可用!");
+			}
+			List<OrderInfo> list = combinationSaveRegularDateService.updateRegularDate(combinationOrderInfo);
 
-		return new SuccResult("");
+			return new SuccResult("更换成功");
+		}catch (Exception e){
+			e.printStackTrace();
+			return new FailResult("更换失败!");
+		}
 	}
 
 	/**
-	 * 更换固定技师
+	 * 更换固定技师 - 技师列表
 	 * @param combinationOrderInfo
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "updateRegularTech", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_regular_tech")
-	public Result updateRegularTech(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+	@RequestMapping(value = "updateRegularTechTechList", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_regular_tech")
+	public Result updateRegularTechTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderDispatch> list = combinationSaveRegularDateService.updateRegularTechTechList(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderDispatch>());
+		}
+	}
+
+	/**
+	 * 更换固定技师 - 保存
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateRegularTechSave", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_regular_tech")
+	public Result updateRegularTechSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 
 		return new SuccResult("");
 	}
-
 	/**
 	 * 更换子订单时间
 	 * @param combinationOrderInfo

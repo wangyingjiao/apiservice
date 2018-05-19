@@ -10,8 +10,8 @@
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             AND a.master_id=#{masterId}
-            AND a.order_number != null
-            AND a.order_group_id != null
+            AND a.order_number is not null
+            AND a.order_group_id is not null
         </where>
         GROUP By a.order_group_id
         ORDER BY a.create_date DESC
@@ -86,7 +86,7 @@
             a.order_number AS "orderNumber"
          from order_combination_gasq a
          WHERE
-            a.del_flag = #{DEL_FLAG_NORMAL}
+            a.del_flag = '0'
             AND a.master_id = #{masterId}
             AND a.order_group_id IS NULL
             AND a.order_number IS NULL
