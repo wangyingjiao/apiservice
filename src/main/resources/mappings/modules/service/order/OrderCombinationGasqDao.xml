@@ -10,6 +10,8 @@
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             AND a.master_id=#{masterId}
+            AND a.order_number != null
+            AND a.order_group_id != null
         </where>
         GROUP By a.order_group_id
         ORDER BY a.create_date DESC

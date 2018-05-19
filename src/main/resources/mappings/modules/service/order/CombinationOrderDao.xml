@@ -164,7 +164,7 @@
     </select>
 
     <!--根据masterId获取组合订单-->
-    <select id="getCombinationByMasterId" resultType="CombinationOrderInfo">
+    <select id="getCombinationOrderByMasterId" resultType="CombinationOrderInfo">
         SELECT
         <include refid="CombinationOrderColumns"/>
         FROM
