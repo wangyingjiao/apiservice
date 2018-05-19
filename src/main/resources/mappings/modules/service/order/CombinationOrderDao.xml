@@ -158,7 +158,7 @@
         LEFT JOIN sys_area t3 ON address.area_code = t3.code
 
         LEFT JOIN customer_info cust ON a.customer_id = cust.id AND cust.del_flag = #{DEL_FLAG_NORMAL}
-        LEFT JOIN tech_info tech ON a.tech_id = tech.id AND tech.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN tech_info tech ON a.tech_id = tech.id
 
         WHERE a.master_id = #{masterId} AND a.del_flag = #{DEL_FLAG_NORMAL}
     </select>
