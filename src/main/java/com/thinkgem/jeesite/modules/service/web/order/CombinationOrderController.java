@@ -44,6 +44,11 @@ public class CombinationOrderController extends BaseController {
 	@Autowired
 	private CombinationSaveRegularTechService combinationSaveRegularTechService;
 	@Autowired
+	private CombinationSaveOrderTechService combinationSaveOrderTechService;
+	@Autowired
+	private CombinationSaveOrderTimeService combinationSaveOrderTimeService;
+
+	@Autowired
 	private MessageInfoService messageInfoService;
 
 	/**
@@ -221,65 +226,152 @@ public class CombinationOrderController extends BaseController {
 		}
 	}
 	/**
-	 * 更换子订单时间
+	 * 子订单  更换技师  按钮
+	 * @param combinationOrderInfo
+	 * @return 子订单技师列表
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTechInit", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_tech")
+	public Result updateOrderTechInit(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderDispatch> list = combinationSaveOrderTechService.updateOrderTechInit(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderDispatch>());
+		}
+	}
+
+	/**
+	 * 子订单  更换技师 增加 改派 技师列表
+	 * @param combinationOrderInfo
+	 * @return 子订单增加 改派 技师列表
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTechTechList", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_tech")
+	public Result updateOrderTechTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderDispatch> list = combinationSaveOrderTechService.updateOrderTechTechList(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderDispatch>());
+		}
+	}
+
+	/**
+	 * 子订单  更换技师 增加保存按钮
 	 * @param combinationOrderInfo
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "updateOrderTime", method = {RequestMethod.POST})
-	@RequiresPermissions("combination_order_time")
-	public Result updateOrderTime(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+	@RequestMapping(value = "updateOrderTechAddSave", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_tech")
+	public Result updateOrderTechAddSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try{
+			HashMap<String,Object> map = combinationSaveOrderTechService.updateOrderTechAddSave(combinationOrderInfo);
 
-		return new SuccResult("");
+			try {//对接
+				//非自营订单
+				if(!"own".equals(map.get("orderSource").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					String orderSn = map.get("orderNumber").toString();
+					sendOrder.setOrderNumber(orderSn);//订单编号
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendUtil.openSendSaveOrder(sendOrder);
+				}
+			}catch (Exception e){
+				logger.error("增加技师保存-对接失败-系统异常");
+			}
+
+			try{
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+				OrderInfo orderInfo1 = new OrderInfo();
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo1.setId(orderId);
+				orderInfo1.setTechList(orderCreateMsgList);
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+			}catch (Exception e){
+				logger.error("增加技师保存-推送消息失败-系统异常");
+			}
+
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult("保存失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败!");
+		}
 	}
+	/**
+	 * 子订单  更换技师  改派保存按钮
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTechDispatchSave", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_tech")
+	public Result updateOrderTechDispatchSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try{
+			HashMap<String,Object> map = combinationSaveOrderTechService.updateOrderTechDispatchSave(combinationOrderInfo);
 
-//	/**
-//	 * 子订单  更换技师  按钮
-//	 * @param combinationOrderInfo
-//	 * @return 子订单技师列表
-//	 */
-//	@ResponseBody
-//	@RequestMapping(value = "updateOrderTechInit", method = {RequestMethod.POST})
-//	//@RequiresPermissions("combination_order_tech")
-//	public Result updateOrderTechInit(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-//
-//	}
-//
-//	/**
-//	 * 子订单  更换技师 增加 改派 技师列表
-//	 * @param combinationOrderInfo
-//	 * @return 子订单增加 改派 技师列表
-//	 */
-//	@ResponseBody
-//	@RequestMapping(value = "updateOrderTechTechList", method = {RequestMethod.POST})
-//	//@RequiresPermissions("combination_order_tech")
-//	public Result updateOrderTechTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-//
-//	}
-//
-//	/**
-//	 * 子订单  更换技师 增加保存按钮
-//	 * @param combinationOrderInfo
-//	 * @return
-//	 */
-//	@ResponseBody
-//	@RequestMapping(value = "updateOrderTechAddSave", method = {RequestMethod.POST})
-//	//@RequiresPermissions("combination_order_tech")
-//	public Result updateOrderTechAddSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-//
-//	}
-//	/**
-//	 * 子订单  更换技师  改派保存按钮
-//	 * @param combinationOrderInfo
-//	 * @return
-//	 */
-//	@ResponseBody
-//	@RequestMapping(value = "updateOrderTechDispatchSave", method = {RequestMethod.POST})
-//	//@RequiresPermissions("combination_order_tech")
-//	public Result updateOrderTechDispatchSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-//
-//	}
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(!"own".equals(map.get("orderSource").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					String orderSn = map.get("orderNumber").toString();
+					sendOrder.setOrderNumber(orderSn);//订单编号
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendUtil.openSendSaveOrder(sendOrder);
+				}
+			}catch (Exception e){
+				logger.error("技师改派保存-对接失败-系统异常");
+			}
 
+			try{
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				// 改派
+				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+
+				OrderInfo orderInfo1 = new OrderInfo();
+				OrderInfo orderInfo2 = new OrderInfo();
+
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo2.setOrderNumber(orderNumber);
+
+				orderInfo1.setId(orderId);
+				orderInfo2.setId(orderId);
+
+				orderInfo1.setTechList(orderCreateMsgList);
+				orderInfo2.setTechList(orderDispatchMsgList);
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+				orderInfo2.setCreateBy(user);
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+			}catch (Exception e){
+				logger.error("技师改派保存-推送消息失败-系统异常");
+			}
+			return new SuccResult(map);
+		}catch (ServiceException ex){
+			return new FailResult("保存失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("保存失败-系统异常");
+		}
+	}
 
 	/**
 	 * 查看备注
@@ -301,6 +393,46 @@ public class CombinationOrderController extends BaseController {
 		}catch (Exception e){
 			return new FailResult("未找到订单信息!");
 		}
+	}
+
+
+	/**
+	 * 更换子订单时间 - 时间列表
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTimeDateList", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_time")
+	public Result updateOrderTimeDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		//combinationSaveOrderTimeService.updateOrderTimeDateList
+		return new SuccResult("");
+	}
+
+	/**
+	 * 更换子订单时间 - 技师列表
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTimeTechList", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_time")
+	public Result updateOrderTimeTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+//combinationSaveOrderTimeService.updateOrderTimeTechList
+		return new SuccResult("");
+	}
+
+	/**
+	 * 更换子订单时间 - 保存
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateOrderTimeSave", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_order_time")
+	public Result updateOrderTimeSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+//combinationSaveOrderTimeService.updateOrderTimeSave
+		return new SuccResult("");
 	}
 
 }

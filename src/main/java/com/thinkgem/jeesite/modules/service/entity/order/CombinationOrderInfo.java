@@ -76,6 +76,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String techName;// 技师姓名，技师列表查询用
 	private String techPhone;// 技师手机
 	private int serchWeek;//查询可用时间是使用周几
+	List<String> techIdList;//新增技师保存时使用
 	private String unit;// 商品单位
 	private BigDecimal price;// 商品单价
 	private BigDecimal sum;// 小计
@@ -542,5 +543,13 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setSerchWeek(int serchWeek) {
 		this.serchWeek = serchWeek;
+	}
+
+	public List<String> getTechIdList() {
+		return techIdList;
+	}
+
+	public void setTechIdList(List<String> techIdList) {
+		this.techIdList = techIdList;
 	}
 }

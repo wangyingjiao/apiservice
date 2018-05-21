@@ -877,6 +877,7 @@ origin_price,
 			a.start_time AS "startTime",
 			a.end_time AS "endTime",
 			a.type_id AS "typeId",
+			a.master_id AS "masterId",
 			a.type AS "type",
 			a.remark AS "remark"
 		FROM  tech_schedule a
@@ -890,6 +891,26 @@ origin_price,
 		<foreach item="techId" index="index" collection="techIdList" open="(" separator="," close=")">
 			#{techId}
 		</foreach>
+	</select>
+	<select id="getTechScheduleByOrderIdForCombination" resultType="TechScheduleInfo">
+		SELECT
+			a.id AS "id",
+			a.tech_id AS "techId",
+			a.schedule_date AS "scheduleDate",
+			a.schedule_week AS "scheduleWeek",
+			a.start_time AS "startTime",
+			a.end_time AS "endTime",
+			a.type_id AS "typeId",
+			a.master_id AS "masterId",
+			a.type AS "type",
+			a.remark AS "remark"
+		FROM  order_info o
+		LEFT JOIN order_combination_gasq g ON o.order_number = g.order_number
+		LEFT JOIN tech_schedule a ON a.type_id = g.order_group_id
+		WHERE
+		a.del_flag =  #{DEL_FLAG_NORMAL}
+		AND a.type = 'master'
+		AND o.id = #{id}
 	</select>
 
 	<select id="listNotRefundOrderGoodsByOrderId" resultType="OrderGoods">
