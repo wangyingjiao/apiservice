@@ -337,7 +337,7 @@
         UPDATE
         order_combination_info
         SET
-        bespeak_num = bespeak_num + service_num
+        bespeak_num = bespeak_num + #{serviceNum}
         WHERE master_id = #{masterId}
     </update>
 </mapper>

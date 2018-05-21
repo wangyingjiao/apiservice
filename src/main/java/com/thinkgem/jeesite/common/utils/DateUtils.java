@@ -656,6 +656,24 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
+	 * 返回时间数组
+	 * @param serviceTime 年月日时分秒
+	 * @param serviceNum 生成个数
+	 * @param serviceHour 每次增加小时数
+	 * @return
+	 */
+	public static List<Date> listTimeByFrequency(Date serviceTime, int serviceNum, Double serviceHour) {
+		Double serviceSecond = serviceHour * 3600;//每次增加秒数
+		List<Date> list = new ArrayList<>();
+		list.add(serviceTime);
+		for(int i=0;i<serviceNum-1;i++){
+			serviceTime = DateUtils.addSeconds(serviceTime,serviceSecond.intValue());
+			list.add(serviceTime);
+		}
+		return list;
+	}
+
+	/**
 	 * @param args
 	 * @throws ParseException
 	 */

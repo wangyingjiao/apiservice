@@ -883,7 +883,14 @@ origin_price,
 		FROM  tech_schedule a
 		WHERE
 		a.del_flag = #{DEL_FLAG_NORMAL}
-		AND a.type=#{type}
+
+		<if test="type !=null and type = 'holiday'">
+			AND a.type = 'holiday'
+		</if>
+		<if test="type !=null and type = 'order'">
+			AND (a.type = 'order' OR a.type = 'master')
+		</if>
+
 		<if test="scheduleDate !=null and scheduleDate != ''">
 			AND a.schedule_date=#{scheduleDate}
 		</if>

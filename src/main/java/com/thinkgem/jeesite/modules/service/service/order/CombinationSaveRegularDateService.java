@@ -676,7 +676,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();
 		updateCombinationInfo.setMasterId(masterId);
 		updateCombinationInfo.setServiceNum(serviceNum);
-		combinationOrderDao.updateBespeakByMasterId(updateCombinationOrderInfo);
+		combinationOrderDao.updateBespeakByMasterId(updateCombinationInfo);
 
 		return orderInfoList;
 	}
