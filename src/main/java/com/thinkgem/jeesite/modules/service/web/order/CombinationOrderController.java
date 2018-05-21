@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
+import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.service.service.order.*;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
@@ -47,6 +48,8 @@ public class CombinationOrderController extends BaseController {
 	private CombinationSaveOrderTechService combinationSaveOrderTechService;
 	@Autowired
 	private CombinationSaveOrderTimeService combinationSaveOrderTimeService;
+	@Autowired
+	private CombinationSubscribeService combinationSubscribeService;
 
 	@Autowired
 	private MessageInfoService messageInfoService;
@@ -321,7 +324,51 @@ public class CombinationOrderController extends BaseController {
 	//@RequiresPermissions("combination_order_tech")
 	public Result updateOrderTechDispatchSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try{
-			HashMap<String,Object> map = combinationSaveOrderTechService.updateOrderTechDispatchSave(combinationOrderInfo);
+			HashMap<String,Object> map = null;
+			OrderInfo typeInfo = combinationSaveOrderTechService.getOrderTypeByOrderId(combinationOrderInfo);
+			if("group_split_yes".equals(typeInfo.getOrderType())){
+				map = combinationSaveOrderTechService.updateOrderTechDispatchSaveForMany(combinationOrderInfo);
+				try {
+					//订单商品有对接方商品CODE  机构有对接方E店CODE
+					if(!"own".equals(map.get("orderSource").toString())){
+						List<OrderInfo> orderSendList = (List<OrderInfo>) map.get("orderSendList");
+						if(orderSendList != null ){
+							for(OrderInfo orderSend : orderSendList){
+								OpenSendUtil.openSendSaveOrder(orderSend);
+							}
+						}
+					}
+				}catch (Exception e){
+					logger.error("技师改派保存-对接失败-系统异常");
+				}
+
+				try{
+					User user = UserUtils.getUser();
+					// 派单
+					List<OrderInfo> orderCreateMsgList = (List<OrderInfo>) map.get("orderCreateMsgList");
+					if(orderCreateMsgList != null ){
+						for(OrderInfo orderCreateMsg : orderCreateMsgList){
+							orderCreateMsg.setCreateBy(user);
+							messageInfoService.insert(orderCreateMsg,"orderCreate");//新增
+						}
+					}
+					// 改派
+					List<OrderInfo> orderDispatchMsgList = (List<OrderInfo>) map.get("orderDispatchMsgList");
+					if(orderDispatchMsgList != null ){
+						for(OrderInfo orderDispatchMsg : orderDispatchMsgList){
+							orderDispatchMsg.setCreateBy(user);
+							messageInfoService.insert(orderDispatchMsg,"orderDispatch");//改派
+						}
+					}
+				}catch (Exception e){
+					logger.error("技师改派保存-推送消息失败-系统异常");
+				}
+				return new SuccResult(map);
+			}else if("group_split_no".equals(typeInfo.getOrderType())){
+				map = combinationSaveOrderTechService.updateOrderTechDispatchSaveForOnce(combinationOrderInfo);
+			}else {
+				return null;
+			}
 
 			try {
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
@@ -433,6 +480,76 @@ public class CombinationOrderController extends BaseController {
 	public Result updateOrderTimeSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 //combinationSaveOrderTimeService.updateOrderTimeSave
 		return new SuccResult("");
+	}
+
+
+
+	/**
+	 * 后台预约- 查询服务日期
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "subscribeDateList", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_start_time")
+	public Result subscribeDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderTimeList>  list = combinationSubscribeService.subscribeDateList(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			//return new FailResult("获取时间列表失败!");
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderTimeList>());
+		}
+	}
+
+	/**
+	 * 后台预约 - 查询服务技师
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "subscribeTechList", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_start_time")
+	public Result subscribeTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderDispatch> list = combinationSubscribeService.subscribeTechList(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderDispatch>());
+		}
+	}
+	/**
+	 * 后台预约 - 保存
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "subscribeSave", method = {RequestMethod.POST})
+	//@RequiresPermissions("combination_start_time")
+	public Result subscribeSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			boolean flag = combinationSubscribeService.checkSubscribeTech(combinationOrderInfo);
+			if(flag){
+				return new FailResult("时间或服务技师目前暂不可用!");
+			}
+			List<OrderInfo> list = combinationSubscribeService.subscribeSave(combinationOrderInfo);
+
+			try {
+				for(OrderInfo info : list){
+					info.setCreateBy(UserUtils.getUser());
+					messageInfoService.insert(info, "orderCreate");//新增
+				}
+			}catch (Exception e){
+				logger.error("订单创建-推送消息失败-系统异常");
+			}
+
+			return new SuccResult("预约成功");
+		}catch (Exception e){
+			e.printStackTrace();
+			return new FailResult("预约失败!");
+		}
 	}
 
 }

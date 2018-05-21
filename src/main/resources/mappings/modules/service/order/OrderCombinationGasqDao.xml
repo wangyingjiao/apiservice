@@ -98,4 +98,18 @@
         order_number = #{orderNumber}
         WHERE id = #{id}
     </update>
+    <select id="listGroupOrderByOrderId" resultType="OrderCombinationGasqInfo">
+        SELECT
+        s1.master_id AS "masterId",
+        s1.order_group_id AS "orderGroupId",
+        s2.id AS  "orderId",
+        s2.order_source AS "orderSource",
+        s2.order_number AS "orderNumber"
+        from
+        order_info o
+        INNER JOIN order_combination_gasq g on o.order_number = g.order_number AND g.del_flag = '0'
+        LEFT JOIN order_combination_gasq s1 ON s1.order_group_id = g.order_group_id AND s1.del_flag = '0'
+        LEFT JOIN order_info s2 ON s1.order_number = s2.order_number AND s2.del_flag = '0'
+        WHERE o.id =  #{orderId}
+    </select>
 </mapper>

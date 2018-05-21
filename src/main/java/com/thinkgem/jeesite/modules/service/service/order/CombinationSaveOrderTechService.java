@@ -83,6 +83,9 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 			throw new ServiceException("请选择技师");
 		}
 		OrderInfo orderInfo = orderInfoDao.get(combinationOrderInfo.getOrderId());//当前订单
+		if(!"group_split_no".equals(orderInfo.getOrderType())){
+			throw new ServiceException("订单类型不允许此操作");
+		}
 		List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
@@ -94,7 +97,7 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 
 		//新增、改派判断库存
 		boolean flag = false;
-		List<OrderDispatch> checkTechList = orderToolsService.listTechByGoodsAndTime(orderInfo);
+		List<OrderDispatch> checkTechList = orderToolsService.listTechByGoodsAndTimeForCombination(combinationOrderInfo);
 		List<String> checkTechIdList = new ArrayList<>();
 		if(checkTechList != null) {
 			for (OrderDispatch checkTech : checkTechList) {
@@ -178,27 +181,160 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 	}
 
 	/**
-	 * 子订单  更换技师  改派保存按钮
+	 * 子订单  更换技师  改派保存按钮 拆单  多次服务订单
 	 * @param combinationOrderInfo
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	public HashMap<String,Object> updateOrderTechDispatchSave(CombinationOrderInfo combinationOrderInfo) {
+	public HashMap<String,Object> updateOrderTechDispatchSaveForMany(CombinationOrderInfo combinationOrderInfo) {
+		String dispatchTechIdOld = combinationOrderInfo.getTechId();//改派前技师ID
+		ServiceTechnicianInfo dispatchTechOld = serviceTechnicianInfoDao.get(dispatchTechIdOld);//改派前技师
+
+		List<String> techIdList = combinationOrderInfo.getTechIdList();//改派后技师List
+		if(techIdList==null || techIdList.size()!=1){
+			throw new ServiceException("技师数量有误，请重新选择！");
+		}
+		String dispatchTechIdNew = techIdList.get(0);//改派后技师ID
+		ServiceTechnicianInfo dispatchTechNew = serviceTechnicianInfoDao.get(dispatchTechIdNew);//改派后技师
+
+		List<OrderCombinationGasqInfo> gasqInfos = orderCombinationGasqDao.listGroupOrderByOrderId(combinationOrderInfo);//订单组List  orderId
+		if(gasqInfos==null || gasqInfos.size()==0){
+			throw new ServiceException("未找到订单组信息，请检查数据是否有误！");
+		}
+		String masterId = gasqInfos.get(0).getMasterId();//订单组ID
+		String groupId = gasqInfos.get(0).getOrderGroupId();//订单组ID
+		String orderSource = gasqInfos.get(0).getOrderSource();//订单来源
+
+		OrderInfo serchScheduleInfo = new OrderInfo();
+		serchScheduleInfo.setId(combinationOrderInfo.getOrderId());
+		TechScheduleInfo scheduleInfo = orderInfoDao.getTechScheduleByOrderIdForCombination(serchScheduleInfo);
+		Date groupServiceTime = scheduleInfo.getStartTime();//服务时间
+		Date groupFinishTime = scheduleInfo.getEndTime();//完成时间
+
+
+		List<OrderInfo> orderDispatchMsgList = new ArrayList<>();//改派发消息技师列表
+		List<OrderInfo> orderCreateMsgList = new ArrayList<>();//新增发消息技师列表
+		List<OrderInfo> orderSendList = new ArrayList<>();//改派技师列表 对接国安
+
+		//关联组订单 工单修改
+		for(OrderCombinationGasqInfo gasqInfo : gasqInfos){
+			OrderInfo serchOrderInfo = new OrderInfo();//当前订单
+			serchOrderInfo.setId(gasqInfo.getOrderId());
+			List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(serchOrderInfo); //订单当前已有技师List
+			for(OrderDispatch orderDispatch : techList){
+				//改派前技师工单 不可用
+				OrderDispatch orderDispatchUpdate = new OrderDispatch();
+				orderDispatchUpdate.setId(orderDispatch.getId());//ID
+				orderDispatchUpdate.setStatus("no");//状态(yes：可用 no：不可用)
+				orderDispatchUpdate.preUpdate();
+				orderDispatchDao.update(orderDispatchUpdate);//数据库改派前技师设为不可用
+			}
+
+			//改派后技师工单新增保存
+			OrderDispatch orderDispatch = new OrderDispatch();
+			orderDispatch.setTechId(dispatchTechIdNew);//技师ID
+			orderDispatch.setOrderId(gasqInfo.getOrderId());//订单ID
+			orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
+			orderDispatch.preInsert();
+			orderDispatchDao.insert(orderDispatch);
+
+			//改派发消息技师列表------------------------------
+			OrderInfo orderDispatchMsg = new OrderInfo();
+			orderDispatchMsg.setId(gasqInfo.getOrderId());
+			orderDispatchMsg.setOrderNumber(gasqInfo.getOrderNumber());
+
+			List<OrderDispatch> orderDispatchMsgTechList = new ArrayList<>();
+			OrderDispatch orderDispatchMsgTech = new OrderDispatch();
+			orderDispatchMsgTech.setTechId(dispatchTechOld.getId());
+			orderDispatchMsgTech.setTechPhone(dispatchTechOld.getPhone());
+			orderDispatchMsgTechList.add(orderDispatchMsgTech);
+			orderDispatchMsg.setTechList(orderDispatchMsgTechList);
+
+			orderDispatchMsgList.add(orderDispatchMsg);
+
+			//新增发消息技师列表-------------------------------
+			OrderInfo orderCreateMsg = new OrderInfo();
+			orderCreateMsg.setId(gasqInfo.getOrderId());
+			orderCreateMsg.setOrderNumber(gasqInfo.getOrderNumber());
+
+			List<OrderDispatch> orderCreateMsgTechList = new ArrayList<>();
+			OrderDispatch orderCreateMsgTech = new OrderDispatch();
+			orderCreateMsgTech.setTechId(dispatchTechNew.getId());
+			orderCreateMsgTech.setTechPhone(dispatchTechNew.getPhone());
+			orderCreateMsgTechList.add(orderCreateMsgTech);
+			orderCreateMsg.setTechList(orderCreateMsgTechList);
+
+			orderCreateMsgList.add(orderCreateMsg);
+
+			//对接国安技师列表 ----------------------------
+			OrderInfo orderSend = new OrderInfo();
+			orderSend.setId(gasqInfo.getOrderId());
+			orderSend.setOrderNumber(gasqInfo.getOrderNumber());
+
+			List<OrderDispatch> orderSendTechList = new ArrayList<>();
+			OrderDispatch orderSendTech = new OrderDispatch();
+			orderSendTech.setTechId(dispatchTechNew.getId());
+			orderSendTech.setTechPhone(dispatchTechNew.getPhone());
+			orderSendTechList.add(orderSendTech);
+			orderSend.setTechList(orderSendTechList);
+
+			orderSendList.add(orderSend);
+		}
+
+		//排期修改
+		TechScheduleInfo techScheduleInfoDel = new TechScheduleInfo();
+		techScheduleInfoDel.setTechId(dispatchTechIdOld);//技师ID
+		techScheduleInfoDel.setTypeId(groupId);
+		techScheduleInfoDel.setType("master");
+		techScheduleInfoDel.preUpdate();
+		techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfoDel);
+
+		//排期
+		TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+		techScheduleInfo.setTechId(dispatchTechIdNew);//技师ID
+		techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(groupServiceTime));//日期
+		int weekDay = DateUtils.getWeekNum(groupServiceTime);//周几
+		techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+		techScheduleInfo.setStartTime(groupServiceTime);//起始时段
+		techScheduleInfo.setEndTime(groupFinishTime);//结束时段
+		techScheduleInfo.setTypeId(groupId);//休假ID或订单ID或groupID
+		techScheduleInfo.setType("master");//'holiday：休假  order：订单 master:组合订单',
+		techScheduleInfo.setMasterId(masterId);
+		techScheduleInfo.preInsert();
+		techScheduleDao.insertSchedule(techScheduleInfo);
+
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("orderSource",orderSource);
+		map.put("orderDispatchMsgList", orderDispatchMsgList);
+		map.put("orderCreateMsgList", orderCreateMsgList);
+		map.put("orderSendList", orderSendList);
+		return map;
+	}
+
+	/**
+	 * 子订单  更换技师  改派保存按钮  不拆单  单次服务订单
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public HashMap<String,Object> updateOrderTechDispatchSaveForOnce(CombinationOrderInfo combinationOrderInfo) {
 		Double serviceHourRe = 0.0;
 		String dispatchTechId = combinationOrderInfo.getTechId();//改派前技师ID
 		List<String> techIdList = combinationOrderInfo.getTechIdList();//改派技师List
 		OrderInfo orderInfo = orderInfoDao.get(combinationOrderInfo.getOrderId());//当前订单
 		List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 
-		Date serviceTime = orderInfo.getServiceTime();//服务时间
-		Date finishTime = orderInfo.getFinishTime();
+		Date serviceTime = null;//服务时间
+		Date finishTime = null;
+		serviceTime = orderInfo.getServiceTime();//服务时间
+		finishTime = orderInfo.getFinishTime();//完成时间
 
 		//建议完成时间 增加人数后的时间计算 秒
 		Double serviceSecond = ((DateUtils.getDistanceSecondOfTwoDate(serviceTime, finishTime)) * techList.size())/( techList.size() - 1 + techIdList.size());
 
 		//新增、改派判断库存
 		boolean flag = false;
-		List<OrderDispatch> checkTechList = orderToolsService.listTechByGoodsAndTime(orderInfo);
+		List<OrderDispatch> checkTechList = orderToolsService.listTechByGoodsAndTimeForCombination(combinationOrderInfo);
 		List<String> checkTechIdList = new ArrayList<>();
 		if(checkTechList != null) {
 			for (OrderDispatch checkTech : checkTechList) {
@@ -307,6 +443,10 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 		map.put("orderCreateMsgList", orderCreateMsgList);
 		map.put("orderNumber", orderInfo.getOrderNumber());
 		return map;
+	}
+
+	public OrderInfo getOrderTypeByOrderId(CombinationOrderInfo combinationOrderInfo) {
+		return orderInfoDao.get(combinationOrderInfo.getOrderId());
 	}
 
 }

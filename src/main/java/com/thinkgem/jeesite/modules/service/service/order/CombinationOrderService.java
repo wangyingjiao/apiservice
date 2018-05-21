@@ -148,24 +148,4 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 
 		return orderInfo;
     }
-
-	public OrderInfo initCombinationOrderTech(CombinationOrderInfo combinationOrderInfo) {
-		OrderInfo orderInfo = new OrderInfo();
-		List<OrderDispatch> techList = combinationOrderDao.initCombinationOrderTech(combinationOrderInfo); //技师List
-		if(techList == null || techList.size() == 0){
-			throw new ServiceException("未找到技师信息");
-		}
-		orderInfo.setTechList(techList);
-
-		return orderInfo;
-	}
-
-	public List<OrderDispatch> addCombinationOrderTech(CombinationOrderInfo combinationOrderInfo) {
-		String serchTechName = combinationOrderInfo.getTechName();
-		OrderInfo orderInfo = orderInfoDao.get(combinationOrderInfo.getOrderId());//当前订单
-		orderInfo.setTechName(serchTechName);
-		List<OrderDispatch> techList = combinationToolsService.listTechByGoodsAndTime(orderInfo);
-		return techList;
-	}
-
 }
