@@ -42,6 +42,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
     private Date endTime;		//结束时间  列表查询条件
 	private String serviceFrequency;	// 服务频次 weekly:1周1次 many:1周多次 fortnightly:2周1次
 	private Date serviceStart;		// 第一次服务日期
+	private Date serviceEnd;		// 第一次服务日期
 	private int serviceNum;//预约个数
 	private Double serviceHour; //单次建议服务时长（小时）
 	private Double serviceAllHour;//预约个数*单次建议服务时长
@@ -198,6 +199,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
         return endTime;
     }
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getServiceTime() {
 		return serviceTime;
 	}
@@ -272,6 +274,14 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setServiceStart(Date serviceStart) {
 		this.serviceStart = serviceStart;
+	}
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	public Date getServiceEnd() {
+		return serviceEnd;
+	}
+
+	public void setServiceEnd(Date serviceEnd) {
+		this.serviceEnd = serviceEnd;
 	}
 
 	public int getServiceNum() {
