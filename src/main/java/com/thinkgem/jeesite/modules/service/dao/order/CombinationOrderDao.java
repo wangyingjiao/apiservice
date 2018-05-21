@@ -32,7 +32,7 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
 
     //判断是否在组合订单中卫固定技师 可预约次数>已预约次数  订单状态dispatched
     int getComCount(ServiceTechnicianInfo info);
-    //根据masterId获取组合订单
+    //根据orderNumber masterId获取组合订单的orderGroupId
     CombinationOrderInfo getCombinationByMasterId(String masterId);
 
     List<OrderCombinationFrequencyInfo> listFrequencyByTechWeek(CombinationOrderInfo serchCombinationInfo);

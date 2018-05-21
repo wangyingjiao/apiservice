@@ -91,6 +91,28 @@
             AND a.order_group_id IS NULL
             AND a.order_number IS NULL
     </select>
+
+    <!--根据orderNumber masterId获取组合订单的orderGroupId-->
+    <select id="getListByOrderNumber" resultType="OrderCombinationGasqInfo">
+        select
+        <include refid="OrderCombinationGasqInfo"/>
+        FROM order_combination_gasq a
+        WHERE
+        a.del_flag = '0'
+        AND a.master_id = #{masterId}
+        AND a.order_number = #{orderNumber}
+    </select>
+
+    <!--根据masterId获取组合订单的订单集合-->
+    <select id="getListByOrderGroupId" resultType="OrderCombinationGasqInfo">
+        select
+        <include refid="OrderCombinationGasqInfo"/>
+        FROM order_combination_gasq a
+        WHERE
+        a.del_flag = '0'
+        AND a.order_group_id = #{orderGroupId}
+    </select>
+
     <update id="updateOrderGroup">
         UPDATE order_combination_gasq
         SET

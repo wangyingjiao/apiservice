@@ -53,6 +53,8 @@ public class CombinationOrderController extends BaseController {
 
 	@Autowired
 	private MessageInfoService messageInfoService;
+	@Autowired
+	private OrderInfoOperateService orderInfoOperateService;
 
 	/**
 	 * 组合订单列表
@@ -445,40 +447,62 @@ public class CombinationOrderController extends BaseController {
 
 	/**
 	 * 更换子订单时间 - 时间列表
-	 * @param combinationOrderInfo
+	 * @param orderInfo
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTimeDateList", method = {RequestMethod.POST})
 	//@RequiresPermissions("combination_order_time")
-	public Result updateOrderTimeDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-		//combinationSaveOrderTimeService.updateOrderTimeDateList
-		return new SuccResult("");
+	public Result updateOrderTimeDateList(@RequestBody OrderInfo orderInfo) {
+		//判断订单状态
+		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
+		if(!flag){
+			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+		}
+		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
+		if(!fullFlag){
+			return new FailResult("当前订单只有补单商品,不允许操作此项内容");
+		}
+		try {
+			List<OrderTimeList> orderTimeLists = combinationSaveOrderTimeService.updateOrderTimeDateList(orderInfo);
+			return new SuccResult(orderTimeLists);
+		}catch (ServiceException ex){
+			return new FailResult("获取时间列表失败-"+ex.getMessage());
+		}catch (Exception e){
+			return new FailResult("获取时间列表失败!");
+		}
 	}
 
 	/**
 	 * 更换子订单时间 - 技师列表
-	 * @param combinationOrderInfo
+	 * 参数 订单id serviceTime
+	 * @param orderInfo
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTimeTechList", method = {RequestMethod.POST})
 	//@RequiresPermissions("combination_order_time")
-	public Result updateOrderTimeTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-//combinationSaveOrderTimeService.updateOrderTimeTechList
-		return new SuccResult("");
+	public Result updateOrderTimeTechList(@RequestBody OrderInfo orderInfo) {
+		List<OrderDispatch> orderDispatches = combinationSaveOrderTimeService.updateOrderTimeTechList(orderInfo);
+		Map<String,Object> map=new HashMap<String,Object>();
+
+//		map.put("list",orderDispatches);
+//		map.put("tech",);
+		return new SuccResult(orderDispatches);
 	}
 
 	/**
 	 * 更换子订单时间 - 保存
-	 * @param combinationOrderInfo
+	 * 参数 orderId serviceTime techId
+	 * @param orderInfo
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTimeSave", method = {RequestMethod.POST})
 	//@RequiresPermissions("combination_order_time")
-	public Result updateOrderTimeSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
-//combinationSaveOrderTimeService.updateOrderTimeSave
+	public Result updateOrderTimeSave(@RequestBody OrderInfo orderInfo) {
+		combinationSaveOrderTimeService.updateOrderTimeSave(orderInfo);
+
 		return new SuccResult("");
 	}
 

@@ -22,6 +22,12 @@ public interface OrderCombinationGasqDao extends CrudDao<OrderCombinationGasqInf
     //根据masterId获取组合订单的订单集合
     List<OrderCombinationGasqInfo> getListbyMasterId(CombinationOrderInfo combinationOrderInfo);
 
+    //根据groupId获取组合订单的订单集合
+    List<OrderCombinationGasqInfo> getListByOrderGroupId(OrderCombinationGasqInfo orderCombinationGasqInfo);
+
+    //根据orderNumber获取组合订单的orderGroupId
+    OrderCombinationGasqInfo getListByOrderNumber(OrderInfo info);
+
     List<OrderCombinationGasqInfo> listFreeGasqSn(String masterId);
 
     void updateOrderGroup(OrderCombinationGasqInfo combinationGasqInfo);

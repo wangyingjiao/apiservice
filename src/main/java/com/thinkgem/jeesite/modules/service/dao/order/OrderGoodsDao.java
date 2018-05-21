@@ -33,7 +33,7 @@ public interface OrderGoodsDao extends CrudDao<OrderGoods> {
     //获取补单商品表 根据订单id获取多个sortId位数小于3的商品
     List<OrderGoods> listItemGoods(OrderInfo orderInfo);
 
-    // 根据订单id查询所有的订单商品表中分类id小于3的商品结合
+    // 根据订单id查询所有的订单商品表中分类id小于3的商品集合
     List<OrderGoods> getbyOrderId(OrderInfo info);
     //根据id删除订单商品表  物理删除
     int deleteById(OrderGoods orderGoods);
