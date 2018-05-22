@@ -25,5 +25,5 @@ public interface OrderCustomAddressDao extends CrudDao<OrderCustomAddress> {
 
     void deleteAddressByCustomerId(OrderCustomInfo orderCustomInfo);
 
-    List<OrderCustomAddress> findCusAddrList(OrderCustomInfo serchCustomInfo);
+    List<OrderCustomAddress> findCusAddrList(OrderCustomAddress serchCustomInfo);
 }

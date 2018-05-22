@@ -736,7 +736,7 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 		serchCustomAddress.setAddressPhone(phone);
 		serchCustomAddress.setAddrLatitude(latitude);//服务地址：纬度
 		serchCustomAddress.setAddrLongitude(longitude);//服务地址：经度
-		List<OrderCustomAddress> cusAddrList = orderCustomAddressDao.findCusAddrList(serchCustomInfo);
+		List<OrderCustomAddress> cusAddrList = orderCustomAddressDao.findCusAddrList(serchCustomAddress);
 		OrderCustomAddress orderCustomAddress = new OrderCustomAddress();
 		if (null == cusAddrList || cusAddrList.size()==0) {
 			// 客户地址表

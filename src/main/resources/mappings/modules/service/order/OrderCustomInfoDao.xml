@@ -25,8 +25,9 @@
         SELECT
         a.id AS "id",
         a.name AS "name",
-        a.phone AS "phone"
-        FROM customer_info a
+        a.phone AS "phone",
+		a.org_id AS "orgId"
+		FROM customer_info a
         WHERE
         a.del_flag = #{DEL_FLAG_NORMAL}
         AND a.phone = #{phone}
