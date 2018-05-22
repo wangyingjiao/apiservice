@@ -55,6 +55,8 @@ public class CombinationOrderController extends BaseController {
 	private MessageInfoService messageInfoService;
 	@Autowired
 	private OrderInfoOperateService orderInfoOperateService;
+	@Autowired
+	private OrderInfoService orderInfoService;
 
 	/**
 	 * 组合订单列表
@@ -483,12 +485,8 @@ public class CombinationOrderController extends BaseController {
 	@RequestMapping(value = "updateOrderTimeTechList", method = {RequestMethod.POST})
 	//@RequiresPermissions("combination_order_time")
 	public Result updateOrderTimeTechList(@RequestBody OrderInfo orderInfo) {
-		List<OrderDispatch> orderDispatches = combinationSaveOrderTimeService.updateOrderTimeTechList(orderInfo);
-		Map<String,Object> map=new HashMap<String,Object>();
-
-//		map.put("list",orderDispatches);
-//		map.put("tech",);
-		return new SuccResult(orderDispatches);
+		Map<String, Object> stringObjectMap = combinationSaveOrderTimeService.updateOrderTimeTechList(orderInfo);
+		return new SuccResult(stringObjectMap);
 	}
 
 	/**
@@ -501,14 +499,73 @@ public class CombinationOrderController extends BaseController {
 	@RequestMapping(value = "updateOrderTimeSave", method = {RequestMethod.POST})
 	//@RequiresPermissions("combination_order_time")
 	public Result updateOrderTimeSave(@RequestBody OrderInfo orderInfo) {
-		combinationSaveOrderTimeService.updateOrderTimeSave(orderInfo);
+		OrderInfo info = orderInfoService.get(orderInfo.getId());
+		HashMap<String,Object> map = null;
+		try {
+			if ("group_split_yes".equals(info.getOrderType())){
+				map = combinationSaveOrderTimeService.updateOrderTimeSave(orderInfo);
+			}else if ("group_split_no".equals(info.getOrderType())){
+				map = orderInfoOperateService.saveTime(orderInfo);
+			}
+			try {
+				//订单商品有对接方商品CODE  机构有对接方E店CODE
+				if(!"own".equals(map.get("orderSource").toString())){
+					OrderInfo sendOrder = new OrderInfo();
+					String orderSn = map.get("orderNumber").toString();
+					sendOrder.setOrderNumber(orderSn);//订单编号
+					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+					OpenSendUtil.openSendSaveOrder(sendOrder);
+				}
+			}catch (Exception e){
+				logger.error("更换时间保存-对接失败-系统异常");
+			}
 
-		return new SuccResult("");
+			try{
+				// 派单
+				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+				// 改派
+				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+				// 时间变化
+				List<OrderDispatch> orderServiceTimeMsgList = (List<OrderDispatch>)map.get("orderServiceTimeMsgList");
+				String orderNumber = (String)map.get("orderNumber");
+				String orderId = (String)map.get("orderId");
+
+				OrderInfo orderInfo1 = new OrderInfo();
+				OrderInfo orderInfo2 = new OrderInfo();
+				OrderInfo orderInfo3 = new OrderInfo();
+
+				orderInfo1.setOrderNumber(orderNumber);
+				orderInfo2.setOrderNumber(orderNumber);
+				orderInfo3.setOrderNumber(orderNumber);
+
+				orderInfo1.setId(orderId);
+				orderInfo2.setId(orderId);
+				orderInfo3.setId(orderId);
+
+				orderInfo1.setTechList(orderCreateMsgList);
+				orderInfo2.setTechList(orderDispatchMsgList);
+				orderInfo3.setTechList(orderServiceTimeMsgList);
+				//时间
+				orderInfo3.setServiceTime((Date)map.get("serviceDate"));
+
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+				orderInfo2.setCreateBy(user);
+				orderInfo3.setCreateBy(user);
+
+				messageInfoService.insert(orderInfo1,"orderCreate");//新增
+				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+				messageInfoService.insert(orderInfo3,"orderServiceTime");//服务时间变更
+			}catch (Exception e){
+				logger.error("更换时间保存-推送消息失败-系统异常");
+			}
+			return new SuccResult("保存成功");
+        }catch (ServiceException e){
+            return new FailResult(e.getMessage());
+        }
 	}
 
-
-
-	/**
+    /**
 	 * 后台预约- 查询服务日期
 	 * @param combinationOrderInfo
 	 * @return

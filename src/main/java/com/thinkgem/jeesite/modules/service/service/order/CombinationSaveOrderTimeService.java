@@ -237,7 +237,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		return listRe;
 	}
 	//更换子订单时间 - 技师列表
-	public List<OrderDispatch> updateOrderTimeTechList(OrderInfo orderInfo) {
+	public Map<String,Object> updateOrderTimeTechList(OrderInfo orderInfo) {
 		//技师的技能  排期表时间  服务信息-分类-技能
 		OrderInfo info = orderInfoDao.get(orderInfo.getId());
 		//服务时间
@@ -272,18 +272,58 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		info.setFinishTime(finishTime);
 		info.setSerchFullTech(true);
 		List<OrderDispatch> techList = orderToolsService.listTechByGoodsAndTime(info);
-		return  techList;
+		//当前技师
+		List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(orderInfo);
+		OrderDispatch orderDispatch = byOrderId.get(0);
+		ServiceTechnicianInfo technicianInfo=new ServiceTechnicianInfo();
+		technicianInfo.setId(orderDispatch.getTechId());
+		ServiceTechnicianInfo byId = serviceTechnicianInfoDao.getById(technicianInfo);
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("list",techList);
+		map.put("tech",byId);
+		return  map;
 	}
-
+	@Transactional(readOnly = false)
 	//更换子订单时间 - 保存(拆单的)  参数 orderId serviceTime techId 拆单就一个技师
-	public List<OrderDispatch> updateOrderTimeSave(OrderInfo orderInfo){
-		OrderInfo info = orderInfoDao.get(orderInfo.getId());
+	public HashMap<String,Object> updateOrderTimeSave(OrderInfo orderInfo){
+        int i =0;
+        OrderInfo info = orderInfoDao.get(orderInfo.getId());
+        //根据orderNumber masterId获取组合订单的orderGroupId
+        OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(info);
 		CombinationOrderInfo combinationByMasterId = combinationOrderDao.getCombinationByMasterId(info.getMasterId());
 		if (!"group_split_yes".equals(combinationByMasterId.getOrderType())){
 			throw new ServiceException("该订单订单类型有误");
 		}
-		//先将订单表修改
-		orderInfoDao.saveTime(orderInfo);
+        //计算建议完成时间
+        int size = 0;
+		Date serviceTime = orderInfo.getServiceTime();
+		//建议服务时长（小时）（排期表）
+		Double serviceHour = info.getServiceHour();
+		//建议完成时间（排期表）
+		Date finishTime =null;
+		//根据groupId获取组合订单的订单集合
+        List<OrderCombinationGasqInfo> listByOrderGroupId = orderCombinationGasqDao.getListByOrderGroupId(listByOrderNumber);
+        if (listByOrderGroupId != null && listByOrderGroupId.size() > 0){
+            size = listByOrderGroupId.size();
+            for (OrderCombinationGasqInfo orderCombinationGasqInfo:listByOrderGroupId){
+                //获取同一groupId 的订单
+                OrderInfo orderTem = new OrderInfo();
+                orderTem.setOrderNumber(orderCombinationGasqInfo.getOrderNumber());
+                OrderInfo bySn = orderInfoDao.getBySn(orderTem);
+                bySn.setServiceTime(serviceTime);
+                Double serviceSecondTem = (bySn.getServiceHour() * 3600);
+                Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
+                bySn.setSuggestFinishTime(date);
+                bySn.preUpdate();
+                //先将订单表修改 *******
+                orderInfoDao.saveOrderTime(orderInfo);
+				serviceTime=date;
+            }
+        }
+		//计算订单的建议完成时间（排期表）
+		Double serviceSecond = (serviceHour * size * 3600);
+		finishTime = DateUtils.addSeconds(orderInfo.getServiceTime(), serviceSecond.intValue());
+		int weekNum = DateUtils.getWeekNum(orderInfo.getServiceTime());
 		//修改派单表
 		//1.将之前的派单的可用状态置为no
 		//根据订单id获取之前的技师集合
@@ -308,19 +348,17 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 			throw new ServiceException("新增派单表失败");
 		}
 		//修改排期表
-		//根据orderNumber masterId获取组合订单的orderGroupId
-		OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(info);
 		//根据orderGroupId查询排期表 将之前的删除 新增改派后的
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
-		techScheduleInfo.setType("");
+		techScheduleInfo.setType("master");
 		techScheduleInfo.setTypeId(listByOrderNumber.getOrderGroupId());
 		techScheduleInfo.setTechId(orderInfo.getTechId());
 		List<TechScheduleInfo> orderSchedule = techScheduleDao.getOrderSchedule(techScheduleInfo);
 		if (orderSchedule != null && orderSchedule.size() > 0){
 			//组合订单 同一个orderGroupId只有一个排期表
 			TechScheduleInfo techScheduleInfo1 = orderSchedule.get(0);
-			int i = techScheduleDao.deleteSchedule(techScheduleInfo1);
-			if (i < 1){
+			int delete = techScheduleDao.deleteSchedule(techScheduleInfo1);
+			if (delete < 1){
 				throw new ServiceException("删除改派前的排期表失败");
 			}
 		}
@@ -330,8 +368,18 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		newTechScheduleInfo.setTypeId(listByOrderNumber.getOrderGroupId());
 		newTechScheduleInfo.setType("master");
 		newTechScheduleInfo.setMasterId(info.getMasterId());
-
+        newTechScheduleInfo.setScheduleWeek(weekNum);
+        newTechScheduleInfo.setStartTime(orderInfo.getServiceTime());
+        newTechScheduleInfo.setEndTime(finishTime);
 		newTechScheduleInfo.preInsert();
-		return null;
+        i = techScheduleDao.insertSchedule(newTechScheduleInfo);
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("serviceHour",serviceHour);
+		map.put("orderId",orderInfo.getId());
+		map.put("serviceDate",orderInfo.getServiceTime());
+		map.put("orderSource",info.getOrderSource());
+		map.put("orderNumber", info.getOrderNumber());
+        return map;
 	}
+
 }

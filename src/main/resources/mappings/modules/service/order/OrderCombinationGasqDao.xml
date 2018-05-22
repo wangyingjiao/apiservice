@@ -103,7 +103,7 @@
         AND a.order_number = #{orderNumber}
     </select>
 
-    <!--根据masterId获取组合订单的订单集合-->
+    <!--根据groupId获取组合订单的订单集合-->
     <select id="getListByOrderGroupId" resultType="OrderCombinationGasqInfo">
         select
         <include refid="OrderCombinationGasqInfo"/>
