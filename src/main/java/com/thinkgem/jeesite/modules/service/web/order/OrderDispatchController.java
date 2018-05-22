@@ -10,7 +10,9 @@ import com.thinkgem.jeesite.common.result.FailResult;
 import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
+import com.thinkgem.jeesite.modules.service.entity.order.CombinationOrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
+import com.thinkgem.jeesite.modules.service.service.order.CombinationSaveOrderTechService;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoOperateService;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -49,6 +51,9 @@ public class OrderDispatchController extends BaseController {
 	private OrderDispatchService orderDispatchService;
 	@Autowired
 	private MessageInfoService messageInfoService;
+
+	@Autowired
+	private CombinationSaveOrderTechService combinationSaveOrderTechService;
 	
 	@ModelAttribute
 	public OrderDispatch get(@RequestParam(required=false) String id) {
@@ -100,7 +105,16 @@ public class OrderDispatchController extends BaseController {
 		}
 
 		try{
-			List<OrderDispatch> techList = orderInfoOperateService.addTech(orderInfo);
+			List<OrderDispatch> techList = null;
+			OrderInfo info = orderInfoService.get(orderInfo);
+			if("common".equals(info.getOrderType())) {
+				techList = orderInfoOperateService.addTech(orderInfo);
+			}else{
+				CombinationOrderInfo combinationOrderInfo = new CombinationOrderInfo();
+				combinationOrderInfo.setOrderId(orderInfo.getId());
+				combinationOrderInfo.setTechName(orderInfo.getTechName());
+				techList = combinationSaveOrderTechService.updateOrderTechTechList(combinationOrderInfo);
+			}
 			return new SuccResult(techList);
 		}catch (ServiceException ex){
 			return new FailResult("获取技师列表失败-"+ex.getMessage());
@@ -115,60 +129,163 @@ public class OrderDispatchController extends BaseController {
 	@RequiresPermissions("dispatch_insert")
 	public Result dispatchTechSave(@RequestBody OrderInfo orderInfo) {
 		try{
-			HashMap<String,Object> map = orderInfoOperateService.dispatchTechSave(orderInfo);
+			OrderInfo info = orderInfoService.get(orderInfo);
 
-			try {
-				//订单商品有对接方商品CODE  机构有对接方E店CODE
-				if(!"own".equals(map.get("orderSource").toString())){
-					OrderInfo sendOrder = new OrderInfo();
+			if("common".equals(info.getOrderType())) {
+				HashMap<String,Object> map = orderInfoOperateService.dispatchTechSave(orderInfo);
+				try {
+					//订单商品有对接方商品CODE  机构有对接方E店CODE
+					if(!"own".equals(map.get("orderSource").toString())){
+						OrderInfo sendOrder = new OrderInfo();
 
-					String orderSn = orderInfoService.getOrderSnById(map.get("orderId").toString());
-					sendOrder.setOrderNumber(orderSn);//订单编号
+						String orderSn = orderInfoService.getOrderSnById(map.get("orderId").toString());
+						sendOrder.setOrderNumber(orderSn);//订单编号
 
-					//sendOrder.setId(map.get("orderId").toString());//订单ID
-					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
-					OpenSendUtil.openSendSaveOrder(sendOrder);
+						//sendOrder.setId(map.get("orderId").toString());//订单ID
+						sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+						OpenSendUtil.openSendSaveOrder(sendOrder);
 					/*OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
 					if (sendResponse == null) {
 						logger.error("技师改派保存-对接失败-返回值为空");
 					} else if (sendResponse.getCode() != 0) {
 						logger.error("技师改派保存-对接失败-"+sendResponse.getMessage());
 					}*/
+					}
+				}catch (Exception e){
+					logger.error("技师改派保存-对接失败-系统异常");
 				}
-			}catch (Exception e){
-				logger.error("技师改派保存-对接失败-系统异常");
+
+				try{
+					// 派单
+					List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+					// 改派
+					List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+					String orderNumber = (String)map.get("orderNumber");
+					String orderId = (String)map.get("orderId");
+
+					OrderInfo orderInfo1 = new OrderInfo();
+					OrderInfo orderInfo2 = new OrderInfo();
+
+					orderInfo1.setOrderNumber(orderNumber);
+					orderInfo2.setOrderNumber(orderNumber);
+
+					orderInfo1.setId(orderId);
+					orderInfo2.setId(orderId);
+
+					orderInfo1.setTechList(orderCreateMsgList);
+					orderInfo2.setTechList(orderDispatchMsgList);
+
+					User user = UserUtils.getUser();
+					orderInfo1.setCreateBy(user);
+					orderInfo2.setCreateBy(user);
+
+					messageInfoService.insert(orderInfo1,"orderCreate");//新增
+					messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+				}catch (Exception e){
+					logger.error("技师改派保存-推送消息失败-系统异常");
+				}
+				return new SuccResult(map);
+			}else{
+				CombinationOrderInfo combinationOrderInfo = new CombinationOrderInfo();
+				combinationOrderInfo.setTechId(orderInfo.getDispatchTechId());
+				combinationOrderInfo.setTechIdList(orderInfo.getTechIdList());
+				combinationOrderInfo.setOrderId(orderInfo.getId());
+				try{
+					HashMap<String,Object> map = null;
+					OrderInfo typeInfo = combinationSaveOrderTechService.getOrderTypeByOrderId(combinationOrderInfo);
+					if("group_split_yes".equals(typeInfo.getOrderType())){
+						map = combinationSaveOrderTechService.updateOrderTechDispatchSaveForMany(combinationOrderInfo);
+						try {
+							//订单商品有对接方商品CODE  机构有对接方E店CODE
+							if(!"own".equals(map.get("orderSource").toString())){
+								List<OrderInfo> orderSendList = (List<OrderInfo>) map.get("orderSendList");
+								if(orderSendList != null ){
+									for(OrderInfo orderSend : orderSendList){
+										OpenSendUtil.openSendSaveOrder(orderSend);
+									}
+								}
+							}
+						}catch (Exception e){
+							logger.error("技师改派保存-对接失败-系统异常");
+						}
+
+						try{
+							User user = UserUtils.getUser();
+							// 派单
+							List<OrderInfo> orderCreateMsgList = (List<OrderInfo>) map.get("orderCreateMsgList");
+							if(orderCreateMsgList != null ){
+								for(OrderInfo orderCreateMsg : orderCreateMsgList){
+									orderCreateMsg.setCreateBy(user);
+									messageInfoService.insert(orderCreateMsg,"orderCreate");//新增
+								}
+							}
+							// 改派
+							List<OrderInfo> orderDispatchMsgList = (List<OrderInfo>) map.get("orderDispatchMsgList");
+							if(orderDispatchMsgList != null ){
+								for(OrderInfo orderDispatchMsg : orderDispatchMsgList){
+									orderDispatchMsg.setCreateBy(user);
+									messageInfoService.insert(orderDispatchMsg,"orderDispatch");//改派
+								}
+							}
+						}catch (Exception e){
+							logger.error("技师改派保存-推送消息失败-系统异常");
+						}
+						return new SuccResult(map);
+					}else if("group_split_no".equals(typeInfo.getOrderType())){
+						map = combinationSaveOrderTechService.updateOrderTechDispatchSaveForOnce(combinationOrderInfo);
+					}else {
+						return null;
+					}
+
+					try {
+						//订单商品有对接方商品CODE  机构有对接方E店CODE
+						if(!"own".equals(map.get("orderSource").toString())){
+							OrderInfo sendOrder = new OrderInfo();
+							String orderSn = map.get("orderNumber").toString();
+							sendOrder.setOrderNumber(orderSn);//订单编号
+							sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
+							OpenSendUtil.openSendSaveOrder(sendOrder);
+						}
+					}catch (Exception e){
+						logger.error("技师改派保存-对接失败-系统异常");
+					}
+
+					try{
+						// 派单
+						List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
+						// 改派
+						List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
+						String orderNumber = (String)map.get("orderNumber");
+						String orderId = (String)map.get("orderId");
+
+						OrderInfo orderInfo1 = new OrderInfo();
+						OrderInfo orderInfo2 = new OrderInfo();
+
+						orderInfo1.setOrderNumber(orderNumber);
+						orderInfo2.setOrderNumber(orderNumber);
+
+						orderInfo1.setId(orderId);
+						orderInfo2.setId(orderId);
+
+						orderInfo1.setTechList(orderCreateMsgList);
+						orderInfo2.setTechList(orderDispatchMsgList);
+
+						User user = UserUtils.getUser();
+						orderInfo1.setCreateBy(user);
+						orderInfo2.setCreateBy(user);
+
+						messageInfoService.insert(orderInfo1,"orderCreate");//新增
+						messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+					}catch (Exception e){
+						logger.error("技师改派保存-推送消息失败-系统异常");
+					}
+					return new SuccResult(map);
+				}catch (ServiceException ex){
+					return new FailResult("保存失败-"+ex.getMessage());
+				}catch (Exception e){
+					return new FailResult("保存失败-系统异常");
+				}
 			}
-
-			try{
-				// 派单
-				List<OrderDispatch> orderCreateMsgList = (List<OrderDispatch>)map.get("orderCreateMsgList");
-				// 改派
-				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
-				String orderNumber = (String)map.get("orderNumber");
-				String orderId = (String)map.get("orderId");
-
-				OrderInfo orderInfo1 = new OrderInfo();
-				OrderInfo orderInfo2 = new OrderInfo();
-
-				orderInfo1.setOrderNumber(orderNumber);
-				orderInfo2.setOrderNumber(orderNumber);
-
-				orderInfo1.setId(orderId);
-				orderInfo2.setId(orderId);
-
-				orderInfo1.setTechList(orderCreateMsgList);
-				orderInfo2.setTechList(orderDispatchMsgList);
-
-				User user = UserUtils.getUser();
-				orderInfo1.setCreateBy(user);
-				orderInfo2.setCreateBy(user);
-
-				messageInfoService.insert(orderInfo1,"orderCreate");//新增
-				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
-			}catch (Exception e){
-				logger.error("技师改派保存-推送消息失败-系统异常");
-			}
-			return new SuccResult(map);
 		}catch (ServiceException ex){
 			return new FailResult("保存失败-"+ex.getMessage());
 		}catch (Exception e){
