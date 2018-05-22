@@ -477,6 +477,14 @@ public class CombinationOrderController extends BaseController {
 		if(!fullFlag){
 			return new FailResult("当前订单只有补单商品,不允许操作此项内容");
 		}
+		OrderInfo info = orderInfoService.get(orderInfo.getId());
+		Date serviceTime = info.getServiceTime();
+		//当前时间后一个半小时
+		Double serviceNextSecond = (1.5 * 3600);
+		Date finishTime = DateUtils.addSeconds(new Date(), serviceNextSecond.intValue());
+		if (serviceTime.compareTo(finishTime) < 0){
+			return new FailResult("距离服务开始时间只剩下一个半小时，不可再更换时间!");
+		}
 		try {
 			List<OrderTimeList> orderTimeLists = combinationSaveOrderTimeService.updateOrderTimeDateList(orderInfo);
 			return new SuccResult(orderTimeLists);
