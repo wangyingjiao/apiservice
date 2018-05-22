@@ -63,7 +63,7 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 	public CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo) {
 		CombinationOrderInfo combinationById = combinationOrderDao.getCombinationById(combinationOrderInfo);
         //计算预约次数 组合并拆单 没有order_combination_frequency order_combination_gasq
-        if ("group_split_yes".equalsIgnoreCase(combinationById.getOrderType())) {
+        if ("group_split_yes".equals(combinationById.getOrderType())) {
 			List<OrderCombinationFrequencyInfo> frequencyList = frequencyDao.getFrequencyList(combinationOrderInfo);
 			if (frequencyList != null && frequencyList.size() > 0) {
 				for (OrderCombinationFrequencyInfo frequencyInfo : frequencyList) {
@@ -84,7 +84,7 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
             BigDecimal serviceNum = new BigDecimal(combinationById.getServiceNum());
             BigDecimal multiply = serviceNum.multiply(new BigDecimal(combinationById.getServiceHour()));
             combinationById.setServiceAllHour(multiply.doubleValue());
-        }else if ("group_split_no".equalsIgnoreCase(combinationById.getOrderType())){
+        }else if ("group_split_no".equals(combinationById.getOrderType())){
 			OrderInfo orderListbyMasterId = orderCombinationGasqDao.getOrderListbyMasterId(combinationOrderInfo);
 			List<OrderInfo> orderInfos=new ArrayList<OrderInfo>();
 			orderInfos.add(orderListbyMasterId);
