@@ -19,8 +19,10 @@ import java.util.List;
  */
 @MyBatisDao
 public interface OrderCombinationGasqDao extends CrudDao<OrderCombinationGasqInfo> {
-    //根据masterId获取组合订单的订单集合
+    //根据masterId获取组合并拆单订单的订单集合
     List<OrderCombinationGasqInfo> getListbyMasterId(CombinationOrderInfo combinationOrderInfo);
+    //根据masterId获取组合不拆单订单的订单集合
+    OrderInfo getOrderListbyMasterId(CombinationOrderInfo combinationOrderInfo);
 
     //根据groupId获取组合订单的订单集合
     List<OrderCombinationGasqInfo> getListByOrderGroupId(OrderCombinationGasqInfo orderCombinationGasqInfo);

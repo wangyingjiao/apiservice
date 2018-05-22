@@ -62,18 +62,18 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 	//组合订单详情
 	public CombinationOrderInfo getCombinationById(CombinationOrderInfo combinationOrderInfo) {
 		CombinationOrderInfo combinationById = combinationOrderDao.getCombinationById(combinationOrderInfo);
-		List<OrderCombinationFrequencyInfo> frequencyList = frequencyDao.getFrequencyList(combinationOrderInfo);
-		if (frequencyList != null && frequencyList.size() > 0) {
-			for (OrderCombinationFrequencyInfo frequencyInfo : frequencyList) {
-				frequencyInfo.setTimeArea(DateUtils.formatDate(frequencyInfo.getStartTime(),"HH:mm")+"-"+DateUtils.formatDate(frequencyInfo.getEndTime(),"HH:mm"));
-			}
-		}
-		combinationById.setFreList(frequencyList);
-		//根据masterId获取组合订单的订单集合
-        List<OrderCombinationGasqInfo> listbyMasterId = orderCombinationGasqDao.getListbyMasterId(combinationOrderInfo);
-        combinationById.setOrderCombinationGasqInfos(listbyMasterId);
-        //计算预约次数 组合并拆单
+        //计算预约次数 组合并拆单 没有order_combination_frequency order_combination_gasq
         if ("group_split_yes".equalsIgnoreCase(combinationById.getOrderType())) {
+			List<OrderCombinationFrequencyInfo> frequencyList = frequencyDao.getFrequencyList(combinationOrderInfo);
+			if (frequencyList != null && frequencyList.size() > 0) {
+				for (OrderCombinationFrequencyInfo frequencyInfo : frequencyList) {
+					frequencyInfo.setTimeArea(DateUtils.formatDate(frequencyInfo.getStartTime(),"HH:mm")+"-"+DateUtils.formatDate(frequencyInfo.getEndTime(),"HH:mm"));
+				}
+			}
+			combinationById.setFreList(frequencyList);
+			//根据masterId获取组合订单的订单集合
+			List<OrderCombinationGasqInfo> listbyMasterId = orderCombinationGasqDao.getListbyMasterId(combinationOrderInfo);
+			combinationById.setOrderCombinationGasqInfos(listbyMasterId);
             int bespeakNum = combinationById.getBespeakNum();
             int bespeakTotal = combinationById.getBespeakTotal();
             int surplusNum = 0;
@@ -84,7 +84,16 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
             BigDecimal serviceNum = new BigDecimal(combinationById.getServiceNum());
             BigDecimal multiply = serviceNum.multiply(new BigDecimal(combinationById.getServiceHour()));
             combinationById.setServiceAllHour(multiply.doubleValue());
-        }
+        }else if ("group_split_no".equalsIgnoreCase(combinationById.getOrderType())){
+			OrderInfo orderListbyMasterId = orderCombinationGasqDao.getOrderListbyMasterId(combinationOrderInfo);
+			List<OrderInfo> orderInfos=new ArrayList<OrderInfo>();
+			orderInfos.add(orderListbyMasterId);
+			OrderCombinationGasqInfo gasqInfo=new OrderCombinationGasqInfo();
+			gasqInfo.setOrderList(orderInfos);
+			List<OrderCombinationGasqInfo> orderCombinationGasqInfos=new ArrayList<OrderCombinationGasqInfo>();
+			orderCombinationGasqInfos.add(gasqInfo);
+			combinationById.setOrderCombinationGasqInfos(orderCombinationGasqInfos);
+		}
         //根据com表中goodId获取所有组合商品-子商品
 		List<CombinationCommodity> listByGoodsId = combinationCommodityDao.findListByGoodsId(combinationById);
 		List<CombinationCommodity> comGoods=new ArrayList<CombinationCommodity>();
