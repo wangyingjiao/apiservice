@@ -26,6 +26,8 @@
 	</select>
 	<resultMap id="orderDispatchMap" type="OrderInfo">
 		<result column="orderNumber" property="orderNumber"></result>
+		<result column="masterId" property="masterId"></result>
+		<result column="orderType" property="orderType"></result>
 		<result column="serviceStatus" property="serviceStatus"></result>
 		<result column="orderStatus" property="orderStatus"></result>
 		<result column="serviceHour" property="serviceHour"></result>
@@ -39,6 +41,8 @@
 	<select id="findOrderList" resultMap="orderDispatchMap">
 		SELECT
 			a.id AS id,
+		a.master_id AS "masterId",
+		a.order_type AS "orderType",
 			a.order_number AS orderNumber,
 			a.service_time AS serviceTime,
 		a.service_status AS serviceStatus,

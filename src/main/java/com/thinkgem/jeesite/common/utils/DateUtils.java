@@ -333,7 +333,26 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return  list;
 	}
+	/**
+	 * 获取两周后一周的日期数组
+	 * @return
+	 */
+	public static Map<String,Date> getTwoWeekLaterWeekDays() {
+		Map<String,Date> map = new HashMap<>();
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		day = DateUtils.addDays(day,14);
+		list.add(day);
+		for(int i=0;i<6;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
 
+		for(Date date : list){
+			map.put(String.valueOf(getWeekNum(date)),date);
+		}
+		return  map;
+	}
 
 	/**
 	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回false
@@ -678,14 +697,25 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws ParseException {
-		/*List<Date> list = null;
-		list = listTimeByFrequency(parseDate("2018-05-08"),parseDate("16:00","HH:mm"),4,1.5);
-		for(Date info : list){
-			System.out.println(info);
-		}*/
+//		List<Date> list = null;
+//		list = getTwoWeekLaterWeekDays();
+//		for(Date info : list){
+//			System.out.println(info);
+//		}
 
-		String str = getWeekL(parseDate("2018-05-08"));
-		System.out.println(str);
+		Map<String,Date> map = null;
+		map = getTwoWeekLaterWeekDays();
+
+
+		Iterator iterator = map.entrySet().iterator();
+		while (iterator.hasNext()){
+			Map.Entry entry = (Map.Entry) iterator.next();
+			System.out.println(entry.getKey() + "---" + entry.getValue());
+		}
+		System.out.println("------------");
+		System.out.println(map.get("1"));
+		System.out.println(map.get("2"));
+		System.out.println(map.get("3"));
 	}
 
 }

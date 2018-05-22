@@ -242,6 +242,18 @@ public class CombinationOrderController extends BaseController {
 	//@RequiresPermissions("combination_order_tech")
 	public Result updateOrderTechInit(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
+			OrderInfo orderInfo = new OrderInfo();
+			orderInfo.setId(combinationOrderInfo.getOrderId());
+			//判断订单状态
+			boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
+			if(!flag){
+				return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+			}
+			boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
+			if(!fullFlag){
+				return new FailResult("当前订单只有补单商品,不允许操作此项内容");
+			}
+
 			List<OrderDispatch> list = combinationSaveOrderTechService.updateOrderTechInit(combinationOrderInfo);
 			return new SuccResult(list);
 		}catch (Exception e){

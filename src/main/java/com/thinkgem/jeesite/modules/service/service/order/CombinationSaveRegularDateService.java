@@ -104,7 +104,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 	public List<OrderTimeList> saveRegularDateDateList(CombinationOrderInfo combinationOrderInfo) {
 		int serviceNum = combinationOrderInfo.getServiceNum();//预约个数
 		String masterId = combinationOrderInfo.getMasterId();
-		List<Date> dateList = DateUtils.getWeekLaterTwoWeekDays();
+		Map<String,Date> map = DateUtils.getTwoWeekLaterWeekDays();//获取第三周数据，查询排期用
+
 		List<OrderTimeList> list = new ArrayList<>();
 
 		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
@@ -151,7 +152,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				responseRe.setValue(String.valueOf(i));
 				responseRe.setLabel(String.valueOf(i));
 				//该日服务时间点列表
-				List<OrderDispatch> hours = listHourByWeek(i, dateList,techList, techDispatchNum,serviceSecond);
+				List<OrderDispatch> hours = listHourByWeek(i, map,techList, techDispatchNum,serviceSecond);
 				if(hours!= null && hours.size()>0){
 					List<KeyValueEntity> hoursList = new ArrayList<>();
 					for(int j=0;j<hours.size();j++){
@@ -171,7 +172,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		return list;
 	}
 
-	private List<OrderDispatch> listHourByWeek(int week, List<Date> dateList, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
+	private List<OrderDispatch> listHourByWeek(int week, Map<String,Date> map, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
 		List<OrderDispatch> techForList = new ArrayList<>();
 		if(techList != null){//深浅拷贝问题
 			for(OrderDispatch dispatch: techList){
@@ -217,7 +218,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				}
 				//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点  结束-------------
 
-				//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
+				//----------取得技师 组合订单频率  如果和工作时间重复 删除该时间点 开始-------------------
 				//--- 订单时间段--订单开始时间 减去商品需求时间 减去准备时间；---订单结束时间 加上准备时间 ----------------------
 				CombinationOrderInfo serchCombinationInfo = new CombinationOrderInfo();
 				serchCombinationInfo.setTechId(tech.getTechId());
@@ -254,6 +255,48 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 								String work = it2.next();
 								if (orders.contains(work)) {//去除订单时间
 									it2.remove();
+								}
+							}
+						}
+					}
+				}
+				//----------取得技师 组合订单频率   如果和工作时间重复 删除该时间点 结束------------------
+
+				//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
+				Date date = map.get(String.valueOf(week));
+				List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), date, "order");
+				if (techOrderList != null && techOrderList.size() != 0) {
+					for (TechScheduleInfo order : techOrderList) {
+						int intervalTimeS = 0;//必须间隔时间 秒
+						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+							//可以接单的时间则为：40分钟+路上时间+富余时间
+							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
+						} else {
+							//可以接单的时间则为：路上时间+富余时间
+							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
+						}
+
+						int intervalTimeE = 0;//必须间隔时间 秒
+						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
+							//可以接单的时间则为：40分钟+路上时间+富余时间
+							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
+						} else {
+							//可以接单的时间则为：路上时间+富余时间
+							intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));
+						}
+
+						List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
+								DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
+								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
+						if (orders != null && workTimes!= null) {
+							Iterator<String> it2 = workTimes.iterator();
+							while (it2.hasNext()) {
+								String work = (String) it2.next();
+								if (orders.contains(work)) {//去除订单时间
+									it2.remove();
+									//continue;
 								}
 							}
 						}
@@ -306,7 +349,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 	/**
 	 * 设置固定时间- 查询服务技师
-	 * @param combinationOrderInfo(serviceNum，masterId，freList)
+	 * @param combinationOrderInfo(serviceNum，masterId，freList,serviceStart)
 	 * @return
 	 */
 	public List<OrderDispatch> saveRegularDateTechList(CombinationOrderInfo combinationOrderInfo) {
@@ -314,6 +357,10 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		int serviceNum = combinationOrderInfo.getServiceNum();//预约个数
 		String masterId = combinationOrderInfo.getMasterId();
 		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();
+		Date serviceStart = combinationOrderInfo.getServiceStart();// 第一次选择日期
+		if(serviceStart == null){
+			return null;
+		}
 
 		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
 		SerItemCommodity commodity = orderGoodsDao.findItemGoodsByGoodId(combinationInfo.getCombinationGoodsId());
@@ -356,16 +403,15 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		for(OrderCombinationFrequencyInfo frequency : freList){
 			OrderTimeList responseRe = new OrderTimeList();
 			try {
-				removeBusyTechByWeekTime(frequency, techList, techDispatchNum, serviceSecond);
+				removeBusyTechByWeekTime(frequency, techList, techDispatchNum, serviceSecond, serviceStart);
 			}catch (Exception e){
 				logger.error(responseRe.getLabel()+"去除忙碌技师失败");
 			}
-
 		}
 		return techList;
 	}
 
-	private void removeBusyTechByWeekTime(OrderCombinationFrequencyInfo frequencyInfo, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
+	private void removeBusyTechByWeekTime(OrderCombinationFrequencyInfo frequencyInfo, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond, Date serviceStart) {
 		int week = frequencyInfo.getWeek();
 		String selectTimeStr = frequencyInfo.getTimeArea().split("-")[0];
 		Date selectTime = null;
@@ -427,7 +473,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			}
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点  结束-------------
 
-			//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
+			//----------取得技师 组合订单频率    如果和工作时间重复 删除该时间点 开始-------------------
 			//--- 订单时间段--订单开始时间 减去商品需求时间 减去准备时间；---订单结束时间 加上准备时间 ----------------------
 			CombinationOrderInfo serchCombinationInfo = new CombinationOrderInfo();
 			serchCombinationInfo.setTechId(tech.getTechId());
@@ -471,6 +517,50 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 					}
 				}
 			}
+			//----------取得技师 组合订单频率   如果和工作时间重复 删除该时间点 结束------------------
+
+			//----------取得技师 开始时间订单   如果和工作时间重复 删除该时间点 开始-------------------
+			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), serviceStart, "order");
+			if (techOrderList != null && techOrderList.size() != 0) {
+				for (TechScheduleInfo order : techOrderList) {
+					int intervalTimeS = 0;//必须间隔时间 秒
+					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+						//可以接单的时间则为：40分钟+路上时间+富余时间
+						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
+					} else {
+						//可以接单的时间则为：路上时间+富余时间
+						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
+					}
+
+					int intervalTimeE = 0;//必须间隔时间 秒
+					if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
+						//可以接单的时间则为：40分钟+路上时间+富余时间
+						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
+					} else {
+						//可以接单的时间则为：路上时间+富余时间
+						intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));
+					}
+
+					//List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
+					//DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
+					//DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
+					if(
+							(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
+									|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))==0) &&
+									selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
+							){
+						it.remove();
+						if(techList.size() < techDispatchNum){//技师数量不够
+							return;
+						}
+						continue;//下一位技师
+					}
+				}
+			}
+			//----------取得技师 开始时间订单   如果和工作时间重复 删除该时间点 结束------------------
+
 		}
 	}
 
@@ -582,9 +672,106 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 					}
 				}
 			}
+
+
+
+			//----------取得技师 开始时间订单   如果和工作时间重复 删除该时间点 开始-------------------
+			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, serviceStart, "order");
+			if (techOrderList != null && techOrderList.size() != 0) {
+				for (TechScheduleInfo order : techOrderList) {
+					int intervalTimeS = 0;//必须间隔时间 秒
+					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+						//可以接单的时间则为：40分钟+路上时间+富余时间
+						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
+					} else {
+						//可以接单的时间则为：路上时间+富余时间
+						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
+					}
+
+					int intervalTimeE = 0;//必须间隔时间 秒
+					if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
+						//可以接单的时间则为：40分钟+路上时间+富余时间
+						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
+					} else {
+						//可以接单的时间则为：路上时间+富余时间
+						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
+					}
+
+					//List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
+					//DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
+					//DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
+					if (
+							(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
+									|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS)) == 0) &&
+									selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
+							) {
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}
+
+	/**
+	 * 根据频次开始时间返回所有需要生成的日期
+	 * @param serviceFrequency  服务频次   week_one:1周1次 week_some:1周多次 two_week_one:2周1次
+	 * @param freList   服务时间   周
+	 * @param serviceStart  第一次选择日期
+	 * @return
+	 */
+	private static List<Date> listCreartDateByFrequency(String serviceFrequency, List<OrderCombinationFrequencyInfo> freList, Date serviceStart) {
+		List<Date> list = new ArrayList<>();
+		if("two_week_one".equals(serviceFrequency)){//2周1次
+			list.add(serviceStart);
+			return list;
+		}
+		List<Date> dateList = DateUtils.getWeekLaterTwoWeekDays();
+		List<String> weekList = new ArrayList<>();
+		HashMap<String, List<Date>> map = new HashMap<>();
+		for(Date date : dateList){
+			String week = String.valueOf(DateUtils.getWeekNum(date));
+			if(weekList.contains(week)){
+				List<Date> keyValueEntityList = map.get(week);
+				keyValueEntityList.add(date);
+				map.put(week,keyValueEntityList);
+			}else{
+				List<Date> keyValueEntityList = new ArrayList<>();
+				keyValueEntityList.add(date);
+				map.put(week,keyValueEntityList);
+				weekList.add(week);
+			}
+		}
+
+		for(OrderCombinationFrequencyInfo frequencyInfo : freList){
+			List<Date> dateListMap = map.get(String.valueOf(frequencyInfo.getWeek()));
+			for(Date dateMap : dateListMap){
+				if(!serviceStart.after(dateMap)){
+					list.add(dateMap);
+				}
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * 返回时间数组的最后日期
+	 * @param creartDateList
+	 * @return
+	 */
+	private Date getLastDate(List<Date> creartDateList) {
+		Date last = creartDateList.get(0);
+		for(Date date : creartDateList){
+			if(date.after(last)){
+				last = date;
+			}
+		}
+		return last;
+	}
+
 	/**
 	 * 设置固定时间- 保存
 	 * @param combinationOrderInfo(serviceNum，masterId，freList，serviceFrequency，serviceStart，techId)
@@ -597,6 +784,12 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		String serviceFrequency = combinationOrderInfo.getServiceFrequency();//服务频次
 		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();//服务时间
 		Date serviceStart = combinationOrderInfo.getServiceStart();// 第一次选择日期
+
+		//根据频次开始时间返回所有需要生成的日期
+		List<Date> creartDateList = listCreartDateByFrequency(serviceFrequency, freList, serviceStart);
+		//返回时间数组的最后日期
+		Date serviceEnd = getLastDate(creartDateList);
+
 		String techId = combinationOrderInfo.getTechId();
 		ServiceTechnicianInfo techInfo = technicianInfoDao.get(techId);
 		//获取组合信息
@@ -614,12 +807,10 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		updateCombinationOrderInfo.setServiceNum(serviceNum);
 		updateCombinationOrderInfo.setServiceFrequency(serviceFrequency);
 		updateCombinationOrderInfo.setServiceStart(serviceStart);
+		updateCombinationOrderInfo.setServiceEnd(serviceEnd);
 		updateCombinationOrderInfo.setTechId(techId);
 		combinationOrderDao.updateManyByMasterId(updateCombinationOrderInfo);
 
-		Date serviceStartBeginTime = null;// 第一次选择日期开始时间
-		Date serviceStartEndTime = null;// 第一次选择日期结束时间
-		int serviceStartWeek = DateUtils.getWeekNum(serviceStart);
 		// 新增 组合订单服务时间order_combination_frequency
 		for(OrderCombinationFrequencyInfo frequency : freList){
 			frequency.setMasterId(masterId);
@@ -637,50 +828,67 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			frequency.setEndTime(endTime);
 			frequency.preInsert();
 			frequencyDao.insert(frequency);
+		}
+		List<OrderInfo> orderList = new ArrayList<>();
+		for(Date creartDate : creartDateList) {//每天生成一组订单
 
-			if(serviceStartWeek == frequency.getWeek()){//第一次服务日期的开始时间(时分)
-				serviceStartBeginTime = frequency.getStartTime();
-				serviceStartEndTime = frequency.getEndTime();
+			Date serviceStartBeginTime = null;// 第一次选择日期开始时间
+			Date serviceStartEndTime = null;// 第一次选择日期结束时间
+			int serviceStartWeek = DateUtils.getWeekNum(serviceStart);
+			// 新增 组合订单服务时间order_combination_frequency
+			for (OrderCombinationFrequencyInfo frequency : freList) {
+				if (serviceStartWeek == frequency.getWeek()) {//第一次服务日期的开始时间(时分)
+					serviceStartBeginTime = frequency.getStartTime();
+					serviceStartEndTime = frequency.getEndTime();
+				}
 			}
+
+			List<Date> listDate = DateUtils.listTimeByFrequency(serviceStart, serviceStartBeginTime, serviceNum, combinationInfo.getServiceHour());
+			//根据组合商品ID返回子商品信息
+			OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());
+
+			List<OrderInfo> orderInfoList = new ArrayList<>();
+			// 新增 子商品信息
+			for (Date startDate : listDate) {
+				HashMap<String, Object> map = combinationCreateOrder(startDate, combinationInfo, goods);
+				OrderInfo orderInfo = (OrderInfo) map.get("orderInfoMsg");
+				orderInfoList.add(orderInfo);
+			}
+
+			//更新 组合订单对接编号信息order_combination_gasq
+			List<OrderCombinationGasqInfo> combinationGasqInfoList = orderCombinationGasqDao.listFreeGasqSn(masterId);
+			String groupId = IdGen.uuid();
+			for (int i = 0; i < orderInfoList.size(); i++) {
+				OrderCombinationGasqInfo combinationGasqInfo = combinationGasqInfoList.get(i);
+				combinationGasqInfo.setOrderGroupId(groupId);
+				combinationGasqInfo.setOrderNumber(orderInfoList.get(i).getOrderNumber());
+				combinationGasqInfo.preUpdate();
+				orderCombinationGasqDao.updateOrderGroup(combinationGasqInfo);
+
+				orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
+
+
+				// order_info  对接订单ID 更新
+				OrderInfo updateJointInfo = new OrderInfo();
+				updateJointInfo.setId(orderInfoList.get(i).getId());
+				updateJointInfo.setJointOrderId(combinationGasqInfo.getJointOrderSn());
+				updateJointInfo.preUpdate();
+				orderInfoDao.update(updateJointInfo);
+			}
+
+			// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
+			openCreateForTechSchedule(combinationInfo.getTechId(), serviceStartBeginTime, serviceStartEndTime, groupId, masterId);
+
+			//更新已预约次数
+			CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();
+			updateCombinationInfo.setMasterId(masterId);
+			updateCombinationInfo.setServiceNum(serviceNum);
+			combinationOrderDao.updateBespeakByMasterId(updateCombinationInfo);
+
+			orderList.addAll(orderInfoList);
 		}
-
-		List<Date> listDate = DateUtils.listTimeByFrequency(serviceStart,serviceStartBeginTime,serviceNum,combinationInfo.getServiceHour());
-		//根据组合商品ID返回子商品信息
-		OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());
-
-		List<OrderInfo> orderInfoList = new ArrayList<>();
-		// 新增 子商品信息
-		for(Date startDate :listDate){
-			HashMap<String,Object> map = combinationCreateOrder(startDate, combinationInfo, goods);
-			OrderInfo orderInfo = (OrderInfo)map.get("orderInfoMsg");
-			orderInfoList.add(orderInfo);
-		}
-
-		//更新 组合订单对接编号信息order_combination_gasq
-		List<OrderCombinationGasqInfo> combinationGasqInfoList = orderCombinationGasqDao.listFreeGasqSn(masterId);
-		String groupId = IdGen.uuid();
-		for(int i=0; i<orderInfoList.size(); i++){
-			OrderCombinationGasqInfo combinationGasqInfo = combinationGasqInfoList.get(i);
-			combinationGasqInfo.setOrderGroupId(groupId);
-			combinationGasqInfo.setOrderNumber(orderInfoList.get(i).getOrderNumber());
-			combinationGasqInfo.preUpdate();
-			orderCombinationGasqDao.updateOrderGroup(combinationGasqInfo);
-
-			orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
-		}
-
-		// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
-		openCreateForTechSchedule( combinationInfo.getTechId(), serviceStartBeginTime, serviceStartEndTime , groupId, masterId);
-
-		//更新已预约次数
-		CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();
-		updateCombinationInfo.setMasterId(masterId);
-		updateCombinationInfo.setServiceNum(serviceNum);
-		combinationOrderDao.updateBespeakByMasterId(updateCombinationInfo);
-
-		return orderInfoList;
+		return orderList;
 	}
-
 
 	/**
 	 * 根据组合商品ID返回第一个子商品信息
