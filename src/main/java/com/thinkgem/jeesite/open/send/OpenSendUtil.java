@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
+import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
@@ -252,6 +253,7 @@ public class OpenSendUtil {
 
 			if (commoditys != null) {
 				for (SerItemCommodity commodity : commoditys) {
+                    List<Map<String,Object>> combo = new ArrayList<>();
 					HashMap<String, String> eidGid = new HashMap<>();
 					List<SerItemCommodityEshop> commodityEshops = commodity.getCommodityEshops();
 					if (commodityEshops != null) {
@@ -264,10 +266,26 @@ public class OpenSendUtil {
 						}
 					}
 
+					if (commodity.getCombinationCommodities() != null && commodity.getCombinationCommodities().size()>0){
+						is_combo = "yes";//no 单一商品 no / 组合商品 yes
+                        List<CombinationCommodity> combinationCommodities = commodity.getCombinationCommodities();
+                        for (CombinationCommodity combinationCommodity : combinationCommodities) {
+                            Map<String, Object> map = new HashMap<>();
+                            OpenSendSaveCombGoods osscg = new OpenSendSaveCombGoods();
+                            osscg.setProduct_id(combinationCommodity.getJointGoodsCode());
+                            osscg.setProduct_num(String.valueOf(combinationCommodity.getCombinationNum()));
+                            osscg.setSettlement_price(String.valueOf(combinationCommodity.getCombinationPrice()));
+                            map.put(combinationCommodity.getJointGoodsCode(),osscg);
+                            combo.add(map);
+                        }
+
+                    }
+
 					String content_name = new StringBuilder(itemName).append("(").append(commodity.getName()).append(")").toString();// 商品名称格式：项目名称（商品名）
 					String content_price = commodity.getPrice().toString();// 商品价格
 					String content_unit = commodity.getUnit();// 商品单位格式：次/个/间
 					String self_code = commodity.getSelfCode();   //自营平台商品code  ID
+					String convert_hours = commodity.getConvertHours().toString();  //商品折算时长
 					String min_number = String.valueOf(commodity.getMinPurchase());// 最小购买数量，起购数量
 					//String joint_goods_code = commodity.getJointGoodsCode();
 
@@ -278,6 +296,7 @@ public class OpenSendUtil {
 					itemProduct.setTags_custom(tags_custom);// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
 					itemProduct.setContent_price(content_price);// 商品价格
 					itemProduct.setContent_unit(content_unit);// 商品单位格式：次/个/间
+					itemProduct.setConvert_hours(convert_hours);  //商品折算时长
 					itemProduct.setSelf_code(self_code); //自营平台商品code  ID
 					itemProduct.setMin_number(min_number);// 最小购买数量，起购数量
 					itemProduct.setContent_img(content_img);//图片 一张
@@ -288,6 +307,7 @@ public class OpenSendUtil {
 					itemProduct.setIs_combo(is_combo);//no 单一商品 no / 组合商品 yes
 					itemProduct.setContent_number(content_number);//999999
 					itemProduct.setAttachments(pictureMap);
+					itemProduct.setCombo(combo);
 					itemProduct.setEshop_codes(eidGid);
 					productList.add(itemProduct);
 				}

@@ -4,6 +4,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 服务项目保存RequestEntity
@@ -16,6 +17,7 @@ public class OpenSendSaveItemProduct extends DataEntity<OpenSendSaveItemProduct>
 
     private HashMap<String,Object> attachments;
     private HashMap<String,String> eshop_codes;
+    private List<Map<String,Object>> combo;
 
     private String content_name;// 商品名称格式：项目名称（商品名）
     private String tags_system;//系统标签格式：系统标签1,系统标签2,系统标签3,
@@ -33,6 +35,23 @@ public class OpenSendSaveItemProduct extends DataEntity<OpenSendSaveItemProduct>
     private String content_type;//service 类型：商品 product / 服务 service
     private String is_combo;//no 单一商品 no / 组合商品 yes
     private String content_number;//999999
+    private String convert_hours;
+
+    public List<Map<String, Object>> getCombo() {
+        return combo;
+    }
+
+    public void setCombo(List<Map<String, Object>> combo) {
+        this.combo = combo;
+    }
+
+    public String getConvert_hours() {
+        return convert_hours;
+    }
+
+    public void setConvert_hours(String convert_hours) {
+        this.convert_hours = convert_hours;
+    }
 
     public String getContent_name() {
         return content_name;

@@ -29,9 +29,27 @@ public class CombinationCommodity extends DataEntity<CombinationCommodity> {
     private boolean check = false;  //是否被选中
     private BigDecimal convertHours;  //折算时长
     private String jointGoodsCode;   //对接商品code
+    private String doublePrice;   //展示用
+    private String eshopCode;      //E店code
 
     private List<SerItemCommodityEshop> serItemCommodityEshops;
     private List<CombinationCommodity> combinationCommodities;
+
+    public String getEshopCode() {
+        return eshopCode;
+    }
+
+    public void setEshopCode(String eshopCode) {
+        this.eshopCode = eshopCode;
+    }
+
+    public String getDoublePrice() {
+        return doublePrice;
+    }
+
+    public void setDoublePrice(String doublePrice) {
+        this.doublePrice = doublePrice;
+    }
 
     public List<CombinationCommodity> getCombinationCommodities() {
         return combinationCommodities;

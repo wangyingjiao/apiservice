@@ -886,21 +886,21 @@ public class SerItemInfoController extends BaseController {
     @RequestMapping(value = "verificationJoint", method = {RequestMethod.POST})
     //@RequiresPermissions("project_insert")
     @ApiOperation("验证未对接的组合商品下子商品是否全部对接")
-    public Result verificationJoint(@RequestBody CombinationCommodity serItemCommodityEshops) {
+    public Result verificationJoint(@RequestBody CombinationCommodity combinationCommodity) {
         //============待修改==========
-        if (serItemCommodityEshops.getSerItemCommodityEshops().size() == 0){
+        if (combinationCommodity.getSerItemCommodityEshops().size() == 0){
             return new FailResult("请选择商品");
         }
-        List<SerItemCommodityEshop> siceList = new ArrayList<>();
-        for (SerItemCommodityEshop serItemCommodityEshop : serItemCommodityEshops.getSerItemCommodityEshops()){
+        List<SerItemCommodity> scList = new ArrayList<>();
+        for (SerItemCommodityEshop serItemCommodityEshop : combinationCommodity.getSerItemCommodityEshops()){
             if (serItemCommodityEshop.getGoodsType().equals("combined")){
-                List<CombinationCommodity> combinedList = serItemCommodityService.findCombinedList(serItemCommodityEshop.getId());
-                int count = serItemCommodityService.findCombinedJoint(serItemCommodityEshop);  //查询该商品下的子商品是否已经对接成功
-                if (combinedList.size() != count){
-                    siceList.add(serItemCommodityEshop);
-                }
+                SerItemCommodity serItemCommodity = serItemCommodityService.get(serItemCommodityEshop.getId());
+                serItemCommodity.setEshopCode(combinationCommodity.getEshopCode());
+                List<CombinationCommodity> combinedList = serItemCommodityService.commodJointList(serItemCommodity);
+                serItemCommodity.setCombinationCommodities(combinedList);
+                scList.add(serItemCommodity);
             }
         }
-        return new SuccResult(siceList);
+        return new SuccResult(scList);
     }
 }

@@ -434,6 +434,7 @@
         a.name AS "goodsName",
         a.unit AS "goodsUnit",
         a.price AS "goodsPrice",
+		a.price AS "doublePrice",
         a.convert_hours AS "convertHours",
 		b.name AS "itemName",
 		b.id AS "itemId"
@@ -494,6 +495,7 @@
 			b.name AS "goodsName",
 			b.convert_hours AS "convertHours",
 			b.price AS "goodsPrice",
+			b.price AS "doublePrice",
 			b.unit AS "goodsUnit"
 			FROM ser_item_combination_goods a
 			LEFT JOIN ser_item_info_goods b ON a.goods_id = b.id
@@ -534,6 +536,8 @@
 
 	<select id="commodJointList" resultType="CombinationCommodity">
 		SELECT a.goods_id AS "goodsId",
+				a.combination_price AS "combinationPrice",
+				a.combination_num AS  "combinationNum",
 				b.joint_goods_code AS "jointGoodsCode"
 				FROM ser_item_combination_goods a
 				LEFT JOIN ser_item_info_goods_eshop b ON a.goods_id = b.goods_id
