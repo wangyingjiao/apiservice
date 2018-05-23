@@ -357,6 +357,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		if (orderSchedule != null && orderSchedule.size() > 0){
 			//组合订单 同一个orderGroupId只有一个排期表
 			TechScheduleInfo techScheduleInfo1 = orderSchedule.get(0);
+			techScheduleInfo1.preUpdate();
 			int delete = techScheduleDao.deleteSchedule(techScheduleInfo1);
 			if (delete < 1){
 				throw new ServiceException("删除改派前的排期表失败");
