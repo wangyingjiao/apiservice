@@ -40,4 +40,6 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
     void updateManyByMasterId(CombinationOrderInfo updateCombinationOrderInfo);
 
     void updateBespeakByMasterId(CombinationOrderInfo updateCombinationOrderInfo);
+
+    List<CombinationOrderInfo> listCombinationWaitCreart();
 }

@@ -344,4 +344,17 @@
         bespeak_num = bespeak_num + #{serviceNum}
         WHERE master_id = #{masterId}
     </update>
+
+
+    <select id="listCombinationWaitCreart" resultType="OrderCombinationFrequencyInfo">
+        select
+          <include refid="CombinationOrderColumns"/>
+        from  	order_combination_info a
+        WHERE
+        a.del_flag = '0'
+        AND a.order_type = 'group_split_yes'
+        AND a.bespeak_total &gt; a.bespeak_num
+        AND a.order_status = 'dispatched'
+        AND a.service_frequency is not null
+    </select>
 </mapper>

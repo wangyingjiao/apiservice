@@ -290,20 +290,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return heafHourTimeList;
 	}
-	/**
-	 * 获取今天后15天的日期数组
-	 * @return
-	 */
-	public static List<Date> getAfterFifteenDays() {
-		List<Date> list = new ArrayList<>();
-		Date day = DateUtils.parseDate(getDate());
-		list.add(day);
-		for(int i=0;i<14;i++){
-			day = DateUtils.addDays(day,1);
-			list.add(day);
-		}
-		return  list;
-	}
+
 	/**
 	 * 获取今天后7天的日期数组
 	 * @return
@@ -313,6 +300,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		Date day = DateUtils.parseDate(getDate());
 		list.add(day);
 		for(int i=0;i<6;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
+	}
+	/**
+	 * 获取今天后15天的日期数组
+	 * @return
+	 */
+	public static List<Date> getAfterFifteenDays() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		list.add(day);
+		for(int i=0;i<14;i++){
 			day = DateUtils.addDays(day,1);
 			list.add(day);
 		}
@@ -352,6 +353,39 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			map.put(String.valueOf(getWeekNum(date)),date);
 		}
 		return  map;
+	}
+
+
+	/**
+	 * 周日返回一周后第一周数据
+	 * @return
+	 */
+	public static List<Date> fristWeekDayList() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		day = DateUtils.addDays(day,8);
+		list.add(day);
+		for(int i=0;i<6;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
+	}
+
+	/**
+	 * 周日返回一周后第二周数据
+	 * @return
+	 */
+	public static List<Date> lastWeekDayList() {
+		List<Date> list = new ArrayList<>();
+		Date day = DateUtils.parseDate(getDate());
+		day = DateUtils.addDays(day,15);
+		list.add(day);
+		for(int i=0;i<6;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		return  list;
 	}
 
 	/**
@@ -697,25 +731,25 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws ParseException {
-//		List<Date> list = null;
-//		list = getTwoWeekLaterWeekDays();
-//		for(Date info : list){
-//			System.out.println(info);
-//		}
-
-		Map<String,Date> map = null;
-		map = getTwoWeekLaterWeekDays();
-
-
-		Iterator iterator = map.entrySet().iterator();
-		while (iterator.hasNext()){
-			Map.Entry entry = (Map.Entry) iterator.next();
-			System.out.println(entry.getKey() + "---" + entry.getValue());
+		List<Date> list = null;
+		list = lastWeekDayList();
+		for(Date info : list){
+			System.out.println(info);
 		}
-		System.out.println("------------");
-		System.out.println(map.get("1"));
-		System.out.println(map.get("2"));
-		System.out.println(map.get("3"));
+//
+//		Map<String,Date> map = null;
+//		map = getTwoWeekLaterWeekDays();
+//
+//
+//		Iterator iterator = map.entrySet().iterator();
+//		while (iterator.hasNext()){
+//			Map.Entry entry = (Map.Entry) iterator.next();
+//			System.out.println(entry.getKey() + "---" + entry.getValue());
+//		}
+//		System.out.println("------------");
+//		System.out.println(map.get("1"));
+//		System.out.println(map.get("2"));
+//		System.out.println(map.get("3"));
 	}
 
 }

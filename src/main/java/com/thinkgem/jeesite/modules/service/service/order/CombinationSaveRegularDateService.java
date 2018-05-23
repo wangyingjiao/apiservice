@@ -834,7 +834,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 			Date serviceStartBeginTime = null;// 第一次选择日期开始时间
 			Date serviceStartEndTime = null;// 第一次选择日期结束时间
-			int serviceStartWeek = DateUtils.getWeekNum(serviceStart);
+			int serviceStartWeek = DateUtils.getWeekNum(creartDate);
 			// 新增 组合订单服务时间order_combination_frequency
 			for (OrderCombinationFrequencyInfo frequency : freList) {
 				if (serviceStartWeek == frequency.getWeek()) {//第一次服务日期的开始时间(时分)
@@ -843,7 +843,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				}
 			}
 
-			List<Date> listDate = DateUtils.listTimeByFrequency(serviceStart, serviceStartBeginTime, serviceNum, combinationInfo.getServiceHour());
+			List<Date> listDate = DateUtils.listTimeByFrequency(creartDate, serviceStartBeginTime, serviceNum, combinationInfo.getServiceHour());
 			//根据组合商品ID返回子商品信息
 			OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());
 
