@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.dao.item.CombinationCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.item.SerItemCommodityDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
@@ -81,9 +82,11 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
                 surplusNum = bespeakTotal - bespeakNum;
             }
             combinationById.setSurplusNum(surplusNum);
-            BigDecimal serviceNum = new BigDecimal(combinationById.getServiceNum());
-            BigDecimal multiply = serviceNum.multiply(new BigDecimal(combinationById.getServiceHour()));
-            combinationById.setServiceAllHour(multiply.doubleValue());
+			if (StringUtils.isNotBlank(combinationById.getServiceFrequency())){
+			   BigDecimal serviceNum = new BigDecimal(combinationById.getServiceNum());
+			   BigDecimal multiply = serviceNum.multiply(new BigDecimal(combinationById.getServiceHour()));
+			   combinationById.setServiceAllHour(multiply.doubleValue());
+		  	 }
         }else if ("group_split_no".equals(combinationById.getOrderType())){
 			OrderInfo orderListbyMasterId = orderCombinationGasqDao.getOrderListbyMasterId(combinationOrderInfo);
 			List<OrderInfo> orderInfos=new ArrayList<OrderInfo>();
