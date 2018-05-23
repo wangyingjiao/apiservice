@@ -5,7 +5,9 @@ package com.thinkgem.jeesite.open.send;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.utils.Base64Encoder;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.MD5Util;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
@@ -253,7 +255,7 @@ public class OpenSendUtil {
 
 			if (commoditys != null) {
 				for (SerItemCommodity commodity : commoditys) {
-                    List<Map<String,Object>> combo = new ArrayList<>();
+					Map<String, Object> combo = new HashMap<>();
 					HashMap<String, String> eidGid = new HashMap<>();
 					List<SerItemCommodityEshop> commodityEshops = commodity.getCommodityEshops();
 					if (commodityEshops != null) {
@@ -270,13 +272,12 @@ public class OpenSendUtil {
 						is_combo = "yes";//no 单一商品 no / 组合商品 yes
                         List<CombinationCommodity> combinationCommodities = commodity.getCombinationCommodities();
                         for (CombinationCommodity combinationCommodity : combinationCommodities) {
-                            Map<String, Object> map = new HashMap<>();
+
                             OpenSendSaveCombGoods osscg = new OpenSendSaveCombGoods();
                             osscg.setProduct_id(combinationCommodity.getJointGoodsCode());
                             osscg.setProduct_num(String.valueOf(combinationCommodity.getCombinationNum()));
                             osscg.setSettlement_price(String.valueOf(combinationCommodity.getCombinationPrice()));
-                            map.put(combinationCommodity.getJointGoodsCode(),osscg);
-                            combo.add(map);
+							combo.put(combinationCommodity.getJointGoodsCode(),osscg);
                         }
 
                     }
@@ -470,5 +471,56 @@ public class OpenSendUtil {
 		sysJointWaitDao.insert(waitInfo);
 	}
 
+    /**
+     *  国安社区开放接口 - 验证子商品是否已经对接
+     * @param scList
+     * @return
+     */
+    public static void verificationJoint(List<SerItemCommodity> scList){
+        OpenSendVerificationCombo openSendVerificationCombo = new OpenSendVerificationCombo();
+        OpenSendVerificationComboGoods combo = new OpenSendVerificationComboGoods();
+        List<OpenSendVerificationGoods> osvgList = new ArrayList<>();
+        for (SerItemCommodity serItemCommodity : scList){
+            OpenSendVerificationGoods openSendVerificationGoods = new OpenSendVerificationGoods();
+            List<CombinationCommodity> combinationCommodities = serItemCommodity.getCombinationCommodities();
+            List<String> self_codes = new ArrayList<>();
+            if (combinationCommodities != null && combinationCommodities.size()>0){
+                for (CombinationCommodity combinationCommodity : combinationCommodities){
+                    String self_code = combinationCommodity.getJointGoodsCode();
+                    self_codes.add(self_code);
+                }
+            }
+            openSendVerificationGoods.setSelf_codes(self_codes);
+            openSendVerificationGoods.setService_pro_name(serItemCommodity.getName());
+            osvgList.add(openSendVerificationGoods);
+        }
+        combo.setGoodsList(osvgList);
+        openSendVerificationCombo.setProduct(combo);
 
+        openSendVerificationCombo.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
+        openSendVerificationCombo.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
+        openSendVerificationCombo.setVer(Global.getConfig("openSendPath_gasq_phpGoods_ver"));
+        openSendVerificationCombo.setRequestTimestamp(new Date());
+        openSendVerificationCombo.setMethod(Global.getConfig("openSendPath_gasq_phpGoods_method"));
+        openSendVerificationCombo.setApp_com(Global.getConfig("openSendPath_gasq_php_goods_appCom"));
+        openSendVerificationCombo.setTask(Global.getConfig("openSendPath_gasq_php_VerificationGoods_task"));
+
+        String json = JsonMapper.toJsonString(openSendVerificationCombo);
+        String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
+        String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
+
+        String url =  Global.getConfig("openSendPath_gasq_insertItemInfo");
+
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("md5",md5Content);
+            params.put("appid", "selfService");
+
+            String client = HTTPClientUtils.postClient(url, encode, params);
+            System.out.println(client+"========================================");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

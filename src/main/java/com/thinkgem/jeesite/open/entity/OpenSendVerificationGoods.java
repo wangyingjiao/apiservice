@@ -15,4 +15,20 @@ public class OpenSendVerificationGoods extends DataEntity<OpenSendVerificationGo
 
     private String service_pro_name;    //父商品名称
     private List<String> self_codes;    //子商品对接code集合
+
+    public String getService_pro_name() {
+        return service_pro_name;
+    }
+
+    public void setService_pro_name(String service_pro_name) {
+        this.service_pro_name = service_pro_name;
+    }
+
+    public List<String> getSelf_codes() {
+        return self_codes;
+    }
+
+    public void setSelf_codes(List<String> self_codes) {
+        this.self_codes = self_codes;
+    }
 }

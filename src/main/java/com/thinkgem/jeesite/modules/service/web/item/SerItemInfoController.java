@@ -886,7 +886,7 @@ public class SerItemInfoController extends BaseController {
     @RequestMapping(value = "verificationJoint", method = {RequestMethod.POST})
     //@RequiresPermissions("project_insert")
     @ApiOperation("验证未对接的组合商品下子商品是否全部对接")
-    public Result verificationJoint(@RequestBody CombinationCommodity combinationCommodity) {
+    public Result verificationJoint(@RequestBody(required = false) CombinationCommodity combinationCommodity) {
         //============待修改==========
         if (combinationCommodity.getSerItemCommodityEshops().size() == 0){
             return new FailResult("请选择商品");
@@ -901,6 +901,7 @@ public class SerItemInfoController extends BaseController {
                 scList.add(serItemCommodity);
             }
         }
+        OpenSendUtil.verificationJoint(scList);
         return new SuccResult(scList);
     }
 }
