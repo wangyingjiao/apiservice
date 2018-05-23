@@ -43,8 +43,10 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<OrderGoods> getGoodsList(OrderGoods orderInfo);
 
     List<SerSkillSort> getSkillIdBySortId(SerSkillSort serchSkillSort);
-
+    //取得符合条件的技师
     List<OrderDispatch> getTechListBySkillId(OrderDispatch serchInfo);
+    //取得符合条件的技师包含之前的技师
+    List<OrderDispatch> getTechListBySkillIdAndOldTech(OrderDispatch serchInfo);
 
     List<String> getTechByWorkTime(OrderDispatch serchInfo);
 

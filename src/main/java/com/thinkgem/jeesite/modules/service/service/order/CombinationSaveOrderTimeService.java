@@ -271,7 +271,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		info.setServiceTime(orderInfo.getServiceTime());
 		info.setFinishTime(finishTime);
 		info.setSerchFullTech(true);
-		List<OrderDispatch> techList = orderToolsService.listTechByGoodsAndTime(info);
+		List<OrderDispatch> techList = orderToolsService.listTechByGoodsAndTimeAndOldTech(info);
 		//当前技师
 		List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(orderInfo);
 		OrderDispatch orderDispatch = byOrderId.get(0);
