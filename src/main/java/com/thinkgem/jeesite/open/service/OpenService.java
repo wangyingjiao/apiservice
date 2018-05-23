@@ -1256,6 +1256,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
                 orderInfo.setShopName(store_info.getName());//门店名
                 orderInfo.setShopPhone(store_info.getTelephone());//门店电话
                 orderInfo.setShopRemark(store_info.getRemark());//门店备注
+				orderInfo.setShopAddr(store_info.getAddr());
                 List<String> remark_pic = store_info.getRemark_pic();
                 if(null != remark_pic){
                     String remarkPic = JsonMapper.toJsonString(remark_pic);

@@ -5,6 +5,7 @@
 	<sql id="orderRefundGoodsColumns">
 		a.id AS "id",
 		a.order_id AS "orderId",
+		a.master_id AS "masterId",
 		a.refund_id AS "refundId",
 		a.item_id AS "itemId",
 		a.item_name AS "itemName",
@@ -101,6 +102,7 @@
 		INSERT INTO order_refund_goods(
 			id,
 			order_id,
+			master_id,
 			refund_id,
 			item_id,
 			item_name,
@@ -117,6 +119,7 @@
 		) VALUES (
 			#{id},
 			#{orderId},
+			#{masterId},
 			#{refundId},
 			#{itemId},
 			#{itemName},
@@ -136,6 +139,7 @@
 	<update id="update">
 		UPDATE order_refund_goods SET
 			<if test="orderId !=null and orderId != ''">order_id = #{orderId},</if>
+		<if test="masterId !=null and masterId != ''">master_id = #{masterId},</if>
 			<if test="refundId !=null and refundId != ''">refund_id = #{refundId},</if>
 			<if test="itemId !=null and itemId != ''">item_id = #{itemId},</if>
 			<if test="itemName !=null and itemName != ''">item_name = #{itemName},</if>

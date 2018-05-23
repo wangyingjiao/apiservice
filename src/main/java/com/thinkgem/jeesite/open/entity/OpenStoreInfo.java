@@ -18,6 +18,7 @@ public class OpenStoreInfo extends DataEntity<OpenStoreInfo> {
 	private String name;//门店名
 	private String telephone;//门店电话
 	private String remark;//门店备注
+	private String addr;//门店地址
 	private List<String> remark_pic;//门店备注图片
 	private String remarkPic;//门店备注图片
 
@@ -51,6 +52,14 @@ public class OpenStoreInfo extends DataEntity<OpenStoreInfo> {
 
 	public void setRemark_pic(List<String> remark_pic) {
 		this.remark_pic = remark_pic;
+	}
+
+	public String getAddr() {
+		return addr;
+	}
+
+	public void setAddr(String addr) {
+		this.addr = addr;
 	}
 
 	public String getRemarkPic() {

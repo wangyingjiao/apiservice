@@ -1122,8 +1122,10 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 		/*if(Integer.valueOf(orderRefund.getRefundAccountReality()) < 0){
 		    throw new ServiceException("实际退款金额小于0元");
         }*/
+		info = orderInfoDao.get(info);
 		// 插入退款表；
         orderRefund.setOrderId(info.getId());
+		orderRefund.setMasterId(info.getMasterId());
         orderRefund.setApplyTime(new Date());
         orderRefund.setFinishTime(new Date());
         orderRefund.setRefundStatus("refunded");
@@ -1143,6 +1145,7 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 				// 退货表
 				orderRefundGoods = new OrderRefundGoods();
 				orderRefundGoods.setOrderId(info.getId());
+				orderRefundGoods.setMasterId(info.getMasterId());
 				orderRefundGoods.setRefundId(orderRefund.getId());
 				orderRefundGoods.setItemId(orderGoods.getItemId());
 				orderRefundGoods.setItemName(orderGoods.getItemName());

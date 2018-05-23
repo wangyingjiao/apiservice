@@ -16,6 +16,7 @@ public class OrderRefundGoods extends DataEntity<OrderRefundGoods> {
 	
 	private static final long serialVersionUID = 1L;
 	private String orderId;		// 订单ID
+	private String masterId;		// 主订单ID
 	private String refundId;		// 退款ID
 	private String itemId;		// 服务项目ID
 	private String itemName;		// 项目名称
@@ -42,7 +43,15 @@ public class OrderRefundGoods extends DataEntity<OrderRefundGoods> {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
-	
+
+	public String getMasterId() {
+		return masterId;
+	}
+
+	public void setMasterId(String masterId) {
+		this.masterId = masterId;
+	}
+
 	@Length(min=1, max=32, message="退款ID长度必须介于 1 和 32 之间")
 	public String getRefundId() {
 		return refundId;

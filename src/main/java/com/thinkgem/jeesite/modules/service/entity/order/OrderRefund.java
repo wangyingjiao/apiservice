@@ -21,6 +21,7 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 	private static final long serialVersionUID = 1L;
 	private String refundNumber;		// 退款单编号
 	private String orderId;		// 订单ID
+	private String masterId;		// 主订单ID
 	private Date applyTime;		// 申请时间
 	private Date finishTime;		// 退款完成时间
 	private String refundAccount;		// 退款金额
@@ -90,7 +91,15 @@ public class OrderRefund extends DataEntity<OrderRefund> {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
-	
+
+	public String getMasterId() {
+		return masterId;
+	}
+
+	public void setMasterId(String masterId) {
+		this.masterId = masterId;
+	}
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getApplyTime() {
 		return applyTime;

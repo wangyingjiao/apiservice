@@ -786,6 +786,7 @@ origin_price,
 		UPDATE order_info SET
 		shop_name = #{shopName},
 		shop_phone = #{shopPhone},
+		shop_addr = #{shopAddr},
 		shop_remark = #{shopRemark},
 		shop_remark_pic = #{shopRemarkPic},
 		update_by = #{updateBy.id},
