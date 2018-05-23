@@ -179,6 +179,7 @@
 
     <select id="getOrderRemark" resultType="OrderInfo">
 		SELECT
+		    a.id AS "id",
 			a.customer_remark AS "customerRemark",
 			a.customer_remark_pic AS "customerRemarkPic",
 			a.order_remark AS "orderRemark",
@@ -356,5 +357,17 @@
         AND a.bespeak_total &gt; a.bespeak_num
         AND a.order_status = 'dispatched'
         AND a.service_frequency is not null
+    </select>
+    <select id="listFrequencyByMasterId" resultType="OrderCombinationFrequencyInfo">
+        SELECT
+        a.id AS id,
+        a.master_id AS masterId,
+        a.week AS week,
+        a.start_time AS startTime,
+        a.end_time AS endTime
+        FROM order_combination_frequency a
+        where
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.master_id = #{masterId}
     </select>
 </mapper>

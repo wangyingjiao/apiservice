@@ -588,6 +588,9 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		//更新 组合订单对接编号信息order_combination_gasq
 		List<OrderCombinationGasqInfo> combinationGasqInfoList = orderCombinationGasqDao.listFreeGasqSn(masterId);
 		String groupId = IdGen.uuid();
+		if(combinationGasqInfoList.size()<orderInfoList.size()){
+			throw new ServiceException("没有可用订单");
+		}
 		for(int i=0; i<orderInfoList.size(); i++){
 			OrderCombinationGasqInfo combinationGasqInfo = combinationGasqInfoList.get(i);
 			combinationGasqInfo.setOrderGroupId(groupId);
