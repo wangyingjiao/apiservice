@@ -13,12 +13,15 @@ import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.CombinationOrderInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.sys.dao.SysJointWaitDao;
 import com.thinkgem.jeesite.modules.sys.entity.SysJointWait;
 import com.thinkgem.jeesite.modules.sys.utils.OpenWaitUtils;
 import com.thinkgem.jeesite.open.entity.*;
+import org.springframework.core.annotation.Order;
+
 import java.util.*;
 
 /**
@@ -468,6 +471,66 @@ public class OpenSendUtil {
 		//OpenWaitUtils.saveSendWait(waitInfo);
 		waitInfo.preInsert();
 		System.out.println("-- OpenSendUtil---updateJointGoodsCode---" + waitInfo.toString());
+		sysJointWaitDao.insert(waitInfo);
+	}
+
+
+
+	/**
+	 *  国安社区开放接口 - 对接国安社区SN
+	 *  设置固定时间后生成子订单、预约生成子订单、定时任务生成子订单
+	 * @param info
+	 * @return
+	 */
+	public static void openSendCreartCombinationOrder(CombinationOrderInfo info) {
+		String masterId = info.getMasterId();//自营订单组ID
+		String jointGroupId = info.getJointGroupId();//国安订单组ID
+		List<OrderInfo> orderInfoList = info.getOrderInfoList();//订单信息
+
+		OpenSendCreartCombinationOrderRequest send = new OpenSendCreartCombinationOrderRequest();
+		send.setMaster_id(masterId);
+		send.setGroup_id(jointGroupId);
+
+		List<OpenSendCreartCombinationOrderInfo> sendOrderInfoList = new ArrayList<>();
+		for(OrderInfo orderInfo : orderInfoList){
+			OpenSendCreartCombinationOrderInfo sendOrderInfo = new OpenSendCreartCombinationOrderInfo();
+			sendOrderInfo.setOrder_sn(orderInfo.getOrderNumber());
+			sendOrderInfo.setGasq_order_sn(orderInfo.getJointOrderId());
+
+			String service_time = null;
+			if(orderInfo.getServiceTime() != null){
+				service_time = DateUtils.formatDateTime(orderInfo.getServiceTime());//上门服务时间
+			}
+			sendOrderInfo.setService_time(service_time);
+
+			List<OrderDispatch> techList = orderInfo.getTechList();//技师信息
+			List<OpenSendSaveOrderServiceTechInfo> techListSend = new ArrayList<>();
+			if(techList != null){
+				for(OrderDispatch dispatch : techList){
+					OpenSendSaveOrderServiceTechInfo techInfo = new OpenSendSaveOrderServiceTechInfo();
+					techInfo.setTech_name(dispatch.getTechName());
+					techInfo.setTech_phone(dispatch.getTechPhone());
+					techListSend.add(techInfo);
+				}
+			}
+			sendOrderInfo.setService_tech_info(techListSend);
+
+			sendOrderInfoList.add(sendOrderInfo);
+		}
+
+		send.setOrder_list(sendOrderInfoList);
+
+		String json = JsonMapper.toJsonString(send);
+		String url =  Global.getConfig("openSendPath_gasq_creartOrderInfo");
+
+		SysJointWait waitInfo = new SysJointWait();
+		waitInfo.setSendType("creart_order");
+		waitInfo.setUrl(url);
+		waitInfo.setMany("yes");
+		waitInfo.setNum(0);
+		waitInfo.setRequestContent(json);
+		waitInfo.preInsert();
+		System.out.println("-- OpenSendUtil---openSendSaveOrder---" + waitInfo.toString());
 		sysJointWaitDao.insert(waitInfo);
 	}
 

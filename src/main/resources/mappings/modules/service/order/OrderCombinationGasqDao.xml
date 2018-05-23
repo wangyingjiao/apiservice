@@ -134,7 +134,9 @@
         UPDATE order_combination_gasq
         SET
         order_group_id = #{orderGroupId},
-        order_number = #{orderNumber}
+        order_number = #{orderNumber},
+        <if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+        <if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
         WHERE id = #{id}
     </update>
     <select id="listGroupOrderByOrderId" resultType="OrderCombinationGasqInfo">

@@ -83,6 +83,8 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private BigDecimal price;// 商品单价
 	private BigDecimal sum;// 小计
 
+	private List<OrderInfo> orderInfoList;
+
 	public CombinationOrderInfo() {
 		super();
 	}
@@ -570,5 +572,13 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setTechIdList(List<String> techIdList) {
 		this.techIdList = techIdList;
+	}
+
+	public List<OrderInfo> getOrderInfoList() {
+		return orderInfoList;
+	}
+
+	public void setOrderInfoList(List<OrderInfo> orderInfoList) {
+		this.orderInfoList = orderInfoList;
 	}
 }

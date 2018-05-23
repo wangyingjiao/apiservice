@@ -380,7 +380,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, new Date(), "holiday");
+			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), serviceTime, "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
 				for (TechScheduleInfo holiday : techHolidyList) {
 					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
@@ -402,15 +402,12 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 
 			//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
 			//--- 订单时间段--订单开始时间 减去商品需求时间 减去准备时间；---订单结束时间 加上准备时间 ----------------------
-			CombinationOrderInfo serchCombinationInfo = new CombinationOrderInfo();
-			serchCombinationInfo.setTechId(tech.getTechId());
-			serchCombinationInfo.setSerchWeek(week);
-			List<OrderCombinationFrequencyInfo> frequencyList = combinationOrderDao.listFrequencyByTechWeek(serchCombinationInfo);
-			if (frequencyList != null && frequencyList.size() != 0) {
-				for (OrderCombinationFrequencyInfo frequency : frequencyList) {
+			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), serviceTime, "order");
+			if (techOrderList != null && techOrderList.size() != 0) {
+				for (TechScheduleInfo order : techOrderList) {
 					int intervalTimeS = 0;//必须间隔时间 秒
-					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 						//可以接单的时间则为：40分钟+路上时间+富余时间
 						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
 					} else {
@@ -419,8 +416,8 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 					}
 
 					int intervalTimeE = 0;//必须间隔时间 秒
-					if (11 <= Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) &&
-							Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) < 14) {
+					if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 						//可以接单的时间则为：40分钟+路上时间+富余时间
 						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
 					} else {
@@ -432,9 +429,9 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 //							DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
 //							DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
 					if(
-						(selectTime.after(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))
-							|| selectTime.compareTo(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))==0) &&
-						selectTime.before(DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE))
+						(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
+							|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))==0) &&
+						selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
 					){
 						it.remove();
 						if(techList.size() < techDispatchNum){//技师数量不够
@@ -496,7 +493,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 		//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-		List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(techId, week, new Date(), "holiday");
+		List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechTime(techId, serviceTime, "holiday");
 		if (techHolidyList != null && techHolidyList.size() != 0) {
 			for (TechScheduleInfo holiday : techHolidyList) {
 				//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
@@ -514,15 +511,12 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 
 		//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
 		//--- 订单时间段--订单开始时间 减去商品需求时间 减去准备时间；---订单结束时间 加上准备时间 ----------------------
-		CombinationOrderInfo serchCombinationInfo = new CombinationOrderInfo();
-		serchCombinationInfo.setTechId(techId);
-		serchCombinationInfo.setSerchWeek(week);
-		List<OrderCombinationFrequencyInfo> frequencyList = combinationOrderDao.listFrequencyByTechWeek(serchCombinationInfo);
-		if (frequencyList != null && frequencyList.size() != 0) {
-			for (OrderCombinationFrequencyInfo frequency : frequencyList) {
+		List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, serviceTime, "order");
+		if (techOrderList != null && techOrderList.size() != 0) {
+			for (TechScheduleInfo order : techOrderList) {
 				int intervalTimeS = 0;//必须间隔时间 秒
-				if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-						Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+				if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+						Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 					//可以接单的时间则为：40分钟+路上时间+富余时间
 					intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
 				} else {
@@ -531,8 +525,8 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 				}
 
 				int intervalTimeE = 0;//必须间隔时间 秒
-				if (11 <= Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) &&
-						Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) < 14) {
+				if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+						Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 					//可以接单的时间则为：40分钟+路上时间+富余时间
 					intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
 				} else {
@@ -544,9 +538,9 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 //							DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
 //							DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
 				if (
-						(selectTime.after(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))
-								|| selectTime.compareTo(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS)) == 0) &&
-								selectTime.before(DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE))
+						(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
+								|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS)) == 0) &&
+								selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
 						) {
 					return true;
 				}
@@ -573,7 +567,10 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		Double serviceSecond = (serviceHour * serviceNum * 3600);
 		Date groupFinishTime = DateUtils.addSecondsNotDayE(groupServiceTime, serviceSecond.intValue());
 
-		List<Date> listDate = DateUtils.listTimeByFrequency(groupServiceTime,serviceNum,combinationInfo.getServiceHour());
+		combinationInfo.setTechId(techInfo.getId());
+		combinationInfo.setTechPhone(techInfo.getPhone());
+
+		List<Date> listDate = DateUtils.listTimeByFrequency(groupServiceTime,serviceNum,serviceHour);
 		//根据组合商品ID返回子商品信息
 		OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());
 
@@ -599,10 +596,17 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			orderCombinationGasqDao.updateOrderGroup(combinationGasqInfo);
 
 			orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
+
+			// order_info  对接订单ID 更新
+			OrderInfo updateJointInfo = new OrderInfo();
+			updateJointInfo.setId(orderInfoList.get(i).getId());
+			updateJointInfo.setJointOrderId(combinationGasqInfo.getJointOrderSn());
+			updateJointInfo.preUpdate();
+			orderInfoDao.update(updateJointInfo);
 		}
 
 		// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
-		openCreateForTechSchedule( combinationInfo.getTechId(), groupServiceTime, groupFinishTime , groupId, masterId);
+		openCreateForTechSchedule( techId, groupServiceTime, groupFinishTime , groupId, masterId);
 
 		//更新已预约次数
 		CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();

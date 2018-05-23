@@ -720,9 +720,10 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 	 * @param serviceFrequency  服务频次   week_one:1周1次 week_some:1周多次 two_week_one:2周1次
 	 * @param freList   服务时间   周
 	 * @param serviceStart  第一次选择日期
+	 * @param num 最大次数
 	 * @return
 	 */
-	private static List<Date> listCreartDateByFrequency(String serviceFrequency, List<OrderCombinationFrequencyInfo> freList, Date serviceStart) {
+	private static List<Date> listCreartDateByFrequency(String serviceFrequency, List<OrderCombinationFrequencyInfo> freList, Date serviceStart,int num) {
 		List<Date> list = new ArrayList<>();
 		if("two_week_one".equals(serviceFrequency)){//2周1次
 			list.add(serviceStart);
@@ -754,7 +755,18 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			}
 		}
 
-		return list;
+		//排序
+		Collections.sort(list);
+		//最大数量
+		int maxNum = list.size();
+		if(num < maxNum){
+			maxNum = num;
+		}
+		List<Date> listDate = new ArrayList<>();
+		for(int i=0;i<maxNum;i++){
+			listDate.add(list.get(i));
+		}
+		return listDate;
 	}
 
 	/**
@@ -785,11 +797,6 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();//服务时间
 		Date serviceStart = combinationOrderInfo.getServiceStart();// 第一次选择日期
 
-		//根据频次开始时间返回所有需要生成的日期
-		List<Date> creartDateList = listCreartDateByFrequency(serviceFrequency, freList, serviceStart);
-		//返回时间数组的最后日期
-		Date serviceEnd = getLastDate(creartDateList);
-
 		String techId = combinationOrderInfo.getTechId();
 		ServiceTechnicianInfo techInfo = technicianInfoDao.get(techId);
 		//获取组合信息
@@ -800,6 +807,16 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		combinationInfo.setServiceStart(serviceStart);
 		combinationInfo.setTechId(techId);
 		combinationInfo.setTechPhone(techInfo.getPhone());
+
+
+		//根据频次开始时间返回所有需要生成的日期
+		List<Date> creartDateList = listCreartDateByFrequency(serviceFrequency, freList, serviceStart,combinationInfo.getBespeakTotal());
+		//返回时间数组的最后日期
+		Date serviceEnd = getLastDate(creartDateList);
+
+		if(combinationInfo.getBespeakTotal() < creartDateList.size()){
+			throw new ServiceException("没有可用订单");
+		}
 
 		// 更新 组合订单信息order_combination_info
 		CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
@@ -877,7 +894,16 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			}
 
 			// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
-			openCreateForTechSchedule(combinationInfo.getTechId(), serviceStartBeginTime, serviceStartEndTime, groupId, masterId);
+
+			String startTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+					+  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
+			Date startTime = DateUtils.parseDate(startTimeStr);
+
+			String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+					+  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
+			Date endTime = DateUtils.parseDate(startTimeStr);
+
+			openCreateForTechSchedule(combinationInfo.getTechId(), startTime, endTime, groupId, masterId);
 
 			//更新已预约次数
 			CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();

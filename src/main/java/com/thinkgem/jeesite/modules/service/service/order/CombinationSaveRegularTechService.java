@@ -272,7 +272,7 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 		CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
 		updateCombinationOrderInfo.setMasterId(masterId);
 		updateCombinationOrderInfo.setTechId(techId);
-		combinationOrderDao.updateManyByMasterId(updateCombinationOrderInfo);
+		combinationOrderDao.updateManyTechByMasterId(updateCombinationOrderInfo);
 
 		return null;
 	}

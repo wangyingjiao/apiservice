@@ -335,6 +335,14 @@
         service_frequency = #{serviceFrequency},
         service_num = #{serviceNum},
         service_start = #{serviceStart},
+        service_end = #{serviceEnd},
+        tech_id = #{techId}
+        WHERE master_id = #{masterId}
+    </update>
+    <update id="updateManyTechByMasterId">
+        UPDATE
+        order_combination_info
+        SET
         tech_id = #{techId}
         WHERE master_id = #{masterId}
     </update>

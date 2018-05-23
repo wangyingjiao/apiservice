@@ -215,7 +215,7 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 		List<OpenServiceInfo> serviceInfos = info.getService_info();
 
 		List<String> gasqOrderSnList = info.getGasq_order_sn();
-		if(gasqOrderSnList==null || gasqOrderSnList.size()!=1){
+		if(gasqOrderSnList==null || gasqOrderSnList.size() == 0){
 			throw new ServiceException("国安社区订单SN不能为空");
 		}
 		String latitude = info.getLatitude();//服务地址：纬度
