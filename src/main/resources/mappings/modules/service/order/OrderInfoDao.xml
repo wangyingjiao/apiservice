@@ -913,10 +913,10 @@ origin_price,
 		WHERE
 		a.del_flag = #{DEL_FLAG_NORMAL}
 
-		<if test="type !=null and type = 'holiday'">
+		<if test="type !=null and type == 'holiday'">
 			AND a.type = 'holiday'
 		</if>
-		<if test="type !=null and type = 'order'">
+		<if test="type !=null and type == 'order'">
 			AND (a.type = 'order' OR a.type = 'master')
 		</if>
 

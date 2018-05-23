@@ -249,7 +249,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
     private void openCreateForTechSchedule(String techId, Date serviceStartBeginTime, Date serviceStartEndTime, String groupId, String masterId) {
         TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
         techScheduleInfo.setTechId(techId);//技师ID
-        techScheduleInfo.setScheduleDate(serviceStartBeginTime);//日期
+        techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(serviceStartBeginTime));//日期
         int weekDay = DateUtils.getWeekNum(serviceStartBeginTime);//周几
         techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
         techScheduleInfo.setStartTime(serviceStartBeginTime);//起始时段
