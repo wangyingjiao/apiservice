@@ -425,6 +425,7 @@ public class OpenSendUtil {
 				String content_unit = commodity.getUnit();// 商品单位格式：次/个/间
 				String self_code = commodity.getSelfCode();   //自营平台商品code  ID
 				String min_number = String.valueOf(commodity.getMinPurchase());// 最小购买数量，起购数量
+				String convert_hours = commodity.getConvertHours().toString();   //折算时长
 				//String joint_goods_code = commodity.getJointGoodsCode();
 
 				OpenSendSaveItemProduct itemProduct = new OpenSendSaveItemProduct();
@@ -434,6 +435,7 @@ public class OpenSendUtil {
 				itemProduct.setTags_custom(tags_custom);// 自定义标签格式：自定义标签1,自定义标签2,自定义标签3
 				itemProduct.setContent_price(content_price);// 商品价格
 				itemProduct.setContent_unit(content_unit);// 商品单位格式：次/个/间
+				itemProduct.setConvert_hours(convert_hours);  //折算时长
 				itemProduct.setSelf_code(self_code); //自营平台商品code  ID
 				itemProduct.setMin_number(min_number);// 最小购买数量，起购数量
 				itemProduct.setContent_img(content_img);//图片 一张

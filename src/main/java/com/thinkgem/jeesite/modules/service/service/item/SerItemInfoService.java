@@ -165,6 +165,7 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
                             sendGoods.setName(commodity.getName());// 商品名称格式：项目名称（商品名）
                             sendGoods.setPrice(commodity.getPrice());// 商品价格
                             sendGoods.setUnit(commodity.getUnit());// 商品单位格式：次/个/间
+							sendGoods.setConvertHours(commodity.getConvertHours()); //折算时长
                             //sendGoods.setJointGoodsCode("");
                     /*if (StringUtils.isNotBlank(commodity.getId())) {
                         SerItemCommodity commodityForJoin = serItemCommodityService.get(commodity.getId());
