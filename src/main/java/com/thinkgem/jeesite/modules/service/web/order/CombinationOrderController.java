@@ -11,9 +11,7 @@ import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
-import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.service.service.order.*;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
@@ -521,6 +519,18 @@ public class CombinationOrderController extends BaseController {
 	public Result updateOrderTimeSave(@RequestBody OrderInfo orderInfo) {
 		OrderInfo info = orderInfoService.get(orderInfo.getId());
 		HashMap<String,Object> map = null;
+		Date serviceTime = info.getServiceTime();
+		//当前时间后一个半小时
+		Double serviceNextSecond = (1.5 * 3600);
+		Date finishTime = DateUtils.addSeconds(new Date(), serviceNextSecond.intValue());
+		if (serviceTime.compareTo(finishTime) < 0){
+			return new FailResult("距离服务开始时间只剩下一个半小时，不可再更换时间!");
+		}
+		//根据订单id 查询排期表 时间是否冲突
+		boolean checkTech = combinationSaveOrderTimeService.checkTech(orderInfo);
+		if (!checkTech){
+			return new FailResult("选中技师在此时间段已有排期，不可再更换时间!");
+		}
 		try {
 			if ("group_split_yes".equals(info.getOrderType())){
 				map = combinationSaveOrderTimeService.updateOrderTimeSave(orderInfo);

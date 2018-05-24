@@ -22,6 +22,8 @@ public interface TechScheduleDao extends CrudDao<TechScheduleInfo> {
 
     //根据技师id 开始时间 结束时间 获取排期表集合
     List<TechScheduleInfo> getScheduleByTechId(TechScheduleInfo info);
+    //根据技师id 开始时间 结束时间(masterId 或者typeId) 获取排期表集合
+    List<TechScheduleInfo> getScheduleByTechIdAndMasterId(TechScheduleInfo info);
     //删除排期表
     int deleteSchedule(TechScheduleInfo info);
     //增加排期表

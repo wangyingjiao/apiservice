@@ -35,6 +35,21 @@
 		AND ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
 		AND a.del_flag=#{delFlag}
 	</select>
+	<!--根据技师id 开始时间 结束时间(masterId 或者typeId) 获取排期表集合-->
+	<select id="getScheduleByTechIdAndMasterId" resultType="TechScheduleInfo">
+		SELECT
+		<include refid="techScheduleColumns"/>
+		FROM tech_schedule a
+		WHERE a.tech_id = #{techId}
+		AND ((a.start_time &lt;= #{startTime} AND a.end_time &gt; #{startTime}) OR (a.start_time &gt;= #{startTime} AND a.start_time &lt; #{endTime}))
+		AND a.del_flag=#{delFlag}
+		<if test="masterId != null and masterId != ''">
+			AND a.master_id !=#{masterId}
+		</if>
+		<if test="typeId != null and typeId != ''">
+			AND a.type_id !=#{typeId}
+		</if>
+	</select>
 
 	<!--删除排期表-->
 	<update id="deleteSchedule">
