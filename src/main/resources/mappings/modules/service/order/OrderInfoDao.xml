@@ -499,6 +499,7 @@ origin_price,
 			b.name  AS techName,
 			b.head_pic  AS headPic,
 			b.sex  AS techSex,
+			b.job_nature AS jobNature,
 			b.phone  AS techPhone
 		FROM
 		order_dispatch a
