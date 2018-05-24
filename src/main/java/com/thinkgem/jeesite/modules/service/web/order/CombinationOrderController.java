@@ -218,6 +218,9 @@ public class CombinationOrderController extends BaseController {
 	//@RequiresPermissions("combination_regular_tech")
 	public Result updateRegularTechSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
+			if(StringUtils.isBlank(combinationOrderInfo.getTechId())){
+				return new FailResult("请选择服务技师!");
+			}
 			boolean flag = combinationSaveRegularTechService.checkRegularDateTech(combinationOrderInfo);
 			if(flag){
 				return new FailResult("服务技师目前暂不可用!");
