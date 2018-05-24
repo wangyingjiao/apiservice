@@ -757,6 +757,7 @@ public class SerItemInfoController extends BaseController {
                     SerItemCommodity sendGoods = new SerItemCommodity();
                     sendGoods.setName(sic.getName());// 商品名称格式：项目名称（商品名）
                     sendGoods.setPrice(sic.getPrice());// 商品价格
+                    sendGoods.setServiceType(sic.getServiceType());
                     sendGoods.setCommodityEshops(siceList);
                     if (ccList != null && ccList.size()>0) {
                         sendGoods.setCombinationCommodities(ccList);  //这个商品下的子商品ID和对接ID

@@ -260,6 +260,7 @@ public class OpenSendUtil {
 				for (SerItemCommodity commodity : commoditys) {
 					Map<String, Object> combo = new HashMap<>();
 					HashMap<String, String> eidGid = new HashMap<>();
+					is_combo_split = "no";
 					List<SerItemCommodityEshop> commodityEshops = commodity.getCommodityEshops();
 					if (commodityEshops != null) {
 						for (SerItemCommodityEshop serItemCommodityEshop : commodityEshops) {
@@ -272,6 +273,11 @@ public class OpenSendUtil {
 					}
 
 					if (commodity.getCombinationCommodities() != null && commodity.getCombinationCommodities().size()>0){
+						if (commodity.getServiceType().equals("combined")){
+							is_combo_split = "yes";
+						}else {
+							is_combo_split = "no";
+						}
 						is_combo = "yes";//no 单一商品 no / 组合商品 yes
                         List<CombinationCommodity> combinationCommodities = commodity.getCombinationCommodities();
                         for (CombinationCommodity combinationCommodity : combinationCommodities) {
@@ -584,7 +590,7 @@ public class OpenSendUtil {
             params.put("appid", "selfService");
 
             String client = HTTPClientUtils.postClient(url, encode, params);
-            System.out.println(client+"========================================");
+            //System.out.println(client+"========================================");
 
             OpenSendSaveItemResponse sendResponse = null;
             if(StringUtils.isNotBlank(client)){
