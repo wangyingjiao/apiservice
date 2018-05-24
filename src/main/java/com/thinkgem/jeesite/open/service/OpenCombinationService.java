@@ -110,7 +110,7 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		double serviceHour =combinationInfo.getServiceHour();//单次建议服务时长
 		String stationId = combinationInfo.getStationId();//服务站ID
 		String orgId = combinationInfo.getOrgId();//机构
-		Double serviceSecond = (serviceHour * Integer.getInteger(serviceNum) * 3600);
+		Double serviceSecond = (serviceHour * Integer.parseInt(serviceNum) * 3600);
 
 		BasicOrganization organization = basicOrganizationDao.get(orgId);
 		if(organization==null){
