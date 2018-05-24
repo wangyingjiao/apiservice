@@ -316,7 +316,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
                 bySn.setSuggestFinishTime(date);
                 bySn.preUpdate();
                 //先将订单表修改 *******
-                orderInfoDao.saveOrderTime(orderInfo);
+                orderInfoDao.saveOrderTime(bySn);
 				serviceTime=date;
             }
         }
