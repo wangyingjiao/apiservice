@@ -257,4 +257,33 @@ public class OpenController extends BaseController {
 			return result;
 		}
 	}
+
+	/**
+	 * 对接取消订单
+	 * @param info
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "cancelForGroup", method = {RequestMethod.POST})
+	public OpenResult cancelForGroup(OpenCancleStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
+		try{
+			OpenUpdateInfoResponse responseRe = openCombinationService.cancelForGroup(info);
+
+			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","1");
+			return result;
+		}catch (ServiceException ex) {
+			OpenFailResult result = new OpenFailResult(ex.getMessage());
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson", openResponseJson);
+			request.setAttribute("openResponseCode", "0");
+			return result;
+		}
+	}
+
+
 }

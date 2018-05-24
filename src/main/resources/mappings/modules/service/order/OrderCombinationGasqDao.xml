@@ -120,6 +120,17 @@
         AND a.order_number = #{orderNumber}
     </select>
 
+    <!--根据orderSn masterId获取组合订单-->
+    <select id="getGasqByOrderSn" resultType="OrderCombinationGasqInfo">
+        select
+        <include refid="OrderCombinationGasqInfo"/>
+        FROM order_combination_gasq a
+        WHERE
+        a.del_flag = '0'
+        AND a.master_id = #{masterId}
+        AND a.joint_order_sn = #{jointOrderSn}
+    </select>
+
     <!--根据groupId获取组合订单的订单集合-->
     <select id="getListByOrderGroupId" resultType="OrderCombinationGasqInfo">
         select
@@ -131,8 +142,7 @@
     </select>
 
     <update id="updateOrderGroup">
-        UPDATE order_combination_gasq
-        SET
+        UPDATE order_combination_gasq SET
         order_group_id = #{orderGroupId},
         order_number = #{orderNumber},
         <if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>

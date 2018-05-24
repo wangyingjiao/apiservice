@@ -92,6 +92,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     int orderCancel(OrderInfo orderInfo);
 
+    int orderUpdateJointOrderId(OrderInfo orderInfo);
+
     String getSortIdByOrderId(OrderInfo orderInfo);
 
     List<ServiceTechnicianWorkTime> listTechWorkByTechsTime(ServiceTechnicianWorkTime serchInfo);
@@ -105,4 +107,8 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     List<TechScheduleInfo> listTechScheduleByTechWeekTime(TechScheduleInfo serchInfo);
 
     TechScheduleInfo getTechScheduleByOrderIdForCombination(OrderInfo orderInfo);
+
+    //根据groupId获取orderinfo的订单集合并按服务时间排序
+    List<OrderInfo> getListByOrderGroupId(OrderCombinationGasqInfo orderCombinationGasqInfo);
+
 }

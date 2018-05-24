@@ -71,6 +71,8 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 	TechScheduleDao techScheduleDao;
 	@Autowired
 	CombinationOrderDao combinationOrderDao;
+	@Autowired
+	OrderCombinationGasqDao orderCombinationGasqDao;
 
 	@Autowired
 	private OrderToolsService orderToolsService;
@@ -396,6 +398,99 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		List<String> list = Arrays.asList(strings);
 
 		return list;
+	}
+
+	//对接取消订单
+	public OpenUpdateInfoResponse  cancelForGroup(OpenCancleStautsRequest info){
+		OpenUpdateInfoResponse response = new OpenUpdateInfoResponse();
+		//根据group_id查组合订单主表 获取masterId
+		CombinationOrderInfo combinationByGroupId = combinationOrderDao.getCombinationByGroupId(info.getGroup_id());
+		combinationByGroupId.setJointOrderSn(info.getGasq_order_sn());
+		//根据joint_order_sn找到order_group_id  和一条要取消的数据
+		OrderCombinationGasqInfo gasqByOrderSn = orderCombinationGasqDao.getGasqByOrderSn(combinationByGroupId);
+		OrderInfo CancleOrderInfo=new OrderInfo();
+		CancleOrderInfo.setOrderNumber(gasqByOrderSn.getOrderNumber());
+		//想要取消的订单
+		OrderInfo cancleOrder = orderInfoDao.getBySn(CancleOrderInfo);
+		String orderNumber = cancleOrder.getOrderNumber();
+		//根据order_group_id找到多个子订单 并按服务时间排序
+		List<OrderInfo> listByOrderGroupId = orderInfoDao.getListByOrderGroupId(gasqByOrderSn);
+		if (listByOrderGroupId == null || listByOrderGroupId.size() < 1){
+			throw new ServiceException("未在对接表中找到该订单");
+		}
+		Date serviceTime = listByOrderGroupId.get(0).getServiceTime();
+		Double serviceHour = listByOrderGroupId.get(0).getServiceHour();
+		int size=listByOrderGroupId.size() - 1;
+	//1。只针对组合并拆单  排期表只有一个 把排期表中结束时间修改(原-服务时长)
+		Double serviceSecondTem = (serviceHour * size * 3600);
+		Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
+		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
+		techScheduleInfo.setMasterId(combinationByGroupId.getMasterId());
+		techScheduleInfo.setType("master");
+		techScheduleInfo.setTypeId(gasqByOrderSn.getOrderGroupId());
+		List<TechScheduleInfo> orderScheduleByTypeId = techScheduleDao.getOrderScheduleByTypeId(techScheduleInfo);
+		if (orderScheduleByTypeId == null || orderScheduleByTypeId.size() < 1 ){
+			throw new ServiceException("未在排期表中找到该订单");
+		}
+		TechScheduleInfo techScheduleInfo1 = orderScheduleByTypeId.get(0);
+		if (serviceTime.compareTo(techScheduleInfo1.getStartTime()) != 0){
+			//开始时间不对
+			throw new ServiceException("排期表中起始时间不对");
+		}
+		techScheduleInfo1.setEndTime(date);
+		//修改排期表
+		techScheduleDao.updateScheduleByTypeIdTech(techScheduleInfo1);
+		//修改派单表
+		List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(cancleOrder);
+		if (byOrderId == null || byOrderId.size() < 1 ){
+			throw new ServiceException("未在派单表中找到该订单");
+		}
+		OrderDispatch orderDispatch = byOrderId.get(0);
+		orderDispatch.setDelFlag("1");
+		int delete = orderDispatchDao.delete(orderDispatch);
+		if (delete < 0){
+			throw new ServiceException("删除派单表失败");
+		}
+	//2。 修改order 和order_combination_info表
+		OrderInfo lastOrder = listByOrderGroupId.get(size);
+		//第一种  如果要取消的是最后一个订单 直接把最后一条状态置为取消
+		if (cancleOrder.getId().equals(lastOrder.getId())){
+			cancleOrder.setOrderStatus("cancel");
+			cancleOrder.setServiceStatus("cancel");
+			cancleOrder.setCancelReason("other");
+			cancleOrder.preUpdate();
+			int i = orderInfoDao.orderCancel(cancleOrder);
+			if (i < 0){
+				throw new ServiceException("取消最后一个订单失败");
+			}
+		}else {
+		//如果要取消的不是最后一条 把最后一条取消
+			Date serviceTime1 = cancleOrder.getServiceTime();
+			Date suggestFinishTime = cancleOrder.getSuggestFinishTime();
+			lastOrder.setServiceTime(serviceTime1);
+			lastOrder.setSuggestFinishTime(suggestFinishTime);
+			lastOrder.preUpdate();
+			int i1 = orderInfoDao.orderUpdateJointOrderId(lastOrder);
+			if (i1 < 0){
+				throw new ServiceException("取消最后一个订单失败");
+			}
+			cancleOrder.setOrderStatus("cancel");
+			cancleOrder.setServiceStatus("cancel");
+			cancleOrder.setCancelReason("other");
+			cancleOrder.preUpdate();
+			int i = orderInfoDao.orderCancel(cancleOrder);
+			if (i < 0){
+				throw new ServiceException("取消最后一个订单失败");
+			}
+		}
+		//3。把对应的order_combination_gasq数据中order_group_id order_number的值置为null
+		gasqByOrderSn.setOrderNumber(null);
+		gasqByOrderSn.setOrderGroupId(null);
+		gasqByOrderSn.preUpdate();
+		orderCombinationGasqDao.updateOrderGroup(gasqByOrderSn);
+		response.setSuccess(true);
+		response.setService_order_id(orderNumber);
+		return response;
 	}
 
 }

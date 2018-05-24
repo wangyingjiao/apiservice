@@ -874,6 +874,15 @@ origin_price,
 		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 		WHERE id = #{id}
 	</update>
+	<update id="orderUpdateJointOrderId">
+		UPDATE order_info SET
+		service_time = #{serviceTime},
+		suggest_finish_time = #{suggestFinishTime},
+		<if test="updateBy.id !=null and updateBy.id != ''">update_by = #{updateBy.id},</if>
+		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
+		WHERE id = #{id}
+	</update>
+
 	<select id="getSortIdByOrderId" resultType="String">
 		SELECT
 			DISTINCT good.sort_id AS sortId
@@ -948,6 +957,18 @@ origin_price,
 		a.del_flag =  #{DEL_FLAG_NORMAL}
 		AND a.type = 'master'
 		AND o.id = #{id}
+	</select>
+
+	<!--根据groupId获取orderinfo的订单集合 并按服务时间排序-->
+	<select id="getListByOrderGroupId" resultType="OrderInfo">
+		select
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		LEFT JOIN order_combination_gasq b ON a.order_number = b.order_number
+		WHERE
+		a.del_flag = '0'
+		AND b.order_group_id = #{orderGroupId}
+		ORDER BY a.service_time
 	</select>
 
 	<select id="listNotRefundOrderGoodsByOrderId" resultType="OrderGoods">

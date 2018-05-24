@@ -82,6 +82,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String unit;// 商品单位
 	private BigDecimal price;// 商品单价
 	private BigDecimal sum;// 小计
+	private String jointOrderSn;         //国安社区订单编号 对接取消订单使用
 
 	private List<OrderInfo> orderInfoList;
 
@@ -220,6 +221,14 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setOriginPrice(String originPrice) {
 		this.originPrice = originPrice;
+	}
+
+	public String getJointOrderSn() {
+		return jointOrderSn;
+	}
+
+	public void setJointOrderSn(String jointOrderSn) {
+		this.jointOrderSn = jointOrderSn;
 	}
 
 	public String getPayPrice() {
