@@ -546,12 +546,25 @@
 		SELECT a.goods_id AS "goodsId",
 				a.combination_price AS "combinationPrice",
 				a.combination_num AS  "combinationNum",
-				b.joint_goods_code AS "jointGoodsCode"
+				b.joint_goods_code AS "jointGoodsCode",
+				d.sort_id AS "sortId"
 				FROM ser_item_combination_goods a
-				LEFT JOIN ser_item_info_goods_eshop b ON a.goods_id = b.goods_id
+				LEFT JOIN ser_item_info_goods d ON a.goods_id = d.id
+				LEFT JOIN ser_item_info_goods_eshop b ON d.id = b.goods_id
 				WHERE a.combination_goods_id = #{id}
 				AND a.del_flag = 0
 				AND b.eshop_code = #{eshopCode}
 
+	</select>
+
+	<select id="getCommodity" resultType="SerItemCommodity">
+		SELECT
+			<include refid="serItemCommodityColumns"/>
+			,b.joint_goods_code AS "jointGoodsCode"
+			FROM ser_item_info_goods a
+			LEFT JOIN ser_item_info_goods_eshop b ON a.id = b.goods_id
+			WHERE a.id = #{id}
+			AND a.del_flag = 0
+			AND b.eshop_code = #{eshopCode}
 	</select>
 </mapper>

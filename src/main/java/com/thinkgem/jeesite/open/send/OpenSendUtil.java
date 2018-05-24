@@ -3,12 +3,12 @@
  */
 package com.thinkgem.jeesite.open.send;
 
+import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
-import com.thinkgem.jeesite.common.utils.Base64Encoder;
-import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.MD5Util;
-import com.thinkgem.jeesite.common.utils.SpringContextHolder;
+import com.thinkgem.jeesite.common.result.Result;
+import com.thinkgem.jeesite.common.result.SuccResult;
+import com.thinkgem.jeesite.common.utils.*;
 import com.thinkgem.jeesite.modules.service.entity.item.CombinationCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
@@ -539,26 +539,30 @@ public class OpenSendUtil {
      * @param scList
      * @return
      */
-    public static void verificationJoint(List<SerItemCommodity> scList){
+    public static Result verificationJoint(List<SerItemCommodity> scList, String eshopCode){
         OpenSendVerificationCombo openSendVerificationCombo = new OpenSendVerificationCombo();
         OpenSendVerificationComboGoods combo = new OpenSendVerificationComboGoods();
         List<OpenSendVerificationGoods> osvgList = new ArrayList<>();
+        Map<String,Object> product = new HashMap<>();
         for (SerItemCommodity serItemCommodity : scList){
             OpenSendVerificationGoods openSendVerificationGoods = new OpenSendVerificationGoods();
             List<CombinationCommodity> combinationCommodities = serItemCommodity.getCombinationCommodities();
             List<String> self_codes = new ArrayList<>();
             if (combinationCommodities != null && combinationCommodities.size()>0){
                 for (CombinationCommodity combinationCommodity : combinationCommodities){
-                    String self_code = combinationCommodity.getJointGoodsCode();
+                    String self_code = combinationCommodity.getSelfCode();
                     self_codes.add(self_code);
                 }
             }
             openSendVerificationGoods.setSelf_codes(self_codes);
             openSendVerificationGoods.setService_pro_name(serItemCommodity.getName());
-            osvgList.add(openSendVerificationGoods);
+            //osvgList.add(openSendVerificationGoods);
+            product.put(serItemCommodity.getId(),openSendVerificationGoods);
         }
-        combo.setGoodsList(osvgList);
-        openSendVerificationCombo.setProduct(combo);
+        //combo.setGoodsList(osvgList);
+        //combo.setMap(map);
+        openSendVerificationCombo.setProduct(product);
+        openSendVerificationCombo.setEshop_code(eshopCode);
 
         openSendVerificationCombo.setCom(Global.getConfig("openSendPath_gasq_phpGoods_com"));
         openSendVerificationCombo.setClient(Global.getConfig("openSendPath_gasq_phpGoods_client"));
@@ -581,9 +585,33 @@ public class OpenSendUtil {
 
             String client = HTTPClientUtils.postClient(url, encode, params);
             System.out.println(client+"========================================");
+
+            OpenSendSaveItemResponse sendResponse = null;
+            if(StringUtils.isNotBlank(client)){
+                sendResponse = JSON.parseObject(client, OpenSendSaveItemResponse.class);
+            }
+            if(sendResponse != null && sendResponse.getCode() == 1){    //执行成功
+                Map<String, Object> responseData = (Map<String, Object>)JsonMapper.fromJsonString(sendResponse.getData().toString(), Map.class);
+                List<String> commodityIds = new ArrayList<>();
+                if(responseData != null){
+                    Iterator iter = responseData.entrySet().iterator();
+                    while (iter.hasNext()) {
+                        Map.Entry entry = (Map.Entry) iter.next();
+                        String id = entry.getKey().toString();
+                        commodityIds.add(id);
+                    }
+                    return new SuccResult(0,commodityIds);
+                }else {
+                    return new SuccResult(3,null);
+                }
+            }else if (sendResponse != null && sendResponse.getCode() == 0){
+                return new SuccResult(3,null);
+            }else {
+                return new SuccResult(1,null);
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            return new SuccResult(1,null);
         }
-
     }
 }

@@ -3,12 +3,15 @@ package com.thinkgem.jeesite.open.entity;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 import java.util.Date;
+import java.util.Map;
 
 public class OpenSendVerificationCombo extends DataEntity<OpenSendVerificationCombo> {
 
     private static final long serialVersionUID = 1L;
 
-    private OpenSendVerificationComboGoods product;
+    private Map<String,Object> product;
+    private Map<String,Object> map;
+    private String eshop_code;
 
     private String com;
     private String client;
@@ -18,11 +21,28 @@ public class OpenSendVerificationCombo extends DataEntity<OpenSendVerificationCo
     private String app_com;
     private String task;
 
-    public OpenSendVerificationComboGoods getProduct() {
+
+    public String getEshop_code() {
+        return eshop_code;
+    }
+
+    public void setEshop_code(String eshop_code) {
+        this.eshop_code = eshop_code;
+    }
+
+    public Map<String, Object> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Object> map) {
+        this.map = map;
+    }
+
+    public Map<String, Object> getProduct() {
         return product;
     }
 
-    public void setProduct(OpenSendVerificationComboGoods product) {
+    public void setProduct(Map<String, Object> product) {
         this.product = product;
     }
 

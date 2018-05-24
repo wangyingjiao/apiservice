@@ -894,14 +894,32 @@ public class SerItemInfoController extends BaseController {
         List<SerItemCommodity> scList = new ArrayList<>();
         for (SerItemCommodityEshop serItemCommodityEshop : combinationCommodity.getSerItemCommodityEshops()){
             if (serItemCommodityEshop.getGoodsType().equals("combined")){
+                //serItemCommodityEshop.setEshopCode(combinationCommodity.getEshopCode());
                 SerItemCommodity serItemCommodity = serItemCommodityService.get(serItemCommodityEshop.getId());
                 serItemCommodity.setEshopCode(combinationCommodity.getEshopCode());
                 List<CombinationCommodity> combinedList = serItemCommodityService.commodJointList(serItemCommodity);
+                if (combinedList != null && combinedList.size()>0){
+                    for (CombinationCommodity combinationCommodity1 : combinedList){
+                        combinationCommodity1.setSelfCode(combinationCommodity1.getSortId()+"_"+combinationCommodity1.getGoodsId());
+                    }
+                }
                 serItemCommodity.setCombinationCommodities(combinedList);
                 scList.add(serItemCommodity);
             }
         }
-        OpenSendUtil.verificationJoint(scList);
-        return new SuccResult(scList);
+        Result result = new Result();
+        if (scList != null && scList.size() > 0) {
+            String eshopCode = combinationCommodity.getEshopCode();
+            result = OpenSendUtil.verificationJoint(scList, eshopCode);
+        }else {
+            return new SuccResult();
+        }
+        if (result.getCode() == 0){
+            return new SuccResult(result.getData());
+        }else if (result.getCode() == 3){
+            return new SuccResult();
+        }else {
+            return new FailResult("验证失败");
+        }
     }
 }

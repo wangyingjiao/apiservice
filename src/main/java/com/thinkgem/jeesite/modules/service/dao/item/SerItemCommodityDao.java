@@ -78,4 +78,6 @@ public interface SerItemCommodityDao extends CrudDao<SerItemCommodity> {
     List<CombinationCommodity> commodJointList(SerItemCommodity serItemCommodity);
 
     SerItemCommodity getGoodsByGoodsId(CombinationOrderInfo combinationOrderInfo);
+
+    SerItemCommodity getCommodity(SerItemCommodityEshop serItemCommodityEshop);
 }

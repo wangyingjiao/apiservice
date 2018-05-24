@@ -129,4 +129,8 @@ public class SerItemCommodityService extends CrudService<SerItemCommodityDao, Se
     public List<CombinationCommodity> commodJointList(SerItemCommodity serItemCommodity) {
 	    return serItemCommodityDao.commodJointList(serItemCommodity);
     }
+
+	public SerItemCommodity getCommodity(SerItemCommodityEshop serItemCommodityEshop) {
+		return serItemCommodityDao.getCommodity(serItemCommodityEshop);
+	}
 }

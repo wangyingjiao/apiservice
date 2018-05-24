@@ -32,6 +32,16 @@ public class CombinationCommodity extends DataEntity<CombinationCommodity> {
     private String doublePrice;   //展示用
     private String eshopCode;      //E店code
 
+    private String selfCode;
+
+    public String getSelfCode() {
+        return selfCode;
+    }
+
+    public void setSelfCode(String selfCode) {
+        this.selfCode = selfCode;
+    }
+
     private List<SerItemCommodityEshop> serItemCommodityEshops;
     private List<CombinationCommodity> combinationCommodities;
 
