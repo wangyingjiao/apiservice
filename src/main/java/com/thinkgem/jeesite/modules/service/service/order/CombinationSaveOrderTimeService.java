@@ -388,6 +388,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
         newTechScheduleInfo.setScheduleWeek(weekNum);
         newTechScheduleInfo.setStartTime(orderInfo.getServiceTime());
         newTechScheduleInfo.setEndTime(finishTime);
+        newTechScheduleInfo.setScheduleDate(orderInfo.getServiceTime());
 		newTechScheduleInfo.preInsert();
         i = techScheduleDao.insertSchedule(newTechScheduleInfo);
 		HashMap<String,Object> map = new HashMap<>();
