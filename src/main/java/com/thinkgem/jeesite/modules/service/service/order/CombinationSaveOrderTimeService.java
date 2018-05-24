@@ -368,8 +368,8 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
 		techScheduleInfo.setType("master");
 		techScheduleInfo.setTypeId(listByOrderNumber.getOrderGroupId());
-		techScheduleInfo.setTechId(orderInfo.getTechId());
-		List<TechScheduleInfo> orderSchedule = techScheduleDao.getOrderSchedule(techScheduleInfo);
+		techScheduleInfo.setMasterId(info.getMasterId());
+		List<TechScheduleInfo> orderSchedule = techScheduleDao.getOrderScheduleByTypeId(techScheduleInfo);
 		if (orderSchedule != null && orderSchedule.size() > 0){
 			//组合订单 同一个orderGroupId只有一个排期表
 			TechScheduleInfo techScheduleInfo1 = orderSchedule.get(0);
