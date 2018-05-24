@@ -14,6 +14,7 @@ import com.thinkgem.jeesite.modules.service.dao.basic.BasicOrganizationDao;
 import com.thinkgem.jeesite.modules.service.dao.order.*;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicServiceStationDao;
 import com.thinkgem.jeesite.modules.service.dao.station.BasicStoreDao;
+import com.thinkgem.jeesite.modules.service.dao.technician.ServiceTechnicianInfoDao;
 import com.thinkgem.jeesite.modules.service.dao.technician.TechScheduleDao;
 import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
@@ -21,6 +22,7 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodityEshop;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.skill.SerSkillSort;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
+import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianInfo;
 import com.thinkgem.jeesite.modules.service.entity.technician.ServiceTechnicianWorkTime;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderToolsService;
@@ -76,6 +78,8 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 
 	@Autowired
 	private OrderToolsService orderToolsService;
+	@Autowired
+	private ServiceTechnicianInfoDao serviceTechnicianInfoDao;
 
 
 	/**
@@ -401,7 +405,8 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 	}
 
 	//对接取消订单
-	public OpenUpdateInfoResponse  cancelForGroup(OpenCancleStautsRequest info){
+	@Transactional(readOnly = false)
+	public HashMap<String,Object>  cancelForGroup(OpenCancleStautsRequest info){
 		OpenUpdateInfoResponse response = new OpenUpdateInfoResponse();
 		//根据group_id查组合订单主表 获取masterId
 		CombinationOrderInfo combinationByGroupId = combinationOrderDao.getCombinationByGroupId(info.getGroup_id());
@@ -441,11 +446,12 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		//修改排期表
 		techScheduleDao.updateScheduleByTypeIdTech(techScheduleInfo1);
 		//修改派单表
-		List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(cancleOrder);
+		List<OrderDispatch> byOrderId = orderDispatchDao.getDisByOrderId(cancleOrder);
 		if (byOrderId == null || byOrderId.size() < 1 ){
 			throw new ServiceException("未在派单表中找到该订单");
 		}
 		OrderDispatch orderDispatch = byOrderId.get(0);
+		String orderId = cancleOrder.getId();
 		orderDispatch.setDelFlag("1");
 		int delete = orderDispatchDao.delete(orderDispatch);
 		if (delete < 0){
@@ -490,7 +496,15 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		orderCombinationGasqDao.updateOrderGroup(gasqByOrderSn);
 		response.setSuccess(true);
 		response.setService_order_id(orderNumber);
-		return response;
+
+		HashMap<String,Object> map = new HashMap<>();
+		List<OrderDispatch> dis = new ArrayList<>();
+		dis.add(orderDispatch);
+		map.put("orderId",orderId);
+		map.put("dis", dis);
+		map.put("orderNumber", cancleOrder.getOrderNumber());
+		map.put("response",response);
+		return map;
 	}
 
 }

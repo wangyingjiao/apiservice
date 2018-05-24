@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.open.entity.*;
 import com.thinkgem.jeesite.open.service.OpenCombinationService;
 import com.thinkgem.jeesite.open.service.OpenCreateCombinationManyService;
@@ -269,12 +270,25 @@ public class OpenController extends BaseController {
 	@RequestMapping(value = "cancelForGroup", method = {RequestMethod.POST})
 	public OpenResult cancelForGroup(OpenCancleStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try{
-			OpenUpdateInfoResponse responseRe = openCombinationService.cancelForGroup(info);
-
+			HashMap<String, Object> map = openCombinationService.cancelForGroup(info);
+			Object responseRe = map.get("response");
 			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
 			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);
 			request.setAttribute("openResponseCode","1");
+
+			try {
+				List<OrderDispatch> dis = (List<OrderDispatch>)map.get("dis");
+				OrderInfo orderInfo1 = new OrderInfo();
+				orderInfo1.setId((String)map.get("orderId"));
+				orderInfo1.setOrderNumber((String)map.get("orderNumber"));
+				orderInfo1.setTechList(dis);
+				User user = UserUtils.getUser();
+				orderInfo1.setCreateBy(user);
+				messageInfoService.insert(orderInfo1,"orderCancel");//取消
+			}catch (Exception e){
+				logger.error("更换时间保存-推送消息失败-系统异常");
+			}
 			return result;
 		}catch (ServiceException ex) {
 			OpenFailResult result = new OpenFailResult(ex.getMessage());

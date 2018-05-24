@@ -35,6 +35,7 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 	private String stationName;// 服务站
 	private String orderNumber;// 订单编号
 	private String orderSource;// 订单来源
+	private String orderType  ;// 订单状态
 
 	public String getPayPlatformName() {
 		return payPlatformName;
@@ -181,5 +182,13 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
 	}
 }

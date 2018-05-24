@@ -334,7 +334,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 
 		//1.将之前的派单的可用状态置为no
         //根据订单id获取之前的技师集合
-		List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(orderInfo);
+		List<OrderDispatch> byOrderId = orderDispatchDao.getDisByOrderId(orderInfo);
 		if (byOrderId == null || byOrderId.size() < 1){
             throw new ServiceException("该订单尚未派单");
 		}

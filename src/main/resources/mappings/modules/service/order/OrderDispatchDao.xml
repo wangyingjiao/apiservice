@@ -217,6 +217,18 @@
 		AND a.status='yes'
 	</select>
 
+	<!--根据订单id关联技师表 获取派单（发消息）-->
+	<select id="getDisByOrderId" resultType="OrderDispatch">
+		SELECT
+		<include refid="orderDispatchColumns"/>
+		,b.phone AS "techPhone"
+		FROM order_dispatch a
+		LEFT JOIN tech_info b ON  a.tech_id=b.id AND b.del_flag=#{delFlag}
+		WHERE a.order_id = #{id}
+		AND a.del_flag=#{delFlag}
+		AND a.status='yes'
+	</select>
+
 	<select id="formData" resultType="OrderDispatch">
 		SELECT
 			a.create_date AS "createDate",

@@ -30,4 +30,6 @@ public interface OrderDispatchDao extends CrudDao<OrderDispatch> {
 
 	//app根据订单id查询派单表集合
 	List<OrderDispatch> getByOrderId(OrderInfo info);
+	//根据订单id关联技师表 获取派单包含技师手机（发消息）
+	List<OrderDispatch> getDisByOrderId(OrderInfo info);
 }

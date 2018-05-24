@@ -37,6 +37,32 @@
         FROM order_pay_info a
         WHERE a.master_id = #{masterId}
     </select>
+
+	<!--根据支付表（普通订单）关联机构服务站-->
+	<select id="getPayInfoByOrderId" resultType="OrderPayInfo">
+		SELECT
+		org.name AS orgName,
+		sta.name AS stationName
+		FROM order_pay_info a
+		LEFT JOIN order_info ord ON a.order_id = ord.id
+		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.id = #{id}
+	</select>
+
+	<!--根据支付表（组合订单）关联组合订单主表机构服务站-->
+	<select id="getPayInfoByComId" resultType="OrderPayInfo">
+		SELECT
+		ord.order_number AS orderNumber,
+		org.name AS orgName,
+		sta.name AS stationName
+		FROM order_pay_info a
+		LEFT JOIN order_combination_info ord ON a.order_id = ord.id
+		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
+		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.id = #{id}
+	</select>
+
 	<select id="getPayInfoByOrderId" resultType="OrderPayInfo">
 		SELECT
 		<include refid="orderPayInfoColumns"/>
@@ -47,20 +73,16 @@
 	<select id="findList" resultType="OrderPayInfo">
 		SELECT
 		a.id AS "id",
-		ord.order_number AS orderNumber,
-		org.name AS orgName,
-		sta.name AS stationName,
 		a.pay_number AS "payNumber",
 		a.pay_time AS "payTime",
 		a.pay_account AS "payAccount",
 		a.pay_status AS "payStatus",
-		tech.name AS payTechName
+		tech.name AS payTechName,
+		a.master_id AS "masterId",
+		mas.order_type AS "orderType"
 		FROM order_pay_info a
-		LEFT JOIN order_info ord ON a.order_id = ord.id
 		LEFT JOIN order_master_info mas ON a.master_id = mas.id
 		LEFT JOIN tech_info tech ON a.pay_tech = tech.id
-		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
-		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="orderSource != null and orderSource !=''">
@@ -93,7 +115,7 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findAllList" resultType="OrderPayInfo">
 		SELECT 
 			<include refid="orderPayInfoColumns"/>

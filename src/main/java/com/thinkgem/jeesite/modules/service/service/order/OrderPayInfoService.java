@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.station.BasicServiceStation;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ import com.thinkgem.jeesite.modules.service.dao.order.OrderPayInfoDao;
 @Transactional(readOnly = true)
 public class OrderPayInfoService extends CrudService<OrderPayInfoDao, OrderPayInfo> {
 
+	@Autowired
+	OrderPayInfoDao orderPayInfoDao;
 	public OrderPayInfo get(String id) {
 		return super.get(id);
 	}
@@ -37,7 +40,23 @@ public class OrderPayInfoService extends CrudService<OrderPayInfoDao, OrderPayIn
 	public Page<OrderPayInfo> findPage(Page<OrderPayInfo> page, OrderPayInfo orderPayInfo) {
 		User user = UserUtils.getUser();
 		orderPayInfo.getSqlMap().put("dsf", dataRoleFilterForOrder(user, "ord"));
-		return super.findPage(page, orderPayInfo);
+		Page<OrderPayInfo> page1 = super.findPage(page, orderPayInfo);
+		List<OrderPayInfo> list = page1.getList();
+		if (list != null && list.size() > 0) {
+			for (OrderPayInfo orderPayInfo1:list){
+				if ("common".equals(orderPayInfo1.getOrderType())){
+					OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayInfoByOrderId(orderPayInfo1);
+					orderPayInfo1.setOrderNumber(payInfoByOrderId.getOrderNumber());
+					orderPayInfo1.setOrgName(payInfoByOrderId.getOrgName());
+					orderPayInfo1.setStationName(payInfoByOrderId.getStationName());
+				}else {
+					OrderPayInfo payInfoByComId = orderPayInfoDao.getPayInfoByComId(orderPayInfo1);
+					orderPayInfo1.setOrgName(payInfoByComId.getOrgName());
+					orderPayInfo1.setStationName(payInfoByComId.getStationName());
+				}
+			}
+		}
+		return page1;
 	}
 	
 	@Transactional(readOnly = false)
