@@ -102,7 +102,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "saveRegularDateDateList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_start_time")
+	@RequiresPermissions("combination_regular")
 	public Result saveRegularDateDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderTimeList>  list = combinationSaveRegularDateService.saveRegularDateDateList(combinationOrderInfo);
@@ -125,7 +125,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "saveRegularDateTechList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_start_time")
+	@RequiresPermissions("combination_regular")
 	public Result saveRegularDateTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderDispatch> list = combinationSaveRegularDateService.saveRegularDateTechList(combinationOrderInfo);
@@ -142,7 +142,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "saveRegularDate", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_start_time")
+	@RequiresPermissions("combination_regular")
 	public Result saveRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
@@ -174,7 +174,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateRegularDate", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_regular_time")
+	@RequiresPermissions("combination_regular")
 	public Result updateRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
@@ -197,7 +197,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateRegularTechTechList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_regular_tech")
+	@RequiresPermissions("combination_regular")
 	public Result updateRegularTechTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderDispatch> list = combinationSaveRegularTechService.updateRegularTechTechList(combinationOrderInfo);
@@ -215,7 +215,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateRegularTechSave", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_regular_tech")
+	@RequiresPermissions("combination_regular")
 	public Result updateRegularTechSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			if(StringUtils.isBlank(combinationOrderInfo.getTechId())){
@@ -240,7 +240,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTechInit", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_tech")
+	@RequiresPermissions("combination_order")
 	public Result updateOrderTechInit(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			OrderInfo orderInfo = new OrderInfo();
@@ -270,7 +270,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTechTechList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_tech")
+	@RequiresPermissions("combination_order")
 	public Result updateOrderTechTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderDispatch> list = combinationSaveOrderTechService.updateOrderTechTechList(combinationOrderInfo);
@@ -288,7 +288,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTechAddSave", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_tech")
+	@RequiresPermissions("combination_order")
 	public Result updateOrderTechAddSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try{
 			HashMap<String,Object> map = combinationSaveOrderTechService.updateOrderTechAddSave(combinationOrderInfo);
@@ -338,7 +338,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTechDispatchSave", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_tech")
+	@RequiresPermissions("combination_order")
 	public Result updateOrderTechDispatchSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try{
 			HashMap<String,Object> map = null;
@@ -444,7 +444,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "formOrderRemark", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_remark")
+	@RequiresPermissions("combination_remark")
 	public Result formOrderRemark(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		// 订单ID不为空
 		if(combinationOrderInfo == null || StringUtils.isBlank(combinationOrderInfo.getOrderId())){
@@ -467,7 +467,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTimeDateList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_time")
+	@RequiresPermissions("combination_order")
 	public Result updateOrderTimeDateList(@RequestBody OrderInfo orderInfo) {
 		//判断订单状态
 		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
@@ -504,7 +504,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTimeTechList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_time")
+	@RequiresPermissions("combination_order")
 	public Result updateOrderTimeTechList(@RequestBody OrderInfo orderInfo) {
 		Map<String, Object> stringObjectMap = combinationSaveOrderTimeService.updateOrderTimeTechList(orderInfo);
 		return new SuccResult(stringObjectMap);
@@ -518,7 +518,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "updateOrderTimeSave", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_order_time")
+	@RequiresPermissions("combination_order")
 	public Result updateOrderTimeSave(@RequestBody OrderInfo orderInfo) {
 		OrderInfo info = orderInfoService.get(orderInfo.getId());
 		HashMap<String,Object> map = null;
@@ -605,7 +605,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "subscribeDateList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_start_time")
+	@RequiresPermissions("combination_subscribe")
 	public Result subscribeDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderTimeList>  list = combinationSubscribeService.subscribeDateList(combinationOrderInfo);
@@ -624,7 +624,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "subscribeTechList", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_start_time")
+	@RequiresPermissions("combination_subscribe")
 	public Result subscribeTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			List<OrderDispatch> list = combinationSubscribeService.subscribeTechList(combinationOrderInfo);
@@ -641,7 +641,7 @@ public class CombinationOrderController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "subscribeSave", method = {RequestMethod.POST})
-	//@RequiresPermissions("combination_start_time")
+	@RequiresPermissions("combination_subscribe")
 	public Result subscribeSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
 			boolean flag = combinationSubscribeService.checkSubscribeTech(combinationOrderInfo);
