@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.open.entity.*;
+import com.thinkgem.jeesite.open.service.OpenCombinationService;
 import com.thinkgem.jeesite.open.service.OpenCreateCombinationManyService;
 import com.thinkgem.jeesite.open.service.OpenCreateCombinationOnceService;
 import com.thinkgem.jeesite.open.service.OpenService;
@@ -44,6 +45,8 @@ public class OpenController extends BaseController {
 	@Autowired
 	private OpenService openService;
 	@Autowired
+	private OpenCombinationService openCombinationService;
+	@Autowired
 	private OpenCreateCombinationManyService openCreateCombinationManyService;
 	@Autowired
 	private OpenCreateCombinationOnceService openCreateCombinationOnceService;
@@ -61,6 +64,37 @@ public class OpenController extends BaseController {
 	public OpenResult serviceTimes(OpenServiceTimesRequest info, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			Map<String,Object> value = openService.openServiceTimes(info);
+			OpenSuccResult result =  new OpenSuccResult(value, "操作成功");
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","1");
+			request.setAttribute("openResponseSendType","");
+			return result;
+		}catch (ServiceException ex){
+			OpenFailResult result =  new OpenFailResult(ex.getMessage());
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
+		}catch (Exception e){
+			OpenFailResult result =  new OpenFailResult("操作失败");
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
+		}
+	}
+
+	/**
+	 * 多次预约订单选择服务时间
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "serviceTimesForGroup", method = {RequestMethod.POST})
+	public OpenResult serviceTimesForGroup(OpenServiceTimesForGroupRequest info, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			Map<String,Object> value = openCombinationService.serviceTimesForGroup(info);
 			OpenSuccResult result =  new OpenSuccResult(value, "操作成功");
 			String openResponseJson = JsonMapper.toJsonString(result);
 			request.setAttribute("openResponseJson",openResponseJson);

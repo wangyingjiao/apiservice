@@ -311,7 +311,15 @@
         WHERE a.master_id = #{masterId}
         AND a.del_flag = '0'
     </select>
-
+    <!--根据GroupId获取组合订单-->
+    <select id="getCombinationByGroupId"  resultType="CombinationOrderInfo">
+        SELECT
+        <include refid="CombinationOrderColumns"/>
+        FROM
+        order_combination_info a
+        WHERE a.joint_group_id = #{groupId}
+        AND a.del_flag = '0'
+    </select>
 
     <select id="listFrequencyByTechWeek" resultType="OrderCombinationFrequencyInfo">
         select
