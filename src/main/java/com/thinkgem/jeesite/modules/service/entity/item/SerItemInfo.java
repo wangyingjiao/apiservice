@@ -35,7 +35,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	private List<String> sysTags;			//系统标签
 	private List<String> customTags;		//自定义标签
 	//private String eshopCode; //e点code 对接用
-	private String jointStatus;//'对接状态(yes:对接成功  no：对接失败）',
 	private String tags;
 	private String cusTags;
 
@@ -270,14 +269,6 @@ public class SerItemInfo extends DataEntity<SerItemInfo> {
 	public void setEshopCode(String eshopCode) {
 		this.eshopCode = eshopCode;
 	}*/
-
-	public String getJointStatus() {
-		return jointStatus;
-	}
-
-	public void setJointStatus(String jointStatus) {
-		this.jointStatus = jointStatus;
-	}
 	
 	//add by wyr 对接编码
 	private String sortIdandGoodsId;

@@ -17,8 +17,7 @@
 		a.capping_per_num AS "cappingPerNum",
 		<!--a.joint_goods_code AS "jointGoodsCode"-->
 		a.goods_type AS "goodsType",
-		a.service_type AS "serviceType",
-		a.service_num AS "serviceNum"
+		a.service_type AS "serviceType"
 	</sql>
 	
 	<sql id="serItemCommodityJoins">
@@ -102,9 +101,6 @@
 			<if test="serviceType != null and serviceType != ''">
 				,service_type
 			</if>
-			<if test="serviceNum != null and serviceNum != 0">
-				,service_num
-			</if>
 		) VALUES (
 			#{id},
 			#{sortId},
@@ -127,9 +123,6 @@
 			#{goodsType}
 			<if test="serviceType != null and serviceType != ''">
 				,#{serviceType}
-			</if>
-			<if test="serviceNum != null and serviceNum != 0">
-				,#{serviceNum}
 			</if>
 		)
 	</insert>
@@ -224,8 +217,7 @@
 		a.capping_per_num AS cappingPerNum,
 		<!--a.joint_goods_code AS jointGoodsCode-->
 		a.goods_type AS "goodsType",
-		a.service_type AS "serviceType",
-		a.service_num AS "serviceNum"
+		a.service_type AS "serviceType"
 	</sql>
 	<resultMap type="SerItemCommodity" id="SerItemGoodsResultMap">
 		<id column="id" property="id"/>

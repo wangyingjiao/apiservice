@@ -50,7 +50,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private String goodsType;  //商品类型
 	private List<CombinationCommodity> combinationCommodities;
 	private String serviceType;    //服务类型
-	private int serviceNum;        //服务次数(多次服务)
 	private List<SerItemInfo> serItemInfos;
 
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
@@ -77,14 +76,6 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 
 	public void setServiceType(String serviceType) {
 		this.serviceType = serviceType;
-	}
-
-	public int getServiceNum() {
-		return serviceNum;
-	}
-
-	public void setServiceNum(int serviceNum) {
-		this.serviceNum = serviceNum;
 	}
 
 	public List<CombinationCommodity> getCombinationCommodities() {

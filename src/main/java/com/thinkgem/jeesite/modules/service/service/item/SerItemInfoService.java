@@ -288,11 +288,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 							}
 						}
 					}
-					if (entity.getFlag().equals("yes")) {
-						if (entity.getJointStatus().equals("no")) {
-							entity.setFlag("no");
-						}
-					}
 				}
 			}
 
@@ -537,11 +532,6 @@ public class SerItemInfoService extends CrudService<SerItemInfoDao, SerItemInfo>
 		}
 		return map;
 	}*/
-
-	@Transactional(readOnly = false)
-	public void updateJointStatus(SerItemInfo serItemInfo) {
-		dao.updateJointStatus(serItemInfo);
-	}
 
 	/**
 	 * 单个删除商品时，取得对接信息

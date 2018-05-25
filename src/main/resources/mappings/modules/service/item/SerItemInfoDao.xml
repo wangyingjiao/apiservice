@@ -124,8 +124,7 @@
 		a.picture_detail AS "pictureDetail",
 		a.description AS "description",
 		a.sale AS "sale",
-		a.sort_num AS "sortNum",
-		a.joint_status AS "jointStatus"
+		a.sort_num AS "sortNum"
 		<!--b.joint_eshop_code AS jointEshopCode-->
 	</sql>
 	<resultMap type="SerItemInfo" id="SerItemCommodityResultMap">
@@ -138,7 +137,6 @@
 		<result column="sort_name" property="sortName"/>
 		<result column="name" property="name"/>
 		<result column="sale" property="sale"/>
-		<result column="joint_status" property="jointStatus"/>
 		<!-- 项目关联商品 -->
 		<association property="commoditys" column="{reqId=id,goodsName=goodsName,sortIdandGoodsId=sortIdandGoodsId}" select="selectCommodityById"></association>
 		<!-- 定向城市 -->
@@ -329,14 +327,6 @@
 		from basic_organization a
 		WHERE a.id= #{orgId}
 	</select>
-
-	<update id="updateJointStatus">
-		UPDATE ser_item_info SET
-		joint_status = #{jointStatus},
-		update_by = #{updateBy.id},
-		update_date = #{updateDate}
-		WHERE id = #{id}
-	</update>
 
 	<select id="getItemInfoByCommodityId" resultType="SerItemInfo">
 		SELECT
