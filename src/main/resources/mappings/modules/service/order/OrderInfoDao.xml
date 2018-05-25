@@ -93,6 +93,7 @@
 		LEFT JOIN basic_service_station sta ON a.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND  a.order_type = 'common'
 			<if test="orderSource != null and orderSource !=''">
 				AND a.order_source= #{orderSource}
 			</if>
