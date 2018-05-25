@@ -111,4 +111,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     //根据groupId获取orderinfo的订单集合并按服务时间排序
     List<OrderInfo> getListByOrderGroupId(OrderCombinationGasqInfo orderCombinationGasqInfo);
 
+    OrderInfo getOrderInfoByJointOrderSn(OrderInfo serchOrderInfo);
+
+    List<OrderInfo> getOrderInfoByMasterId(String masterId);
 }

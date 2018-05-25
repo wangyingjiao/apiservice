@@ -3,27 +3,17 @@
  */
 package com.thinkgem.jeesite.open.web;
 
-import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.result.*;
 import com.thinkgem.jeesite.common.service.ServiceException;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.service.entity.basic.BasicOrganization;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
-import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.open.entity.*;
-import com.thinkgem.jeesite.open.service.OpenCombinationService;
-import com.thinkgem.jeesite.open.service.OpenCreateCombinationManyService;
-import com.thinkgem.jeesite.open.service.OpenCreateCombinationOnceService;
-import com.thinkgem.jeesite.open.service.OpenService;
-import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.thinkgem.jeesite.open.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +41,8 @@ public class OpenController extends BaseController {
 	private OpenCreateCombinationManyService openCreateCombinationManyService;
 	@Autowired
 	private OpenCreateCombinationOnceService openCreateCombinationOnceService;
+	@Autowired
+    private OpenCreateCombinationSubscribeService openCreateCombinationSubscribeService;
 
 	@Autowired
 	private MessageInfoService messageInfoService;
@@ -182,6 +174,96 @@ public class OpenController extends BaseController {
 		}
 	}
 
+    /**
+     * 多次预约订单保存
+     * @param info
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "createForGroup", method = {RequestMethod.POST})
+    public OpenResult createForGroup(OpenCreateForSubscribeRequest info, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            HashMap<String,Object> map = openCreateCombinationSubscribeService.openCreate(info);
+			OpenCreateForSubscribeResponse responseRe = (OpenCreateForSubscribeResponse)map.get("response");
+
+            try {
+				List<OrderInfo> orderInfoList = (List<OrderInfo>)map.get("orderInfoMsg");
+				if(orderInfoList != null){
+					for(OrderInfo orderInfo : orderInfoList){
+						User user = new User();
+						user.setId("gasq001");
+						orderInfo.setCreateBy(user);
+						messageInfoService.insert(orderInfo, "orderCreate");//新增
+					}
+				}
+            }catch (Exception e){
+                logger.error("订单创建-推送消息失败-系统异常");
+            }
+
+            OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
+            String openResponseJson = JsonMapper.toJsonString(result);
+            request.setAttribute("openResponseJson",openResponseJson);
+            request.setAttribute("openResponseCode","1");
+            return result;
+        }catch (ServiceException ex){
+            OpenFailResult result =  new OpenFailResult(ex.getMessage());
+            String openResponseJson = JsonMapper.toJsonString(result);
+            request.setAttribute("openResponseJson",openResponseJson);
+            request.setAttribute("openResponseCode","0");
+            return result;
+        }catch (Exception e){
+            OpenFailResult result =  new OpenFailResult("操作失败");
+            String openResponseJson = JsonMapper.toJsonString(result);
+            request.setAttribute("openResponseJson",openResponseJson);
+            request.setAttribute("openResponseCode","0");
+            return result;
+        }
+    }
+
+	/**
+	 * 订单退款取消
+	 * @param info
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateGroupStatus", method = {RequestMethod.POST})
+	public OpenResult updateGroupStatus(OpenUpdateStautsRequest info, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			HashMap<String,Object> map = openService.updateGroupStatus(info);
+			OpenUpdateStautsResponse responseRe = (OpenUpdateStautsResponse)map.get("response");
+			try {
+				List<OrderInfo> orderMsgList = (List<OrderInfo>) map.get("orderMsgList");
+				if(orderMsgList!=null){
+					for(OrderInfo orderInfo : orderMsgList){
+						User user = new User();
+						user.setId("gasq001");
+						orderInfo.setCreateBy(user);
+						messageInfoService.insert(orderInfo, "orderCancel");//取消
+					}
+				}
+			}catch (Exception e){
+				logger.error("订单状态更新-推送消息失败-系统异常");
+			}
+
+			OpenSuccResult result =  new OpenSuccResult(responseRe, "操作成功");
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","1");
+			return result;
+		}catch (ServiceException ex){
+			OpenFailResult result =  new OpenFailResult(ex.getMessage());
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
+		}catch (Exception e){
+			OpenFailResult result =  new OpenFailResult("操作失败");
+			String openResponseJson = JsonMapper.toJsonString(result);
+			request.setAttribute("openResponseJson",openResponseJson);
+			request.setAttribute("openResponseCode","0");
+			return result;
+		}
+	}
 	/**
 	 * 订单状态更新
 	 * @param info
@@ -194,10 +276,9 @@ public class OpenController extends BaseController {
 			HashMap<String,Object> map = openService.openUpdateStauts(info);
 			OpenUpdateStautsResponse responseRe = (OpenUpdateStautsResponse)map.get("response");
 			try {
-				String status = info.getStatus();
-				if("cancel".equals(status)) {
-					OrderInfo orderInfo = (OrderInfo) map.get("orderInfoMsg");
-					if(null != orderInfo) {
+				List<OrderInfo> orderMsgList = (List<OrderInfo>) map.get("orderMsgList");
+				if(orderMsgList!=null){
+					for(OrderInfo orderInfo : orderMsgList){
 						User user = new User();
 						user.setId("gasq001");
 						orderInfo.setCreateBy(user);

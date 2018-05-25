@@ -22,6 +22,7 @@ public class OpenUpdateStautsRequest extends DataEntity<OpenUpdateStautsRequest>
 	private String status;//cancel取消；signed已签收；finish完成
 	private String gasq_order_id;//国安社区订单ID
 	private String gasq_order_sn;//国安社区订单SN
+	private String group_id;
 
 	public String getPlatform() {
 		return platform;
@@ -69,5 +70,13 @@ public class OpenUpdateStautsRequest extends DataEntity<OpenUpdateStautsRequest>
 
 	public void setGasq_order_sn(String gasq_order_sn) {
 		this.gasq_order_sn = gasq_order_sn;
+	}
+
+	public String getGroup_id() {
+		return group_id;
+	}
+
+	public void setGroup_id(String group_id) {
+		this.group_id = group_id;
 	}
 }

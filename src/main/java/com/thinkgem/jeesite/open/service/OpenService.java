@@ -73,6 +73,10 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 	BasicStoreDao basicStoreDao;
 	@Autowired
 	TechScheduleDao techScheduleDao;
+	@Autowired
+	CombinationOrderDao combinationOrderDao;
+	@Autowired
+	OrderCombinationGasqDao orderCombinationGasqDao;
 
 	@Autowired
 	private OrderToolsService orderToolsService;
@@ -1112,9 +1116,16 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("自营服务订单sn不能为空");
 		}
 		String gasq_order_sn = info.getGasq_order_sn();//国安社区订单编号
-		if(StringUtils.isBlank(gasq_order_sn)){
-			throw new ServiceException("国安社区订单sn不能为空");
+		String group_id = info.getGroup_id();//国安社区订单编号
+		if(StringUtils.isBlank(gasq_order_sn) && StringUtils.isBlank(group_id)){
+			throw new ServiceException("国安社区订单sn或订单组ID不能同时为空");
 		}
+
+		if("cancel".equals(info.getStatus()) && !StringUtils.isBlank(group_id)){//组合取消
+			HashMap<String,Object> groupMap = openUpdateStautsForGroup(info);
+			return groupMap;
+		}
+
 		OrderInfo checkInfo = new OrderInfo();
 		checkInfo.setOrderNumber(orderSn);
 		checkInfo.setJointOrderId(gasq_order_sn);
@@ -1127,29 +1138,34 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String status = info.getStatus();//cancel 取消；finish 已签收；success 完成
 
 		try{
-            OrderInfo orderInfo = new OrderInfo();
+			OrderInfo orderInfo = new OrderInfo();
 			orderInfo.setId(checkInfoRe.getId());
-            if("cancel".equals(status)){
+			if("cancel".equals(status)){
 				if(!"finish".equals(checkInfoRe.getServiceStatus())){
 					// 当前服务状态不允许取消
 					orderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 				}
 
-                orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-                orderInfo.setCancelReason(cancelReason);//取消原因
-            }else if("signed".equals(status)){
-                //orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
-                orderInfo.setOrderStatus("finish");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-            }else if("success".equals(status)){
-                //orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
-                orderInfo.setOrderStatus("success");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-            }
+				orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+				orderInfo.setCancelReason(cancelReason);//取消原因
+			}else if("signed".equals(status)){
+				//orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+				orderInfo.setOrderStatus("finish");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+			}else if("success".equals(status)){
+				//orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+				orderInfo.setOrderStatus("success");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
 
-            orderInfo.setUpdateDate(new Date());
-            int num = orderInfoDao.openUpdateOrder(orderInfo);
-            if(num == 0){
+			}
+
+			orderInfo.setUpdateDate(new Date());
+			int num = orderInfoDao.openUpdateOrder(orderInfo);
+			if(num == 0){
 				throw new ServiceException("订单状态更新失败");
-            }else{
+			}else{
+				if("success".equals(status)){//所有子订单成功 组合订单成功
+					//TODO
+					//List<OrderInfo> succList = orderInfo.listNotSucc
+				}
 				response = new OpenUpdateStautsResponse();
 				response.setSuccess(true);// 状态：true 成功；false 失败
 				response.setService_order_id(orderSn);// 自营服务订单ID
@@ -1158,32 +1174,322 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				map.put("response",response);
 
 				if("cancel".equals(status) && !"finish".equals(checkInfoRe.getServiceStatus())){
-                    // 删除排期
-                    TechScheduleInfo scheduleInfo = new TechScheduleInfo();
-                    scheduleInfo.setType("order");
-                    scheduleInfo.setTypeId(orderInfo.getId());
-                    User user = new User();
-                    user.setId("gasq001");
-                    scheduleInfo.setUpdateBy(user);
-                    scheduleInfo.setUpdateDate(new Date());
-                    techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+					// 删除排期
+					TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+					scheduleInfo.setType("order");
+					scheduleInfo.setTypeId(orderInfo.getId());
+					User user = new User();
+					user.setId("gasq001");
+					scheduleInfo.setUpdateBy(user);
+					scheduleInfo.setUpdateDate(new Date());
+					techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
 
 					//推送消息  取消订单时
 					//标题：订单已取消
 					//内容：编号为XXXXXXXXX的订单已取消，请点击查看
+					List<OrderInfo> orderMsgList = new ArrayList<>();
 					OrderInfo orderInfoMsg = new OrderInfo();
 					orderInfoMsg.setId(checkInfoRe.getId());
 					orderInfoMsg.setOrderNumber(orderSn);
 					List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
 					orderInfoMsg.setTechList(techList);
-					map.put("orderInfoMsg",orderInfoMsg);
+					orderMsgList.add(orderInfoMsg);
+					map.put("orderMsgList",orderMsgList);
 				}
 
 				return map;
-            }
+			}
 		}catch (Exception e){
 			throw new ServiceException("订单状态更新失败E!");
-        }
+		}
+	}
+
+	@Transactional(readOnly = false)
+	public HashMap<String,Object> openUpdateStautsForGroup(OpenUpdateStautsRequest info) {
+		OpenUpdateStautsResponse response = new OpenUpdateStautsResponse();
+		if(null == info){
+			throw new ServiceException("未接收到订单信息");
+		}
+		String group_id = info.getGroup_id();//国安社区订单编号
+		String cancelReason = info.getComment();//取消原因
+		User user = new User();
+		user.setId("gasq001");
+		try{
+			List<OrderInfo> orderMsgList = new ArrayList<>();//取消订单MSG List
+			if(StringUtils.isNotBlank(group_id)){//组合订单
+				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
+				//组合订单取消
+				combinationOrderDao.updateStatusByGroupId(group_id);
+				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
+					//获取所有子订单
+					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
+					List<String> orderGroupIdList = new ArrayList<>();
+					for(OrderInfo orderInfo : orderInfoList){
+						OrderInfo updateOrderInfo = new OrderInfo();
+						updateOrderInfo.setId(orderInfo.getId());
+						if(!"finish".equals(orderInfo.getServiceStatus())){
+							// 当前服务状态不允许取消
+							updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+						}
+						updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+						updateOrderInfo.setCancelReason(cancelReason);//取消原因
+						updateOrderInfo.setUpdateBy(user);
+						updateOrderInfo.setUpdateDate(new Date());
+						int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
+						if(num == 0){
+							throw new ServiceException("订单状态更新失败");
+						}else{
+							if(!"finish".equals(orderInfo.getServiceStatus())){
+								//推送消息  取消订单时
+								//标题：订单已取消
+								//内容：编号为XXXXXXXXX的订单已取消，请点击查看
+								OrderInfo orderInfoMsg = new OrderInfo();
+								orderInfoMsg.setId(orderInfo.getId());
+								orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+								List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+								orderInfoMsg.setTechList(techList);
+								orderMsgList.add(orderInfoMsg);
+							}
+						}
+
+						List<OrderCombinationGasqInfo> gasqInfos = orderCombinationGasqDao.getListbyOrderId(orderInfo);
+						if(gasqInfos!=null && gasqInfos.size()>0){
+							String groupId = gasqInfos.get(0).getOrderGroupId();
+							if(!orderGroupIdList.contains(groupId)){
+								orderGroupIdList.add(groupId);
+							}
+						}
+					}
+					for(String typeId : orderGroupIdList){
+						// 删除排期
+						TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+						scheduleInfo.setType("master");
+						scheduleInfo.setTypeId(typeId);
+						scheduleInfo.setUpdateBy(user);
+						scheduleInfo.setUpdateDate(new Date());
+						techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+					}
+				}else{//组合不拆单
+					List<OrderInfo> orderInfoList = orderInfoDao.getOrderInfoByMasterId(combinationOrderInfo.getMasterId());
+					if(orderInfoList==null || orderInfoList.size()!=1){
+						throw new ServiceException("订单信息有误");
+					}
+					OrderInfo orderInfo = orderInfoList.get(0);
+					OrderInfo updateOrderInfo = new OrderInfo();
+					updateOrderInfo.setId(orderInfo.getId());
+					if(!"finish".equals(orderInfo.getServiceStatus())){
+						// 当前服务状态不允许取消
+						updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+					}
+					updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+					updateOrderInfo.setCancelReason(cancelReason);//取消原因
+					updateOrderInfo.setUpdateBy(user);
+					updateOrderInfo.setUpdateDate(new Date());
+					int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
+					if(num == 0){
+						throw new ServiceException("订单状态更新失败");
+					}else{
+						if(!"finish".equals(orderInfo.getServiceStatus())){
+							//推送消息  取消订单时
+							//标题：订单已取消
+							//内容：编号为XXXXXXXXX的订单已取消，请点击查看
+							OrderInfo orderInfoMsg = new OrderInfo();
+							orderInfoMsg.setId(orderInfo.getId());
+							orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+							List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+							orderInfoMsg.setTechList(techList);
+							orderMsgList.add(orderInfoMsg);
+						}
+					}
+
+					// 删除排期
+					TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+					scheduleInfo.setType("master");
+					scheduleInfo.setTypeId(orderInfo.getId());
+					scheduleInfo.setUpdateBy(user);
+					scheduleInfo.setUpdateDate(new Date());
+					techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+				}
+			}
+
+			HashMap<String,Object> map = new HashMap<>();
+			response = new OpenUpdateStautsResponse();
+			response.setSuccess(true);// 状态：true 成功；false 失败
+
+			map.put("response",response);
+			map.put("orderMsgList",orderMsgList);
+			return map;
+		}catch (Exception e){
+			throw new ServiceException("订单状态更新失败E!");
+		}
+	}
+
+	/**
+	 * 对接接口 订单状态更新
+	 * @param info
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public HashMap<String,Object> updateGroupStatus(OpenUpdateStautsRequest info) {
+		OpenUpdateStautsResponse response = new OpenUpdateStautsResponse();
+		if(null == info){
+			throw new ServiceException("未接收到订单信息");
+		}
+		String platform = info.getPlatform();//对接平台代号
+		String gasq_order_sn = info.getGasq_order_sn();//国安社区订单编号
+		String group_id = info.getGroup_id();//国安社区订单编号
+		if(StringUtils.isBlank(gasq_order_sn) && StringUtils.isBlank(group_id)){
+			throw new ServiceException("国安社区订单sn或订单组ID不能同时为空");
+		}
+		String cancelReason = info.getComment();//取消原因
+		User user = new User();
+		user.setId("gasq001");
+		try{
+			List<OrderInfo> orderMsgList = new ArrayList<>();//取消订单MSG List
+			if(StringUtils.isNotBlank(group_id)){//组合订单
+				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
+				//组合订单取消
+				combinationOrderDao.updateStatusByGroupId(group_id);
+				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
+					//获取所有子订单
+					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
+					List<String> orderGroupIdList = new ArrayList<>();
+					for(OrderInfo orderInfo : orderInfoList){
+						OrderInfo updateOrderInfo = new OrderInfo();
+						updateOrderInfo.setId(orderInfo.getId());
+						if(!"finish".equals(orderInfo.getServiceStatus())){
+							// 当前服务状态不允许取消
+							updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+						}
+						updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+						updateOrderInfo.setCancelReason(cancelReason);//取消原因
+						updateOrderInfo.setUpdateBy(user);
+						updateOrderInfo.setUpdateDate(new Date());
+						int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
+						if(num == 0){
+							throw new ServiceException("订单状态更新失败");
+						}else{
+							if(!"finish".equals(orderInfo.getServiceStatus())){
+								//推送消息  取消订单时
+								//标题：订单已取消
+								//内容：编号为XXXXXXXXX的订单已取消，请点击查看
+								OrderInfo orderInfoMsg = new OrderInfo();
+								orderInfoMsg.setId(orderInfo.getId());
+								orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+								List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+								orderInfoMsg.setTechList(techList);
+								orderMsgList.add(orderInfoMsg);
+							}
+						}
+
+						List<OrderCombinationGasqInfo> gasqInfos = orderCombinationGasqDao.getListbyOrderId(orderInfo);
+						if(gasqInfos!=null && gasqInfos.size()>0){
+							String groupId = gasqInfos.get(0).getOrderGroupId();
+							if(!orderGroupIdList.contains(groupId)){
+								orderGroupIdList.add(groupId);
+							}
+						}
+					}
+					for(String typeId : orderGroupIdList){
+						// 删除排期
+						TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+						scheduleInfo.setType("master");
+						scheduleInfo.setTypeId(typeId);
+						scheduleInfo.setUpdateBy(user);
+						scheduleInfo.setUpdateDate(new Date());
+						techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+					}
+				}else{//组合不拆单
+					List<OrderInfo> orderInfoList = orderInfoDao.getOrderInfoByMasterId(combinationOrderInfo.getMasterId());
+					if(orderInfoList==null || orderInfoList.size()!=1){
+						throw new ServiceException("订单信息有误");
+					}
+					OrderInfo orderInfo = orderInfoList.get(0);
+					OrderInfo updateOrderInfo = new OrderInfo();
+					updateOrderInfo.setId(orderInfo.getId());
+					if(!"finish".equals(orderInfo.getServiceStatus())){
+						// 当前服务状态不允许取消
+						updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+					}
+					updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+					updateOrderInfo.setCancelReason(cancelReason);//取消原因
+					updateOrderInfo.setUpdateBy(user);
+					updateOrderInfo.setUpdateDate(new Date());
+					int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
+					if(num == 0){
+						throw new ServiceException("订单状态更新失败");
+					}else{
+						if(!"finish".equals(orderInfo.getServiceStatus())){
+							//推送消息  取消订单时
+							//标题：订单已取消
+							//内容：编号为XXXXXXXXX的订单已取消，请点击查看
+							OrderInfo orderInfoMsg = new OrderInfo();
+							orderInfoMsg.setId(orderInfo.getId());
+							orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+							List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+							orderInfoMsg.setTechList(techList);
+							orderMsgList.add(orderInfoMsg);
+						}
+					}
+
+					// 删除排期
+					TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+					scheduleInfo.setType("master");
+					scheduleInfo.setTypeId(orderInfo.getId());
+					scheduleInfo.setUpdateBy(user);
+					scheduleInfo.setUpdateDate(new Date());
+					techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+				}
+			}else{//普通订单
+				OrderInfo serchOrderInfo = new OrderInfo();
+				serchOrderInfo.setJointOrderId(gasq_order_sn);
+				OrderInfo orderInfo = orderInfoDao.getOrderInfoByJointOrderSn(serchOrderInfo);
+				OrderInfo updateOrderInfo = new OrderInfo();
+				updateOrderInfo.setId(orderInfo.getId());
+				if(!"finish".equals(orderInfo.getServiceStatus())){
+					// 当前服务状态不允许取消
+					updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
+				}
+				updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
+				updateOrderInfo.setCancelReason(cancelReason);//取消原因
+				updateOrderInfo.setUpdateBy(user);
+				updateOrderInfo.setUpdateDate(new Date());
+				int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
+				if(num == 0){
+					throw new ServiceException("订单状态更新失败");
+				}else{
+					if(!"finish".equals(orderInfo.getServiceStatus())){
+						//推送消息  取消订单时
+						//标题：订单已取消
+						//内容：编号为XXXXXXXXX的订单已取消，请点击查看
+						OrderInfo orderInfoMsg = new OrderInfo();
+						orderInfoMsg.setId(orderInfo.getId());
+						orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+						List<OrderDispatch> techList = orderInfoDao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+						orderInfoMsg.setTechList(techList);
+						orderMsgList.add(orderInfoMsg);
+					}
+				}
+
+				// 删除排期
+				TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+				scheduleInfo.setType("order");
+				scheduleInfo.setTypeId(orderInfo.getId());
+				scheduleInfo.setUpdateBy(user);
+				scheduleInfo.setUpdateDate(new Date());
+				techScheduleDao.deleteScheduleByTypeId(scheduleInfo);
+			}
+
+			HashMap<String,Object> map = new HashMap<>();
+			response = new OpenUpdateStautsResponse();
+			response.setSuccess(true);// 状态：true 成功；false 失败
+
+			map.put("response",response);
+			map.put("orderMsgList",orderMsgList);
+			return map;
+		}catch (Exception e){
+			throw new ServiceException("订单状态更新失败E!");
+		}
 	}
 
 	/**

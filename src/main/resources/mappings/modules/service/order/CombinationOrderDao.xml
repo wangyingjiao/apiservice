@@ -361,6 +361,13 @@
         bespeak_num = bespeak_num + #{serviceNum}
         WHERE master_id = #{masterId}
     </update>
+    <update id="updateStatusByGroupId">
+        UPDATE
+        order_combination_info
+        SET
+        order_status = 'cancel'
+        WHERE joint_group_id = #{groupId}
+    </update>
 
     <update id="updateBespeakNumByMasterId">
         UPDATE
@@ -393,5 +400,14 @@
         where
         a.del_flag = #{DEL_FLAG_NORMAL}
         AND a.master_id = #{masterId}
+    </select>
+
+    <select id="listOrderByGroupId" resultType="OrderInfo">
+      SELECT
+        o.*
+      from  	order_combination_info a
+      LEFT JOIN order_info o ON a.master_id = o.master_id AND o.del_flag='0'
+      WHERE
+        a.joint_group_id = #{groupId}
     </select>
 </mapper>

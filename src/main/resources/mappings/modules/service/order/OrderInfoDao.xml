@@ -824,6 +824,20 @@ origin_price,
 		<include refid="orderInfoJoins"/>
 		WHERE a.order_number = #{orderNumber}
 	</select>
+	<select id="getOrderInfoByJointOrderSn" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<include refid="orderInfoJoins"/>
+		WHERE a.joint_order_id = #{jointOrderId}
+	</select>
+	<select id="getOrderInfoByMasterId" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		<include refid="orderInfoJoins"/>
+		WHERE a.master_id = #{masterId}
+	</select>
 	<select id="checkGasqSnOrderSn" resultType="OrderInfo">
 		SELECT
 		<include refid="orderInfoColumns"/>

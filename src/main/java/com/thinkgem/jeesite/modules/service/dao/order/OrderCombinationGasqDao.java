@@ -37,4 +37,8 @@ public interface OrderCombinationGasqDao extends CrudDao<OrderCombinationGasqInf
     void updateOrderGroup(OrderCombinationGasqInfo combinationGasqInfo);
 
     List<OrderCombinationGasqInfo> listGroupOrderByOrderId(CombinationOrderInfo combinationOrderInfo);
+
+    List<OrderCombinationGasqInfo> getListbyOrderId(OrderInfo orderInfo);
+
+    void updateOrderGroupByMasterJointSn(OrderCombinationGasqInfo combinationGasqInfo);
 }

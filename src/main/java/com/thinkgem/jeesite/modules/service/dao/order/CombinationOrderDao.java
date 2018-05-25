@@ -50,4 +50,8 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
     void updateManyTechByMasterId(CombinationOrderInfo updateCombinationOrderInfo);
 
     CombinationOrderInfo getCombinationByGroupId(String groupId);
+
+    void updateStatusByGroupId(String group_id);
+
+    List<OrderInfo> listOrderByGroupId(String group_id);
 }
