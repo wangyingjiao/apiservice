@@ -49,6 +49,7 @@
 		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<!--根据支付表（组合订单）关联组合订单主表机构服务站-->
@@ -57,10 +58,11 @@
 		org.name AS orgName,
 		sta.name AS stationName
 		FROM order_pay_info a
-		LEFT JOIN order_combination_info ord ON a.order_id = ord.id
+		LEFT JOIN order_combination_info ord ON a.master_id = ord.master_id
 		LEFT JOIN basic_organization org ON ord.org_id = org.id AND org.del_flag = #{DEL_FLAG_NORMAL}
 		LEFT JOIN basic_service_station sta ON ord.station_id = sta.id AND sta.del_flag = #{DEL_FLAG_NORMAL}
 		WHERE a.id = #{id}
+		AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
 	<select id="getPayInfoByOrderId" resultType="OrderPayInfo">
