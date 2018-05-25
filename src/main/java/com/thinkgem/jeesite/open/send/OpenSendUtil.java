@@ -622,4 +622,78 @@ public class OpenSendUtil {
             return new SuccResult(1,null);
         }
     }
+
+    /**
+     *  国安社区开放接口 - 首次设置预约时间
+     * @param combinationOrderInfo
+     * @return
+     */
+    public static void updateGroupOrderInfo(CombinationOrderInfo combinationOrderInfo) {
+        OpenSendUpdateGroupOrder openSendUpdateGroupOrder = new OpenSendUpdateGroupOrder();
+        List<OrderInfo> list = new ArrayList<>();
+        List<OpenSendUpdateGroupComboOrder> list1 = new ArrayList<>();
+        if (combinationOrderInfo != null){
+            openSendUpdateGroupOrder.setGroup_id(combinationOrderInfo.getJointGroupId());
+            openSendUpdateGroupOrder.setMaster_id(combinationOrderInfo.getMasterId());
+            list = combinationOrderInfo.getOrderInfoList();
+            for (OrderInfo info : list){
+                OpenSendUpdateGroupComboOrder comboOrder = new OpenSendUpdateGroupComboOrder();
+                comboOrder.setOrder_sn(info.getOrderNumber());
+                comboOrder.setGasq_order_sn(info.getJointOrderId());
+                list1.add(comboOrder);
+            }
+            openSendUpdateGroupOrder.setOrder_list(list1);
+            String json = JsonMapper.toJsonString(openSendUpdateGroupOrder);
+            String url =  Global.getConfig("openSendPath_gasq_updateGroupOrderInfo");
+
+            SysJointWait waitInfo = new SysJointWait();
+            waitInfo.setSendType("save_group");
+            //waitInfo.setOrderNumber(order_sn);
+            waitInfo.setUrl(url);
+            waitInfo.setMany("yes");
+            waitInfo.setNum(0);
+            waitInfo.setRequestContent(json);
+            //OpenWaitUtils.saveSendWait(waitInfo);
+            waitInfo.preInsert();
+            System.out.println(waitInfo.toString()+"==========================");
+            sysJointWaitDao.insert(waitInfo);
+        }
+    }
+
+    /**
+     *  国安社区开放接口 - 修改预约时间
+     * @param combinationOrderInfo
+     * @return
+     */
+    public static void updateGroupDate(CombinationOrderInfo combinationOrderInfo) {
+        OpenSendUpdateGroupOrder openSendUpdateGroupOrder = new OpenSendUpdateGroupOrder();
+        List<OrderInfo> list = new ArrayList<>();
+        List<OpenSendUpdateGroupComboOrder> list1 = new ArrayList<>();
+        if (combinationOrderInfo != null){
+            openSendUpdateGroupOrder.setGroup_id(combinationOrderInfo.getJointGroupId());
+            openSendUpdateGroupOrder.setMaster_id(combinationOrderInfo.getMasterId());
+            list = combinationOrderInfo.getOrderInfoList();
+            for (OrderInfo info : list){
+                OpenSendUpdateGroupComboOrder comboOrder = new OpenSendUpdateGroupComboOrder();
+                comboOrder.setOrder_sn(info.getOrderNumber());
+                comboOrder.setGasq_order_sn(info.getJointOrderId());
+                list1.add(comboOrder);
+            }
+            openSendUpdateGroupOrder.setOrder_list(list1);
+            String json = JsonMapper.toJsonString(openSendUpdateGroupOrder);
+            String url =  Global.getConfig("openSendPath_gasq_updateGroupDate");
+
+            SysJointWait waitInfo = new SysJointWait();
+            waitInfo.setSendType("update_group");
+            //waitInfo.setOrderNumber(order_sn);
+            waitInfo.setUrl(url);
+            waitInfo.setMany("yes");
+            waitInfo.setNum(0);
+            waitInfo.setRequestContent(json);
+            //OpenWaitUtils.saveSendWait(waitInfo);
+            waitInfo.preInsert();
+            System.out.println(waitInfo.toString()+"==========================");
+            sysJointWaitDao.insert(waitInfo);
+        }
+    }
 }

@@ -52,6 +52,8 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 	private static final String SEND_TYPE_DEL_GOODS = "del_goods";
 	private static final String SEND_TYPE_SAVE_GOODS = "save_goods";
 	private static final String SEND_TYPE_SAVE_ORDER = "save_order";
+	private static final String SEND_TYPE_SAVE_GROUP = "save_group";
+	private static final String SEND_TYPE_UPDATE_GROUP = "update_group";
 	private static final String SOURCE_OWN = "own";
 	private static final String MANY_YES = "yes";
 	private static final int MANY_MAX_NUM = 5;
@@ -89,6 +91,12 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 						continue;
 					} else if (SEND_TYPE_SAVE_ORDER.equals(info.getSendType())) {// 更新订单信息
 						this.doJointWaitSaveOrder(info);
+						continue;
+					} else if (SEND_TYPE_SAVE_GROUP.equals(info.getSendType())) {//首次设定预约时间
+						this.doJointWaitSaveGroup(info);
+						continue;
+					} else if (SEND_TYPE_UPDATE_GROUP.equals(info.getSendType())) {//修改预约时间
+						this.doJointWaitUpdateGroup(info);
 						continue;
 					} else {// 对接类型 未知
 						this.doJointWaitNull(info);
@@ -496,6 +504,142 @@ public class SendQuartzService extends CrudService<OrderInfoDao, OrderInfo> {
 			//删除待执行表
             //OpenWaitUtils.delSendWait(info);
             sysJointWaitDao.delete(info);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 首次设定预约时间(多订单)
+	 * @param info
+	 */
+	private void doJointWaitSaveGroup(SysJointWait info) {
+		String json = info.getRequestContent();
+		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
+		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
+		String url =  Global.getConfig("openSendPath_gasq_updateGroupOrderInfo");
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("md5",md5Content);
+			params.put("appid", "selfService");
+
+			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
+			OpenSendSaveOrderResponse sendResponse = null;
+			if(StringUtils.isNotBlank(postClientResponse)){
+				sendResponse = JSON.parseObject(postClientResponse, OpenSendSaveOrderResponse.class);
+			}
+
+			if(sendResponse != null && sendResponse.getCode() == 0){//执行成功
+				//保存对接日志表
+				SysJointLog log = new SysJointLog();
+				log.setUrl(url);
+				log.setIsSuccess(SysJointLog.IS_SUCCESS_YES );
+				log.setResponseContent(JsonMapper.toJsonString(sendResponse));
+				log.setSendType(SEND_TYPE_SAVE_GROUP);
+				log.setSource(SOURCE_OWN);
+				log.setRequestContent(json);
+				System.out.println("-- SendQuartzService---doJointWaitSaveGroup---"+log.toString());
+				//OpenLogUtils.saveSendLog(log);
+				log.preInsert();
+				sysJointLogDao.insert(log);
+
+				//删除待执行表
+				//OpenWaitUtils.delSendWait(info);
+				sysJointWaitDao.delete(info);
+			}else{
+				if(MANY_YES.equals(info.getMany()) && (info.getNum() < MANY_MAX_NUM)){//多次请求，且5次之内
+					//次数加1
+					//OpenWaitUtils.updateNumSendWait(info);
+					sysJointWaitDao.update(info);
+				}else{//执行失败
+					//保存对接日志表
+					SysJointLog log = new SysJointLog();
+					log.setUrl(url);
+					log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+					if(sendResponse != null) {
+						log.setResponseContent(JsonMapper.toJsonString(sendResponse));
+					}
+					log.setSendType(SEND_TYPE_SAVE_GROUP);
+					log.setSource(SOURCE_OWN);
+					log.setRequestContent(json);
+					System.out.println("-- SendQuartzService---doJointWaitSaveGroup---2---" + log.toString());
+					//OpenLogUtils.saveSendLog(log);
+					log.preInsert();
+					sysJointLogDao.insert(log);
+
+					//删除待执行表
+					//OpenWaitUtils.delSendWait(info);
+					sysJointWaitDao.delete(info);
+				}
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 修改预约时间(多订单)
+	 * @param info
+	 */
+	private void doJointWaitUpdateGroup(SysJointWait info) {
+		String json = info.getRequestContent();
+		String encode = Base64Encoder.encode(json).replace("\n", "").replace("\r", "");
+		String md5Content = MD5Util.getStringMD5(encode+ Global.getConfig("openEncryptPassword_gasq"));
+		String url =  Global.getConfig("openSendPath_gasq_updateGroupDate");
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("md5",md5Content);
+			params.put("appid", "selfService");
+
+			String postClientResponse = HTTPClientUtils.postClient(url,encode,params);
+			OpenSendSaveOrderResponse sendResponse = null;
+			if(StringUtils.isNotBlank(postClientResponse)){
+				sendResponse = JSON.parseObject(postClientResponse, OpenSendSaveOrderResponse.class);
+			}
+
+			if(sendResponse != null && sendResponse.getCode() == 0){//执行成功
+				//保存对接日志表
+				SysJointLog log = new SysJointLog();
+				log.setUrl(url);
+				log.setIsSuccess(SysJointLog.IS_SUCCESS_YES );
+				log.setResponseContent(JsonMapper.toJsonString(sendResponse));
+				log.setSendType(SEND_TYPE_UPDATE_GROUP);
+				log.setSource(SOURCE_OWN);
+				log.setRequestContent(json);
+				System.out.println("-- SendQuartzService---doJointWaitUpdateGroup---"+log.toString());
+				//OpenLogUtils.saveSendLog(log);
+				log.preInsert();
+				sysJointLogDao.insert(log);
+
+				//删除待执行表
+				//OpenWaitUtils.delSendWait(info);
+				sysJointWaitDao.delete(info);
+			}else{
+				if(MANY_YES.equals(info.getMany()) && (info.getNum() < MANY_MAX_NUM)){//多次请求，且5次之内
+					//次数加1
+					//OpenWaitUtils.updateNumSendWait(info);
+					sysJointWaitDao.update(info);
+				}else{//执行失败
+					//保存对接日志表
+					SysJointLog log = new SysJointLog();
+					log.setUrl(url);
+					log.setIsSuccess(SysJointLog.IS_SUCCESS_NO);
+					if(sendResponse != null) {
+						log.setResponseContent(JsonMapper.toJsonString(sendResponse));
+					}
+					log.setSendType(SEND_TYPE_UPDATE_GROUP);
+					log.setSource(SOURCE_OWN);
+					log.setRequestContent(json);
+					System.out.println("-- SendQuartzService---doJointWaitUpdateGroup---2---" + log.toString());
+					//OpenLogUtils.saveSendLog(log);
+					log.preInsert();
+					sysJointLogDao.insert(log);
+
+					//删除待执行表
+					//OpenWaitUtils.delSendWait(info);
+					sysJointWaitDao.delete(info);
+				}
+			}
 		}catch (Exception e){
 			e.printStackTrace();
 		}
