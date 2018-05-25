@@ -85,7 +85,7 @@ public class CombinationOrderController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "getCombinationById", method = {RequestMethod.POST, RequestMethod.GET})
 	@ApiOperation("组合订单详情")
-	@RequiresPermissions("combination_info")
+	//@RequiresPermissions("combination_info")
 	public Result getCombinationById(@RequestBody(required = false) CombinationOrderInfo combinationOrderInfo) {
 		if(null == combinationOrderInfo){
 			combinationOrderInfo = new CombinationOrderInfo();

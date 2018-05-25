@@ -84,7 +84,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "formData", method = {RequestMethod.POST})
 	@ApiOperation("查看订单")
-	@RequiresPermissions("order_info")
+	//@RequiresPermissions("order_info")
 	public Result formData(@RequestBody OrderInfo orderInfo) {
 		OrderInfo entity = null;
 		try {
@@ -659,7 +659,7 @@ public class OrderInfoController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "formDataRefund", method = {RequestMethod.POST})
 	@ApiOperation("查看退款")
-	@RequiresPermissions("refund_info")
+	//@RequiresPermissions("refund_info")
 	public Result formDataRefund(@RequestBody OrderRefund orderRefund) {
 		OrderRefund entity = null;
 		try {
