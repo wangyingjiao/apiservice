@@ -114,4 +114,6 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     OrderInfo getOrderInfoByJointOrderSn(OrderInfo serchOrderInfo);
 
     List<OrderInfo> getOrderInfoByMasterId(String masterId);
+
+    List<OrderInfo> listNotSuccessOrderByMasterId(String masterId);
 }

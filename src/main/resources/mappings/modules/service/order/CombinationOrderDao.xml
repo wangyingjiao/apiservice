@@ -361,12 +361,19 @@
         bespeak_num = bespeak_num + #{serviceNum}
         WHERE master_id = #{masterId}
     </update>
-    <update id="updateStatusByGroupId">
+    <update id="updateStatusCancelByGroupId">
         UPDATE
         order_combination_info
         SET
         order_status = 'cancel'
         WHERE joint_group_id = #{groupId}
+    </update>
+    <update id="updateStatusSuccessByMasterId">
+        UPDATE
+        order_combination_info
+        SET
+        order_status = 'success'
+        WHERE master_id = #{masterId}
     </update>
 
     <update id="updateBespeakNumByMasterId">

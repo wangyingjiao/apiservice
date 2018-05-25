@@ -1162,9 +1162,14 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(num == 0){
 				throw new ServiceException("订单状态更新失败");
 			}else{
-				if("success".equals(status)){//所有子订单成功 组合订单成功
-					//TODO
-					//List<OrderInfo> succList = orderInfo.listNotSucc
+				if("success".equals(status) && !"common".equals(checkInfoRe.getOrderStatus())){//组合订单 所有子订单成功 组合订单成功
+                    CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByMasterId(checkInfoRe.getMasterId());
+                    if(combinationOrderInfo.getBespeakTotal() == combinationOrderInfo.getBespeakNum()){
+                        List<OrderInfo> orderInfos = orderInfoDao.listNotSuccessOrderByMasterId(checkInfoRe.getMasterId());
+                        if(orderInfos==null || orderInfos.size()==0){
+                            combinationOrderDao.updateStatusSuccessByMasterId(checkInfoRe.getMasterId());
+                        }
+                    }
 				}
 				response = new OpenUpdateStautsResponse();
 				response.setSuccess(true);// 状态：true 成功；false 失败
@@ -1219,7 +1224,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(StringUtils.isNotBlank(group_id)){//组合订单
 				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
 				//组合订单取消
-				combinationOrderDao.updateStatusByGroupId(group_id);
+				combinationOrderDao.updateStatusCancelByGroupId(group_id);
 				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
 					//获取所有子订单
 					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
@@ -1349,7 +1354,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(StringUtils.isNotBlank(group_id)){//组合订单
 				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
 				//组合订单取消
-				combinationOrderDao.updateStatusByGroupId(group_id);
+				combinationOrderDao.updateStatusCancelByGroupId(group_id);
 				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
 					//获取所有子订单
 					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);

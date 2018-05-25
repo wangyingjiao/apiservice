@@ -1055,4 +1055,14 @@ origin_price,
 		AND a.type = #{type}
 		AND a.schedule_date &gt;= #{scheduleDate}
 	</select>
+    <select id="listNotSuccessOrderByMasterId" resultType="OrderInfo">
+        SELECT
+        <include refid="orderInfoColumns"/>
+        FROM
+        order_info a
+        WHERE
+        a.del_flag = '0'
+        AND a.master_id = #{masterId}
+        AND a.order_status != 'success'
+    </select>
 </mapper>
