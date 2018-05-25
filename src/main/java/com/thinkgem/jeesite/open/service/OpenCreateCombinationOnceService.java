@@ -427,6 +427,10 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 				if(null == commodity){
 					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
 				}
+				if(!"combined".equals(commodity.getGoodsType()) || !"single".equals(commodity.getServiceType())){
+					throw new ServiceException("商品类型或服务类型有误");
+				}
+
 				BigDecimal price = commodity.getPrice().multiply(new BigDecimal(buy_num));
 				originPrice = originPrice.add(price);//商品总价
 				sortItemNames = commodity.getSortName();//下单服务内容(服务分类+服务项目+商品名称)',//订单内容改为   服务分类+商品名称1+商品名称2

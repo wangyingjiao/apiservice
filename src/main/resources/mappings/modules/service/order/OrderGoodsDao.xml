@@ -156,7 +156,9 @@
 		b.name AS itemName,
 		c.id AS sortId,
 		c.name AS sortName,
-		b.major_sort AS majorSort
+		b.major_sort AS majorSort,
+		a.goods_type AS "goodsType",
+		a.service_type AS "serviceType"
 		FROM ser_item_info_goods a
 		LEFT JOIN ser_item_info b ON b.id = a.item_id
 		LEFT JOIN ser_sort_info c on b.sort_id = c.id

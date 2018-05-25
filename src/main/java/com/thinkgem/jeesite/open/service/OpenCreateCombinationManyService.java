@@ -283,6 +283,9 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 				if(null == commodity){
 					throw new ServiceException("未找到自营服务服务商品ID对应的商品信息");
 				}
+				if(!"combined".equals(commodity.getGoodsType()) || !"combined".equals(commodity.getServiceType())){
+					throw new ServiceException("商品类型或服务类型有误");
+				}
 				goods = new OrderGoods();
 				goods.setSortId(commodity.getSortId());//服务分类ID
 				goods.setItemId(commodity.getItemId());//服务项目ID
