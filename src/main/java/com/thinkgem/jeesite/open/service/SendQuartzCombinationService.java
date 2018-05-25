@@ -15,10 +15,14 @@ import com.thinkgem.jeesite.modules.service.entity.item.SerItemCommodity;
 import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.sys.dao.SysJointLogDao;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
+import com.thinkgem.jeesite.open.send.OpenSendUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -46,6 +50,9 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
     @Autowired
     private ServiceTechnicianInfoDao technicianInfoDao;
 
+    @Autowired
+    private MessageInfoService messageInfoService;
+
     /**
 	 * 待执行对接数据
 	 */
@@ -55,50 +62,165 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 		if(list==null || list.size()==0){
 			System.out.println("未找到待生成组合订单数据");
 		}else{
+		    //今天是周天
 			int todayWeek = DateUtils.getWeekNum(new Date());
 			if(todayWeek != 7){
 				return;
 			}
 
 			List<Date> fristWeekDayList = DateUtils.fristWeekDayList();//第一周日期
+            Timestamp fristServiceTimeStart = new Timestamp(fristWeekDayList.get(0).getTime());
+            Date endDate = DateUtils.parseDate(DateUtils.formatDate(fristWeekDayList.get(fristWeekDayList.size()-1),"yyyy-MM-dd") + " 23:59:59");
+            Timestamp fristServiceTimeEnd = new Timestamp(endDate.getTime());
+
 			List<Date> lastWeekDayList = DateUtils.lastWeekDayList();//第二周日期
 
+            List<OrderInfo> orderInfoList = new ArrayList<>();
 			for(CombinationOrderInfo info : list){
+                //第二周是否有订单
+                OrderInfo lastSerchInfo = new OrderInfo();
+                lastSerchInfo.setMasterId(info.getMasterId());
+                lastSerchInfo.setServiceTimeStart(fristServiceTimeStart);
+                lastSerchInfo.setServiceTimeEnd(fristServiceTimeEnd);
+                List<OrderInfo> lastOrderList = orderInfoDao.listOrderByMasterAndDate(lastSerchInfo);
+
 			    //服务时间段
                 List<OrderCombinationFrequencyInfo> frequencyList= combinationOrderDao.listFrequencyByMasterId(info);
                 info.setFreList(frequencyList);
 
 				if("week_one".equals(info.getServiceFrequency())){//服务频次 week_one:1周1次
-					creartCombinationOrderOnce(info);
+					if(lastOrderList==null || lastOrderList.size()==0){//已有订单就不生成
+                        List<Date> dateList = creartCombinationOrderDate(info, lastWeekDayList);
+                        orderInfoList = creartCombinationOrder(info, dateList);
+                    }
 				}else if("week_some".equals(info.getServiceFrequency())){//服务频次 week_some:1周多次
-					creartCombinationOrderMany(info);
+                    List<Date> dateList = creartCombinationOrderDate(info, lastWeekDayList);
+                    orderInfoList = creartCombinationOrder(info, dateList);
 				}else if("two_week_one".equals(info.getServiceFrequency())){//服务频次 two_week_one:2周1次
-					creartCombinationOrderFortnightly(info);
+                    Date serviceEnd = info.getServiceEnd();
+                    if(!fristWeekDayList.contains(serviceEnd)){
+                        List<Date> dateList = creartCombinationOrderDate(info, lastWeekDayList);
+                        orderInfoList = creartCombinationOrder(info, dateList);
+                    }
 				}
 			}
+            try {
+                if(orderInfoList != null){
+                    for(OrderInfo orderInfo : orderInfoList){
+                        User user = new User();
+                        user.setId("gasq001");
+                        orderInfo.setCreateBy(user);
+                        messageInfoService.insert(orderInfo, "orderCreate");//新增
+                    }
+                }
+            }catch (Exception e){
+                logger.error("订单创建-推送消息失败-系统异常");
+            }
+
+            try {
+                if(orderInfoList!=null && orderInfoList.size()>0) {
+                    CombinationOrderInfo combinationInfo = new CombinationOrderInfo();
+                    combinationInfo.setMasterId(orderInfoList.get(0).getMasterId());
+                    combinationInfo.setJointGroupId(orderInfoList.get(0).getJointGroupId());
+                    combinationInfo.setOrderInfoList(orderInfoList);
+                    OpenSendUtil.updateGroupOrderInfo(combinationInfo);
+                }
+            }catch (Exception e){
+                logger.error("订单创建-对接失败-系统异常");
+            }
 		}
 		return;
 	}
 
-	private void creartCombinationOrderFortnightly(CombinationOrderInfo info) {
-		//两周一次 根据order_combination_infos 当前预约时间ervice_end  判断是否生成订单
-	}
+	private List<Date> creartCombinationOrderDate(CombinationOrderInfo info, List<Date> dateList) {
+        if(info==null || dateList==null || dateList.size()==0){
+            return null;
+        }
 
-	private void creartCombinationOrderMany(CombinationOrderInfo info) {
-		//一周多次 直接生成
-	}
+        List<OrderCombinationFrequencyInfo> freList = info.getFreList();
+        Date serviceStart = info.getServiceStart();
+        int num = info.getBespeakTotal();
 
-	private void creartCombinationOrderOnce(CombinationOrderInfo info) {
-		//一周一次 根据本周是否有订单 判断是否生成
-	}
+        List<Date> list = new ArrayList<>();
+        List<String> weekList = new ArrayList<>();
+        HashMap<String, List<Date>> map = new HashMap<>();
+        for(Date date : dateList){
+            String week = String.valueOf(DateUtils.getWeekNum(date));
+            if(weekList.contains(week)){
+                List<Date> keyValueEntityList = map.get(week);
+                keyValueEntityList.add(date);
+                map.put(week,keyValueEntityList);
+            }else{
+                List<Date> keyValueEntityList = new ArrayList<>();
+                keyValueEntityList.add(date);
+                map.put(week,keyValueEntityList);
+                weekList.add(week);
+            }
+        }
 
-	private void creartCombinationOrder(CombinationOrderInfo info, List<Date> dateList) {
+        for(OrderCombinationFrequencyInfo frequencyInfo : freList){
+            List<Date> dateListMap = map.get(String.valueOf(frequencyInfo.getWeek()));
+            for(Date dateMap : dateListMap){
+                if(!serviceStart.after(dateMap)){
+                    //判断今天是否有订单
+                    OrderInfo serchInfo = new OrderInfo();
+                    serchInfo.setMasterId(info.getMasterId());
+                    serchInfo.setServiceTimeStart(new Timestamp(DateUtils.getDateFirstTime(dateMap).getTime()));
+                    serchInfo.setServiceTimeEnd(new Timestamp(DateUtils.getDateLastTime(dateMap).getTime()));
+                    List<OrderInfo> orderList = orderInfoDao.listOrderByMasterAndDate(serchInfo);
+                    if(orderList==null || orderList.size()==0){
+                        list.add(dateMap);
+                    }
+                }
+            }
+        }
+
+        //排序
+        Collections.sort(list);
+        //最大数量
+        int maxNum = list.size();
+        if(num < maxNum){
+            maxNum = num;
+        }
+        List<Date> listDate = new ArrayList<>();
+        for(int i=0;i<maxNum;i++){
+            listDate.add(list.get(i));
+        }
+        return listDate;
+    }
+
+    /**
+     * 返回时间数组的最后日期
+     * @param creartDateList
+     * @return
+     */
+    private Date getLastDate(List<Date> creartDateList) {
+        Date last = creartDateList.get(0);
+        for(Date date : creartDateList){
+            if(date.after(last)){
+                last = date;
+            }
+        }
+        return last;
+    }
+	private List<OrderInfo> creartCombinationOrder(CombinationOrderInfo info, List<Date> dateList) {
+	    if(info==null || dateList==null || dateList.size()==0){
+	        return null;
+        }
         List<OrderCombinationFrequencyInfo> freList = info.getFreList();
         String masterId = info.getMasterId();
         int serviceNum = info.getServiceNum();
         Double serviceHour = info.getServiceHour();
         String techId = info.getTechId();
         String combinationGoodsId = info.getCombinationGoodsId();
+
+        //返回时间数组的最后日期
+        Date serviceEnd = getLastDate(dateList);
+        // 更新 组合订单信息order_combination_info
+        CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
+        updateCombinationOrderInfo.setMasterId(masterId);
+        updateCombinationOrderInfo.setServiceEnd(serviceEnd);
+        combinationOrderDao.updateServiceEndByMasterId(updateCombinationOrderInfo);
 
         List<OrderInfo> orderList = new ArrayList<>();
 		for(Date creartDate : dateList) {//每天生成一组订单
@@ -123,6 +245,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 			for (Date startDate : listDate) {
 				HashMap<String, Object> map = combinationCreateOrder(startDate, info, goods);
 				OrderInfo orderInfo = (OrderInfo) map.get("orderInfoMsg");
+                orderInfo.setJointGroupId(info.getJointGroupId());
 				orderInfoList.add(orderInfo);
 			}
 
@@ -138,7 +261,6 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 
 				orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
 
-
 				// order_info  对接订单ID 更新
 				OrderInfo updateJointInfo = new OrderInfo();
 				updateJointInfo.setId(orderInfoList.get(i).getId());
@@ -147,8 +269,16 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 				orderInfoDao.update(updateJointInfo);
 			}
 
-			// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
-			openCreateForTechSchedule(techId, serviceStartBeginTime, serviceStartEndTime, groupId, masterId);
+            // tech_schedule  服务技师排期 --------------------------------------------------------------
+            String startTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+                    +  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
+            Date startTime = DateUtils.parseDate(startTimeStr);
+
+            String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+                    +  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
+            Date endTime = DateUtils.parseDate(startTimeStr);
+
+            openCreateForTechSchedule(techId, startTime, endTime, groupId, masterId);
 
 			//更新已预约次数
 			CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();
@@ -158,8 +288,8 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 
 			orderList.addAll(orderInfoList);
 		}
+        return orderList;
 	}
-
 
     /**
      * 根据组合商品ID返回第一个子商品信息

@@ -869,6 +869,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			for (Date startDate : listDate) {
 				HashMap<String, Object> map = combinationCreateOrder(startDate, combinationInfo, goods);
 				OrderInfo orderInfo = (OrderInfo) map.get("orderInfoMsg");
+				orderInfo.setJointGroupId(combinationInfo.getJointGroupId());
 				orderInfoList.add(orderInfo);
 			}
 

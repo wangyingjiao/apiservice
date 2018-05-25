@@ -1065,4 +1065,15 @@ origin_price,
         AND a.master_id = #{masterId}
         AND a.order_status != 'success'
     </select>
+	<select id="listOrderByMasterAndDate" resultType="OrderInfo">
+		SELECT
+		<include refid="orderInfoColumns"/>
+		FROM
+		order_info a
+		WHERE
+		a.del_flag = '0'
+		AND a.master_id = #{masterId}
+		AND a.service_time &gt;= #{serviceTimeStart}
+		AND a.service_time &lt;= #{serviceTimeEnd}
+	</select>
 </mapper>

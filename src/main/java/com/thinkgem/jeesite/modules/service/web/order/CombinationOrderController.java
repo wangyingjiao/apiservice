@@ -152,12 +152,25 @@ public class CombinationOrderController extends BaseController {
 			List<OrderInfo> list = combinationSaveRegularDateService.saveRegularDate(combinationOrderInfo);
 
 			try {
-				for(OrderInfo info : list){
-					info.setCreateBy(UserUtils.getUser());
-					messageInfoService.insert(info, "orderCreate");//新增
+				if(list!=null){
+					for(OrderInfo info : list){
+						info.setCreateBy(UserUtils.getUser());
+						messageInfoService.insert(info, "orderCreate");//新增
+					}
 				}
 			}catch (Exception e){
 				logger.error("订单创建-推送消息失败-系统异常");
+			}
+			try {
+				if(list!=null && list.size()>0) {
+					CombinationOrderInfo combinationInfo = new CombinationOrderInfo();
+					combinationInfo.setMasterId(list.get(0).getMasterId());
+					combinationInfo.setJointGroupId(list.get(0).getJointGroupId());
+					combinationInfo.setOrderInfoList(list);
+					OpenSendUtil.updateGroupOrderInfo(combinationInfo);
+				}
+			}catch (Exception e){
+				logger.error("订单创建-对接失败-系统异常");
 			}
 
 			return new SuccResult("设置成功");

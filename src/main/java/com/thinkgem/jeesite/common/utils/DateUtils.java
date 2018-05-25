@@ -369,6 +369,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			day = DateUtils.addDays(day,1);
 			list.add(day);
 		}
+		Collections.sort(list);
 		return  list;
 	}
 
@@ -385,6 +386,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			day = DateUtils.addDays(day,1);
 			list.add(day);
 		}
+		Collections.sort(list);
 		return  list;
 	}
 
