@@ -556,11 +556,8 @@ public class CombinationOrderController extends BaseController {
 			try {
 				//订单商品有对接方商品CODE  机构有对接方E店CODE
 				if(!"own".equals(map.get("orderSource").toString())){
-					OrderInfo sendOrder = new OrderInfo();
-					String orderSn = map.get("orderNumber").toString();
-					sendOrder.setOrderNumber(orderSn);//订单编号
-					sendOrder.setTechList((List<OrderDispatch>) map.get("list"));//技师信息
-					OpenSendUtil.openSendSaveOrder(sendOrder);
+					CombinationOrderInfo combinationOrderInfo = (CombinationOrderInfo) map.get("combinationByMasterId");
+					OpenSendUtil.updateGroupDate(combinationOrderInfo);
 				}
 			}catch (Exception e){
 				logger.error("更换时间保存-对接失败-系统异常");

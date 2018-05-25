@@ -290,6 +290,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
         OrderInfo info = orderInfoDao.get(orderInfo.getId());
         //根据orderNumber masterId获取组合订单的orderGroupId
         OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(info);
+        //根据masterid获取组合订单主表
 		CombinationOrderInfo combinationByMasterId = combinationOrderDao.getCombinationByMasterId(info.getMasterId());
 		if (!"group_split_yes".equals(combinationByMasterId.getOrderType())){
 			throw new ServiceException("该订单订单类型有误");
@@ -301,6 +302,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		Double serviceHour = info.getServiceHour();
 		//建议完成时间（排期表）
 		Date finishTime =null;
+		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
 		//根据groupId获取组合订单的订单集合
         List<OrderCombinationGasqInfo> listByOrderGroupId = orderCombinationGasqDao.getListByOrderGroupId(listByOrderNumber);
         if (listByOrderGroupId != null && listByOrderGroupId.size() > 0){
@@ -317,9 +319,12 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
                 bySn.preUpdate();
                 //先将订单表修改 *******
                 orderInfoDao.saveOrderTime(bySn);
+                orderInfoList.add(bySn);
 				serviceTime=date;
             }
         }
+        //对接接口调用使用
+        combinationByMasterId.setOrderInfoList(orderInfoList);
 		//计算订单的建议完成时间（排期表）
 		Double serviceSecond = (serviceHour * size * 3600);
 		finishTime = DateUtils.addSeconds(orderInfo.getServiceTime(), serviceSecond.intValue());
@@ -401,6 +406,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
         map.put("orderServiceTimeMsgList", orderServiceTimeMsgList);
         map.put("orderDispatchMsgList", orderDispatchMsgList);
         map.put("orderCreateMsgList", orderCreateMsgList);
+        map.put("combinationByMasterId", combinationByMasterId);
 
 		map.put("orderNumber", info.getOrderNumber());
         return map;
