@@ -413,10 +413,10 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		combinationByGroupId.setJointOrderSn(info.getGasq_order_sn());
 		//根据joint_order_sn找到order_group_id  和一条要取消的数据
 		OrderCombinationGasqInfo gasqByOrderSn = orderCombinationGasqDao.getGasqByOrderSn(combinationByGroupId);
-		OrderInfo CancleOrderInfo=new OrderInfo();
-		CancleOrderInfo.setOrderNumber(gasqByOrderSn.getOrderNumber());
+		OrderInfo cancleOrderInfo=new OrderInfo();
+		cancleOrderInfo.setOrderNumber(gasqByOrderSn.getOrderNumber());
 		//想要取消的订单
-		OrderInfo cancleOrder = orderInfoDao.getBySn(CancleOrderInfo);
+		OrderInfo cancleOrder = orderInfoDao.getBySn(cancleOrderInfo);
 		String orderNumber = cancleOrder.getOrderNumber();
 		//根据order_group_id找到多个子订单 并按服务时间排序
 		List<OrderInfo> listByOrderGroupId = orderInfoDao.getListByOrderGroupId(gasqByOrderSn);
@@ -426,7 +426,11 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		Date serviceTime = listByOrderGroupId.get(0).getServiceTime();
 		Double serviceHour = listByOrderGroupId.get(0).getServiceHour();
 		int size=listByOrderGroupId.size() - 1;
-	//1。只针对组合并拆单  排期表只有一个 把排期表中结束时间修改(原-服务时长)
+		//修改组合订单主表  已预约次数-1
+		int bespeakNum = combinationByGroupId.getBespeakNum();
+		combinationByGroupId.setBespeakNum(bespeakNum - 1);
+		combinationOrderDao.updateBespeakNumByMasterId(combinationByGroupId);
+		//1。只针对组合并拆单  排期表只有一个 把排期表中结束时间修改(原-服务时长)
 		Double serviceSecondTem = (serviceHour * size * 3600);
 		Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();

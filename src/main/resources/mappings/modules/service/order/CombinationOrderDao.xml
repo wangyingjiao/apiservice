@@ -362,6 +362,14 @@
         WHERE master_id = #{masterId}
     </update>
 
+    <update id="updateBespeakNumByMasterId">
+        UPDATE
+        order_combination_info
+        SET
+        bespeak_num = #{bespeakNum}
+        WHERE master_id = #{masterId}
+    </update>
+
 
     <select id="listCombinationWaitCreart" resultType="OrderCombinationFrequencyInfo">
         select
