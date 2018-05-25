@@ -256,7 +256,10 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 				OrderCombinationGasqInfo combinationGasqInfo = combinationGasqInfoList.get(i);
 				combinationGasqInfo.setOrderGroupId(groupId);
 				combinationGasqInfo.setOrderNumber(orderInfoList.get(i).getOrderNumber());
-				combinationGasqInfo.preUpdate();
+                User user = new User();
+                user.setId("bat001");
+                combinationGasqInfo.setUpdateBy(user);
+                combinationGasqInfo.setUpdateDate(new Date());
 				orderCombinationGasqDao.updateOrderGroup(combinationGasqInfo);
 
 				orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
@@ -265,7 +268,8 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 				OrderInfo updateJointInfo = new OrderInfo();
 				updateJointInfo.setId(orderInfoList.get(i).getId());
 				updateJointInfo.setJointOrderId(combinationGasqInfo.getJointOrderSn());
-				updateJointInfo.preUpdate();
+                updateJointInfo.setUpdateBy(user);
+                updateJointInfo.setUpdateDate(new Date());
 				orderInfoDao.update(updateJointInfo);
 			}
 
@@ -388,7 +392,13 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
         techScheduleInfo.setTypeId(groupId);//休假ID或订单ID
         techScheduleInfo.setType("master");//'holiday：休假  order：订单'
         techScheduleInfo.setMasterId(masterId);
-        techScheduleInfo.preInsert();
+        User user = new User();
+        user.setId("bat001");
+        techScheduleInfo.setId(IdGen.uuid());
+        techScheduleInfo.setCreateBy(user);
+        techScheduleInfo.setCreateDate(new Date());
+        techScheduleInfo.setUpdateBy(user);
+        techScheduleInfo.setUpdateDate(techScheduleInfo.getCreateDate());
         techScheduleDao.insertSchedule(techScheduleInfo);
     }
 
@@ -398,7 +408,13 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
      */
     private void openCreateForGoods(OrderInfo orderInfo, OrderGoods goods) {
         goods.setOrderId(orderInfo.getId());//订单ID
-        goods.preInsert();
+        User user = new User();
+        user.setId("bat001");
+        goods.setId(IdGen.uuid());
+        goods.setCreateBy(user);
+        goods.setCreateDate(new Date());
+        goods.setUpdateBy(user);
+        goods.setUpdateDate(goods.getCreateDate());
         orderGoodsDao.insert(goods);
     }
 
@@ -412,7 +428,13 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
         orderDispatch.setOrderId(orderInfo.getId());//订单ID
         orderDispatch.setTechId(techId);//技师ID
         orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
-        orderDispatch.preInsert();
+        User user = new User();
+        user.setId("bat001");
+        orderDispatch.setId(IdGen.uuid());
+        orderDispatch.setCreateBy(user);
+        orderDispatch.setCreateDate(new Date());
+        orderDispatch.setUpdateBy(user);
+        orderDispatch.setUpdateDate(orderDispatch.getCreateDate());
         orderDispatchDao.insert(orderDispatch);
     }
 
@@ -450,7 +472,13 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 
         orderInfo.setOrderContent(goods.getSortName() + "+" + goods.getGoodsName());               //下单服务内容(服务分类+服务项目+商品名称)',
         orderInfo.setEshopCode(combinationInfo.getEshopCode());
-        orderInfo.preInsert();
+        User user = new User();
+        user.setId("bat001");
+        orderInfo.setId(IdGen.uuid());
+        orderInfo.setCreateBy(user);
+        orderInfo.setCreateDate(new Date());
+        orderInfo.setUpdateBy(user);
+        orderInfo.setUpdateDate(orderInfo.getCreateDate());
         orderInfoDao.insert(orderInfo);
 
         return orderInfo;

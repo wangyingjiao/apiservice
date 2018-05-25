@@ -392,7 +392,7 @@
     </update>
 
 
-    <select id="listCombinationWaitCreart" resultType="OrderCombinationFrequencyInfo">
+    <select id="listCombinationWaitCreart" resultType="CombinationOrderInfo">
         select
           <include refid="CombinationOrderColumns"/>
         from  	order_combination_info a

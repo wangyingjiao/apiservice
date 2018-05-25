@@ -18,6 +18,7 @@ import com.thinkgem.jeesite.modules.service.entity.order.*;
 import com.thinkgem.jeesite.modules.service.entity.technician.TechScheduleInfo;
 import com.thinkgem.jeesite.modules.service.service.order.OrderToolsService;
 import com.thinkgem.jeesite.modules.sys.dao.AreaDao;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.open.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -148,7 +149,10 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 			combinationGasqInfo.setJointOrderSn(gasqOrderSn);
 			combinationGasqInfo.setOrderGroupId(groupId);
 			combinationGasqInfo.setOrderNumber(orderInfoList.get(i).getOrderNumber());
-			combinationGasqInfo.preUpdate();
+			User user = new User();
+			user.setId("gasq001");
+			combinationGasqInfo.setUpdateBy(user);
+			combinationGasqInfo.setUpdateDate(new Date());
 			orderCombinationGasqDao.updateOrderGroupByMasterJointSn(combinationGasqInfo);
 
 			orderInfoList.get(i).setJointOrderId(gasqOrderSn);
@@ -317,7 +321,13 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		techScheduleInfo.setTypeId(groupId);//休假ID或订单ID
 		techScheduleInfo.setType("master");//'holiday：休假  order：订单'
 		techScheduleInfo.setMasterId(masterId);
-		techScheduleInfo.preInsert();
+		User user = new User();
+		user.setId("gasq001");
+		techScheduleInfo.setId(IdGen.uuid());
+		techScheduleInfo.setCreateBy(user);
+		techScheduleInfo.setCreateDate(new Date());
+		techScheduleInfo.setUpdateBy(user);
+		techScheduleInfo.setUpdateDate(techScheduleInfo.getCreateDate());
 		techScheduleDao.insertSchedule(techScheduleInfo);
 	}
 
@@ -327,7 +337,13 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 	 */
 	private void openCreateForGoods(OrderInfo orderInfo, OrderGoods goods) {
 		goods.setOrderId(orderInfo.getId());//订单ID
-		goods.preInsert();
+		User user = new User();
+		user.setId("gasq001");
+		goods.setId(IdGen.uuid());
+		goods.setCreateBy(user);
+		goods.setCreateDate(new Date());
+		goods.setUpdateBy(user);
+		goods.setUpdateDate(goods.getCreateDate());
 		orderGoodsDao.insert(goods);
 	}
 
@@ -341,7 +357,13 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		orderDispatch.setOrderId(orderInfo.getId());//订单ID
 		orderDispatch.setTechId(techId);//技师ID
 		orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
-		orderDispatch.preInsert();
+		User user = new User();
+		user.setId("gasq001");
+		orderDispatch.setId(IdGen.uuid());
+		orderDispatch.setCreateBy(user);
+		orderDispatch.setCreateDate(new Date());
+		orderDispatch.setUpdateBy(user);
+		orderDispatch.setUpdateDate(orderDispatch.getCreateDate());
 		orderDispatchDao.insert(orderDispatch);
 	}
 
@@ -380,7 +402,13 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		orderInfo.setOrderContent(goods.getSortName() + "+" + goods.getGoodsName());               //下单服务内容(服务分类+服务项目+商品名称)',
 		orderInfo.setEshopCode(combinationInfo.getEshopCode());
 		orderInfo.setJointOrderId(gasqOrderSn);
-		orderInfo.preInsert();
+		User user = new User();
+		user.setId("gasq001");
+		orderInfo.setId(IdGen.uuid());
+		orderInfo.setCreateBy(user);
+		orderInfo.setCreateDate(new Date());
+		orderInfo.setUpdateBy(user);
+		orderInfo.setUpdateDate(orderInfo.getCreateDate());
 		orderInfoDao.insert(orderInfo);
 
 		return orderInfo;

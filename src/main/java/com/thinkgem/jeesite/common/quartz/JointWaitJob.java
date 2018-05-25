@@ -8,7 +8,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-public class QuartzJob implements Job{
+public class JointWaitJob implements Job{
 	private static SendQuartzService sendQuartzService = SpringContextHolder.getBean(SendQuartzService.class);
 
 	@Override

@@ -206,6 +206,11 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>QuartzServlet</servlet-name>
+        <servlet-class>com.thinkgem.jeesite.common.quartz.QuartzServlet</servlet-class>
+        <load-on-startup>5</load-on-startup>
+    </servlet>
     <!-- Activiti diagram-view callback filter-->
     <!-- <filter>
         <filter-name>JSONPFilter</filter-name>

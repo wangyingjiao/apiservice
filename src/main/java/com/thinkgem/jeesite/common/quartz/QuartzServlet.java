@@ -20,8 +20,10 @@ public class QuartzServlet extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 		QuartzUtil quartzUtil = new QuartzUtil();
+
 		try {
-			quartzUtil.doJointWait();
+			//quartzUtil.doJointWait();
+			quartzUtil.doCreartCombinationOrder();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
