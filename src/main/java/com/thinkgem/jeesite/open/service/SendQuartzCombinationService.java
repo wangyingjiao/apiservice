@@ -355,6 +355,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
         OrderInfo orderInfoMsg = new OrderInfo();
         orderInfoMsg.setId(orderInfo.getId());
         orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
+        orderInfoMsg.setMasterId(orderInfo.getMasterId());
         List<OrderDispatch> techList = new ArrayList<>();
         OrderDispatch dispatch = new OrderDispatch();
         dispatch.setTechId(combinationInfo.getTechId());

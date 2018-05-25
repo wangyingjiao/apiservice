@@ -980,6 +980,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 		OrderInfo orderInfoMsg = new OrderInfo();
 		orderInfoMsg.setId(orderInfo.getId());
+		orderInfoMsg.setMasterId(orderInfo.getMasterId());
 		orderInfoMsg.setOrderNumber(orderInfo.getOrderNumber());
 		List<OrderDispatch> techList = new ArrayList<>();
 		OrderDispatch dispatch = new OrderDispatch();

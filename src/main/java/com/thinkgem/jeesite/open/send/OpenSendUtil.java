@@ -640,6 +640,7 @@ public class OpenSendUtil {
                 OpenSendUpdateGroupComboOrder comboOrder = new OpenSendUpdateGroupComboOrder();
                 comboOrder.setOrder_sn(info.getOrderNumber());
                 comboOrder.setGasq_order_sn(info.getJointOrderId());
+				comboOrder.setService_time(DateUtils.formatDateTime(info.getServiceTime()));
                 list1.add(comboOrder);
             }
             openSendUpdateGroupOrder.setOrder_list(list1);
@@ -677,6 +678,7 @@ public class OpenSendUtil {
                 OpenSendUpdateGroupComboOrder comboOrder = new OpenSendUpdateGroupComboOrder();
                 comboOrder.setOrder_sn(info.getOrderNumber());
                 comboOrder.setGasq_order_sn(info.getJointOrderId());
+				comboOrder.setService_time(DateUtils.formatDateTime(info.getServiceTime()));
                 list1.add(comboOrder);
             }
             openSendUpdateGroupOrder.setOrder_list(list1);
