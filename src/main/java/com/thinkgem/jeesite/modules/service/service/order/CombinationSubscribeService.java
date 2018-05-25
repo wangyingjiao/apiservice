@@ -99,7 +99,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		serchInfo.setTechStatus("yes");
 		serchInfo.setJobStatus("online");
 		//自动派单 全职 ; 手动派单没有条件
-		//serchInfo.setJobNature("full_time");
+		serchInfo.setJobNature("full_time");
 		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
 		if(techList.size() < techDispatchNum){//技师数量不够
 			logger.error("技师数量不够");
@@ -322,7 +322,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		serchInfo.setTechStatus("yes");
 		serchInfo.setJobStatus("online");
 		//自动派单 全职 ; 手动派单没有条件
-		//serchInfo.setJobNature("full_time");
+		serchInfo.setJobNature("full_time");
 		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
 		if(techList.size() < techDispatchNum){//技师数量不够
 			logger.error("技师数量不够");
