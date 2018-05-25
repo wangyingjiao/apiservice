@@ -7,6 +7,7 @@
         SELECT
         <include refid="OrderCombinationGasqInfo"/>
         FROM order_combination_gasq a
+        LEFT JOIN tech_schedule b ON b.type_id=a.order_group_id AND b.del_flag = #{DEL_FLAG_NORMAL}
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             AND a.master_id=#{masterId}
@@ -14,7 +15,7 @@
             AND a.order_group_id is not null
         </where>
         GROUP By a.order_group_id
-        ORDER BY a.create_date DESC
+        ORDER BY b.start_time DESC
     </select>
     <!--组合不拆单订单对接编号信息-->
     <select id="getOrderListbyMasterId" resultType="OrderInfo">
@@ -66,7 +67,7 @@
         LEFT JOIN order_combination_gasq b on a.order_number= b.order_number
         where b.order_group_id=#{reqId}
         and a.del_flag = '0'
-        ORDER BY a.service_time
+        ORDER BY a.service_time DESC
     </select>
 
     <insert id="insert">
