@@ -66,6 +66,7 @@
         LEFT JOIN order_combination_gasq b on a.order_number= b.order_number
         where b.order_group_id=#{reqId}
         and a.del_flag = '0'
+        ORDER BY a.service_time
     </select>
 
     <insert id="insert">
