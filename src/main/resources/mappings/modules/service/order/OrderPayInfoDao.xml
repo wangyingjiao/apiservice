@@ -39,8 +39,9 @@
     </select>
 
 	<!--根据支付表（普通订单）关联机构服务站-->
-	<select id="getPayInfoByOrderId" resultType="OrderPayInfo">
+	<select id="getPayByOrderId" resultType="OrderPayInfo">
 		SELECT
+		ord.order_number AS orderNumber,
 		org.name AS orgName,
 		sta.name AS stationName
 		FROM order_pay_info a
@@ -53,7 +54,6 @@
 	<!--根据支付表（组合订单）关联组合订单主表机构服务站-->
 	<select id="getPayInfoByComId" resultType="OrderPayInfo">
 		SELECT
-		ord.order_number AS orderNumber,
 		org.name AS orgName,
 		sta.name AS stationName
 		FROM order_pay_info a
@@ -76,6 +76,7 @@
 		a.pay_number AS "payNumber",
 		a.pay_time AS "payTime",
 		a.pay_account AS "payAccount",
+		a.pay_platform AS "payPlatform",
 		a.pay_status AS "payStatus",
 		tech.name AS payTechName,
 		a.master_id AS "masterId",

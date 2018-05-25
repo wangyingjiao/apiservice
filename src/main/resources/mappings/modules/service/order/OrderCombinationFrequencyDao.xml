@@ -14,6 +14,7 @@
         where
             a.del_flag = #{DEL_FLAG_NORMAL}
             AND a.master_id = #{masterId}
+            ORDER BY a.week
     </select>
 
     <insert id="insert">

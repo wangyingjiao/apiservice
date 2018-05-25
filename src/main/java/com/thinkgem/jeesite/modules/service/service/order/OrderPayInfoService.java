@@ -45,7 +45,7 @@ public class OrderPayInfoService extends CrudService<OrderPayInfoDao, OrderPayIn
 		if (list != null && list.size() > 0) {
 			for (OrderPayInfo orderPayInfo1:list){
 				if ("common".equals(orderPayInfo1.getOrderType())){
-					OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayInfoByOrderId(orderPayInfo1);
+					OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayByOrderId(orderPayInfo1);
 					orderPayInfo1.setOrderNumber(payInfoByOrderId.getOrderNumber());
 					orderPayInfo1.setOrgName(payInfoByOrderId.getOrgName());
 					orderPayInfo1.setStationName(payInfoByOrderId.getStationName());

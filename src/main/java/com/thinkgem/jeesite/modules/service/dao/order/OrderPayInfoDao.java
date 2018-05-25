@@ -20,7 +20,7 @@ public interface OrderPayInfoDao extends CrudDao<OrderPayInfo> {
     //app根据masterId获取支付信息
     OrderPayInfo getByMasterId(String masterId);
     //根据支付表（普通订单）关联机构服务站
-    OrderPayInfo getPayInfoByOrderId(OrderPayInfo payInfo);
+    OrderPayInfo getPayByOrderId(OrderPayInfo payInfo);
     //根据支付表（组合订单）关联组合订单主表机构服务站
     OrderPayInfo getPayInfoByComId(OrderPayInfo payInfo);
 
