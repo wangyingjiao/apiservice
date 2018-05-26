@@ -76,6 +76,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	SerSortInfoDao serSortInfoDao;
 	@Autowired
 	CombinationOrderDao combinationOrderDao;
+	@Autowired
+	OrderCombinationGasqDao orderCombinationGasqDao;
 
 	public OrderInfo get(String id) {
 		return super.get(id);
@@ -915,16 +917,33 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 	}
 	//app改派保存
 	@Transactional(readOnly = false)
-	public int appDispatchTechSave(OrderInfo orderInfo) {
+	public Map<String,Object> appDispatchTechSave(OrderInfo orderInfo) {
 		int insert =0;
 		//改派前技师ID
 		String dispatchTechId = orderInfo.getDispatchTechId();
 		//改派后技师id
 		String techId = orderInfo.getTechId();
+		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
+		String orderGroupId = null;
+		Map<String,Object> map=new HashMap<String,Object>();
+		if (!"group_split_yes".equals(orderInfo.getOrderType())) {
+			orderInfoList.add(orderInfo);
+		}else {
+			//根据orderNumber masterId获取组合订单的orderGroupId
+			OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(orderInfo);
+			orderGroupId = listByOrderNumber.getOrderGroupId();
+			//根据groupId获取组合订单的订单集合
+			orderInfoList = orderInfoDao.getOrderListByOrderGroupId(listByOrderNumber);
+		}
+		if (orderInfoList == null || orderInfoList.size() < 1){
+			throw new ServiceException("未找到该订单！");
+		}
+		orderInfo = orderInfoList.get(0);
 		String orderId = orderInfo.getId();
 		ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
 		Date serviceTime = orderInfo.getServiceTime();
-		Date finishTime = orderInfo.getFinishTime();
+		Double serviceHour = orderInfo.getServiceHour();
+		Date finishTime = orderInfo.getSuggestFinishTime();
 		List techIdList=new ArrayList();
 		techIdList.add(techId);
 		//新增、改派判断库存
@@ -932,10 +951,6 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		if(!flag){
 			throw new ServiceException("技师已经派单，请重新选择！");
 		}
-
-		//改派前技师信息
-//		tec.setId(dispatchTechId);
-//		ServiceTechnicianInfo oldTech = serviceTechnicianInfoDao.getById(tec);
 		//改派技师信息
 		tec.setId(techId);
 		ServiceTechnicianInfo newTech = serviceTechnicianInfoDao.getById(tec);
@@ -947,59 +962,86 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else{
 			throw new ServiceException("选择技师不可为空！");
 		}
-		//根据订单技师  获取老派单 订单id和改派前技师id去查
-		OrderDispatch orderDispatch = dao.appGetOrderDispatch(orderInfo);
-		//如果派单为空 说明订单不属于该技师
-		if(null == orderDispatch){
-			throw new ServiceException("订单不属于该技师！");
+		// 将数据库中改派前技师排期表设为无效
+		TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+		if (!"group_split_yes".equals(orderInfo.getOrderType())){
+			techScheduleInfo.setTypeId(orderInfo.getId());
+		}else {
+			techScheduleInfo.setTypeId(orderGroupId);
 		}
+		if ("common".equals(orderInfo.getOrderType())){
+			techScheduleInfo.setType("order");
+		}else{
+			techScheduleInfo.setType("master");
+		}
+		techScheduleInfo.setTechId(dispatchTechId);
+		techScheduleInfo.appPreUpdate();
+		techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfo);
 		if (StringUtils.isNotBlank(orderInfo.getServiceStatus()) && StringUtils.isNotBlank(orderInfo.getOrderStatus())) {
 			//订单服务状态为 wait_service:待服务 started:已上门 订单状态 waitdispatch:待派单;dispatched:已派单 可以改派
 			if ((orderInfo.getServiceStatus().equals("wait_service") || orderInfo.getServiceStatus().equals("started"))
 					&& (orderInfo.getOrderStatus().equals("waitdispatch") || orderInfo.getOrderStatus().equals("dispatched")) ) {
-
-				OrderDispatch orderDispatchUpdate = new OrderDispatch();
-				orderDispatchUpdate.setId(dispatchTechId);//ID
-				orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
-				orderDispatch.appPreUpdate();
-				//数据库将改派前技师派单 设为不可用
-				int update1 = orderDispatchDao.update(orderDispatch);
-				//将数据库中改派前技师排期表设为无效
-                TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
-                techScheduleInfo.setTypeId(orderId);
-                techScheduleInfo.setType("order");
-                techScheduleInfo.setTechId(dispatchTechId);
-                techScheduleInfo.appPreUpdate();
-                techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfo);
-				//将老派单改成无效  再新增
-				if (update1 > 0){
-					OrderDispatch newDis = new OrderDispatch();
-					newDis.setTechId(techId);//技师ID
-					newDis.setOrderId(orderInfo.getId());//订单ID
-					newDis.setStatus("yes");//状态(yes：可用 no：不可用)
-					newDis.appreInsert();
-					insert = orderDispatchDao.insert(newDis);
-					if (insert > 0) {
-						//新增改派后的排期表
-						TechScheduleInfo scheduleInfo = new TechScheduleInfo();
-						scheduleInfo.setTechId(techId);
-						scheduleInfo.setType("order");
-						scheduleInfo.setTypeId(orderId);
-						scheduleInfo.setStartTime(orderInfo.getServiceTime());
-						scheduleInfo.setEndTime(orderInfo.getFinishTime());
-						int weekNum = DateUtils.getWeekNum(orderInfo.getServiceTime());
-						scheduleInfo.setScheduleWeek(weekNum);
-						Date dateFirstTime = DateUtils.getDateFirstTime(orderInfo.getServiceTime());
-						scheduleInfo.setScheduleDate(dateFirstTime);
-						scheduleInfo.appreInsert();
-						insert = techScheduleDao.insertSchedule(scheduleInfo);
+				//普通订单改派
+					for (OrderInfo info:orderInfoList){
+						info.setDispatchTechId(dispatchTechId);
+						//根据订单技师  获取老派单 订单id和改派前技师id去查
+						OrderDispatch orderDispatch = dao.appGetOrderDispatch(info);
+						//如果派单为空 说明订单不属于该技师
+						if(null == orderDispatch){
+							throw new ServiceException("订单不属于该技师！");
+						}
+					//1. 数据库将改派前技师派单 设为不可用
+						OrderDispatch orderDispatchUpdate = new OrderDispatch();
+						orderDispatchUpdate.setId(orderDispatch.getId());//ID
+						orderDispatchUpdate.setStatus("no");//状态(yes：可用 no：不可用)
+						orderDispatchUpdate.appPreUpdate();
+						int update1 = orderDispatchDao.update(orderDispatchUpdate);
+						if (update1 < 1){
+							throw new ServiceException("删除改派前技师派单失败");
+						}
+					//2. 新增派单
+						OrderDispatch newDis = new OrderDispatch();
+						newDis.setTechId(techId);//技师ID
+						newDis.setOrderId(info.getId());//订单ID
+						newDis.setStatus("yes");//状态(yes：可用 no：不可用)
+						newDis.appreInsert();
+						insert = orderDispatchDao.insert(newDis);
+						if (insert < 1){
+							throw new ServiceException("新增技师派单失败");
+						}
 					}
-                }else {
-					throw new ServiceException("删除改派前技师派单失败");
+				// 新增改派后的排期表
+				TechScheduleInfo scheduleInfo = new TechScheduleInfo();
+				scheduleInfo.setTechId(techId);
+				if ("common".equals(orderInfo.getOrderType())){
+					scheduleInfo.setType("order");
+					scheduleInfo.setTypeId(orderId);
+				}else if ("group_split_no".equals(orderInfo.getOrderType())){
+					scheduleInfo.setType("master");
+					scheduleInfo.setTypeId(orderId);
+				}else {
+					scheduleInfo.setType("master");
+					scheduleInfo.setTypeId(orderGroupId);
 				}
-				return insert;
+				//计算排期表的开始 结束时间
+				int size = orderInfoList.size();//serviceHour
+				Double serviceSecondTem = (serviceHour * size * 3600);
+				Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
+				scheduleInfo.setStartTime(serviceTime);
+				scheduleInfo.setEndTime(date);
+				int weekNum = DateUtils.getWeekNum(serviceTime);
+				scheduleInfo.setScheduleWeek(weekNum);
+				Date dateFirstTime = DateUtils.getDateFirstTime(serviceTime);
+				scheduleInfo.setScheduleDate(dateFirstTime);
+				scheduleInfo.setMasterId(orderInfo.getMasterId());
+				scheduleInfo.appreInsert();
+				insert = techScheduleDao.insertSchedule(scheduleInfo);
+				if (insert < 0){
+					throw new ServiceException("新增改派后技师排期失败");
+				}
+				map.put("orderInfoList",orderInfoList);
+				return  map;
 			}else {
-				//
 				throw new ServiceException("订单状态与服务状态不符合改派要求！");
 			}
 		}else {

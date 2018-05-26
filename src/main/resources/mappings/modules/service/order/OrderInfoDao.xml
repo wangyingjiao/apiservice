@@ -856,7 +856,17 @@ origin_price,
 		where a.id= #{id}
 		AND a.del_flag = '0'
 	</select>
-
+	<!--根据groupId获取组合订单的订单集合并排序-->
+	<select id="getOrderListByOrderGroupId" resultType="OrderInfo">
+		select
+		<include refid="orderInfoColumns"/>
+		FROM order_info a
+		LEFT JOIN order_combination_gasq b on a.order_number=b.order_number AND b.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		AND b.order_group_id = #{orderGroupId}
+		ORDER BY a.service_time
+	</select>
 	<!--app根据商品id获取订单对应商品的对接code-->
 	<select id="getGoodsCode" resultType="String">
 		SELECT a.joint_goods_code

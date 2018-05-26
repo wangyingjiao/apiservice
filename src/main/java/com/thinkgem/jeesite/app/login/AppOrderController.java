@@ -259,52 +259,38 @@ public class AppOrderController extends BaseController {
 		//改派前技师id
 		orderInfo.setDispatchTechId(token.getTechId());
 		try {
+			Map<String, Object> map = orderInfoService.appDispatchTechSave(orderInfo);
 			//改派并发送消息
-			int i = orderInfoService.appDispatchTechSave(orderInfo);
-			if (i > 0){
-				// 给改派后技师发送消息
-				ServiceTechnicianInfo technicianInfo=new ServiceTechnicianInfo();
-				technicianInfo.setId(techId);
-				ServiceTechnicianInfo byId = techService.getById(technicianInfo);
-				//给改派的技师发送消息
-				OrderDispatch new1 = new OrderDispatch();
-				new1.setTechId(techId);
-				new1.setOrderId(orderInfo.getId());
-				new1.setTechPhone(byId.getPhone());
-				List<OrderDispatch> list1=new ArrayList<OrderDispatch>();
-				list1.add(new1);
-				orderInfo.setTechList(list1);
-				messageInfoService.insert(orderInfo,"orderCreate");
+			ServiceTechnicianInfo technicianInfo=new ServiceTechnicianInfo();
+			technicianInfo.setId(techId);
+			ServiceTechnicianInfo byId = techService.getById(technicianInfo);
+			List<OrderInfo> orderInfoList = (List<OrderInfo>) map.get("orderInfoList");
+			if (orderInfoList != null && orderInfoList.size() > 0) {
+				for (OrderInfo info : orderInfoList) {
+					//给改派的技师发送消息
+					OrderDispatch new1 = new OrderDispatch();
+					new1.setTechId(techId);
+					new1.setOrderId(info.getId());
+					new1.setTechPhone(byId.getPhone());
+					List<OrderDispatch> list1=new ArrayList<OrderDispatch>();
+					list1.add(new1);
+					info.setTechList(list1);
+					messageInfoService.insert(info,"orderCreate");
+					//查询数据库获取订单对应的机构  获取对接code
+					String orderSource = info.getOrderSource();
+					//订单来源是国安社区的 需要对接
+					if (StringUtils.isNotBlank(orderSource) && orderSource.equals("gasq")) {
+						OrderInfo sendOrder = new OrderInfo();
 
-				//查询数据库获取订单对应的机构  获取对接code
-				OrderInfo info = orderInfoService.get(orderInfo.getId());
-				String orderSource = info.getOrderSource();
-				//订单来源是国安社区的 需要对接
-				if (StringUtils.isNotBlank(orderSource) && orderSource.equals("gasq")) {
-					// BasicOrganization basicCode = orderInfoService.getBasicOrganizationByOrgId(info);
-					// //获取商品的对接code
-					// List<String> goodsCode = orderInfoService.getGoodsCode(orderInfo);
-					// if (StringUtils.isNotBlank(basicCode.getJointEshopCode()) && goodsCode.size() > 0) {
-					OrderInfo sendOrder = new OrderInfo();
-
-					String orderSn = orderInfoService.getOrderSnById(orderInfo.getId());
-					sendOrder.setOrderNumber(orderSn);//订单编号
-
-					//sendOrder.setId(orderInfo.getId());
-					List<OrderDispatch> orderDispatchList = orderInfoService.getOrderDispatchList(info);
-					sendOrder.setTechList(orderDispatchList);
-					OpenSendUtil.openSendSaveOrder(sendOrder);
-					/*OpenSendSaveOrderResponse sendResponse = OpenSendUtil.openSendSaveOrder(sendOrder);
-					if (sendResponse == null) {
-						return new AppFailResult(-1, null, "对接失败N");
-					} else if (sendResponse.getCode() != 0) {
-						return new AppFailResult(-1, null, sendResponse.getMessage());
-					}*/
-					// }
+						String orderSn = orderInfoService.getOrderSnById(info.getId());
+						sendOrder.setOrderNumber(orderSn);//订单编号
+						List<OrderDispatch> orderDispatchList = orderInfoService.getOrderDispatchList(info);
+						sendOrder.setTechList(orderDispatchList);
+						OpenSendUtil.openSendSaveOrder(sendOrder);
+					}
 				}
-				return new AppSuccResult(0,null,"改派成功");
 			}
-			return new AppFailResult(-1,null,"改派失败");
+			return new AppSuccResult(0,null,"改派成功");
 		}catch (ServiceException e){
 			return new AppFailResult(-1,null,e.getMessage());
 		}

@@ -84,6 +84,9 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     OrderInfo getBySn(OrderInfo orderInfo);
 
+    //根据groupId获取组合订单的订单集合并排序
+    List<OrderInfo> getOrderListByOrderGroupId(OrderCombinationGasqInfo orderCombinationGasqInfo);
+
     OrderInfo checkGasqSnOrderSn(OrderInfo checkInfo);
 
     int openUpdateOrderForBusiness(OrderInfo orderInfo);

@@ -102,7 +102,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		String orgId = orderInfo.getOrgId();//机构ID
 		String stationId = orderInfo.getStationId();//服务站ID
 		Date serviceTime = orderInfo.getServiceTime();//服务时间
-		Date finishTime = orderInfo.getFinishTime();//完成时间
+		Date finishTime = orderInfo.getSuggestFinishTime();//完成时间
 		String sortId = orderInfo.getGoodsSortId();
 		boolean serchFullTech = orderInfo.getSerchFullTech();
 		String serchNowOrderId = orderInfo.getSerchNowOrderId();
