@@ -56,6 +56,18 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 	@Autowired
 	private OrderToolsService orderToolsService;
 
+
+    public boolean checkCombinationStatus(CombinationOrderInfo combinationOrderInfo) {
+        CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(combinationOrderInfo.getMasterId());
+        if(!"dispatched".equals(combinationInfo.getOrderStatus())){
+            return false;
+        }
+        if(combinationInfo.getBespeakTotal() <= combinationInfo.getBespeakNum()){
+            return false;
+        }
+        return true;
+    }
+
 	/**
 	 * 后台预约- 查询服务日期
 	 * @param combinationOrderInfo(masterId,serviceNum)
@@ -782,7 +794,5 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 
 		return orderInfo;
 	}
-
-
 
 }

@@ -618,6 +618,10 @@ public class CombinationOrderController extends BaseController {
 	@RequiresPermissions("combination_subscribe")
 	public Result subscribeDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
+            boolean flag = combinationSubscribeService.checkCombinationStatus(combinationOrderInfo);
+            if (!flag){
+                return new FailResult("组合订单当前状态不允许预约");
+            }
 			List<OrderTimeList>  list = combinationSubscribeService.subscribeDateList(combinationOrderInfo);
 			return new SuccResult(list);
 		}catch (Exception e){
@@ -654,6 +658,10 @@ public class CombinationOrderController extends BaseController {
 	@RequiresPermissions("combination_subscribe")
 	public Result subscribeSave(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
+            boolean statusFlag = combinationSubscribeService.checkCombinationStatus(combinationOrderInfo);
+            if (!statusFlag){
+                return new FailResult("组合订单当前状态不允许预约");
+            }
 			boolean flag = combinationSubscribeService.checkSubscribeTech(combinationOrderInfo);
 			if(flag){
 				return new FailResult("时间或服务技师目前暂不可用!");
