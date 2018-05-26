@@ -902,7 +902,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 			String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
 					+  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
-			Date endTime = DateUtils.parseDate(startTimeStr);
+			Date endTime = DateUtils.parseDate(endTimeStr);
 
 			openCreateForTechSchedule(combinationInfo.getTechId(), startTime, endTime, groupId, masterId);
 

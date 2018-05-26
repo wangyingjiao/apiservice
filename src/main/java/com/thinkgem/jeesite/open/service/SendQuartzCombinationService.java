@@ -280,7 +280,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 
             String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
                     +  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
-            Date endTime = DateUtils.parseDate(startTimeStr);
+            Date endTime = DateUtils.parseDate(endTimeStr);
 
             openCreateForTechSchedule(techId, startTime, endTime, groupId, masterId);
 
