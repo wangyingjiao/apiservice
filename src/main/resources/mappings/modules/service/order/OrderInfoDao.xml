@@ -791,6 +791,7 @@ origin_price,
 		<if test="serviceStatus !=null and serviceStatus != ''">service_status = #{serviceStatus},</if>
 		<if test="orderStatus !=null and orderStatus != ''">order_status = #{orderStatus},</if>
 		<if test="cancelReason !=null and cancelReason != ''">cancel_reason = #{cancelReason},</if>
+		<if test="cancelReasonRemark !=null and cancelReasonRemark != ''">cancel_reason_remark = #{cancelReasonRemark},</if>
 
 		<if test="updateDate !=null and updateDate != ''">update_date = #{updateDate}</if>
 

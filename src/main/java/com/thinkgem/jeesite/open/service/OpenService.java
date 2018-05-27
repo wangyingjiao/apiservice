@@ -1116,26 +1116,43 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		String platform = info.getPlatform();//对接平台代号
 		String orderSn = info.getService_order_id();// 自营服务订单ID->编号
-		if(StringUtils.isBlank(orderSn)){
-			throw new ServiceException("自营服务订单sn不能为空");
-		}
+
 		String gasq_order_sn = info.getGasq_order_sn();//国安社区订单编号
-		String group_id = info.getGroup_id();//国安社区订单编号
-		if(StringUtils.isBlank(gasq_order_sn) && StringUtils.isBlank(group_id)){
-			throw new ServiceException("国安社区订单sn或订单组ID不能同时为空");
+
+		OrderInfo checkInfoRe = new OrderInfo();
+		boolean combinationFlag = false;//组合订单
+		if(StringUtils.isNotBlank(orderSn)) {
+			OrderInfo checkInfo = new OrderInfo();
+			checkInfo.setOrderNumber(orderSn);
+			checkInfo.setJointOrderId(gasq_order_sn);
+			checkInfoRe = orderInfoDao.checkGasqSnOrderSn(checkInfo);
+			if (null == checkInfoRe) {
+				throw new ServiceException("未找到订单,请确认订单sn是否正确");
+			}
+			if(!"common".equals(checkInfoRe.getOrderType())){//不是普通订单
+				if(!"cancel".equals(info.getStatus())){//状态不是取消，必须是普通订单，必须有自营SN
+					throw new ServiceException("自营服务订单编号不能为空");
+				}
+				String group_id = info.getGroup_id();//没有自营SN，说明是组合取消，必须有国安组ID
+				if(StringUtils.isBlank(group_id)){
+					throw new ServiceException("订单组ID不能为空");
+				}
+				combinationFlag = true;
+			}
+		}else {
+			if(!"cancel".equals(info.getStatus())){//状态不是取消，必须是普通订单，必须有自营SN
+				throw new ServiceException("自营服务订单编号不能为空");
+			}
+			String group_id = info.getGroup_id();//没有自营SN，说明是组合取消，必须有国安组ID
+			if(StringUtils.isBlank(group_id)){
+				throw new ServiceException("订单组ID不能为空");
+			}
+			combinationFlag = true;
 		}
 
-		if("cancel".equals(info.getStatus()) && !StringUtils.isBlank(group_id)){//组合取消
+		if(combinationFlag){//组合取消
 			HashMap<String,Object> groupMap = openUpdateStautsForGroup(info);
 			return groupMap;
-		}
-
-		OrderInfo checkInfo = new OrderInfo();
-		checkInfo.setOrderNumber(orderSn);
-		checkInfo.setJointOrderId(gasq_order_sn);
-		OrderInfo checkInfoRe = orderInfoDao.checkGasqSnOrderSn(checkInfo);
-		if(null == checkInfoRe){
-			throw new ServiceException("未找到订单,请确认订单sn是否正确");
 		}
 
 		String cancelReason = info.getComment();//取消原因
@@ -1151,7 +1168,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				}
 
 				orderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-				orderInfo.setCancelReason(cancelReason);//取消原因
+				orderInfo.setCancelReason("other");//取消原因
+				orderInfo.setCancelReasonRemark(cancelReason);
 			}else if("signed".equals(status)){
 				//orderInfo.setServiceStatus("finish");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 				orderInfo.setOrderStatus("finish");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
@@ -1241,7 +1259,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 							updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 						}
 						updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-						updateOrderInfo.setCancelReason(cancelReason);//取消原因
+						updateOrderInfo.setCancelReason("other");//取消原因
+						updateOrderInfo.setCancelReasonRemark(cancelReason);
 						updateOrderInfo.setUpdateBy(user);
 						updateOrderInfo.setUpdateDate(new Date());
 						int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
@@ -1347,9 +1366,7 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 		String platform = info.getPlatform();//对接平台代号
 		String gasq_order_sn = info.getGasq_order_sn();//国安社区订单编号
 		String group_id = info.getGroup_id();//国安社区订单编号
-		if(StringUtils.isBlank(gasq_order_sn) && StringUtils.isBlank(group_id)){
-			throw new ServiceException("国安社区订单sn或订单组ID不能同时为空");
-		}
+
 		String cancelReason = info.getComment();//取消原因
 		User user = new User();
 		user.setId("gasq001");
@@ -1371,7 +1388,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 							updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 						}
 						updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-						updateOrderInfo.setCancelReason(cancelReason);//取消原因
+						updateOrderInfo.setCancelReason("other");//取消原因
+						updateOrderInfo.setCancelReasonRemark(cancelReason);
 						updateOrderInfo.setUpdateBy(user);
 						updateOrderInfo.setUpdateDate(new Date());
 						int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
@@ -1421,7 +1439,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 						updateOrderInfo.setServiceStatus("cancel");	//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 					}
 					updateOrderInfo.setOrderStatus("cancel");//订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)',
-					updateOrderInfo.setCancelReason(cancelReason);//取消原因
+					updateOrderInfo.setCancelReason("other");//取消原因
+					updateOrderInfo.setCancelReasonRemark(cancelReason);
 					updateOrderInfo.setUpdateBy(user);
 					updateOrderInfo.setUpdateDate(new Date());
 					int num = orderInfoDao.openUpdateOrder(updateOrderInfo);
