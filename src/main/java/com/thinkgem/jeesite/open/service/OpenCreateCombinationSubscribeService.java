@@ -105,6 +105,7 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		if(combinationInfo == null){
 			throw new ServiceException("未找到组合订单信息");
 		}
+		int remainderOfBespeak = combinationInfo.getBespeakTotal() - combinationInfo.getBespeakNum();
 		//根据组合商品ID返回子商品信息
 		OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());
 
@@ -127,7 +128,7 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		OrderDispatch techInfo = techList.get(0);
 		combinationInfo.setTechId(techInfo.getTechId());
 		combinationInfo.setTechPhone(techInfo.getTechPhone());
-
+		serviceNum = remainderOfBespeak < serviceNum ? remainderOfBespeak : serviceNum;
 		List<Date> listDate = DateUtils.listTimeByFrequency(groupServiceTime,serviceNum,serviceHour);
 
 		List<OrderInfo> orderInfoList = new ArrayList<>();

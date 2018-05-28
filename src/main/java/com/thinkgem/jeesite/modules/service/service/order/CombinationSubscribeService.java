@@ -469,9 +469,9 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		Date serviceTime = combinationOrderInfo.getServiceTime();
 
 		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
-		if(serviceNum > combinationInfo.getBespeakTotal()){
+		/*if(serviceNum > combinationInfo.getBespeakTotal()){
 			return true;
-		}
+		}*/
 		double serviceHour =combinationInfo.getServiceHour();//单次建议服务时长
 		Double serviceSecond = (serviceHour * serviceNum * 3600);
 		int week = DateUtils.getWeekNum(serviceTime);
@@ -576,12 +576,14 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		//获取组合信息
 		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
 		double serviceHour =combinationInfo.getServiceHour();//单次建议服务时长
+		int remainderOfBespeak = combinationInfo.getBespeakTotal() - combinationInfo.getBespeakNum();
 		Double serviceSecond = (serviceHour * serviceNum * 3600);
 		Date groupFinishTime = DateUtils.addSecondsNotDayE(groupServiceTime, serviceSecond.intValue());
 
 		combinationInfo.setTechId(techInfo.getId());
 		combinationInfo.setTechPhone(techInfo.getPhone());
 
+		serviceNum = remainderOfBespeak < serviceNum ? remainderOfBespeak : serviceNum;
 		List<Date> listDate = DateUtils.listTimeByFrequency(groupServiceTime,serviceNum,serviceHour);
 		//根据组合商品ID返回子商品信息
 		OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());

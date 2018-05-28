@@ -578,9 +578,9 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		String techId = combinationOrderInfo.getTechId();
 
 		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
-		if(serviceNum > combinationInfo.getBespeakTotal()){
+		/*if(serviceNum > combinationInfo.getBespeakTotal()){
 			return true;
-		}
+		}*/
 		double serviceHour =combinationInfo.getServiceHour();//单次建议服务时长
 		Double serviceSecond = (serviceHour * serviceNum * 3600);
 
@@ -807,7 +807,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		combinationInfo.setServiceStart(serviceStart);
 		combinationInfo.setTechId(techId);
 		combinationInfo.setTechPhone(techInfo.getPhone());
-
+		int remainderOfBespeak = combinationInfo.getBespeakTotal() - combinationInfo.getBespeakNum();
 
 		//根据频次开始时间返回所有需要生成的日期
 		List<Date> creartDateList = listCreartDateByFrequency(serviceFrequency, freList,serviceNum, serviceStart,combinationInfo.getBespeakTotal());
@@ -859,7 +859,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 					serviceStartEndTime = frequency.getEndTime();
 				}
 			}
-
+			serviceNum = (remainderOfBespeak-orderList.size()) < serviceNum ? remainderOfBespeak : serviceNum;
 			List<Date> listDate = DateUtils.listTimeByFrequency(creartDate, serviceStartBeginTime, serviceNum, combinationInfo.getServiceHour());
 			//根据组合商品ID返回子商品信息
 			OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());
