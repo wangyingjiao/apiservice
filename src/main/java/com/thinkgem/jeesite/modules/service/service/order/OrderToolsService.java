@@ -322,16 +322,9 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 			// 考虑技师的订单
 			List<TechScheduleInfo> techOrderList = listTechScheduleByTechsTime(techIdList, serviceTime, "order");
 			if (techOrderList != null) {
-				int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+				int intervalTimeS = 0;//必须间隔时间 秒
 				int intervalTimeE = 0;//必须间隔时间 秒
-				if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
-						Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
-					//可以接单的时间则为：40分钟+路上时间+富余时间
-					intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
-				} else {
-					//可以接单的时间则为：路上时间+富余时间
-					intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
-				}
+
 				Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
 				Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
 
@@ -340,10 +333,7 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 						Date techOrderStartTime = techOrder.getStartTime();//订单开始时间
 						Date techOrderEndTime = techOrder.getEndTime();//订单结束时间
 						if (techOrderStartTime.before(techOrderEndTime) && serviceTime.before(finishTime)) {
-							if (11 <= Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) &&
-									Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) < 14) {
-								techOrderEndTime = DateUtils.addSeconds(techOrderEndTime, Integer.parseInt(Global.getConfig("order_eat_time")));
-							}
+
 							// 订单时间和已有订单时间有重合,不可下单
 							if (!DateUtils.checkDatesRepeat(checkServiceTime, checkFinishTime, techOrderStartTime, techOrderEndTime)) {
 								checkOrderTechIdList.add(techOrder.getTechId());

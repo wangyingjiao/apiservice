@@ -64,11 +64,20 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		List<OrderGoods> goodsInfoList = orderInfoDao.getOrderGoodsList(orderInfo1); //取得订单服务信息
 		String orderGroupId = null;
 		Map<String,Object> map=new HashMap<String,Object>();
+		int size=1;
+        int techDispatchNum =0;
 		if (!"group_split_yes".equals(orderInfo1.getOrderType())) {
 			orderInfoList.add(orderInfo1);
+			orderGroupId = orderInfo1.getId();
+            techDispatchNum =  orderToolsService.getTechDispatchNumByGoodsList(goodsInfoList);//派人数量
 		}else {
 			//根据orderNumber masterId获取组合订单的orderGroupId
 			OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(orderInfo1);
+            List<OrderInfo> orderInfoListTem = orderInfoDao.getOrderListByOrderGroupId(listByOrderNumber);
+            if (orderInfoListTem != null && orderInfoListTem.size() > 0){
+                size = orderInfoListTem.size();
+            }
+            techDispatchNum = 1;//派人数量
 			orderGroupId = listByOrderNumber.getOrderGroupId();
 			//根据groupId获取组合订单的订单集合
 			orderInfoList = orderInfoDao.getOrderListByOrderGroupId(listByOrderNumber);
@@ -76,21 +85,24 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		if (orderInfoList == null || orderInfoList.size() < 1){
 			throw new ServiceException("未找到该订单！");
 		}
-		int techDispatchNum = 1;//派人数量
+
 		double serviceHour = orderInfo1.getServiceHour();//建议服务时长（小时）
 
 		orderInfo = orderInfoList.get(0);
+		orderInfo.setSerchNowOrderId(orderGroupId);
 		String stationId = orderInfo.getStationId();//服务站ID
 		if(null == stationId){
 			logger.error("未找到当前订单的服务站信息");
 			return null;
 		}
 
-		Double serviceSecond = (serviceHour * 3600);
+		Double serviceSecond = (serviceHour * size * 3600);
 
 		String skillId = orderToolsService.getSkillIdByOrgSort(orderInfo.getOrgId(), orderToolsService.getNotFullGoodsSortId(goodsInfoList));
 		List<OrderDispatch> techList = orderToolsService.listTechByStationSkillOrder(stationId, skillId, null,true,null);
-
+		if(techList.size() < techDispatchNum){//技师数量不够
+			return null;
+		}
 		for(Date date : dateList){
 			OrderTimeList responseRe = new OrderTimeList();
 			try {
@@ -192,7 +204,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 				List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), date, "order");
 				if (techOrderList != null && techOrderList.size() != 0) {
 					for (TechScheduleInfo order : techOrderList) {
-						if(!orderInfo.getId().equals(order.getTypeId())) {//当前订单不考虑
+						if(!orderInfo.getSerchNowOrderId().equals(order.getTypeId())) {//当前订单不考虑
 							int intervalTimeS = 0;//必须间隔时间 秒
 							int intervalTimeE = 0;//必须间隔时间 秒
 							List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
