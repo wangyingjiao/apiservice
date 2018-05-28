@@ -308,8 +308,8 @@
 			c.id AS sortId,
 			c.name AS sortName,
 			b.major_sort AS majorSort,
-			g.combination_price AS goodsNum,
-			g.combination_num AS goodsPrice
+			g.combination_price AS goodsPrice,
+			g.combination_num AS goodsNum
 		FROM ser_item_combination_goods g
 		LEFT JOIN ser_item_info_goods a ON a.id = g.goods_id
 		LEFT JOIN ser_item_info b ON b.id = a.item_id
