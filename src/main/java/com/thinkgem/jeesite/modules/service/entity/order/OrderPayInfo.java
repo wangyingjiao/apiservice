@@ -31,11 +31,29 @@ public class OrderPayInfo extends DataEntity<OrderPayInfo> {
 
 	private String orgId;  // 机构
 	private String orgName;// 机构
+	private String comOrgName;
 	private String stationId;// 服务站
 	private String stationName;// 服务站
+	private String comStationName;
 	private String orderNumber;// 订单编号
 	private String orderSource;// 订单来源
-	private String orderType  ;// 订单状态
+	private String orderType;// 订单状态
+
+	public String getComOrgName() {
+		return comOrgName;
+	}
+
+	public void setComOrgName(String comOrgName) {
+		this.comOrgName = comOrgName;
+	}
+
+	public String getComStationName() {
+		return comStationName;
+	}
+
+	public void setComStationName(String comStationName) {
+		this.comStationName = comStationName;
+	}
 
 	public String getPayPlatformName() {
 		return payPlatformName;

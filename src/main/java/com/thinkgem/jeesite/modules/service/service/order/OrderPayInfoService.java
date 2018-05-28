@@ -42,7 +42,7 @@ public class OrderPayInfoService extends CrudService<OrderPayInfoDao, OrderPayIn
 		orderPayInfo.getSqlMap().put("dsf", dataRoleFilterForOrder(user, "ord"));
 		Page<OrderPayInfo> page1 = super.findPage(page, orderPayInfo);
 		List<OrderPayInfo> list = page1.getList();
-		if (list != null && list.size() > 0) {
+		/*if (list != null && list.size() > 0) {
 			for (OrderPayInfo orderPayInfo1:list){
 				if ("common".equals(orderPayInfo1.getOrderType())){
 					OrderPayInfo payInfoByOrderId = orderPayInfoDao.getPayByOrderId(orderPayInfo1);
@@ -55,7 +55,7 @@ public class OrderPayInfoService extends CrudService<OrderPayInfoDao, OrderPayIn
 					orderPayInfo1.setStationName(payInfoByComId.getStationName());
 				}
 			}
-		}
+		}*/
 		return page1;
 	}
 	
