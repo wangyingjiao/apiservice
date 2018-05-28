@@ -758,13 +758,15 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		//排序
 		Collections.sort(list);
 		//最大数量
-		int maxNum = list.size();
+		int maxNum = list.size() * serviceNum;
 		if(num < maxNum){
 			maxNum = num;
 		}
 		List<Date> listDate = new ArrayList<>();
+		int j=0;
 		for(int i=0;i<maxNum;i=i+serviceNum){
-			listDate.add(list.get(i));
+			listDate.add(list.get(j));
+            j++;
 		}
 		return listDate;
 	}
@@ -859,7 +861,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 					serviceStartEndTime = frequency.getEndTime();
 				}
 			}
-			serviceNum = (remainderOfBespeak-orderList.size()) < serviceNum ? remainderOfBespeak : serviceNum;
+			serviceNum = (remainderOfBespeak-orderList.size()) < serviceNum ? (remainderOfBespeak-orderList.size()) : serviceNum;
 			List<Date> listDate = DateUtils.listTimeByFrequency(creartDate, serviceStartBeginTime, serviceNum, combinationInfo.getServiceHour());
 			//根据组合商品ID返回子商品信息
 			OrderGoods goods = getOrderGoodsByCombination(combinationInfo.getCombinationGoodsId());
