@@ -373,7 +373,9 @@
         order_combination_info
         SET
         order_status = 'cancel'
-        WHERE joint_group_id = #{groupId}
+        cancel_reason = #{cancelReason}
+        cancel_reason_remark = #{cancelReasonRemark}
+        WHERE joint_group_id = #{jointGroupId}
     </update>
     <update id="updateStatusSuccessByMasterId">
         UPDATE

@@ -1246,7 +1246,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(StringUtils.isNotBlank(group_id)){//组合订单
 				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
 				//组合订单取消
-				combinationOrderDao.updateStatusCancelByGroupId(group_id);
+				CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
+				updateCombinationOrderInfo.setJointGroupId(group_id);
+				updateCombinationOrderInfo.setCancelReason("other");//取消原因
+				updateCombinationOrderInfo.setCancelReasonRemark(cancelReason);
+				combinationOrderDao.updateStatusCancelByGroupId(updateCombinationOrderInfo);
 				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
 					//获取所有子订单
 					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
@@ -1375,7 +1379,11 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(StringUtils.isNotBlank(group_id)){//组合订单
 				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
 				//组合订单取消
-				combinationOrderDao.updateStatusCancelByGroupId(group_id);
+				CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
+				updateCombinationOrderInfo.setJointGroupId(group_id);
+				updateCombinationOrderInfo.setCancelReason("other");//取消原因
+				updateCombinationOrderInfo.setCancelReasonRemark(cancelReason);
+				combinationOrderDao.updateStatusCancelByGroupId(updateCombinationOrderInfo);
 				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
 					//获取所有子订单
 					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
