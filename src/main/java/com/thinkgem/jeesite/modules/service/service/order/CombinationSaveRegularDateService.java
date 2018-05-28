@@ -723,7 +723,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 	 * @param num 最大次数
 	 * @return
 	 */
-	private static List<Date> listCreartDateByFrequency(String serviceFrequency, List<OrderCombinationFrequencyInfo> freList, Date serviceStart,int num) {
+	private static List<Date> listCreartDateByFrequency(String serviceFrequency, List<OrderCombinationFrequencyInfo> freList,int serviceNum, Date serviceStart,int num) {
 		List<Date> list = new ArrayList<>();
 		if("two_week_one".equals(serviceFrequency)){//2周1次
 			list.add(serviceStart);
@@ -763,7 +763,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			maxNum = num;
 		}
 		List<Date> listDate = new ArrayList<>();
-		for(int i=0;i<maxNum;i++){
+		for(int i=0;i<maxNum;i=i+serviceNum){
 			listDate.add(list.get(i));
 		}
 		return listDate;
@@ -810,7 +810,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 
 		//根据频次开始时间返回所有需要生成的日期
-		List<Date> creartDateList = listCreartDateByFrequency(serviceFrequency, freList, serviceStart,combinationInfo.getBespeakTotal());
+		List<Date> creartDateList = listCreartDateByFrequency(serviceFrequency, freList,serviceNum, serviceStart,combinationInfo.getBespeakTotal());
 		//返回时间数组的最后日期
 		Date serviceEnd = getLastDate(creartDateList);
 
