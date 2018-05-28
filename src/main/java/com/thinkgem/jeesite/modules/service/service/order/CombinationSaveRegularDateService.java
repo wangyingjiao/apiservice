@@ -578,6 +578,19 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();//服务时间
 		Date serviceStart = combinationOrderInfo.getServiceStart();// 第一次选择日期
 		String techId = combinationOrderInfo.getTechId();
+		ServiceTechnicianInfo techInfo = technicianInfoDao.get(techId);
+		if(techInfo == null){
+            return true;
+        }
+		if(!"yes".equals(techInfo.getStatus())){
+		    return true;
+        }
+        if(!"online".equals(techInfo.getJobStatus())){
+            return true;
+        }
+        if(!"full_time".equals(techInfo.getJobNature())){
+            return true;
+        }
 
 		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
 		/*if(serviceNum > combinationInfo.getBespeakTotal()){
