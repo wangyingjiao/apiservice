@@ -99,7 +99,8 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 		//自动派单 全职 ; 手动派单没有条件
 		serchInfo.setJobNature("full_time");
 		serchInfo.setTechName(techName);
-		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillId(serchInfo);
+		serchInfo.setTechId(combinationInfo.getTechId());
+		List<OrderDispatch> techList = orderInfoDao.getTechListBySkillIdRemoveRegularTech(serchInfo);
 		if(techList.size() < techDispatchNum){//技师数量不够
 			logger.error("技师数量不够");
 			return null;

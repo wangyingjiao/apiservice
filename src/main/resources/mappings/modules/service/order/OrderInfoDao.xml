@@ -658,6 +658,28 @@ origin_price,
 		</where>
 		ORDER BY t.create_date DESC
 	</select>
+	<select id="getTechListBySkillIdRemoveRegularTech" resultType="OrderDispatch">
+		SELECT
+		t.id as techId, t.name AS techName,t.sex AS techSex,t.phone AS techPhone,
+		t.head_pic AS headPic,t.job_nature AS jobNature
+		FROM ser_skill_tech a
+		LEFT JOIN tech_info t ON a.tech_id = t.id AND t.del_flag = #{DEL_FLAG_NORMAL}
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.skill_id= #{skillId}
+			AND t.station_id= #{stationId}
+			AND t.status= #{techStatus}
+			AND t.job_status= #{jobStatus}
+			<if test="techName != null and techName !=''">
+				AND t.name LIKE concat('%',#{techName},'%')
+			</if>
+			<if test="jobNature != null and jobNature != ''">
+				AND t.job_nature= #{jobNature}
+			</if>
+			AND t.id != #{techId}
+		</where>
+		ORDER BY t.create_date DESC
+	</select>
 	<!-- 取得技师List -->
 	<select id="getTechListBySkillIdAndOldTech" resultType="OrderDispatch">
 		SELECT
