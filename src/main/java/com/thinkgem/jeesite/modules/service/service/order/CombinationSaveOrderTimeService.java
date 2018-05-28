@@ -205,7 +205,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 				if (techOrderList != null && techOrderList.size() != 0) {
 					for (TechScheduleInfo order : techOrderList) {
 						if(!orderInfo.getSerchNowOrderId().equals(order.getTypeId())) {//当前订单不考虑
-							int intervalTimeS = 0;//必须间隔时间 秒
+							int intervalTimeS = serviceSecond.intValue();//必须间隔时间 秒
 							int intervalTimeE = 0;//必须间隔时间 秒
 							List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
 									DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),

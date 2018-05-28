@@ -149,7 +149,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		Double minutes = v * 60;
 		if(i > 0){
 			if (minutes != 0) {
-				DateTimes = i + "小时" + minutes + "分钟";
+				DateTimes = i + "小时" + minutes.intValue() + "分钟";
 			}else {
 				DateTimes = i + "小时";
 			}
