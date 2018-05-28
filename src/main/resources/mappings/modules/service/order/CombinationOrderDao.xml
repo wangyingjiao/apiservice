@@ -372,8 +372,8 @@
         UPDATE
         order_combination_info
         SET
-        order_status = 'cancel'
-        cancel_reason = #{cancelReason}
+        order_status = 'cancel',
+        cancel_reason = #{cancelReason},
         cancel_reason_remark = #{cancelReasonRemark}
         WHERE joint_group_id = #{jointGroupId}
     </update>
