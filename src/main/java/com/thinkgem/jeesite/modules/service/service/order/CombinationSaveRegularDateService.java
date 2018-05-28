@@ -179,6 +179,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				techForList.add(dispatch);
 			}
 		}
+		Date date = map.get(String.valueOf(week));
 		Iterator<OrderDispatch> it = techForList.iterator();
 		while(it.hasNext()) {//循环技师List 取得可用时间
 			OrderDispatch tech = it.next();
@@ -203,7 +204,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 			if(workTimes != null) {
 				//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-				List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, new Date(), "holiday");
+				List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, date, "holiday");
 				if (techHolidyList != null && techHolidyList.size() != 0) {
 					for (TechScheduleInfo holiday : techHolidyList) {
 						List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
@@ -263,7 +264,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				//----------取得技师 组合订单频率   如果和工作时间重复 删除该时间点 结束------------------
 
 				//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------
-				Date date = map.get(String.valueOf(week));
+
 				List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), date, "order");
 				if (techOrderList != null && techOrderList.size() != 0) {
 					for (TechScheduleInfo order : techOrderList) {
@@ -413,10 +414,11 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 	private void removeBusyTechByWeekTime(OrderCombinationFrequencyInfo frequencyInfo, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond, Date serviceStart) {
 		int week = frequencyInfo.getWeek();
+		Date selectTime = serviceStart;
 		String selectTimeStr = frequencyInfo.getTimeArea().split("-")[0];
-		Date selectTime = null;
+		Date selectTimeH = null;
 		try {
-			selectTime = DateUtils.parseDate(selectTimeStr,"HH:mm");
+			selectTimeH = DateUtils.parseDate(selectTimeStr,"HH:mm");
 		} catch (ParseException e) {
 			return;
 		}
@@ -441,8 +443,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
 			//List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(workTime.getStartTime(),workTime.getEndTime());
 			if(!(
-					(selectTime.after(workTime.getStartTime()) || selectTime.compareTo(workTime.getStartTime())==0) &&
-							selectTime.before(workTime.getEndTime())
+					(selectTimeH.after(workTime.getStartTime()) || selectTimeH.compareTo(workTime.getStartTime())==0) &&
+							selectTimeH.before(workTime.getEndTime())
 			)){
 				it.remove();
 				if(techList.size() < techDispatchNum){//技师数量不够
@@ -453,7 +455,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, new Date(), "holiday");
+			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, serviceStart, "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
 				for (TechScheduleInfo holiday : techHolidyList) {
 					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
@@ -616,7 +618,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(techId, week, new Date(), "holiday");
+			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(techId, week, serviceStart, "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
 				for (TechScheduleInfo holiday : techHolidyList) {
 					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());

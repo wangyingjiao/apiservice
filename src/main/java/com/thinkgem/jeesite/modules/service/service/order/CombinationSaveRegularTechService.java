@@ -154,7 +154,7 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 			//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, new Date(), "holiday");
+			/*List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, new Date(), "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
 				for (TechScheduleInfo holiday : techHolidyList) {
 					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
@@ -171,7 +171,7 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 						continue;//下一位技师
 					}
 				}
-			}
+			}*/
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点  结束-------------
 
 			//----------取得技师 当天(15天中的某天)订单   如果和工作时间重复 删除该时间点 开始-------------------

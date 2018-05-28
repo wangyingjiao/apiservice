@@ -352,10 +352,11 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 
 	private void removeBusyTechByWeekTime(Date serviceTime, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
 		int week = DateUtils.getWeekNum(serviceTime);
+		Date selectTime = serviceTime;
+		Date selectTimeH = null;
 		String selectTimeStr = DateUtils.formatDate(serviceTime,"HH:mm");
-		Date selectTime = null;
 		try {
-			selectTime = DateUtils.parseDate(selectTimeStr,"HH:mm");
+			selectTimeH = DateUtils.parseDate(selectTimeStr,"HH:mm");
 		} catch (ParseException e) {
 			return;
 		}
@@ -380,8 +381,8 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
 			//List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(workTime.getStartTime(),workTime.getEndTime());
 			if(!(
-					(selectTime.after(workTime.getStartTime()) || selectTime.compareTo(workTime.getStartTime())==0) &&
-							selectTime.before(workTime.getEndTime())
+					(selectTimeH.after(workTime.getStartTime()) || selectTimeH.compareTo(workTime.getStartTime())==0) &&
+							selectTimeH.before(workTime.getEndTime())
 			)){
 				it.remove();
 				if(techList.size() < techDispatchNum){//技师数量不够
