@@ -83,6 +83,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private BigDecimal price;// 商品单价
 	private BigDecimal sum;// 小计
 	private String jointOrderSn;         //国安社区订单编号 对接取消订单使用
+	private String orgVisable;		// 用户是否可见(yes:可见;no:不可见;)
 
 	private List<OrderInfo> orderInfoList;
 
@@ -589,5 +590,13 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setOrderInfoList(List<OrderInfo> orderInfoList) {
 		this.orderInfoList = orderInfoList;
+	}
+
+	public String getOrgVisable() {
+		return orgVisable;
+	}
+
+	public void setOrgVisable(String orgVisable) {
+		this.orgVisable = orgVisable;
 	}
 }

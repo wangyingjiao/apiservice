@@ -116,6 +116,7 @@
         a.origin_price AS originPrice,
         a.org_id AS "orgId",
         org.name AS "orgName",
+        org.visable AS "orgVisable",
         a.station_id AS "stationId",
         sta.name AS "stationName",
         a.joint_group_id AS "jointGroupId",

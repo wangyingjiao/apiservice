@@ -118,6 +118,55 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 		BigDecimal bigDecimal = new BigDecimal(combinationById.getCombinationGoodsNum());
 		BigDecimal multiply = bigDecimal.multiply(goodsByGoodsId.getPrice());
 		info.setSum(multiply);
+		// 地址模糊显示
+		String orgVisable = combinationById.getOrgVisable();
+		OrderAddress addressInfo = combinationById.getAddressInfo();
+
+		if("gasq".equals(combinationById.getOrderSource()) && "no".equals(orgVisable)){
+			if(addressInfo != null){
+				OrderAddress address = new OrderAddress();
+				String name = addressInfo.getName();
+				if(StringUtils.isNotBlank(name) && name.length() > 0){
+					String newName = name.substring(0,1);
+					for(int i=1;i<name.length();i++){
+						newName = newName.concat("*");
+					}
+					address.setName(newName);
+				}else{
+					address.setName(name);
+				}
+				String phone = addressInfo.getPhone();
+				if(StringUtils.isNotBlank(phone) && phone.length() == 11){
+					address.setPhone(phone.substring(0, 3) + "****" + phone.substring(7, phone.length()));
+				}else{
+					address.setPhone(phone);
+				}
+				address.setDetailAddress(addressInfo.getPlacename() + "***");
+				combinationById.setAddressInfo(address);
+			}
+
+			String customerName = combinationById.getCustomerName();
+			if(StringUtils.isNotBlank(customerName) && customerName.length() > 0){
+				String newCustomerName = customerName.substring(0,1);
+				for(int i=1;i<customerName.length();i++){
+					newCustomerName = newCustomerName.concat("*");
+				}
+				combinationById.setCustomerName(newCustomerName);
+			}
+			String customerPhone = combinationById.getCustomerPhone();
+			if(StringUtils.isNotBlank(customerPhone) && customerPhone.length() == 11){
+				combinationById.setCustomerPhone(customerPhone.substring(0, 3) + "****" + customerPhone.substring(7, customerPhone.length()));
+			}
+
+		}else{
+			if(addressInfo != null){
+				OrderAddress address = new OrderAddress();
+				address.setName(addressInfo.getName());
+				address.setPhone(addressInfo.getPhone());
+				address.setDetailAddress(addressInfo.getAddress());
+				combinationById.setAddressInfo(address);
+			}
+		}
 		list.add(info);
 		combinationById.setCombinationOrderInfos(list);
         return combinationById;
