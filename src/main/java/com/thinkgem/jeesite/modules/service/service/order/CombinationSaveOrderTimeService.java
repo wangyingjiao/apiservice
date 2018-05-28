@@ -59,12 +59,27 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		List<Date> dateList = DateUtils.getAfterSevenDays();
 		List<OrderTimeList> list = new ArrayList<>();
 		int value = 1;
+		OrderInfo orderInfo1 = orderInfoDao.get(orderInfo.getId());
+		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
+		List<OrderGoods> goodsInfoList = orderInfoDao.getOrderGoodsList(orderInfo1); //取得订单服务信息
+		String orderGroupId = null;
+		Map<String,Object> map=new HashMap<String,Object>();
+		if (!"group_split_yes".equals(orderInfo1.getOrderType())) {
+			orderInfoList.add(orderInfo1);
+		}else {
+			//根据orderNumber masterId获取组合订单的orderGroupId
+			OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(orderInfo1);
+			orderGroupId = listByOrderNumber.getOrderGroupId();
+			//根据groupId获取组合订单的订单集合
+			orderInfoList = orderInfoDao.getOrderListByOrderGroupId(listByOrderNumber);
+		}
+		if (orderInfoList == null || orderInfoList.size() < 1){
+			throw new ServiceException("未找到该订单！");
+		}
+		int techDispatchNum = 1;//派人数量
+		double serviceHour = orderInfo1.getServiceHour();//建议服务时长（小时）
 
-		List<OrderGoods> goodsInfoList = orderInfoDao.getOrderGoodsList(orderInfo); //取得订单服务信息
-		int techDispatchNum = orderToolsService.getTechDispatchNumByGoodsList(goodsInfoList);//派人数量
-		double serviceHour = orderToolsService.getServiceHourByGoodsList(goodsInfoList);//建议服务时长（小时）
-
-		orderInfo = orderInfoDao.get(orderInfo);
+		orderInfo = orderInfoList.get(0);
 		String stationId = orderInfo.getStationId();//服务站ID
 		if(null == stationId){
 			logger.error("未找到当前订单的服务站信息");
@@ -75,10 +90,6 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 
 		String skillId = orderToolsService.getSkillIdByOrgSort(orderInfo.getOrgId(), orderToolsService.getNotFullGoodsSortId(goodsInfoList));
 		List<OrderDispatch> techList = orderToolsService.listTechByStationSkillOrder(stationId, skillId, null,true,null);
-
-		if(techList.size() < techDispatchNum){//技师数量不够
-			return null;
-		}
 
 		for(Date date : dateList){
 			OrderTimeList responseRe = new OrderTimeList();
@@ -244,6 +255,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		Date serviceTime = orderInfo.getServiceTime();
 		//建议服务时长（小时）
 		Double serviceHour = info.getServiceHour();
+		String typeId=null;
 		//建议完成时间
 		Date finishTime =null;
 		//根据masterId去查组合订单主表
@@ -255,23 +267,27 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 			//拆单 根据order_group_id order_number查询所有集合
 			int size = 0;
 			OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(info);
-			List<OrderCombinationGasqInfo> listByOrderGroupId = orderCombinationGasqDao.getListByOrderGroupId(listByOrderNumber);
-			if (listByOrderGroupId != null && listByOrderGroupId.size() > 0){
-				size = listByOrderGroupId.size();
+			List<OrderInfo> orderInfoList = orderInfoDao.getOrderListByOrderGroupId(listByOrderNumber);
+			if (orderInfoList != null && orderInfoList.size() > 0){
+				size = orderInfoList.size();
 			}
+			info=orderInfoList.get(0);
 			//计算订单的建议完成时间
 			Double serviceSecond = (serviceHour * size * 3600);
 			finishTime = DateUtils.addSeconds(serviceTime, serviceSecond.intValue());
+			typeId=listByOrderNumber.getOrderGroupId();
 		}
 		if ("group_split_no".equals(combinationById.getOrderType())){
 			//计算订单的建议完成时间
+			typeId=orderInfo.getId();
 			Double serviceSecond = (serviceHour * 3600);
 			finishTime = DateUtils.addSeconds(serviceTime, serviceSecond.intValue());
 		}
-		info.setServiceTime(orderInfo.getServiceTime());
+		info.setServiceTime(serviceTime);
 		info.setFinishTime(finishTime);
 		info.setSerchFullTech(true);
-		List<OrderDispatch> techList = orderToolsService.listTechByGoodsAndTimeAndOldTech(info);
+		info.setSerchNowOrderId(typeId);
+		List<OrderDispatch> techList = orderToolsService.listTechByGoodsAndTimeAndOldTechCom(info);
 		//当前技师
 		List<OrderDispatch> byOrderId = orderDispatchDao.getByOrderId(orderInfo);
 		OrderDispatch orderDispatch = byOrderId.get(0);
@@ -316,6 +332,7 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
                 Double serviceSecondTem = (bySn.getServiceHour() * 3600);
                 Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
                 bySn.setSuggestFinishTime(date);
+                bySn.setFinishTime(date);
                 bySn.preUpdate();
                 //先将订单表修改 *******
                 orderInfoDao.saveOrderTime(bySn);

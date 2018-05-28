@@ -375,6 +375,148 @@ public class OrderToolsService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		return techListRe;
 	}
+	/**
+	 * 根据商品信息和服务时间返回技师列表(web组合订单更换时间中 更换技师时 展示原来的技师)
+	 * @param orderInfo
+	 * @return
+	 */
+	public List<OrderDispatch> listTechByGoodsAndTimeAndOldTechCom(OrderInfo orderInfo) {
+		String serchTechName = orderInfo.getTechName();//技师列表查询条件
+		//根据订单ID取得当前订单信息
+		String orderId = orderInfo.getId();
+		String orgId = orderInfo.getOrgId();//机构ID
+		String stationId = orderInfo.getStationId();//服务站ID
+		Date serviceTime = orderInfo.getServiceTime();//服务时间
+		Date finishTime = orderInfo.getFinishTime();//完成时间
+		String sortId = orderInfo.getGoodsSortId();
+		boolean serchFullTech = orderInfo.getSerchFullTech();
+		String serchNowOrderId = orderInfo.getSerchNowOrderId();
+
+		// 根据订单ID返回分类ID
+		if(StringUtils.isBlank(sortId)) {
+			sortId = dao.getSortIdByOrderId(orderInfo);
+		}
+		// 根据机构ID、分类ID返回技能ID
+		String skillId = getSkillIdByOrgSort(orgId, sortId);
+
+		// 取得符合条件的技师
+		List<OrderDispatch> techList = listTechByStationSkillOrderAndOldTech(stationId, skillId, orderId, serchFullTech, serchTechName);
+		List<String> techIdList = new ArrayList<>();
+		List<OrderDispatch> techListPart = new ArrayList<>();//兼职
+		List<String> techIdListPart = new ArrayList<>();
+		List<OrderDispatch> techListFull = new ArrayList<>();//全职
+		List<String> techIdListFull = new ArrayList<>();
+		if(null != techList){
+			for(OrderDispatch orderDispatch : techList){
+				if("part_time".equals(orderDispatch.getJobNature())){
+					techListPart.add(orderDispatch);
+					techIdListPart.add(orderDispatch.getTechId());
+				}else{
+					techListFull.add(orderDispatch);
+					techIdListFull.add(orderDispatch.getTechId());
+				}
+				techIdList.add(orderDispatch.getTechId());
+			}
+		}
+		List<String> checkWorkTechIdList = new ArrayList<String>();
+		List<String> checkHolidyTechIdList = new ArrayList<String>();
+		List<String> checkOrderTechIdList = new ArrayList<String>();
+
+		if(techIdListFull != null && techIdListFull.size() > 0) {
+			//（3）考虑技师的工作时间
+			//取得当前机构下工作时间包括服务时间的技师
+			List<ServiceTechnicianWorkTime> techWorkList = listTechWorkByTechsTime(techIdListFull, serviceTime);
+			if (techWorkList != null) {
+				for (ServiceTechnicianWorkTime techWork : techWorkList) {
+					//Date techWorkStartTime = techWork.getStartTime();//工作开始时间
+					//Date techWorkEndTime = techWork.getEndTime();//工作结束时间
+					Date techWorkStartTime = DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd")
+							+ " " + DateUtils.formatDate(techWork.getStartTime(), "HH:mm:ss"));//工作开始时间
+					Date techWorkEndTime = DateUtils.parseDate(DateUtils.formatDate(serviceTime, "yyyy-MM-dd")
+							+ " " + DateUtils.formatDate(techWork.getEndTime(), "HH:mm:ss"));//工作结束时间
+					if (techWorkStartTime.before(techWorkEndTime) && serviceTime.before(finishTime)) {
+						// 订单时间在工作时间内,可以下单
+						if ((techWorkStartTime.before(serviceTime) || techWorkStartTime.compareTo(serviceTime) == 0)
+								&& (techWorkEndTime.after(serviceTime) || techWorkEndTime.compareTo(serviceTime) == 0)) {
+							checkWorkTechIdList.add(techWork.getTechId());
+						}
+					}
+				}
+			}
+
+			//（4）考虑技师的休假时间
+			List<TechScheduleInfo> techHolidyList = listTechScheduleByTechsTime(techIdListFull, serviceTime, "holiday");
+			if (techHolidyList != null) {
+				for (TechScheduleInfo techHolidy : techHolidyList) {
+					Date techHolidyStartTime = techHolidy.getStartTime();//休假开始时间
+					Date techHolidyEndTime = techHolidy.getEndTime();//休假结束时间
+					if (techHolidyStartTime.before(techHolidyEndTime) && serviceTime.before(finishTime)) {
+						// 订单时间和休假时间有重合,不可下单
+						if (!DateUtils.checkDatesRepeat(techHolidyStartTime, techHolidyEndTime, serviceTime, finishTime)) {
+							checkHolidyTechIdList.add(techHolidy.getTechId());
+						}
+					}
+				}
+			}
+		}
+
+		if(techIdList != null && techIdList.size() > 0) {
+			// 考虑技师的订单
+			List<TechScheduleInfo> techOrderList = listTechScheduleByTechsTime(techIdList, serviceTime, "master");
+			if (techOrderList != null) {
+				int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+				int intervalTimeE = 0;//必须间隔时间 秒
+				if (11 <= Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) &&
+						Integer.parseInt(DateUtils.formatDate(finishTime, "HH")) < 14) {
+					//可以接单的时间则为：40分钟+路上时间+富余时间
+					intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
+				} else {
+					//可以接单的时间则为：路上时间+富余时间
+					intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
+				}
+				Date checkServiceTime = DateUtils.addSecondsNotDayB(serviceTime, -intervalTimeS);
+				Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
+
+				for (TechScheduleInfo techOrder : techOrderList) {
+					if(!techOrder.getTypeId().equals(serchNowOrderId)) {//当前订单不考虑
+						Date techOrderStartTime = techOrder.getStartTime();//订单开始时间
+						Date techOrderEndTime = techOrder.getEndTime();//订单结束时间
+						if (techOrderStartTime.before(techOrderEndTime) && serviceTime.before(finishTime)) {
+							if (11 <= Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(techOrderEndTime, "HH")) < 14) {
+								techOrderEndTime = DateUtils.addSeconds(techOrderEndTime, Integer.parseInt(Global.getConfig("order_eat_time")));
+							}
+							// 订单时间和已有订单时间有重合,不可下单
+							if (!DateUtils.checkDatesRepeat(checkServiceTime, checkFinishTime, techOrderStartTime, techOrderEndTime)) {
+								checkOrderTechIdList.add(techOrder.getTechId());
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 返回的技师列表
+		List<OrderDispatch> techListRe = new ArrayList<>();
+		if(techIdList != null){
+			for(OrderDispatch tech : techList){
+				// 全职技师
+				if(techIdListFull.contains(tech.getTechId())){
+					if(checkWorkTechIdList.contains(tech.getTechId())// 有工作时间
+							&& !checkHolidyTechIdList.contains(tech.getTechId())// 没有休假
+							&& !checkOrderTechIdList.contains(tech.getTechId())){// 没有订单
+						techListRe.add(tech);
+					}
+				}else{
+					// 兼职技师
+					if(!checkOrderTechIdList.contains(tech.getTechId())){// 没有订单
+						techListRe.add(tech);
+					}
+				}
+			}
+		}
+		return techListRe;
+	}
 
 	/**
 	 * 根据技师List、时间 取得工作时间
