@@ -612,6 +612,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			orderCombinationGasqDao.updateOrderGroup(combinationGasqInfo);
 
 			orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
+			orderInfoList.get(i).setServiceTimeForGroup(groupServiceTime);
 
 			// order_info  对接订单ID 更新
 			OrderInfo updateJointInfo = new OrderInfo();

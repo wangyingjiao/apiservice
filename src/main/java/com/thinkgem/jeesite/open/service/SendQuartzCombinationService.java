@@ -239,6 +239,14 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 					serviceStartEndTime = frequency.getEndTime();
 				}
 			}
+            String startTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+                    +  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
+            Date startTime = DateUtils.parseDate(startTimeStr);
+
+            String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+                    +  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
+            Date endTime = DateUtils.parseDate(endTimeStr);
+
             serviceNum = (remainderOfBespeak-orderList.size()) < serviceNum ? (remainderOfBespeak-orderList.size()) : serviceNum;
 			List<Date> listDate = DateUtils.listTimeByFrequency(creartDate, serviceStartBeginTime, serviceNum, serviceHour);
 			//根据组合商品ID返回子商品信息
@@ -267,6 +275,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 				orderCombinationGasqDao.updateOrderGroup(combinationGasqInfo);
 
 				orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
+                orderInfoList.get(i).setServiceTimeForGroup(startTime);
 
 				// order_info  对接订单ID 更新
 				OrderInfo updateJointInfo = new OrderInfo();
@@ -278,14 +287,6 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 			}
 
             // tech_schedule  服务技师排期 --------------------------------------------------------------
-            String startTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
-                    +  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
-            Date startTime = DateUtils.parseDate(startTimeStr);
-
-            String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
-                    +  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
-            Date endTime = DateUtils.parseDate(endTimeStr);
-
             openCreateForTechSchedule(techId, startTime, endTime, groupId, masterId);
 
 			//更新已预约次数

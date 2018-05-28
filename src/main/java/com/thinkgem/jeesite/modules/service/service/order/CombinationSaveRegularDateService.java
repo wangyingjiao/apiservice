@@ -863,6 +863,15 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 					serviceStartEndTime = frequency.getEndTime();
 				}
 			}
+
+			String startTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+					+  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
+			Date startTime = DateUtils.parseDate(startTimeStr);
+
+			String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+					+  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
+			Date endTime = DateUtils.parseDate(endTimeStr);
+
 			serviceNum = (remainderOfBespeak-orderList.size()) < serviceNum ? (remainderOfBespeak-orderList.size()) : serviceNum;
 			List<Date> listDate = DateUtils.listTimeByFrequency(creartDate, serviceStartBeginTime, serviceNum, combinationInfo.getServiceHour());
 			//根据组合商品ID返回子商品信息
@@ -888,7 +897,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				orderCombinationGasqDao.updateOrderGroup(combinationGasqInfo);
 
 				orderInfoList.get(i).setJointOrderId(combinationGasqInfo.getJointOrderSn());
-
+				orderInfoList.get(i).setServiceTimeForGroup(startTime);
 
 				// order_info  对接订单ID 更新
 				OrderInfo updateJointInfo = new OrderInfo();
@@ -899,14 +908,6 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			}
 
 			// tech_schedule  服务技师排期 ------------------------------------------------------------------------------
-
-			String startTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
-					+  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
-			Date startTime = DateUtils.parseDate(startTimeStr);
-
-			String endTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
-					+  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
-			Date endTime = DateUtils.parseDate(endTimeStr);
 
 			openCreateForTechSchedule(combinationInfo.getTechId(), startTime, endTime, groupId, masterId);
 

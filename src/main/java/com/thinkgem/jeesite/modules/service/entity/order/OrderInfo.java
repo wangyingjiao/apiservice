@@ -132,6 +132,8 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private String jointGroupId;		// 对接订单组ID（组合订单）
 	private int combinationGoodsNum;
 
+	private Date serviceTimeForGroup;		// 服务时间 一组订单的开始时间
+
 	public List<String> getRefundGoodsList() {
 		return refundGoodsList;
 	}
@@ -981,5 +983,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setServiceHourStr(String serviceHourStr) {
 		this.serviceHourStr = serviceHourStr;
+	}
+
+	public Date getServiceTimeForGroup() {
+		return serviceTimeForGroup;
+	}
+
+	public void setServiceTimeForGroup(Date serviceTimeForGroup) {
+		this.serviceTimeForGroup = serviceTimeForGroup;
 	}
 }
