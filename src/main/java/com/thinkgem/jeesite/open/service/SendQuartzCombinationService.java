@@ -140,6 +140,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
         List<OrderCombinationFrequencyInfo> freList = info.getFreList();
         Date serviceStart = info.getServiceStart();
         int num = info.getBespeakTotal();
+        int serviceNum = info.getServiceNum();
 
         List<Date> list = new ArrayList<>();
         List<String> weekList = new ArrayList<>();
@@ -183,7 +184,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
             maxNum = num;
         }
         List<Date> listDate = new ArrayList<>();
-        for(int i=0;i<maxNum;i++){
+        for(int i=0;i<maxNum;i=i+serviceNum){
             listDate.add(list.get(i));
         }
         return listDate;
@@ -213,6 +214,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
         Double serviceHour = info.getServiceHour();
         String techId = info.getTechId();
         String combinationGoodsId = info.getCombinationGoodsId();
+        int remainderOfBespeak = info.getBespeakTotal() - info.getBespeakNum();
 
         //返回时间数组的最后日期
         Date serviceEnd = getLastDate(dateList);
@@ -235,7 +237,7 @@ public class SendQuartzCombinationService extends CrudService<OrderInfoDao, Orde
 					serviceStartEndTime = frequency.getEndTime();
 				}
 			}
-
+            serviceNum = (remainderOfBespeak-orderList.size()) < serviceNum ? remainderOfBespeak : serviceNum;
 			List<Date> listDate = DateUtils.listTimeByFrequency(creartDate, serviceStartBeginTime, serviceNum, serviceHour);
 			//根据组合商品ID返回子商品信息
 			OrderGoods goods = getOrderGoodsByCombination(combinationGoodsId);
