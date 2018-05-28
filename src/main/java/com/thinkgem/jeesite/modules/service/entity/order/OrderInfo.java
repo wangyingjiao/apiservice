@@ -44,6 +44,7 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 	private Date suggestFinishTime;		// 建议完成时间
 	private Date realServiceTime;		//操作‘上门服务’动作的时间
 	private Double serviceHour; //建议服务时长（小时）
+	private String serviceHourStr; //建议服务时长（小时）
 	private String serviceStatus;//服务状态(wait_service:待服务 started:已上门, finish:已完成, cancel:已取消)
 	private String orderStatus;		// 订单状态(waitdispatch:待派单;dispatched:已派单;cancel:已取消;started:已上门;finish:已完成;success:已成功;stop:已暂停)
 	private String orderSource;		// 订单来源(own:本机构 gasq:国安社区)
@@ -972,5 +973,13 @@ public class OrderInfo extends DataEntity<OrderInfo> {
 
 	public void setRealPayment(String realPayment) {
 		this.realPayment = realPayment;
+	}
+
+	public String getServiceHourStr() {
+		return serviceHourStr;
+	}
+
+	public void setServiceHourStr(String serviceHourStr) {
+		this.serviceHourStr = serviceHourStr;
 	}
 }

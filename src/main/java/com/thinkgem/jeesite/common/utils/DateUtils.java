@@ -138,6 +138,25 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
+	 * 将2.5小时转化为2小时30分钟
+	 * @param mss
+	 * @return
+	 */
+	public static String dateToStrDays(Double mss) {
+		String DateTimes = null;
+		Double hours = (mss % ( 60 * 60 * 24)) / (60 * 60);
+		int i = hours.intValue();
+		Double minutes = (mss % ( 60 * 60)) /60;
+		if(hours>0){
+			DateTimes=i + "小时" + minutes.intValue() + "分钟";
+
+		}else if(minutes>0){
+			DateTimes=minutes.intValue() + "分钟";
+		}
+
+		return DateTimes;
+	}
+	/**
 	 * 获取过去的分钟
 	 *
 	 * @param date

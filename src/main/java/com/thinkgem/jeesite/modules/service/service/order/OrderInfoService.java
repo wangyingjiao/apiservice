@@ -227,6 +227,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}
 		orderInfo.setNowId(info.getNowId());
 		OrderGoods goodsInfo = new OrderGoods();
+		//服务时长
+		Double serviceHour = orderInfo.getServiceHour();
+		orderInfo.setServiceHourStr(DateUtils.dateToStrDays(serviceHour));
 		//订单的类型
 		String orderType = orderInfo.getOrderType();
 		if ("common".equals(orderType)){

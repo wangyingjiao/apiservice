@@ -616,7 +616,8 @@ origin_price,
 	<update id="saveOrderTime">
 		UPDATE order_info SET
 			service_time = #{serviceTime},
-			suggest_finish_time = #{suggestFinishTime}
+			suggest_finish_time = #{suggestFinishTime},
+			finish_time = #{finishTime}
 		WHERE id = #{id}
 	</update>
 
