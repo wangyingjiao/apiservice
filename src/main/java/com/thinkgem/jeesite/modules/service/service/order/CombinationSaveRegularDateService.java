@@ -152,7 +152,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				responseRe.setValue(String.valueOf(i));
 				responseRe.setLabel(String.valueOf(i));
 				//该日服务时间点列表
-				List<OrderDispatch> hours = listHourByWeek(i, map,techList, techDispatchNum,serviceSecond);
+				List<OrderDispatch> hours = listHourByWeek(i, map,techList, techDispatchNum,serviceSecond,masterId);
 				if(hours!= null && hours.size()>0){
 					List<KeyValueEntity> hoursList = new ArrayList<>();
 					for(int j=0;j<hours.size();j++){
@@ -172,7 +172,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		return list;
 	}
 
-	private List<OrderDispatch> listHourByWeek(int week, Map<String,Date> map, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
+	private List<OrderDispatch> listHourByWeek(int week, Map<String,Date> map, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond,String masterId) {
 		List<OrderDispatch> techForList = new ArrayList<>();
 		if(techList != null){//深浅拷贝问题
 			for(OrderDispatch dispatch: techList){
@@ -227,35 +227,37 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				List<OrderCombinationFrequencyInfo> frequencyList = combinationOrderDao.listFrequencyByTechWeek(serchCombinationInfo);
 				if (frequencyList != null && frequencyList.size() != 0) {
 					for (OrderCombinationFrequencyInfo frequency : frequencyList) {
-						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-						}
+						if(!masterId.equals(frequency.getMasterId())){
+							int intervalTimeS = 0;//必须间隔时间 秒
+							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+								//可以接单的时间则为：40分钟+路上时间+富余时间
+								intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
+							} else {
+								//可以接单的时间则为：路上时间+富余时间
+								intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
+							}
 
-						int intervalTimeE = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
-						}
+							int intervalTimeE = 0;//必须间隔时间 秒
+							if (11 <= Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) < 14) {
+								//可以接单的时间则为：40分钟+路上时间+富余时间
+								intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
+							} else {
+								//可以接单的时间则为：路上时间+富余时间
+								intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
+							}
 
-						List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-								DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
-								DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
-						if (orders != null && workTimes!= null) {
-							Iterator<String> it2 = workTimes.iterator();
-							while (it2.hasNext()) {
-								String work = it2.next();
-								if (orders.contains(work)) {//去除订单时间
-									it2.remove();
+							List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
+									DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
+									DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
+							if (orders != null && workTimes!= null) {
+								Iterator<String> it2 = workTimes.iterator();
+								while (it2.hasNext()) {
+									String work = it2.next();
+									if (orders.contains(work)) {//去除订单时间
+										it2.remove();
+									}
 								}
 							}
 						}
@@ -268,36 +270,38 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), date, "order");
 				if (techOrderList != null && techOrderList.size() != 0) {
 					for (TechScheduleInfo order : techOrderList) {
-						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-						}
+						if (!masterId.equals(order.getMasterId())) {
+							int intervalTimeS = 0;//必须间隔时间 秒
+							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+								//可以接单的时间则为：40分钟+路上时间+富余时间
+								intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
+							} else {
+								//可以接单的时间则为：路上时间+富余时间
+								intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
+							}
 
-						int intervalTimeE = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));
-						}
+							int intervalTimeE = 0;//必须间隔时间 秒
+							if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+									Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
+								//可以接单的时间则为：40分钟+路上时间+富余时间
+								intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
+							} else {
+								//可以接单的时间则为：路上时间+富余时间
+								intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
+							}
 
-						List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-								DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
-								DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
-						if (orders != null && workTimes!= null) {
-							Iterator<String> it2 = workTimes.iterator();
-							while (it2.hasNext()) {
-								String work = (String) it2.next();
-								if (orders.contains(work)) {//去除订单时间
-									it2.remove();
-									//continue;
+							List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
+									DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
+									DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
+							if (orders != null && workTimes != null) {
+								Iterator<String> it2 = workTimes.iterator();
+								while (it2.hasNext()) {
+									String work = (String) it2.next();
+									if (orders.contains(work)) {//去除订单时间
+										it2.remove();
+										//continue;
+									}
 								}
 							}
 						}

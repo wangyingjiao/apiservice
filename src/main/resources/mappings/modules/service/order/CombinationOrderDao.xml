@@ -324,6 +324,7 @@
 
     <select id="listFrequencyByTechWeek" resultType="OrderCombinationFrequencyInfo">
         select
+        a.master_id AS "masterId",
         a.start_time AS "startTime",
         a.end_time AS "endTime"
         from  order_combination_frequency a ,order_combination_info o
