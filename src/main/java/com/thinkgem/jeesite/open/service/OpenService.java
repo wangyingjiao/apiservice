@@ -459,6 +459,22 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			throw new ServiceException("未接收到订单信息!");
 		}
 
+		// 验证订单是否存在
+		List<String> gasqOrderSnList = info.getGasq_order_sn();
+		if(gasqOrderSnList==null || gasqOrderSnList.size()!=1){
+			throw new ServiceException("国安社区订单SN不能为空");
+		}
+		String gasq_order_sn = gasqOrderSnList.get(0);
+		if(null == gasq_order_sn){
+			throw new ServiceException("国安社区订单SN不能为空");
+		}
+		OrderInfo cheackSerchInfo = new OrderInfo();
+		cheackSerchInfo.setJointOrderId(gasq_order_sn);
+		OrderInfo cheackInfo = orderInfoDao.getOrderInfoByJointOrderSn(cheackSerchInfo);
+		if(cheackInfo!=null){
+			throw new ServiceException("国安社区订单SN不能重复！");
+		}
+
 		// order_master_info  订单主表 ---------------------------------------------------------------------------
 		OrderMasterInfo masterInfo = new OrderMasterInfo();
 		try {

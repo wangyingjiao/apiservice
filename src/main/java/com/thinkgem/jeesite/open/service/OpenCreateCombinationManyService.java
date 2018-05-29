@@ -93,6 +93,16 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 			throw new ServiceException("未接收到订单信息!");
 		}
 
+		// 验证订单是否存在
+		String group_id = info.getGroup_id();
+		if(null == group_id){
+			throw new ServiceException("组合订单ID不能为空");
+		}
+		CombinationOrderInfo cheackInfo = combinationOrderDao.getCombinationByGroupId(group_id);
+		if(cheackInfo!=null){
+			throw new ServiceException("组合订单ID不能重复！");
+		}
+
 		// order_master_info  订单主表 ---------------------------------------------------------------------------
 		OrderMasterInfo masterInfo = new OrderMasterInfo();
 		try {
