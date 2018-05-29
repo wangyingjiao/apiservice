@@ -120,7 +120,8 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 
 	private void removeBusyTechByWeekTime(OrderCombinationFrequencyInfo frequencyInfo, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
 		int week = frequencyInfo.getWeek();
-		Date selectTime = frequencyInfo.getStartTime();
+		Date checkStartTime = frequencyInfo.getStartTime();
+		Date checkEndTime = frequencyInfo.getEndTime();
 
 		Iterator<OrderDispatch> it = techList.iterator();
 		while(it.hasNext()) {//循环技师List 取得可用时间
@@ -142,16 +143,41 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 
 			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
 			//List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(workTime.getStartTime(),workTime.getEndTime());
-			if(!(
-					(selectTime.after(workTime.getStartTime()) || selectTime.compareTo(workTime.getStartTime())==0) &&
-							selectTime.before(workTime.getEndTime())
-			)){
+//			if(!(
+//					(selectTime.after(workTime.getStartTime()) || selectTime.compareTo(workTime.getStartTime())==0) &&
+//							selectTime.before(workTime.getEndTime())
+//			)){
+//				it.remove();
+//				if(techList.size() < techDispatchNum){//技师数量不够
+//					return;
+//				}
+//				continue;//下一位技师
+//			}
+
+			Date techWorkStartTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
+					+ " " + DateUtils.formatDate(workTime.getStartTime(), "HH:mm:ss"));//工作开始时间
+			Date techWorkEndTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
+					+ " " + DateUtils.formatDate(workTime.getEndTime(), "HH:mm:ss"));//工作结束时间
+			if (techWorkStartTime.before(techWorkEndTime) && checkStartTime.before(checkEndTime)) {
+				// 订单时间在工作时间内,可以下单
+				if ((techWorkStartTime.before(checkStartTime) || techWorkStartTime.compareTo(checkStartTime) == 0)
+						&& (techWorkEndTime.after(checkStartTime) || techWorkEndTime.compareTo(checkStartTime) == 0)) {
+
+				}else{
+					it.remove();
+					if(techList.size() < techDispatchNum){//技师数量不够
+						return;
+					}
+					continue;//下一位技师
+				}
+			}else{
 				it.remove();
 				if(techList.size() < techDispatchNum){//技师数量不够
 					return;
 				}
 				continue;//下一位技师
 			}
+
 			//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
@@ -183,9 +209,15 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 			List<OrderCombinationFrequencyInfo> frequencyList = combinationOrderDao.listFrequencyByTechWeek(serchCombinationInfo);
 			if (frequencyList != null && frequencyList.size() != 0) {
 				for (OrderCombinationFrequencyInfo frequency : frequencyList) {
+
+					Date frequencyStartTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
+							+ " " + DateUtils.formatDate(frequency.getStartTime(), "HH:mm:ss"));//工作开始时间
+					Date frequencyEndTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
+							+ " " + DateUtils.formatDate(frequency.getEndTime(), "HH:mm:ss"));//工作结束时间
+
 					int intervalTimeS = 0;//必须间隔时间 秒
-					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
+					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 						//可以接单的时间则为：40分钟+路上时间+富余时间
 						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
 					} else {
@@ -194,8 +226,8 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 					}
 
 					int intervalTimeE = 0;//必须间隔时间 秒
-					if (11 <= Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) &&
-							Integer.parseInt(DateUtils.formatDate(frequency.getEndTime(), "HH")) < 14) {
+					if (11 <= Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) &&
+							Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) < 14) {
 						//可以接单的时间则为：40分钟+路上时间+富余时间
 						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
 					} else {
@@ -206,11 +238,20 @@ public class CombinationSaveRegularTechService extends CrudService<CombinationOr
 //					List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
 //							DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
 //							DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
-					if(
-							(selectTime.after(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))
-									|| selectTime.compareTo(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))==0) &&
-									selectTime.before(DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE))
-							){
+//					if(
+//							(selectTime.after(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))
+//									|| selectTime.compareTo(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))==0) &&
+//									selectTime.before(DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE))
+//							){
+//						it.remove();
+//						if(techList.size() < techDispatchNum){//技师数量不够
+//							return;
+//						}
+//						continue;//下一位技师
+//					}
+					Date orderStartTime = DateUtils.addSecondsNotDayB(frequencyStartTime, -intervalTimeS);
+					Date orderEndTime = DateUtils.addSecondsNotDayE(frequencyEndTime, intervalTimeE);
+					if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
 						it.remove();
 						if(techList.size() < techDispatchNum){//技师数量不够
 							return;
