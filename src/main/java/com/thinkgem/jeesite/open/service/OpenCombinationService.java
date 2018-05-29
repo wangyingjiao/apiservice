@@ -410,14 +410,31 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		OpenUpdateInfoResponse response = new OpenUpdateInfoResponse();
 		//根据group_id查组合订单主表 获取masterId
 		CombinationOrderInfo combinationByGroupId = combinationOrderDao.getCombinationByGroupId(info.getGroup_id());
+		//只针对组合并拆单
+		if (combinationByGroupId == null){
+			throw new ServiceException("未找到该组合订单，请重新输入");
+		}
+		if (!"group_split_yes".equals(combinationByGroupId.getOrderType())){
+			throw new ServiceException("该订单不是组合并拆单，不可进行此操作");
+		}
 		combinationByGroupId.setJointOrderSn(info.getGasq_order_sn());
-		//根据joint_order_sn找到order_group_id  和一条要取消的数据
+		//根据joint_order_sn找到order_group_id  一条要取消的数据
 		OrderCombinationGasqInfo gasqByOrderSn = orderCombinationGasqDao.getGasqByOrderSn(combinationByGroupId);
+		if (gasqByOrderSn == null){
+			throw new ServiceException("未在对接表中找到该订单");
+		}
 		OrderInfo cancleOrderInfo=new OrderInfo();
 		cancleOrderInfo.setOrderNumber(gasqByOrderSn.getOrderNumber());
+		User user=new User();
+		user.setId("gasq001");
 		//想要取消的订单
 		OrderInfo cancleOrder = orderInfoDao.getBySn(cancleOrderInfo);
+		if (cancleOrder == null){
+			throw new ServiceException("未找到该订单，请重新输入");
+		}
+		String orderId = cancleOrder.getId();
 		String orderNumber = cancleOrder.getOrderNumber();
+		int size=0;
 		//根据order_group_id找到多个子订单 并按服务时间排序
 		List<OrderInfo> listByOrderGroupId = orderInfoDao.getListByOrderGroupId(gasqByOrderSn);
 		if (listByOrderGroupId == null || listByOrderGroupId.size() < 1){
@@ -425,12 +442,19 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 		}
 		Date serviceTime = listByOrderGroupId.get(0).getServiceTime();
 		Double serviceHour = listByOrderGroupId.get(0).getServiceHour();
-		int size=listByOrderGroupId.size() - 1;
-		//修改组合订单主表  已预约次数-1
+		int listByOrderGroupIdSize = listByOrderGroupId.size();
+		//计算子订单数量 用于计算时间
+		if (listByOrderGroupIdSize == 1){
+			size=listByOrderGroupIdSize;
+		}else {
+			size = listByOrderGroupId.size() - 1;
+		}
+		OrderInfo lastOrder = listByOrderGroupId.get(listByOrderGroupIdSize-1);
+	// 1 修改组合订单主表  已预约次数-1
 		int bespeakNum = combinationByGroupId.getBespeakNum();
 		combinationByGroupId.setBespeakNum(bespeakNum - 1);
 		combinationOrderDao.updateBespeakNumByMasterId(combinationByGroupId);
-		//1。只针对组合并拆单  排期表只有一个 把排期表中结束时间修改(原-服务时长)
+		//1。  排期表只有一个 把排期表中结束时间修改(原-服务时长)
 		Double serviceSecondTem = (serviceHour * size * 3600);
 		Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
@@ -446,30 +470,38 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 			//开始时间不对
 			throw new ServiceException("排期表中起始时间不对");
 		}
-		techScheduleInfo1.setEndTime(date);
-		//修改排期表
-		techScheduleDao.updateScheduleByTypeIdTech(techScheduleInfo1);
-		//修改派单表
+	// 2 只有一个子订单的 直接删除排期表 多个修改结束时间
+		techScheduleInfo1.setUpdateBy(user);
+		techScheduleInfo1.setUpdateDate(new Date());
+		if (listByOrderGroupIdSize == 1){
+			techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfo1);
+		}else {
+			techScheduleInfo1.setEndTime(date);
+			//修改排期表
+			techScheduleDao.updateScheduleByTypeIdTech(techScheduleInfo1);
+		}
+		//修改派单表(暂时不删除)
 		List<OrderDispatch> byOrderId = orderDispatchDao.getDisByOrderId(cancleOrder);
 		if (byOrderId == null || byOrderId.size() < 1 ){
 			throw new ServiceException("未在派单表中找到该订单");
 		}
-		OrderDispatch orderDispatch = byOrderId.get(0);
-		String orderId = cancleOrder.getId();
-		orderDispatch.setDelFlag("1");
-		int delete = orderDispatchDao.delete(orderDispatch);
-		if (delete < 0){
-			throw new ServiceException("删除派单表失败");
-		}
-	//2。 修改order 和order_combination_info表
-		OrderInfo lastOrder = listByOrderGroupId.get(size);
+		OrderDispatch orderDispatchMess = byOrderId.get(0);
+//		for (OrderDispatch orderDispatch:byOrderId){
+//			orderDispatch.setDelFlag("1");
+//			int delete = orderDispatchDao.delete(orderDispatch);
+//			if (delete < 0){
+//				throw new ServiceException("删除派单表失败");
+//			}
+//		}
+	//3。 修改order表  一个子订单直接删除 多个的把最后的时间修改为已删除的时间
+
 		//第一种  如果要取消的是最后一个订单 直接把最后一条状态置为取消
 		if (cancleOrder.getId().equals(lastOrder.getId())){
 			cancleOrder.setOrderStatus("cancel");
 			cancleOrder.setServiceStatus("cancel");
-			cancleOrder.setCancelReason("other");
-			cancleOrder.preUpdate();
-			int i = orderInfoDao.orderCancel(cancleOrder);
+			cancleOrder.setUpdateBy(user);
+			cancleOrder.setUpdateDate(new Date());
+			int i = orderInfoDao.openOrderCancel(cancleOrder);
 			if (i < 0){
 				throw new ServiceException("取消最后一个订单失败");
 			}
@@ -479,31 +511,34 @@ public class OpenCombinationService extends CrudService<OrderInfoDao, OrderInfo>
 			Date suggestFinishTime = cancleOrder.getSuggestFinishTime();
 			lastOrder.setServiceTime(serviceTime1);
 			lastOrder.setSuggestFinishTime(suggestFinishTime);
-			lastOrder.preUpdate();
+			lastOrder.setFinishTime(suggestFinishTime);
+			lastOrder.setUpdateDate(new Date());
+			lastOrder.setUpdateBy(user);
 			int i1 = orderInfoDao.orderUpdateJointOrderId(lastOrder);
 			if (i1 < 0){
 				throw new ServiceException("取消最后一个订单失败");
 			}
 			cancleOrder.setOrderStatus("cancel");
 			cancleOrder.setServiceStatus("cancel");
-			cancleOrder.setCancelReason("other");
-			cancleOrder.preUpdate();
-			int i = orderInfoDao.orderCancel(cancleOrder);
+			cancleOrder.setUpdateBy(user);
+			cancleOrder.setUpdateDate(new Date());
+			int i = orderInfoDao.openOrderCancel(cancleOrder);
 			if (i < 0){
 				throw new ServiceException("取消最后一个订单失败");
 			}
 		}
-		//3。把对应的order_combination_gasq数据中order_group_id order_number的值置为null
+	//4。把对应的order_combination_gasq数据中order_group_id order_number的值置为null
 		gasqByOrderSn.setOrderNumber(null);
 		gasqByOrderSn.setOrderGroupId(null);
-		gasqByOrderSn.preUpdate();
+		gasqByOrderSn.setUpdateBy(user);
+		gasqByOrderSn.setUpdateDate(new Date());
 		orderCombinationGasqDao.updateOrderGroup(gasqByOrderSn);
 		response.setSuccess(true);
 		response.setService_order_id(orderNumber);
 
 		HashMap<String,Object> map = new HashMap<>();
 		List<OrderDispatch> dis = new ArrayList<>();
-		dis.add(orderDispatch);
+		dis.add(orderDispatchMess);
 		map.put("orderId",orderId);
 		map.put("dis", dis);
 		map.put("orderNumber", cancleOrder.getOrderNumber());

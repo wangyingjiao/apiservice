@@ -69,7 +69,9 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		if (!"group_split_yes".equals(orderInfo1.getOrderType())) {
 			orderInfoList.add(orderInfo1);
 			orderGroupId = orderInfo1.getId();
-            techDispatchNum =  orderToolsService.getTechDispatchNumByGoodsList(goodsInfoList);//派人数量
+			//派人数量  根据masterId找出com主表 goodsId
+			List<OrderGoods> orderGoodsListByMasterId = orderInfoDao.getOrderGoodsListByMasterId(orderInfo1);
+			techDispatchNum =  orderToolsService.getTechDispatchNumByGoodsList(orderGoodsListByMasterId);
 		}else {
 			//根据orderNumber masterId获取组合订单的orderGroupId
 			OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(orderInfo1);

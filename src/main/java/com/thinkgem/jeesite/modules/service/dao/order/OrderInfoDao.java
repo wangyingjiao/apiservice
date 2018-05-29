@@ -95,6 +95,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
     int openUpdateOrderForShop(OrderInfo orderInfo);
 
     int orderCancel(OrderInfo orderInfo);
+    int openOrderCancel(OrderInfo orderInfo);
 
     int orderUpdateJointOrderId(OrderInfo orderInfo);
 

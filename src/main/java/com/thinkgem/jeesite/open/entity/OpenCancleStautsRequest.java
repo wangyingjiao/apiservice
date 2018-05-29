@@ -15,8 +15,8 @@ public class OpenCancleStautsRequest extends DataEntity<OpenCancleStautsRequest>
 	private static final long serialVersionUID = 1L;
 
 	private String platform;//对接平台代号  默认值: gasq
-	private String group_id;//自营服务订单ID->编号
-	private String gasq_order_sn;//国安社区订单SN
+	private String group_id;//com joint_group_id
+	private String gasq_order_sn;//国安社区订单SN gasq  sn
 
 	public String getPlatform() {
 		return platform;
