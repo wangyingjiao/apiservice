@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.open.service;
 
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -87,6 +88,11 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		String platform = info.getPlatform();// 对接平台代号 默认值 gasq
 		List<String>  remark_pic = info.getRemark_pic();//订单备注(用户备注)
 		String remark = info.getRemark();//订单备注(用户备注)
+		String remark_pic_String = "";
+		if(null != remark_pic){
+			remark_pic_String = JsonMapper.toJsonString(remark_pic);
+		}
+
 		String service_time = info.getService_time();//服务时间
 		if(StringUtils.isBlank(service_time)){
 			throw new ServiceException("服务时间不能为空");
@@ -136,7 +142,7 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		for(int i=0;i<listDate.size();i++){
 			String gasqOrderSn = gasq_order_sn.get(i);
 			Date startDate =listDate.get(i);
-			HashMap<String,Object> map = combinationCreateOrder(startDate, combinationInfo, goods, gasqOrderSn);
+			HashMap<String,Object> map = combinationCreateOrder(startDate, combinationInfo, goods, gasqOrderSn,remark,remark_pic_String);
 			OrderInfo orderInfo = (OrderInfo)map.get("orderInfoMsg");
 			orderInfoList.add(orderInfo);
 		}
@@ -255,12 +261,12 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		return goods;
 	}
 
-	private HashMap<String,Object> combinationCreateOrder(Date startDate, CombinationOrderInfo combinationInfo, OrderGoods goods,String gasqOrderSn) {
+	private HashMap<String,Object> combinationCreateOrder(Date startDate, CombinationOrderInfo combinationInfo, OrderGoods goods,String gasqOrderSn,String remark,String remark_pic_String) {
 
 		// order_info  子订单信息 -------------------------------------------------------------------------------
 		OrderInfo orderInfo = new OrderInfo();
 		try{
-			orderInfo = openCreateForOrder(startDate, combinationInfo, goods, gasqOrderSn);
+			orderInfo = openCreateForOrder(startDate, combinationInfo, goods, gasqOrderSn,remark,remark_pic_String);
 		}catch (ServiceException ex){
 			throw new ServiceException(ex.getMessage());
 		}catch (Exception e){
@@ -375,7 +381,7 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 	 * @param goods
 	 * @return
 	 */
-	private OrderInfo openCreateForOrder(Date startDate, CombinationOrderInfo combinationInfo, OrderGoods goods, String gasqOrderSn) {
+	private OrderInfo openCreateForOrder(Date startDate, CombinationOrderInfo combinationInfo, OrderGoods goods, String gasqOrderSn,String remark,String remark_pic_String) {
 		OrderInfo orderInfo = new OrderInfo();
 		orderInfo.setMasterId(combinationInfo.getMasterId());//主订单ID
 		orderInfo.setOrderType(combinationInfo.getOrderType());//订单类型（common：普通订单  group_split_yes:组合并拆单  group_split_no:组合不拆单）
@@ -399,7 +405,8 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		orderInfo.setOrderSource(combinationInfo.getOrderSource());  // 订单来源(own:本机构 gasq:国安社区)
 		orderInfo.setPayStatus("waitpay");   //支付状态（waitpay:待支付  payed：已支付） 冗余字段
 		orderInfo.setCustomerId(combinationInfo.getCustomerId());    // 客户ID
-
+		orderInfo.setCustomerRemark(remark);   // 客户备注
+		orderInfo.setCustomerRemarkPic(remark_pic_String);    //客户备注图片
 		orderInfo.setOrderContent(goods.getSortName() + "+" + goods.getGoodsName());               //下单服务内容(服务分类+服务项目+商品名称)',
 		orderInfo.setEshopCode(combinationInfo.getEshopCode());
 		orderInfo.setJointOrderId(gasqOrderSn);
