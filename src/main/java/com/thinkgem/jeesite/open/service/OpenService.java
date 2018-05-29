@@ -1269,7 +1269,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				combinationOrderDao.updateStatusCancelByGroupId(updateCombinationOrderInfo);
 				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
 					//获取所有子订单
-					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
+					List<OrderInfo> orderInfoList = orderInfoDao.getOrderInfoByMasterId(combinationOrderInfo.getMasterId());
+					//List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
 					List<String> orderGroupIdList = new ArrayList<>();
 					for(OrderInfo orderInfo : orderInfoList){
 						OrderInfo updateOrderInfo = new OrderInfo();
@@ -1402,7 +1403,8 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 				combinationOrderDao.updateStatusCancelByGroupId(updateCombinationOrderInfo);
 				if("group_split_yes".equals(combinationOrderInfo.getOrderType())){
 					//获取所有子订单
-					List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
+					List<OrderInfo> orderInfoList = orderInfoDao.getOrderInfoByMasterId(combinationOrderInfo.getMasterId());
+					//List<OrderInfo> orderInfoList = combinationOrderDao.listOrderByGroupId(group_id);
 					List<String> orderGroupIdList = new ArrayList<>();
 					for(OrderInfo orderInfo : orderInfoList){
 						OrderInfo updateOrderInfo = new OrderInfo();
