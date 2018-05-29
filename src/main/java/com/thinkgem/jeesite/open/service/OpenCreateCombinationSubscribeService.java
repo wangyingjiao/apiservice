@@ -101,6 +101,16 @@ public class OpenCreateCombinationSubscribeService extends CrudService<OrderInfo
 		if(gasq_order_sn==null || gasq_order_sn.size()==0){
 			throw new ServiceException("国安社区订单SN不能为空");
 		}
+
+		for(String gasqSn : gasq_order_sn){
+			OrderInfo cheackSerchInfo = new OrderInfo();
+			cheackSerchInfo.setJointOrderId(gasqSn);
+			OrderInfo cheackInfo = orderInfoDao.getOrderInfoByJointOrderSn(cheackSerchInfo);
+			if(cheackInfo!=null){
+				throw new ServiceException("国安社区订单SN不能重复！");
+			}
+		}
+
 		int serviceNum =gasq_order_sn.size();
 		String group_id = info.getGroup_id();//订单组ID
 		if(StringUtils.isBlank(group_id)){
