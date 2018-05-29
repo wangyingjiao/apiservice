@@ -312,8 +312,13 @@ public class ServiceStationController extends BaseController {
     //@RequiresPermissions("user")
     @RequestMapping(value = "getStoreList")
     public Result getStoreList(@RequestBody BasicStore basicStore) {
-    	User user = UserUtils.getUser();
-    	String orgId = user.getOrganization().getId();
+        String orgId = null;
+        if (StringUtils.isEmpty(basicStore.getOrgId())) {
+            User user = UserUtils.getUser();
+            orgId = user.getOrganization().getId();
+        }else {
+            orgId = basicStore.getOrgId();
+        }
     	//获取到已被选过的门店id
     	List<String> ids=basicStoreService.getInIds(orgId);
     	if (ids.size()>0) {
