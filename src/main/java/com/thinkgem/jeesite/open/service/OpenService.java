@@ -1145,15 +1145,15 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if (null == checkInfoRe) {
 				throw new ServiceException("未找到订单,请确认订单sn是否正确");
 			}
+
 			if(!"common".equals(checkInfoRe.getOrderType())){//不是普通订单
-				if(!"cancel".equals(info.getStatus())){//状态不是取消，必须是普通订单，必须有自营SN
-					throw new ServiceException("自营服务订单编号不能为空");
+				if("cancel".equals(info.getStatus())){//状态不是取消，必须是普通订单，必须有自营SN
+					String group_id = info.getGroup_id();//没有自营SN，说明是组合取消，必须有国安组ID
+					if(StringUtils.isBlank(group_id)){
+						throw new ServiceException("订单组ID不能为空");
+					}
+					combinationFlag = true;
 				}
-				String group_id = info.getGroup_id();//没有自营SN，说明是组合取消，必须有国安组ID
-				if(StringUtils.isBlank(group_id)){
-					throw new ServiceException("订单组ID不能为空");
-				}
-				combinationFlag = true;
 			}
 		}else {
 			if(!"cancel".equals(info.getStatus())){//状态不是取消，必须是普通订单，必须有自营SN
