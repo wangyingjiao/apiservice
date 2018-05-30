@@ -1194,9 +1194,18 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					//查出每个技师对应的排期表 修改
 					for (ServiceTechnicianInfo serviceTechnicianInfo : tech) {
 						TechScheduleInfo scheduleInfo = new TechScheduleInfo();
-						scheduleInfo.setType("order");
+						if ("common".equals(info.getOrderType())){
+							scheduleInfo.setType("order");
+						}else {
+							scheduleInfo.setType("master");
+						}
 						scheduleInfo.setTechId(serviceTechnicianInfo.getId());
-						scheduleInfo.setTypeId(orderInfo.getId());
+						if ("group_split_yes".equals(info.getOrderType())){
+							OrderCombinationGasqInfo listByOrderNumber = orderCombinationGasqDao.getListByOrderNumber(info);
+							scheduleInfo.setTypeId(listByOrderNumber.getOrderGroupId());
+						}else {
+							scheduleInfo.setTypeId(orderInfo.getId());
+						}
 						//订单再排期表中只有一条数据
 						List<TechScheduleInfo> orderScheduleList = techScheduleDao.getOrderSchedule(scheduleInfo);
 						if (orderScheduleList == null || orderScheduleList.size()<=0 ) {
