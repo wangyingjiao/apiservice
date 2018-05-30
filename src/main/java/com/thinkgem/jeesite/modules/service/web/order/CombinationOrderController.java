@@ -551,7 +551,7 @@ public class CombinationOrderController extends BaseController {
 			if ("group_split_yes".equals(info.getOrderType())){
 				map = combinationSaveOrderTimeService.updateOrderTimeSave(orderInfo);
 			}else if ("group_split_no".equals(info.getOrderType())){
-				map = orderInfoOperateService.saveTime(orderInfo);
+				map = orderInfoOperateService.saveComTime(orderInfo);
 			}
 			try {
 				//订单商品有对接方商品CODE  机构有对接方E店CODE

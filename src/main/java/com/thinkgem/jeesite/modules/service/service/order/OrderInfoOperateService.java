@@ -826,7 +826,205 @@ public class OrderInfoOperateService extends CrudService<OrderInfoDao, OrderInfo
 			throw new ServiceException("未找到可用技师");
 		}
 	}
+	/**
+	 * 更换时间保存  (仅限组合不拆单)
+	 * @param orderInfo
+	 */
+	@Transactional(readOnly = false)
+	public HashMap<String,Object> saveComTime(OrderInfo orderInfo) {
+		//String jointGoodsCodes ="";
+		if(null == orderInfo){
+			throw new ServiceException("服务时间不可为空,请选择日期");
+		}
+		Double serviceHourRe = 0.0;
+		Date newServiceDate = orderInfo.getServiceTime();//新选择时间
+		if(null == newServiceDate){
+			throw new ServiceException("服务时间不可为空,请选择日期");
+		}
+		orderInfo = get(orderInfo.getId());//当前订单
+		if(null == orderInfo){
+			throw new ServiceException("未找到当前订单信息");
+		}
+		if(!"group_split_no".equals(orderInfo.getOrderType())){
+			throw new ServiceException("当前订单订单状态不是组合不拆单");
+		}
+		List<OrderGoods> goodsInfoList = orderInfoDao.getOrderGoodsListByMasterId(orderInfo);
 
+//		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(orderInfo); //取得订单服务信息
+		List<OrderDispatch> techBeforList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+		int techDispatchNum =  orderToolsService.getTechDispatchNumByGoodsList(goodsInfoList);
+//		int techDispatchNum = orderToolsService.getTechDispatchNumByGoodsList(goodsInfoList);//派人数量
+		double newServiceHour = orderToolsService.getServiceHourByGoodsList(goodsInfoList);//建议服务时长（小时）
+
+		if(techDispatchNum == 0 ){
+			throw new ServiceException("未找到当前订单服务商品信息");
+		}
+
+		Double serviceSecond = (newServiceHour * 3600);
+		Date newFinishTime = DateUtils.addSecondsNotDayE(newServiceDate,serviceSecond.intValue());//完成时间
+
+		OrderInfo serchOrderInfo = new OrderInfo();
+		serchOrderInfo.setOrgId(orderInfo.getOrgId());
+		serchOrderInfo.setStationId(orderInfo.getStationId());
+		serchOrderInfo.setServiceTime(newServiceDate);
+		serchOrderInfo.setFinishTime(newFinishTime);
+		serchOrderInfo.setGoodsSortId(orderToolsService.getNotFullGoodsSortId(goodsInfoList));
+		serchOrderInfo.setSerchFullTech(true);
+		serchOrderInfo.setSerchNowOrderId(orderInfo.getId());
+		List<OrderDispatch> techListRe = orderToolsService.listTechByGoodsAndTime(serchOrderInfo);
+		if(techListRe.size() != 0){
+			if(techListRe.size() < techDispatchNum){//技师数量不够
+				throw new ServiceException("当前时间未找到技师");
+			}
+
+			//一个自然月内，根据当前服务站内各个技师的订单数量，优先分配给订单数量少的技师
+			List<String> serchTechIds = new ArrayList<>();//可分配技师
+			for(OrderDispatch tech :techListRe){
+				serchTechIds.add(tech.getTechId());
+			}
+			Date monthFristDay = DateUtils.getMonthFristDay(newServiceDate);
+			Date monthLastDay = DateUtils.getMonthLastDay(newServiceDate);
+			OrderDispatch serchTechInfo = new OrderDispatch();
+			serchTechInfo.setStartTime(monthFristDay);
+			serchTechInfo.setEndTime(monthLastDay);
+			serchTechInfo.setTechIds(serchTechIds);
+			List<OrderDispatch> techListOrderByNum = dao.getTechListOrderByNum(serchTechInfo);//订单数量少的技师
+			List<String> dispatchTechIds = new ArrayList<>();
+			for(int i=0;i<techDispatchNum;i++){//订单数量少的技师  订单需要技师数量
+				dispatchTechIds.add(techListOrderByNum.get(i).getTechId());
+			}
+
+			serviceHourRe = new BigDecimal(serviceSecond/3600).setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
+
+			OrderInfo info = new OrderInfo();
+			info.setId(orderInfo.getId());
+			info.setServiceTime(newServiceDate);//服务时间
+			info.setServiceHour(serviceHourRe);//建议服务时长（小时）
+			info.setFinishTime(newFinishTime);//实际完成时间（用来计算库存）
+			info.setSuggestFinishTime(newFinishTime);//实际完成时间（用来计算库存）
+			info.preUpdate();
+			dao.update(info);
+
+			List<String> newTechIds = new ArrayList<>();
+			List<String> oldTechIds = new ArrayList<>();
+			List<String> delTechIds = new ArrayList<>();
+
+			List<String> techBeforIds = new ArrayList<>();
+			for(OrderDispatch tech :techBeforList){
+				if(dispatchTechIds.contains(tech.getTechId())){//又分配给当前技师
+					oldTechIds.add(tech.getTechId());
+				}else{
+					OrderDispatch orderDispatch = new OrderDispatch();
+					orderDispatch.setId(tech.getId());//技师ID
+					orderDispatch.setStatus("no");//状态(yes：可用 no：不可用)
+					orderDispatch.preUpdate();
+					orderDispatchDao.update(orderDispatch);//数据库改派前技师设为不可用
+
+					delTechIds.add(tech.getTechId());
+				}
+			}
+			for(String techId : dispatchTechIds){//新增技师
+				if(oldTechIds!=null && !oldTechIds.contains(techId)){
+					OrderDispatch orderDispatch = new OrderDispatch();
+					orderDispatch.setTechId(techId);//技师ID
+					orderDispatch.setOrderId(orderInfo.getId());//订单ID
+					orderDispatch.setStatus("yes");//状态(yes：可用 no：不可用)
+					orderDispatch.preInsert();
+					orderDispatchDao.insert(orderDispatch);
+
+					newTechIds.add(techId);
+				}
+			}
+
+			List<OrderDispatch> techLastList = dao.getOrderDispatchList(orderInfo); //订单当前已有技师List
+
+			List<String> msgTechIds = new ArrayList<>();
+			msgTechIds.addAll(newTechIds);
+			msgTechIds.addAll(oldTechIds);
+			msgTechIds.addAll(delTechIds);
+			OrderInfo orderMsg = new OrderInfo();
+			orderMsg.setTechIdList(msgTechIds);
+			List<OrderDispatch> msgTechList = dao.getOrderDispatchMsgTechList(orderMsg); //订单当前已有技师List
+			// 派单 原来没有，现在有
+			List<OrderDispatch> orderCreateMsgList = new ArrayList<>();
+			// 改派 原来有，现在没有
+			List<OrderDispatch> orderDispatchMsgList = new ArrayList<>();
+			// 时间变化 原来有，现在有
+			List<OrderDispatch> orderServiceTimeMsgList = new ArrayList<>();
+			for(OrderDispatch msgInfo : msgTechList){
+				if(newTechIds.contains(msgInfo.getTechId())){
+					orderCreateMsgList.add(msgInfo);// 派单 原来没有，现在有
+
+					//排期
+					TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+					techScheduleInfo.setTechId(msgInfo.getTechId());//技师ID
+					techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(newServiceDate));//日期
+					int weekDay = DateUtils.getWeekNum(newServiceDate);//周几
+					techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+					techScheduleInfo.setStartTime(newServiceDate);//起始时段
+					techScheduleInfo.setEndTime(newFinishTime);//结束时段
+					techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+					techScheduleInfo.setType("master");//master  组合不拆单
+					techScheduleInfo.setMasterId(orderInfo.getMasterId());
+					techScheduleInfo.preInsert();
+					techScheduleDao.insertSchedule(techScheduleInfo);
+				}
+				if(delTechIds.contains(msgInfo.getTechId())){
+					orderDispatchMsgList.add(msgInfo);// 改派 原来有，现在没有
+
+					//排期
+					TechScheduleInfo techScheduleInfoDel = new TechScheduleInfo();
+					techScheduleInfoDel.setTechId(msgInfo.getTechId());//技师ID
+					techScheduleInfoDel.setTypeId(orderInfo.getId());//休假ID或订单ID
+					techScheduleInfoDel.setType("master");//master  组合不拆单
+					techScheduleInfoDel.preUpdate();
+					techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfoDel);
+				}
+				if(oldTechIds.contains(msgInfo.getTechId())) {
+					orderServiceTimeMsgList.add(msgInfo);// 时间变化 原来有，现在有
+
+					//排期
+					TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
+					techScheduleInfo.setTechId(msgInfo.getTechId());//技师ID
+					techScheduleInfo.setScheduleDate(DateUtils.getDateFirstTime(newServiceDate));//日期
+					int weekDay = DateUtils.getWeekNum(newServiceDate);//周几
+					techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
+					techScheduleInfo.setStartTime(newServiceDate);//起始时段
+					techScheduleInfo.setEndTime(newFinishTime);//结束时段
+					techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+					techScheduleInfo.setType("master");//master  组合不拆单
+					techScheduleInfo.preUpdate();
+					techScheduleDao.updateScheduleByTypeIdTechId(techScheduleInfo);
+				}
+			}
+
+			/*BasicOrganization organization = dao.getBasicOrganizationByOrgId(orderInfo);
+			String jointEshopCode = "";
+			if(organization != null){
+				jointEshopCode = organization.getJointEshopCode();
+			}else{
+				throw new ServiceException("未找到当前订单对应的机构信息");
+			}*/
+
+			HashMap<String,Object> map = new HashMap<>();
+			map.put("serviceHour",serviceHourRe);
+			map.put("list",techLastList);
+			map.put("orderId",orderInfo.getId());
+			map.put("serviceDate",newServiceDate);
+			//map.put("jointGoodsCodes",jointGoodsCodes);
+			//map.put("jointEshopCode", jointEshopCode);
+			map.put("orderSource",orderInfo.getOrderSource());
+
+			map.put("orderServiceTimeMsgList", orderServiceTimeMsgList);
+			map.put("orderDispatchMsgList", orderDispatchMsgList);
+			map.put("orderCreateMsgList", orderCreateMsgList);
+			map.put("orderNumber", orderInfo.getOrderNumber());
+
+			return map;
+		}else{
+			throw new ServiceException("未找到可用技师");
+		}
+	}
 	/**
 	 * 判断订单状态 是否可取消
 	 * @param info
