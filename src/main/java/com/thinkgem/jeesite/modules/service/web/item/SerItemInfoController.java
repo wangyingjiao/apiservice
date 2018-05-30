@@ -758,6 +758,7 @@ public class SerItemInfoController extends BaseController {
                     sendGoods.setName(sic.getName());// 商品名称格式：项目名称（商品名）
                     sendGoods.setPrice(sic.getPrice());// 商品价格
                     sendGoods.setServiceType(sic.getServiceType());
+                    sendGoods.setOrderValidityDays(sic.getOrderValidityDays());
                     sendGoods.setCommodityEshops(siceList);
                     if (ccList != null && ccList.size()>0) {
                         sendGoods.setCombinationCommodities(ccList);  //这个商品下的子商品ID和对接ID
@@ -888,7 +889,6 @@ public class SerItemInfoController extends BaseController {
     //@RequiresPermissions("project_insert")
     @ApiOperation("验证未对接的组合商品下子商品是否全部对接")
     public Result verificationJoint(@RequestBody(required = false) CombinationCommodity combinationCommodity) {
-        //============待修改==========
         if (combinationCommodity.getSerItemCommodityEshops().size() == 0){
             return new FailResult("请选择商品");
         }

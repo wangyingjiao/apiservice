@@ -51,8 +51,17 @@ public class SerItemCommodity extends DataEntity<SerItemCommodity> {
 	private List<CombinationCommodity> combinationCommodities;
 	private String serviceType;    //服务类型
 	private List<SerItemInfo> serItemInfos;
+	private int orderValidityDays;     //商品时效
 
 	private String jointEshopFlag;  //用于判断是否显示已对接E店按钮
+
+	public int getOrderValidityDays() {
+		return orderValidityDays;
+	}
+
+	public void setOrderValidityDays(int orderValidityDays) {
+		this.orderValidityDays = orderValidityDays;
+	}
 
 	public List<SerItemInfo> getSerItemInfos() {
 		return serItemInfos;

@@ -36,6 +36,15 @@ public class OpenSendSaveItemProduct extends DataEntity<OpenSendSaveItemProduct>
     private String is_combo;//no 单一商品 no / 组合商品 yes
     private String content_number;//999999
     private String convert_hours;
+    private String order_validity_days;
+
+    public String getOrder_validity_days() {
+        return order_validity_days;
+    }
+
+    public void setOrder_validity_days(String order_validity_days) {
+        this.order_validity_days = order_validity_days;
+    }
 
     public Map<String, Object> getCombo() {
         return combo;

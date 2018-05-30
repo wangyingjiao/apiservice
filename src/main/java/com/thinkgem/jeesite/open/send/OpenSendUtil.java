@@ -251,6 +251,7 @@ public class OpenSendUtil {
 			String content_type = "service";//service 类型：商品 product / 服务 service
 			String is_combo = "no";//no 单一商品 no / 组合商品 yes
 			String content_number = "999999";//999999
+			String order_validity_days = null;
 
 			//---商品List----------------------------------------------------------------------------
 
@@ -279,6 +280,7 @@ public class OpenSendUtil {
 							is_combo_split = "no";
 						}
 						is_combo = "yes";//no 单一商品 no / 组合商品 yes
+						order_validity_days = String.valueOf(commodity.getOrderValidityDays());
                         List<CombinationCommodity> combinationCommodities = commodity.getCombinationCommodities();
                         for (CombinationCommodity combinationCommodity : combinationCommodities) {
 
@@ -317,7 +319,8 @@ public class OpenSendUtil {
 					itemProduct.setIs_combo(is_combo);//no 单一商品 no / 组合商品 yes
 					itemProduct.setContent_number(content_number);//999999
 					itemProduct.setAttachments(pictureMap);
-					itemProduct.setCombo(combo);
+					itemProduct.setCombo(combo);  //子商品
+					itemProduct.setOrder_validity_days(order_validity_days);  //商品时效
 					itemProduct.setEshop_codes(eidGid);
 					productList.add(itemProduct);
 				}
