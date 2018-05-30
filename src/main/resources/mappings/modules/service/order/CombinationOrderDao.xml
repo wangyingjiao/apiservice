@@ -19,6 +19,7 @@
         a.latitude AS "latitude",
         a.longitude AS "longitude",
         a.order_time AS "orderTime",
+        a.expiry_date AS "expiryDate"，
         a.service_frequency AS "serviceFrequency",
         a.service_num AS "serviceNum",
         a.service_hour AS "serviceHour",
@@ -110,6 +111,7 @@
         a.bespeak_total AS "bespeakTotal",
         a.bespeak_num AS "bespeakNum",
         a.order_time AS "orderTime",
+        a.expiry_date AS "expiryDate"，
         a.service_frequency AS serviceFrequency,
         a.latitude AS latitude,
         a.longitude AS longitude,
