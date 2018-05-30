@@ -436,38 +436,12 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 	private void removeBusyTechByWeekTime(Date creartDate, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond,String masterId) {
 		int week = DateUtils.getWeekNum(creartDate);
-//		Date selectTime = serviceStart;
-//		String selectTimeStr = frequencyInfo.getTimeArea().split("-")[0];
-//		Date selectTimeH = null;
-//		try {
-//			selectTimeH = DateUtils.parseDate(selectTimeStr,"HH:mm");
-//		} catch (ParseException e) {
-//			return;
-//		}
-
-//		Date serviceStartBeginTime = null;// 第一次选择日期开始时间
-//		Date serviceStartEndTime = null;// 第一次选择日期结束时间
-//		String startTimeStrFre = frequencyInfo.getTimeArea().split("-")[0];
-//		String endTimeStrFre = frequencyInfo.getTimeArea().split("-")[1];
-//		//Date startTime = null;
-//		//Date endTime = null;
-//		try {
-//			serviceStartBeginTime = DateUtils.parseDate(startTimeStrFre,"HH:mm");
-//			serviceStartEndTime = DateUtils.parseDate(endTimeStrFre,"HH:mm");
-//		} catch (ParseException e) {
-//		}
-//		String startTimeStr = DateUtils.formatDate(serviceStart,"yyyy-MM-dd") + " "
-//				+  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
-//		Date checkStartTime = DateUtils.parseDate(startTimeStr);
-//
-//		String endTimeStr = DateUtils.formatDate(serviceStart,"yyyy-MM-dd") + " "
-//				+  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
-//		Date checkEndTime = DateUtils.parseDate(endTimeStr);
 
 		Date checkStartTime = creartDate;
 		Date checkEndTime = DateUtils.addSecondsNotDayE(creartDate,serviceSecond.intValue());
 
 		Iterator<OrderDispatch> it = techList.iterator();
+
 		while(it.hasNext()) {//循环技师List 取得可用时间
 			OrderDispatch tech = it.next();
 
@@ -486,17 +460,6 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			}
 
 			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
-			//List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(workTime.getStartTime(),workTime.getEndTime());
-//			if(!(
-//					(selectTimeH.after(workTime.getStartTime()) || selectTimeH.compareTo(workTime.getStartTime())==0) &&
-//							selectTimeH.before(workTime.getEndTime())
-//			)){
-//				it.remove();
-//				if(techList.size() < techDispatchNum){//技师数量不够
-//					return;
-//				}
-//				continue;//下一位技师
-//			}
 
 			Date techWorkStartTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
 					+ " " + DateUtils.formatDate(workTime.getStartTime(), "HH:mm:ss"));//工作开始时间
@@ -527,20 +490,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
 			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, creartDate, "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
+				Boolean forFlag = false;
 				for (TechScheduleInfo holiday : techHolidyList) {
-					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
-
-//					if(
-//						(selectTime.after(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()))
-//								|| selectTime.compareTo(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()))==0) &&
-//						selectTime.before(holiday.getEndTime())
-//					){
-//						it.remove();
-//						if(techList.size() < techDispatchNum){//技师数量不够
-//							return;
-//						}
-//						continue;//下一位技师
-//					}
 					Date holidayStartTime = DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue());
 					Date holidayEndTime = holiday.getEndTime();
 					if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, holidayStartTime, holidayEndTime)) {
@@ -548,8 +499,12 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 						if(techList.size() < techDispatchNum){//技师数量不够
 							return;
 						}
-						continue;//下一位技师
+						forFlag = true;
+						break;//下一位技师
 					}
+				}
+				if(forFlag){
+					continue;//下一位技师
 				}
 			}
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点  结束-------------
@@ -561,6 +516,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			serchCombinationInfo.setSerchWeek(week);
 			List<OrderCombinationFrequencyInfo> frequencyList = combinationOrderDao.listFrequencyByTechWeek(serchCombinationInfo);
 			if (frequencyList != null && frequencyList.size() != 0) {
+				Boolean forFlag = false;
 				for (OrderCombinationFrequencyInfo frequency : frequencyList) {
 					if (!masterId.equals(frequency.getMasterId())) {
 						Date frequencyStartTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
@@ -588,20 +544,6 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 						}
 
-//					List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-//							DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
-//							DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
-//					if(
-//						(selectTime.after(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))
-//							|| selectTime.compareTo(DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS))==0) &&
-//						selectTime.before(DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE))
-//					){
-//						it.remove();
-//						if(techList.size() < techDispatchNum){//技师数量不够
-//							return;
-//						}
-//						continue;//下一位技师
-//					}
 						Date orderStartTime = DateUtils.addSecondsNotDayB(frequencyStartTime, -intervalTimeS);
 						Date orderEndTime = DateUtils.addSecondsNotDayE(frequencyEndTime, intervalTimeE);
 						if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
@@ -609,9 +551,13 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 							if (techList.size() < techDispatchNum) {//技师数量不够
 								return;
 							}
-							continue;//下一位技师
+							forFlag = true;
+							break;//下一位技师
 						}
 					}
+				}
+				if(forFlag){
+					continue;//下一位技师
 				}
 			}
 			//----------取得技师 组合订单频率   如果和工作时间重复 删除该时间点 结束------------------
@@ -619,6 +565,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			//----------取得技师 开始时间订单   如果和工作时间重复 删除该时间点 开始-------------------
 			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), creartDate, "order");
 			if (techOrderList != null && techOrderList.size() != 0) {
+				Boolean forFlag = false;
 				for (TechScheduleInfo order : techOrderList) {
 					if (!masterId.equals(order.getMasterId())) {
 						int intervalTimeS = 0;//必须间隔时间 秒
@@ -641,20 +588,6 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 						}
 
-						//List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-						//DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
-						//DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
-//					if(
-//							(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
-//									|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))==0) &&
-//									selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
-//							){
-//						it.remove();
-//						if(techList.size() < techDispatchNum){//技师数量不够
-//							return;
-//						}
-//						continue;//下一位技师
-//					}
 						Date orderStartTime = DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS);
 						Date orderEndTime = DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE);
 						if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
@@ -662,9 +595,13 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 							if (techList.size() < techDispatchNum) {//技师数量不够
 								return;
 							}
-							continue;//下一位技师
+							forFlag = true;
+							break;//下一位技师
 						}
 					}
+				}
+				if(forFlag){
+					continue;//下一位技师
 				}
 			}
 			//----------取得技师 开始时间订单   如果和工作时间重复 删除该时间点 结束------------------
