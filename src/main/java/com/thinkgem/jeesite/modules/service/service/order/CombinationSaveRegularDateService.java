@@ -524,16 +524,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 						Date frequencyEndTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
 								+ " " + DateUtils.formatDate(frequency.getEndTime(), "HH:mm:ss"));//工作结束时间
 
-						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-						}
-
+						int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 						int intervalTimeE = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) < 14) {
@@ -568,16 +559,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				Boolean forFlag = false;
 				for (TechScheduleInfo order : techOrderList) {
 					if (!masterId.equals(order.getMasterId())) {
-						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-						}
 
+						int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 						int intervalTimeE = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
@@ -767,16 +750,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 						Date frequencyEndTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
 								+ " " + DateUtils.formatDate(frequency.getEndTime(), "HH:mm:ss"));//工作结束时间
 
-						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-						}
-
+						int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 						int intervalTimeE = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) < 14) {
@@ -812,16 +786,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, creartDate, "order");
 			if (techOrderList != null && techOrderList.size() != 0) {
 				for (TechScheduleInfo order : techOrderList) {
-					int intervalTimeS = 0;//必须间隔时间 秒
-					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-						//可以接单的时间则为：40分钟+路上时间+富余时间
-						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-					} else {
-						//可以接单的时间则为：路上时间+富余时间
-						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-					}
 
+					int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 					int intervalTimeE = 0;//必须间隔时间 秒
 					if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 							Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
@@ -832,21 +798,11 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 					}
 
-					//List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-					//DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
-					//DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
 					Date orderStartTime = DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS);
 					Date orderEndTime = DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE);
 					if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
 						return true;
 					}
-//					if (
-//							(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
-//									|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS)) == 0) &&
-//									selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
-//							) {
-//						return true;
-//					}
 				}
 			}
 		}
@@ -1399,6 +1355,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				if (techOrderList != null && techOrderList.size() != 0) {
 					for (TechScheduleInfo order : techOrderList) {
 						if (!masterId.equals(order.getMasterId())) {
+
 							int intervalTimeS = 0;//必须间隔时间 秒
 							if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
 									Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
@@ -1418,6 +1375,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 								//可以接单的时间则为：路上时间+富余时间
 								intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 							}
+
 
 							List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
 									DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
@@ -1761,16 +1719,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 						Date frequencyEndTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
 								+ " " + DateUtils.formatDate(frequency.getEndTime(), "HH:mm:ss"));//工作结束时间
 
-						int intervalTimeS = 0;//必须间隔时间 秒
-						if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-								Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(frequencyStartTime, -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-							//可以接单的时间则为：40分钟+路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-						} else {
-							//可以接单的时间则为：路上时间+富余时间
-							intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-						}
-
+						int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 						int intervalTimeE = 0;//必须间隔时间 秒
 						if (11 <= Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) &&
 								Integer.parseInt(DateUtils.formatDate(frequencyEndTime, "HH")) < 14) {
@@ -1806,16 +1755,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, creartDate, "order");
 			if (techOrderList != null && techOrderList.size() != 0) {
 				for (TechScheduleInfo order : techOrderList) {
-					int intervalTimeS = 0;//必须间隔时间 秒
-					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
-							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
-						//可以接单的时间则为：40分钟+路上时间+富余时间
-						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time")) + serviceSecond.intValue();
-					} else {
-						//可以接单的时间则为：路上时间+富余时间
-						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-					}
 
+					int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
 					int intervalTimeE = 0;//必须间隔时间 秒
 					if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 							Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
