@@ -185,6 +185,46 @@ public class CombinationOrderController extends BaseController {
 	}
 
 	/**
+	 * 更换固定时间- 查询服务日期
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateRegularDateDateList", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_regular")
+	public Result updateRegularDateDateList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderTimeList>  list = combinationSaveRegularDateService.updateRegularDateDateList(combinationOrderInfo);
+			HashMap data = new HashMap();
+			data.put("weekList",list);
+//			List<OrderTimeList> dateList = combinationSaveRegularDateService.saveRegularDateWeekList();
+//			data.put("dateList",dateList);
+			return new SuccResult(data);
+		}catch (Exception e){
+			//return new FailResult("获取时间列表失败!");
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderTimeList>());
+		}
+	}
+
+	/**
+	 * 更换固定时间- 查询服务技师
+	 * @param combinationOrderInfo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "updateRegularDateTechList", method = {RequestMethod.POST})
+	@RequiresPermissions("combination_regular")
+	public Result updateRegularDateTechList(@RequestBody CombinationOrderInfo combinationOrderInfo) {
+		try {
+			List<OrderDispatch> list = combinationSaveRegularDateService.updateRegularDateTechList(combinationOrderInfo);
+			return new SuccResult(list);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new SuccResult(new ArrayList<OrderDispatch>());
+		}
+	}
+	/**
 	 * 更换固定时间 - 保存
 	 * @param combinationOrderInfo
 	 * @return
@@ -198,7 +238,7 @@ public class CombinationOrderController extends BaseController {
 			if (!statusFlag){
 				return new FailResult("组合订单当前状态不允许此操作");
 			}
-			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
+			boolean flag = combinationSaveRegularDateService.checkUpdateRegularDateTech(combinationOrderInfo);
 			if(flag){
 				return new FailResult("时间或服务技师目前暂不可用!");
 			}
