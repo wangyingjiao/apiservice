@@ -118,6 +118,8 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 		BigDecimal bigDecimal = new BigDecimal(combinationById.getCombinationGoodsNum());
 		BigDecimal multiply = bigDecimal.multiply(goodsByGoodsId.getPrice());
 		info.setSum(multiply);
+		list.add(info);
+		combinationById.setCombinationOrderInfos(list);
 		// 地址模糊显示
 		String orgVisable = combinationById.getOrgVisable();
 		OrderAddress addressInfo = combinationById.getAddressInfo();
@@ -167,8 +169,6 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 				combinationById.setAddressInfo(address);
 			}
 		}
-		list.add(info);
-		combinationById.setCombinationOrderInfos(list);
         return combinationById;
 	}
 

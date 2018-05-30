@@ -259,9 +259,17 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else {
 			orderInfo.setRealPayment(Integer.toString(0));
 		}
+		//服务信息
+		List<OrderGoods> goodsInfoList = null;
 		//获取服务项目的id集合
 		List<String> ids = new ArrayList<>();
-		List<OrderGoods> goodsInfoList = dao.getOrderGoodsList(info);    //服务信息
+		if ("group_split_no".equals(orderType)){
+			// 如果是组合不拆单 在order_combination_info获取数量和id 再去ser_item_info_goods找价格 masterId
+			goodsInfoList = dao.getOrderGoodsListByMasterId(orderInfo);
+		}else {
+			//普通订单和组合并拆单 去order_goods查子商品信息   orderId
+			goodsInfoList = dao.getOrderGoodsList(info);
+		}
 		List<OrderGoods> tem=new ArrayList<OrderGoods>();
 		if(goodsInfoList != null && goodsInfoList.size() > 0){
 			//获取服务项目id集合
