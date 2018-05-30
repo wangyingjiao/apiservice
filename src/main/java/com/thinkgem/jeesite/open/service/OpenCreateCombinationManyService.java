@@ -235,6 +235,7 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 		if(null == order_type){
 			throw new ServiceException("订单类型不能为空");
 		}
+		String expiry_date = info.getExpiry_date();
 
 		//通过对接方E店CODE获取机构
 		String orgId = orderCustomInfo.getOrgId();
@@ -344,6 +345,7 @@ public class OpenCreateCombinationManyService extends CrudService<OrderInfoDao, 
 		combinationOrderInfo.setLatitude(latitude);                //服务地址  纬度
 		combinationOrderInfo.setLongitude(longitude);         //服务地址  经度
 		combinationOrderInfo.setOrderTime(DateUtils.parseDate(DateUtils.getDateTime()));    //下单时间
+		combinationOrderInfo.setExpiryDate(DateUtils.parseDate(expiry_date));
 		combinationOrderInfo.setServiceNum(1);
 		combinationOrderInfo.setServiceHour(serviceHour);//建议服务时长（小时）
 		combinationOrderInfo.setBespeakTotal(gasqOrderSnList.size());//可预约次数

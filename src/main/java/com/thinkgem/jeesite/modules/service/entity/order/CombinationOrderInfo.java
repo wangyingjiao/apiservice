@@ -38,6 +38,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	private String longitude;		// 经度
 	private String latitude;		// 纬度
 	private Date orderTime;		// 下单时间
+	private Date expiryDate;//有效期限
     private Date startTime;		//开始时间   列表查询条件
     private Date endTime;		//结束时间  列表查询条件
 	private String serviceFrequency;	// 服务频次 weekly:1周1次 many:1周多次 fortnightly:2周1次
@@ -263,6 +264,7 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getOrderTime() {
 		return orderTime;
@@ -270,6 +272,15 @@ public class CombinationOrderInfo extends DataEntity<CombinationOrderInfo> {
 
 	public void setOrderTime(Date orderTime) {
 		this.orderTime = orderTime;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 
 	public String getServiceFrequency() {

@@ -28,6 +28,7 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 	private OpenServiceInfo serviceInfo;//购买商品ID及数量
 	private List<OpenServiceInfo> service_info;//购买商品ID及数量
 	private String service_time;//服务时间
+	private String expiry_date;//有效期
 	private String address;//服务地址：小区+详细地址
 	private String placename;//服务地址：小区
 	private String detail_address;//服务地址：门牌号
@@ -134,6 +135,14 @@ public class OpenCreateRequest extends DataEntity<OpenCreateRequest> {
 
 	public void setService_time(String service_time) {
 		this.service_time = service_time;
+	}
+
+	public String getExpiry_date() {
+		return expiry_date;
+	}
+
+	public void setExpiry_date(String expiry_date) {
+		this.expiry_date = expiry_date;
 	}
 
 	public String getAddress() {

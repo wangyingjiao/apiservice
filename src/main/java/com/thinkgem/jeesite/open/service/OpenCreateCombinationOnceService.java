@@ -627,6 +627,7 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 		if(gasqOrderSnList==null || gasqOrderSnList.size()!=1){
 			throw new ServiceException("国安社区订单SN不能为空");
 		}
+		String expiry_date = info.getExpiry_date();
 		List<OpenServiceInfo> serviceInfos = info.getService_info();
 
 		//--------------------------------------------------
@@ -646,6 +647,7 @@ public class OpenCreateCombinationOnceService extends CrudService<OrderInfoDao, 
 		combinationOrderInfo.setLatitude(orderInfo.getLatitude());                //服务地址  纬度
 		combinationOrderInfo.setLongitude(orderInfo.getLongitude());         //服务地址  经度
 		combinationOrderInfo.setOrderTime(orderInfo.getOrderTime());    //下单时间
+		combinationOrderInfo.setExpiryDate(DateUtils.parseDate(expiry_date));
 		combinationOrderInfo.setServiceHour(orderInfo.getServiceHour());//服务时长（小时）',
 		combinationOrderInfo.setServiceStart(orderInfo.getServiceTime());//第一次服务日期',
 		combinationOrderInfo.setOrderStatus("dispatched");   // 订单状态(dispatched:已下单;cancel:已取消;success:已成功;close:已关闭)
