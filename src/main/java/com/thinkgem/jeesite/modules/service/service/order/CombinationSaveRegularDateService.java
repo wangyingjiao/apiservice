@@ -361,6 +361,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		String techName = combinationOrderInfo.getTechName();//查询条件
 		int serviceNum = combinationOrderInfo.getServiceNum();//预约个数
 		String masterId = combinationOrderInfo.getMasterId();
+		String serviceFrequency = combinationOrderInfo.getServiceFrequency();//服务频次
 		List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();
 		Date serviceStart = combinationOrderInfo.getServiceStart();// 第一次选择日期
 		if(serviceStart == null){
@@ -405,10 +406,27 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			return null;
 		}
 
-		for(OrderCombinationFrequencyInfo frequency : freList){
+		List<Date> creartDateList = listCreartDateByFrequency(serviceFrequency, freList,serviceNum, serviceStart,combinationInfo.getBespeakTotal());
+
+		for(Date creartDate : creartDateList) {
+		//for(OrderCombinationFrequencyInfo frequency : freList){
 			OrderTimeList responseRe = new OrderTimeList();
 			try {
-				removeBusyTechByWeekTime(frequency, techList, techDispatchNum, serviceSecond, serviceStart);
+
+
+					Date creartDateTime = null;
+					int serviceStartWeek = DateUtils.getWeekNum(creartDate);
+					for (OrderCombinationFrequencyInfo frequency : freList) {
+						if (serviceStartWeek == frequency.getWeek()) {
+							creartDateTime = DateUtils.parseDate(frequency.getTimeArea().split("-")[0],"HH:mm");
+						}
+					}
+
+					String creartDateTimeStr = DateUtils.formatDate(creartDate,"yyyy-MM-dd") + " "
+							+  DateUtils.formatDate(creartDateTime,"HH:mm" + ":00");
+					Date creartDateTimeStrTime = DateUtils.parseDate(creartDateTimeStr);
+
+					removeBusyTechByWeekTime(creartDateTimeStrTime, techList, techDispatchNum, serviceSecond);
 			}catch (Exception e){
 				logger.error(responseRe.getLabel()+"去除忙碌技师失败");
 			}
@@ -416,8 +434,8 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		return techList;
 	}
 
-	private void removeBusyTechByWeekTime(OrderCombinationFrequencyInfo frequencyInfo, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond, Date serviceStart) {
-		int week = frequencyInfo.getWeek();
+	private void removeBusyTechByWeekTime(Date creartDate, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
+		int week = DateUtils.getWeekNum(creartDate);
 //		Date selectTime = serviceStart;
 //		String selectTimeStr = frequencyInfo.getTimeArea().split("-")[0];
 //		Date selectTimeH = null;
@@ -427,25 +445,27 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 //			return;
 //		}
 
-		Date serviceStartBeginTime = null;// 第一次选择日期开始时间
-		Date serviceStartEndTime = null;// 第一次选择日期结束时间
-		String startTimeStrFre = frequencyInfo.getTimeArea().split("-")[0];
-		String endTimeStrFre = frequencyInfo.getTimeArea().split("-")[1];
-		Date startTime = null;
-		Date endTime = null;
-		try {
-			serviceStartBeginTime = DateUtils.parseDate(startTimeStrFre,"HH:mm");
-			serviceStartEndTime = DateUtils.parseDate(endTimeStrFre,"HH:mm");
-		} catch (ParseException e) {
-		}
-		String startTimeStr = DateUtils.formatDate(serviceStart,"yyyy-MM-dd") + " "
-				+  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
-		Date checkStartTime = DateUtils.parseDate(startTimeStr);
+//		Date serviceStartBeginTime = null;// 第一次选择日期开始时间
+//		Date serviceStartEndTime = null;// 第一次选择日期结束时间
+//		String startTimeStrFre = frequencyInfo.getTimeArea().split("-")[0];
+//		String endTimeStrFre = frequencyInfo.getTimeArea().split("-")[1];
+//		//Date startTime = null;
+//		//Date endTime = null;
+//		try {
+//			serviceStartBeginTime = DateUtils.parseDate(startTimeStrFre,"HH:mm");
+//			serviceStartEndTime = DateUtils.parseDate(endTimeStrFre,"HH:mm");
+//		} catch (ParseException e) {
+//		}
+//		String startTimeStr = DateUtils.formatDate(serviceStart,"yyyy-MM-dd") + " "
+//				+  DateUtils.formatDate(serviceStartBeginTime,"HH:mm" + ":00");
+//		Date checkStartTime = DateUtils.parseDate(startTimeStr);
+//
+//		String endTimeStr = DateUtils.formatDate(serviceStart,"yyyy-MM-dd") + " "
+//				+  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
+//		Date checkEndTime = DateUtils.parseDate(endTimeStr);
 
-		String endTimeStr = DateUtils.formatDate(serviceStart,"yyyy-MM-dd") + " "
-				+  DateUtils.formatDate(serviceStartEndTime,"HH:mm" + ":00");
-		Date checkEndTime = DateUtils.parseDate(endTimeStr);
-
+		Date checkStartTime = creartDate;
+		Date checkEndTime = DateUtils.addSecondsNotDayE(creartDate,serviceSecond.intValue());
 
 		Iterator<OrderDispatch> it = techList.iterator();
 		while(it.hasNext()) {//循环技师List 取得可用时间
@@ -505,7 +525,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, serviceStart, "holiday");
+			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(tech.getTechId(), week, creartDate, "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
 				for (TechScheduleInfo holiday : techHolidyList) {
 					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
@@ -596,7 +616,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			//----------取得技师 组合订单频率   如果和工作时间重复 删除该时间点 结束------------------
 
 			//----------取得技师 开始时间订单   如果和工作时间重复 删除该时间点 开始-------------------
-			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), serviceStart, "order");
+			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), creartDate, "order");
 			if (techOrderList != null && techOrderList.size() != 0) {
 				for (TechScheduleInfo order : techOrderList) {
 					int intervalTimeS = 0;//必须间隔时间 秒
@@ -648,6 +668,17 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 		}
 	}
+
+    public boolean checkCombinationStatus(CombinationOrderInfo combinationOrderInfo) {
+        CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(combinationOrderInfo.getMasterId());
+        if(!"dispatched".equals(combinationInfo.getOrderStatus())){
+            return false;
+        }
+        if(combinationInfo.getBespeakTotal() <= combinationInfo.getBespeakNum()){
+            return false;
+        }
+        return true;
+    }
 
 	/**
 	 * 设置固定时间- 保存前验证
@@ -762,7 +793,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			//-------------------取得技师 周几可用工作时间  并且转成时间点列表 结束-----------------------------------------------------------
 
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
-			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(techId, week, serviceStart, "holiday");
+			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechWeekTime(techId, week, creartDate, "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
 				for (TechScheduleInfo holiday : techHolidyList) {
 					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
@@ -837,7 +868,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 
 
 			//----------取得技师 开始时间订单   如果和工作时间重复 删除该时间点 开始-------------------
-			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, serviceStart, "order");
+			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, creartDate, "order");
 			if (techOrderList != null && techOrderList.size() != 0) {
 				for (TechScheduleInfo order : techOrderList) {
 					int intervalTimeS = 0;//必须间隔时间 秒
