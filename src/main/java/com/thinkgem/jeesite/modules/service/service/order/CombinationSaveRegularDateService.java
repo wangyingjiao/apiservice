@@ -669,6 +669,17 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 		}
 	}
 
+    public boolean checkCombinationStatus(CombinationOrderInfo combinationOrderInfo) {
+        CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(combinationOrderInfo.getMasterId());
+        if(!"dispatched".equals(combinationInfo.getOrderStatus())){
+            return false;
+        }
+        if(combinationInfo.getBespeakTotal() <= combinationInfo.getBespeakNum()){
+            return false;
+        }
+        return true;
+    }
+
 	/**
 	 * 设置固定时间- 保存前验证
 	 * @param combinationOrderInfo(itemId)

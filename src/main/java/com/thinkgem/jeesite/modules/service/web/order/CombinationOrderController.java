@@ -145,6 +145,10 @@ public class CombinationOrderController extends BaseController {
 	@RequiresPermissions("combination_regular")
 	public Result saveRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
+			boolean statusFlag = combinationSaveRegularDateService.checkCombinationStatus(combinationOrderInfo);
+			if (!statusFlag){
+				return new FailResult("组合订单当前状态不允许此操作");
+			}
 			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
 			if(flag){
 				return new FailResult("时间或服务技师目前暂不可用!");
@@ -190,6 +194,10 @@ public class CombinationOrderController extends BaseController {
 	@RequiresPermissions("combination_regular")
 	public Result updateRegularDate(@RequestBody CombinationOrderInfo combinationOrderInfo) {
 		try {
+			boolean statusFlag = combinationSaveRegularDateService.checkCombinationStatus(combinationOrderInfo);
+			if (!statusFlag){
+				return new FailResult("组合订单当前状态不允许此操作");
+			}
 			boolean flag = combinationSaveRegularDateService.checkRegularDateTech(combinationOrderInfo);
 			if(flag){
 				return new FailResult("时间或服务技师目前暂不可用!");
