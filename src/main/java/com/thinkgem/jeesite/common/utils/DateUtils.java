@@ -412,6 +412,29 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
+	 * 本周周日返回一周后第二周数据
+	 * @return
+	 */
+	public static List<Date> getThisWeekEndLastWeekDayList() {
+		Date day = DateUtils.parseDate(getDate());
+		int week = DateUtils.getWeekNum(day);
+		while (week!=7){
+			day = DateUtils.addDays(day,1);
+			week = DateUtils.getWeekNum(day);
+		}
+
+		List<Date> list = new ArrayList<>();
+		day = DateUtils.addDays(day,15);
+		list.add(day);
+		for(int i=0;i<6;i++){
+			day = DateUtils.addDays(day,1);
+			list.add(day);
+		}
+		Collections.sort(list);
+		return  list;
+	}
+
+	/**
 	 * 判断第一个时间段和第二个时间段是否有重复  重复数据 返回false
 	 *
 	 * .第一个时间段2018-01-01 08:00  2018-01-01 10:00    第二个时间段 2018-01-01 06:00 2018-01-01 07:00  不重复    返回 true
@@ -755,7 +778,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 */
 	public static void main(String[] args) throws ParseException {
 		List<Date> list = null;
-		list = lastWeekDayList();
+		list = getThisWeekEndLastWeekDayList();
 		for(Date info : list){
 			System.out.println(info);
 		}
