@@ -1261,6 +1261,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<OrderInfo> orderMsgList = new ArrayList<>();//取消订单MSG List
 			if(StringUtils.isNotBlank(group_id)){//组合订单
 				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
+				if(null == combinationOrderInfo){
+					throw new ServiceException("未找到组合订单信息");
+				}
 				//组合订单取消
 				CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
 				updateCombinationOrderInfo.setJointGroupId(group_id);
@@ -1395,6 +1398,9 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			List<OrderInfo> orderMsgList = new ArrayList<>();//取消订单MSG List
 			if(StringUtils.isNotBlank(group_id)){//组合订单
 				CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByGroupId(group_id);
+				if(null == combinationOrderInfo){
+					throw new ServiceException("未找到组合订单信息");
+				}
 				//组合订单取消
 				CombinationOrderInfo updateCombinationOrderInfo = new CombinationOrderInfo();
 				updateCombinationOrderInfo.setJointGroupId(group_id);
