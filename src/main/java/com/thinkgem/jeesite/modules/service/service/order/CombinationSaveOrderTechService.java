@@ -194,7 +194,7 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 				Date checkFinishTime = DateUtils.addSecondsNotDayE(finishTime, intervalTimeE);
 
 				for (TechScheduleInfo techOrder : techOrderList) {
-					if(!techOrder.getMasterId().equals(serchNowMasterId)) {//当前订单不考虑
+					if(!serchNowMasterId.equals(techOrder.getMasterId())) {//当前订单不考虑
 						Date techOrderStartTime = techOrder.getStartTime();//订单开始时间
 						Date techOrderEndTime = techOrder.getEndTime();//订单结束时间
 						if (techOrderStartTime.before(techOrderEndTime) && serviceTime.before(finishTime)) {
@@ -284,6 +284,12 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 		info.setSuggestFinishTime(DateUtils.addSecondsNotDayE(serviceTime, serviceSecond.intValue()));//实际完成时间（用来计算库存）
 		info.preUpdate();
 		orderInfoDao.update(info);
+
+		CombinationOrderInfo updateCombinationInfo = new CombinationOrderInfo();
+		updateCombinationInfo.setMasterId(orderInfo.getMasterId());
+		updateCombinationInfo.setServiceHour(serviceHourRe);//建议服务时长（小时）
+		updateCombinationInfo.preUpdate();
+		combinationOrderDao.updateServiceHourByMasterId(updateCombinationInfo);
 
 		// 派单
 		List<OrderDispatch> orderCreateMsgList = new ArrayList<>();
@@ -539,8 +545,13 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 				techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
 				techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
 				techScheduleInfo.setEndTime(info.getFinishTime());//结束时段
+				//techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+				//techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+
 				techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
-				techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+				techScheduleInfo.setMasterId(orderInfo.getMasterId());
+				techScheduleInfo.setType("master");//'holiday：休假  order：订单'
+
 				techScheduleInfo.preUpdate();
 				techScheduleDao.updateScheduleByTypeIdTechId(techScheduleInfo);
 			}
@@ -586,8 +597,13 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 			techScheduleInfo.setScheduleWeek(weekDay);//日期（周一，周二。。。1,2,3,4,5,6,7）
 			techScheduleInfo.setStartTime(orderInfo.getServiceTime());//起始时段
 			techScheduleInfo.setEndTime(info.getFinishTime());//结束时段
+			//techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
+			//techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+
 			techScheduleInfo.setTypeId(orderInfo.getId());//休假ID或订单ID
-			techScheduleInfo.setType("order");//'holiday：休假  order：订单'
+			techScheduleInfo.setMasterId(orderInfo.getMasterId());
+			techScheduleInfo.setType("master");//'holiday：休假  order：订单'
+
 			techScheduleInfo.preInsert();
 			techScheduleDao.insertSchedule(techScheduleInfo);
 

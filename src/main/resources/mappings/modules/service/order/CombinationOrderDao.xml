@@ -360,6 +360,13 @@
         tech_id = #{techId}
         WHERE master_id = #{masterId}
     </update>
+    <update id="updateServiceHourByMasterId">
+        UPDATE
+        order_combination_info
+        SET
+        service_hour = #{serviceHour}
+        WHERE master_id = #{masterId}
+    </update>
     <update id="updateServiceEndByMasterId">
         UPDATE
         order_combination_info

@@ -58,4 +58,6 @@ public interface CombinationOrderDao extends CrudDao<CombinationOrderInfo> {
     void updateStatusSuccessByMasterId(String masterId);
 
     void updateServiceEndByMasterId(CombinationOrderInfo updateCombinationOrderInfo);
+
+    void updateServiceHourByMasterId(CombinationOrderInfo updateCombinationInfo);
 }
