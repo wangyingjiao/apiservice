@@ -1755,26 +1755,26 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, creartDate, "order");
 			if (techOrderList != null && techOrderList.size() != 0) {
 				for (TechScheduleInfo order : techOrderList) {
+					if (!masterId.equals(order.getMasterId())) {
+						int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
+						int intervalTimeE = 0;//必须间隔时间 秒
+						if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
+								Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
+							//可以接单的时间则为：40分钟+路上时间+富余时间
+							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
+						} else {
+							//可以接单的时间则为：路上时间+富余时间
+							intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
+						}
 
-					int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));//必须间隔时间 秒
-					int intervalTimeE = 0;//必须间隔时间 秒
-					if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
-							Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
-						//可以接单的时间则为：40分钟+路上时间+富余时间
-						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time")) + Integer.parseInt(Global.getConfig("order_eat_time"));
-					} else {
-						//可以接单的时间则为：路上时间+富余时间
-						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
-					}
-
-					//List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-					//DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
-					//DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
-					Date orderStartTime = DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS);
-					Date orderEndTime = DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE);
-					if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
-						return true;
-					}
+						//List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
+						//DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
+						//DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
+						Date orderStartTime = DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS);
+						Date orderEndTime = DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE);
+						if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
+							return true;
+						}
 //					if (
 //							(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
 //									|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS)) == 0) &&
@@ -1782,6 +1782,7 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 //							) {
 //						return true;
 //					}
+					}
 				}
 			}
 		}
