@@ -119,7 +119,8 @@
 		'office','office_view','office_insert','office_update',
 		'clean',
 		'service',
-		'basic')
+		'basic',
+        'combination','combination_view','combination_info','combination_regular','combination_order','combination_remark','combination_subscribe')
         ORDER BY a.sort
     </select>
 
