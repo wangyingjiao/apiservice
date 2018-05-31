@@ -571,7 +571,7 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 		TechScheduleInfo techScheduleInfoDel = new TechScheduleInfo();
 		techScheduleInfoDel.setTechId(dispatchTechId);//技师ID
 		techScheduleInfoDel.setTypeId(orderInfo.getId());//休假ID或订单ID
-		techScheduleInfoDel.setType("order");//'holiday：休假  order：订单'
+		techScheduleInfoDel.setType("master");//'holiday：休假  order：订单'
 		techScheduleInfoDel.preUpdate();
 		techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfoDel);
 
