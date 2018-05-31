@@ -146,7 +146,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		String DateTimes = null;
 		int i = mss.intValue();
 		double v = mss % i;
-		Double minutes = v * 60;
+		Double minutes = Math.ceil(v * 60);
 		if(i > 0){
 			if (minutes != 0) {
 				DateTimes = i + "小时" + minutes.intValue() + "分钟";
@@ -154,10 +154,16 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 				DateTimes = i + "小时";
 			}
 		}else {
-			DateTimes=mss * 60 + "分钟";
+			DateTimes=(int)Math.ceil(mss * 60) + "分钟";
 		}
 		return DateTimes;
 	}
+
+	public static void main(String[] args) {
+		Double date = 1.67;
+        String s = dateToStrDays(date);
+        System.out.println(s+"=====================================");
+    }
 	/**
 	 * 获取过去的分钟
 	 *
@@ -776,7 +782,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 * @param args
 	 * @throws ParseException
 	 */
-	public static void main(String[] args) throws ParseException {
+	/*public static void main(String[] args) throws ParseException {
 		List<Date> list = null;
 		list = getThisWeekEndLastWeekDayList();
 		for(Date info : list){
@@ -796,6 +802,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 //		System.out.println(map.get("1"));
 //		System.out.println(map.get("2"));
 //		System.out.println(map.get("3"));
-	}
+	}*/
 
 }
