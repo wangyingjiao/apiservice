@@ -740,7 +740,7 @@ origin_price,
 		WHERE
 		a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.status = 'yes'
-		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
+		AND o.service_time BETWEEN #{startTime} AND #{endTime}
 		AND o.finish_time BETWEEN #{startTime} AND #{endTime}
 		AND (o.service_status='wait_service' or o.service_status='started' or o.service_status='finish')
 		AND a.tech_id  in

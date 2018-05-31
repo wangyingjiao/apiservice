@@ -229,7 +229,8 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		OrderGoods goodsInfo = new OrderGoods();
 		//服务时长
 		Double serviceHour = orderInfo.getServiceHour();
-		orderInfo.setServiceHourStr(DateUtils.dateToStrDays(serviceHour));
+		String s1 = DateUtils.dateToStrDays(serviceHour);
+		orderInfo.setServiceHourStr(s1);
 		//订单的类型
 		String orderType = orderInfo.getOrderType();
 		if ("common".equals(orderType)){
@@ -936,6 +937,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		String techId = orderInfo.getTechId();
 		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
 		String orderGroupId = null;
+		int size=0;
 		Map<String,Object> map=new HashMap<String,Object>();
 		if (!"group_split_yes".equals(orderInfo.getOrderType())) {
 			orderInfoList.add(orderInfo);
@@ -954,7 +956,10 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		ServiceTechnicianInfo tec=new ServiceTechnicianInfo();
 		Date serviceTime = orderInfo.getServiceTime();
 		Double serviceHour = orderInfo.getServiceHour();
-		Date finishTime = orderInfo.getSuggestFinishTime();
+		//要改
+		size=orderInfoList.size();
+		Double serviceSecond = (serviceHour * size * 3600);
+		Date finishTime = DateUtils.addSeconds(serviceTime, serviceSecond.intValue());
 		List techIdList=new ArrayList();
 		techIdList.add(techId);
 		//新增、改派判断库存
@@ -1035,7 +1040,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 					scheduleInfo.setTypeId(orderGroupId);
 				}
 				//计算排期表的开始 结束时间
-				int size = orderInfoList.size();//serviceHour
+				size = orderInfoList.size();//serviceHour
 				Double serviceSecondTem = (serviceHour * size * 3600);
 				Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
 				scheduleInfo.setStartTime(serviceTime);
