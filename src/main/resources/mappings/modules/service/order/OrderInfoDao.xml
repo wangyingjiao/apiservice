@@ -490,7 +490,7 @@ origin_price,
 
 		LEFT JOIN customer_info cust ON a.customer_id = cust.id AND cust.del_flag = #{DEL_FLAG_NORMAL}
 
-		WHERE a.id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.id = #{id}
 	</select>
 
 	<select id="getOrderDispatchList" resultType="OrderDispatch">
