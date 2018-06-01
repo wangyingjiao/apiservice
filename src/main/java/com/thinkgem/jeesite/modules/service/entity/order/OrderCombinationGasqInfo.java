@@ -24,8 +24,17 @@ public class OrderCombinationGasqInfo extends DataEntity<OrderCombinationGasqInf
 	private String orderNumber;		// 自营订单编号
 	private String orderId;		// 自营订单ID
 	private String orderSource;		// 自营订单来源
+	private String hide;		// 是否隐藏按钮 yes 隐藏 no 不隐藏
 	private List<OrderInfo> orderList;
 	public OrderCombinationGasqInfo() {
+	}
+
+	public String getHide() {
+		return hide;
+	}
+
+	public void setHide(String hide) {
+		this.hide = hide;
 	}
 
 	public OrderCombinationGasqInfo(String id) {
