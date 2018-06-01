@@ -1200,12 +1200,14 @@ public class OpenService extends CrudService<OrderInfoDao, OrderInfo> {
 			if(num == 0){
 				throw new ServiceException("订单状态更新失败");
 			}else{
-				if("success".equals(status) && !"common".equals(checkInfoRe.getOrderType())){//组合订单 所有子订单成功 组合订单成功
+				if(("success".equals(status) || "finish".equals(status)) && !"common".equals(checkInfoRe.getOrderType())){	//组合订单 所有子订单成功 组合订单成功
                     CombinationOrderInfo combinationOrderInfo = combinationOrderDao.getCombinationByMasterId(checkInfoRe.getMasterId());
                     if(combinationOrderInfo.getBespeakTotal() == combinationOrderInfo.getBespeakNum()){
+						checkInfoRe.setOrderStatus(status);
                         List<OrderInfo> orderInfos = orderInfoDao.listNotSuccessOrderByMasterId(checkInfoRe.getMasterId());
                         if(orderInfos==null || orderInfos.size()==0){
-                            combinationOrderDao.updateStatusSuccessByMasterId(checkInfoRe.getMasterId());
+							combinationOrderInfo.setOrderStatus(status);
+                            combinationOrderDao.updateStatusSuccessByMasterId(combinationOrderInfo);
                         }
                     }
 				}

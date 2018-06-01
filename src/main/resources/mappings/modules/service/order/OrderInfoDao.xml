@@ -1132,7 +1132,7 @@ origin_price,
         WHERE
         a.del_flag = '0'
         AND a.master_id = #{masterId}
-        AND a.order_status != 'success'
+        AND a.order_status != #{orderStatus}
     </select>
 	<select id="listOrderByMasterAndDate" resultType="OrderInfo">
 		SELECT

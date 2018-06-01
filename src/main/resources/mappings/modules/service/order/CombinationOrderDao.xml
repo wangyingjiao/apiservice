@@ -394,7 +394,7 @@
         UPDATE
         order_combination_info
         SET
-        order_status = 'success'
+        order_status = #{orderStatus}
         WHERE master_id = #{masterId}
     </update>
 

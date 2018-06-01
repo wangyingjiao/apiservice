@@ -677,11 +677,13 @@ public class OpenSendUtil {
             openSendUpdateGroupOrder.setGroup_id(combinationOrderInfo.getJointGroupId());
             openSendUpdateGroupOrder.setMaster_id(combinationOrderInfo.getMasterId());
             list = combinationOrderInfo.getOrderInfoList();
-            for (OrderInfo info : list){
+			OrderInfo orderInfo = list.get(0);
+			Date serviceTime = orderInfo.getServiceTime();
+			for (OrderInfo info : list){
                 OpenSendUpdateGroupComboOrder comboOrder = new OpenSendUpdateGroupComboOrder();
                 comboOrder.setOrder_sn(info.getOrderNumber());
                 comboOrder.setGasq_order_sn(info.getJointOrderId());
-				comboOrder.setService_time(DateUtils.formatDateTime(info.getServiceTime()));
+				comboOrder.setService_time(DateUtils.formatDateTime(serviceTime));
                 list1.add(comboOrder);
             }
             openSendUpdateGroupOrder.setOrder_list(list1);
