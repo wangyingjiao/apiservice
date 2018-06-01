@@ -37,7 +37,7 @@ public class OrderDispatchService extends CrudService<OrderDispatchDao, OrderDis
 		orderDispatch.getSqlMap().put("dsf", dataRoleFilterForOrder(UserUtils.getUser(), "a"));
 		orderDispatch.setPage(page);
 		page.setList(dao.findOrderList(orderDispatch));
-		
+
 		return page;
 	}
 

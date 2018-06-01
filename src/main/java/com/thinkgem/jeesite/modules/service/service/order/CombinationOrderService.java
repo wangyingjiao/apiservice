@@ -74,6 +74,20 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 			combinationById.setFreList(frequencyList);
 			//根据masterId获取组合订单的订单集合
 			List<OrderCombinationGasqInfo> listbyMasterId = orderCombinationGasqDao.getListbyMasterId(combinationOrderInfo);
+			String hide = "no";
+			for (OrderCombinationGasqInfo orderCombinationGasqInfo:listbyMasterId){
+				List<OrderInfo> orderList = orderCombinationGasqInfo.getOrderList();
+				if (orderList != null && orderList.size() > 0){
+					for (OrderInfo orderInfo:orderList){
+						if ("finish".equals(orderInfo.getServiceStatus()) || "cancel".equals(orderInfo.getServiceStatus()) ||
+						"finish".equals(orderInfo.getOrderStatus()) || "success".equals(orderInfo.getOrderStatus()) ||
+						"close".equals(orderInfo.getOrderStatus()) || "cancel".equals(orderInfo.getOrderStatus())){
+							hide="yes";
+						}
+					}
+				}
+				orderCombinationGasqInfo.setHide(hide);
+			}
 			combinationById.setOrderCombinationGasqInfos(listbyMasterId);
             int bespeakNum = combinationById.getBespeakNum();
             int bespeakTotal = combinationById.getBespeakTotal();

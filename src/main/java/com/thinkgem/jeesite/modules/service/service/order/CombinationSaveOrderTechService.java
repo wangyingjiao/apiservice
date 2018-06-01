@@ -453,12 +453,21 @@ public class CombinationSaveOrderTechService extends CrudService<CombinationOrde
 
 		//排期修改
 		TechScheduleInfo techScheduleInfoDel = new TechScheduleInfo();
-		techScheduleInfoDel.setTechId(dispatchTechIdOld);//技师ID
+//		techScheduleInfoDel.setTechId(dispatchTechIdOld);//技师ID
 		techScheduleInfoDel.setTypeId(groupId);
 		techScheduleInfoDel.setType("master");
 		techScheduleInfoDel.preUpdate();
-		techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfoDel);
+		techScheduleDao.deleteScheduleByTypeId(techScheduleInfoDel);
 
+		//去数据库中查是否已有排期 如果有则是已改派
+		TechScheduleInfo techSchedule=new TechScheduleInfo();
+		techSchedule.setMasterId(masterId);
+		techSchedule.setType("master");
+		techSchedule.setTypeId(groupId);
+		List<TechScheduleInfo> orderScheduleByTypeId = techScheduleDao.getOrderScheduleByTypeId(techSchedule);
+		if (orderScheduleByTypeId != null && orderScheduleByTypeId.size() > 0){
+			throw new ServiceException("该订单已改派，不可重新改派");
+		}
 		//排期
 		TechScheduleInfo techScheduleInfo = new TechScheduleInfo();
 		techScheduleInfo.setTechId(dispatchTechIdNew);//技师ID

@@ -990,9 +990,9 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		}else{
 			techScheduleInfo.setType("master");
 		}
-		techScheduleInfo.setTechId(dispatchTechId);
+//		techScheduleInfo.setTechId(dispatchTechId);
 		techScheduleInfo.appPreUpdate();
-		techScheduleDao.deleteScheduleByTypeIdTechId(techScheduleInfo);
+		techScheduleDao.deleteScheduleByTypeId(techScheduleInfo);
 		if (StringUtils.isNotBlank(orderInfo.getServiceStatus()) && StringUtils.isNotBlank(orderInfo.getOrderStatus())) {
 			//订单服务状态为 wait_service:待服务 started:已上门 订单状态 waitdispatch:待派单;dispatched:已派单 可以改派
 			if ((orderInfo.getServiceStatus().equals("wait_service") || orderInfo.getServiceStatus().equals("started"))
@@ -1026,18 +1026,35 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 							throw new ServiceException("新增技师派单失败");
 						}
 					}
+				String typeId=null;
+				String type=null;
 				// 新增改派后的排期表
 				TechScheduleInfo scheduleInfo = new TechScheduleInfo();
 				scheduleInfo.setTechId(techId);
 				if ("common".equals(orderInfo.getOrderType())){
 					scheduleInfo.setType("order");
 					scheduleInfo.setTypeId(orderId);
+					type="order";
+					typeId=orderId;
 				}else if ("group_split_no".equals(orderInfo.getOrderType())){
 					scheduleInfo.setType("master");
 					scheduleInfo.setTypeId(orderId);
+					type="master";
+					typeId=orderId;
 				}else {
 					scheduleInfo.setType("master");
 					scheduleInfo.setTypeId(orderGroupId);
+					type="master";
+					typeId=orderGroupId;
+				}
+				//去数据库中查是否已有排期 如果有则是已改派
+				TechScheduleInfo techSchedule=new TechScheduleInfo();
+				techSchedule.setMasterId(orderInfo.getMasterId());
+				techSchedule.setType(type);
+				techSchedule.setTypeId(typeId);
+				List<TechScheduleInfo> orderScheduleByTypeId = techScheduleDao.getOrderScheduleByTypeId(techSchedule);
+				if (orderScheduleByTypeId != null && orderScheduleByTypeId.size() > 0){
+					throw new ServiceException("该订单已改派，不可重新改派");
 				}
 				//计算排期表的开始 结束时间
 				size = orderInfoList.size();//serviceHour
