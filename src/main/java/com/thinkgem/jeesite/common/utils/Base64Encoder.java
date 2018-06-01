@@ -257,13 +257,201 @@ public class Base64Encoder extends FilterOutputStream {
                         "}";
 
 
-//String bb = "{\"store_id\":\"00000000000000000000000000000034\",\"service_time\":\"2018-02-05 14:30:00\",\"remark_pic\":[],\"address\":\"北京市北京市朝阳区向军南里二巷赤果果春天\",\"area_code\":\"110105\",\"latitude\":\"39.921715\",\"city_code\":\"010\",\"service_info\":[{\"buy_num\":3,\"pay_price\":234.00,\"cate_goods_id\":\"1fe8abda97bc4ea98f26308b968cb0bf_2f7b589fb373408bbf071093f69dd2bd\"}],\"remark\":\"咯嘿嘿买哦安破坏和各地八婆去年破 boss 毛孔呢，pop，破烂/这，出差。x/打个车咯胖龙敏LOL你咯哦破 ins logo 病了，破，破，破烂，哈来陪姥姥家去看看去啦啦啦啦啦啦啦啦啦啪啦啦啦啦啦啦离开了斯里兰卡时间恐怕来来回回。爸爸啊。在一起就好了！你是怎么回事！我在外面玩手\",\"province_code\":\"\",\"platform\":\"gasq\",\"phone\":\"13520174925\",\"gasq_order_id\":\"20180205093554104578\",\"eshop_code\":\"E180314975778109598\",\"order_type\":\"common\",\"longitude\":\"116.46048\",\"sum_price\":\"702.00\"}";
-String bb = "{\"store_id\":\"00000000000000000000000000000034\",\"service_time\":\"2018-02-05 12:30:00\",\"remark_pic\":[\"ios/2018/02/05/DA5FF87B-AD0E-4A01-A319-8A6DF0EBC5DC.jpg\",\"ios/2018/02/05/70E39FF3-1884-4F84-9EEF-35F877D0D417.jpg\",\"ios/2018/02/05/56E7914A-1085-471C-A0F2-4CA9DABF3015.jpg\",\"ios/2018/02/05/97C4E912-1133-4DE5-B78C-F1A9FCDCAA16.jpg\",\"ios/2018/02/05/055A34C5-002E-4E86-9E84-FDB8B3E59B8A.jpg\",\"ios/2018/02/05/E239E0BB-6054-445F-9EA2-9A0391806DAC.jpg\",\"ios/2018/02/05/FA2A9ADF-32D5-4307-8216-8968DA0A71DF.jpg\",\"ios/2018/02/05/4358CA6D-7937-49B1-98B1-7A3DCE7B2A4D.jpg\",\"ios/2018/02/05/FE206109-2A1A-430E-9F3F-B412A381C61C.jpg\"],\"address\":\"北京市北京市朝阳区向军南里二巷赤果果春天\",\"area_code\":\"110105\",\"latitude\":\"39.921715\",\"city_code\":\"010\",\"service_info\":[{\"buy_num\":1,\"pay_price\":234.00,\"cate_goods_id\":\"1fe8abda97bc4ea98f26308b968cb0bf_2f7b589fb373408bbf071093f69dd2bd\"}],\"remark\":\"\",\"province_code\":\"\",\"platform\":\"gasq\",\"phone\":\"13520174925\",\"gasq_order_id\":\"20180205102020594221\",\"eshop_code\":\"E180314975778109598\",\"order_type\":\"common\",\"longitude\":\"116.46048\",\"sum_price\":\"234.00\"}";
+String cc = "{\"area_name\":\"朝阳区\",\"latitude\":\"39.9221\",\"service_info\":[{\"buy_num\":1,\"pay_price\":23.00,\"cate_goods_id\":\"452f5b2db7e14b3f9765cd332a335bf1_33a4397da6a6426bb1d6a997e3042875\"}],\"city_code\":\"010\",\"remark\":\"\",\"province_code\":\"110000\",\"placename\":\"关东店北街11号楼\",\"login_mobile\":\"13520174926\",\"platform\":\"gasq\",\"store_phone\":\"010-33636634\",\"city_name\":\"北京市\",\"store_name\":\"烧饼门店\",\"eshop_code\":\"E161943692063860498\",\"order_type\":\"group_split_yes\",\"longitude\":\"116.461\",\"store_id\":\"12345678901234567890\",\"service_time\":\"2018-05-22 09:00:00\",\"remark_pic\":[],\"store_addr\":\"北京市朝阳区呼家楼宾馆写字楼\",\"detail_address\":\"恶徒夺目\",\"area_code\":\"110105\",\"gasq_order_status\":\"waitConfirm\",\"province_name\":\"北京市\",\"opt\":\"createOrder\",\"login_name\":\"哈喽去\",\"phone\":\"13520174926\",\"group_id\":\"577b055ad5ba4a34bea5ef9999999999\",\"gasq_order_id\":\"58c0d50c5ac441a6aa0f2e592a4ba58e\",\"gasq_order_sn\":[\"20170521193137348111\",\"20170521193137348222\",\"20170521193137348333\",\"20170521193137348444\",\"20170521193137348555\"],\"name\":\"据他\",\"sum_price\":\"23.00\"}";
 
-String aa = "{\"store_id\":\"8ac2d18658faf9650158fc95be90001e\",\"eshop_code\":\"E180924095431792460\",\"latitude\":\"39.930767\",\"longitude\":\"116.675674\",\"service_info\":[{\"cate_goods_id\":\"1_d48aa2d1ca0f4f56a346e0a564558b6a\",\"gasq_product_id\":\"1f41e9811c5b29972f1f43503cab3551\",\"buy_num\":\"1\"}],\"platform\":\"gasq\"}";
+String qh ="{\n" +
+        "\t\"area_name\": \"朝阳区\",\n" +
+        "\t\"latitude\": \"59.9221\",\n" +
+        "\t\"service_info\": [{\n" +
+        "\t\t\"buy_num\": 1,\n" +
+        "\t\t\"pay_price\": 100.00,\n" +
+        "\t\t\"cate_goods_id\": \"0abf778fc2e64db785df4f64f3e6d888_b338c4acbff441439e79a008e0771cc3\"\n" +
+        "\t}],\n" +
+        "\t\"city_code\": \"010\",\n" +
+        "\t\"remark\": \"\",\n" +
+        "\t\"province_code\": \"110000\",\n" +
+        
+        "\t\"platform\": \"gasq\",\n" +
+        "\t\"store_phone\": \"010-33636634\",\n" +
+        "\t\"city_name\": \"北京市\",\n" +
+        "\t\"store_name\": \"烧饼门店\",\n" +
+        "\t\"eshop_code\": \"E180924095431792460\",\n" +
+        "\t\"order_type\": \"group_split_yes\",\n" +
+        "\t\"longitude\": \"156.461\",\n" +
+        "\t\"store_id\": \"00000000000000000000000000000034\",\n" +
+        "\t\"service_time\": \"2018-05-22 09:00:00\",\n" +
+        "\t\"remark_pic\": [],\n" +
+        "\t\"store_addr\": \"北京市朝阳区呼家楼宾馆写字楼\",\n" +
+        
+        "\t\"area_code\": \"110105\",\n" +
+        "\t\"gasq_order_status\": \"waitConfirm\",\n" +
+        "\t\"province_name\": \"北京市\",\n" +
+        "\t\"opt\": \"createOrder\",\n" +
+        "\t\"placename\": \"关东店北街11号楼\",\n" +
+        "\t\"detail_address\": \"详细地址\",\n" +
 
-String cc = "{\"area_name\":\"朝阳区\",\"latitude\":\"39.9221\",\"service_info\":[{\"buy_num\":1,\"pay_price\":23.00,\"cate_goods_id\":\"452f5b2db7e14b3f9765cd332a335bf1_5d814ab700da48948394f9916c4b7d85\"}],\"city_code\":\"010\",\"remark\":\"\",\"province_code\":\"110000\",\"placename\":\"关东店北街11号楼\",\"login_mobile\":\"13520174926\",\"platform\":\"gasq\",\"store_phone\":\"010-33636634\",\"city_name\":\"北京市\",\"store_name\":\"呼家楼门店\",\"eshop_code\":\"E180924095431792460\",\"order_type\":\"common\",\"longitude\":\"116.461\",\"store_id\":\"00000000000000000000000000000034\",\"service_time\":\"2018-05-22 09:00:00\",\"remark_pic\":[],\"store_addr\":\"北京市朝阳区呼家楼宾馆写字楼\",\"detail_address\":\"恶徒夺目\",\"area_code\":\"110105\",\"gasq_order_status\":\"waitConfirm\",\"province_name\":\"北京市\",\"opt\":\"createOrder\",\"login_name\":\"哈喽去\",\"phone\":\"13520174926\",\"group_id\":\"577b055ad5ba4a34bea5ef99693c5811\",\"gasq_order_id\":\"58c0d50c5ac441a6aa0f2e592a4ba58e\",\"gasq_order_sn\":[\"20180521193137348425\"],\"name\":\"据他\",\"sum_price\":\"23.00\"}";
-String encode = Base64Encoder.encode(cc);
+
+        "\t\"login_name\": \"用户2051\",\n" +
+        "\t\"login_mobile\": \"13520172051\",\n" +
+        "\t\"phone\": \"13520172051\",\n" +
+        "\t\"name\": \"用户2051\",\n" +
+
+
+        "\t\"gasq_order_id\": \"58c0d50c5ac441a6aa0f2e592a4ba58e\",\n" +
+
+        "\t\"group_id\": \"577b055ad5ba4a34bea5ef996932051\",\n" +
+        "\t\"gasq_order_sn\": [\"20510521193137348001\", " +
+        "\"20510521193137348002\", " +
+        "\"20510521193137348003\", " +
+        "\"20510521193137348004\", " +
+        "\"20510521193137348005\", " +
+        "\"20510521193137348006\", " +
+        "\"20510521193137348007\", " +
+        "\"20510521193137348008\", " +
+        "\"20510521193137348009\", " +
+        "\"20510521193137348010\", " +
+        "\"20510521193137348011\", " +
+        "\"20510521193137348012\", " +
+        "\"20510521193137348013\", " +
+        "\"20510521193137348014\", " +
+        "\"20510521193137348015\", " +
+        "\"20510521193137348016\", " +
+        "\"20510521193137348017\", " +
+        "\"20510521193137348018\", " +
+        "\"20510521193137348019\", " +
+        "\"20510521193137348020\"],\n" +
+
+
+        "\t\"sum_price\": \"23.00\"\n" +
+        "}";
+
+//String encode = Base64Encoder.encode(dd);
+
+        String time2 =
+                "{\"store_id\":\"00000000000000000000000000000034\"," +
+                        "\"eshop_code\":\"E180924095431792460\"," +
+                        "\"group_id\":\"577b055ad5ba4a34bea5ef996932028\"," +
+                        "\"gasq_order_num\":\"1\"," +
+                        "\"service_info\": [{" +
+                        "\"cate_goods_id\":\"3ccfcd9e8c5a4ce3aad0d0a434d020b0_1fad4ec32c8640248d038d94756e6c29\"," +
+                        "\"gasq_product_id\":\"bda23cc2b60a1fe9ae19a67af537cc6e\"," +
+                        "\"pay_price\":\"200\"," +
+                        "\"buy_num\":\"3\"" +
+                        "}]," +
+                        "\"platform\":\"gasq\"" +
+                        "}";
+        String ee = "{\n" +
+                "\t\"area_name\": \"朝阳区\",\n" +
+                "\t\"latitude\": \"59.9221\",\n" +
+                "\t\"service_info\": [{\n" +
+                "\t\t\"buy_num\": 1,\n" +
+                "\t\t\"pay_price\": 23.00,\n" +
+                "\t\t\"cate_goods_id\": \"452f5b2db7e14b3f9765cd332a335bf1_33a4397da6a6426bb1d6a997e3042875\"\n" +
+                "\t}],\n" +
+                "\t\"city_code\": \"010\",\n" +
+                "\t\"remark\": \"\",\n" +
+                "\t\"province_code\": \"110000\",\n" +
+                "\t\"placename\": \"关东店北街11号楼\",\n" +
+                "\t\"login_mobile\": \"13520171111\",\n" +
+                "\t\"platform\": \"gasq\",\n" +
+                "\t\"store_phone\": \"010-33636634\",\n" +
+                "\t\"city_name\": \"北京市\",\n" +
+                "\t\"store_name\": \"烧饼门店\",\n" +
+                "\t\"eshop_code\": \"E161943692063860498\",\n" +
+                "\t\"order_type\": \"group_split_yes\",\n" +
+                "\t\"longitude\": \"156.461\",\n" +
+                "\t\"store_id\": \"12345678901234567890\",\n" +
+                "\t\"service_time\": \"2018-05-25 11:00:00\",\n" +
+                "\t\"remark_pic\": [],\n" +
+                "\t\"store_addr\": \"北京市朝阳区呼家楼宾馆写字楼\",\n" +
+                "\t\"detail_address\": \"详细地址\",\n" +
+                "\t\"area_code\": \"110105\",\n" +
+                "\t\"gasq_order_status\": \"waitConfirm\",\n" +
+                "\t\"province_name\": \"北京市\",\n" +
+                "\t\"opt\": \"createOrder\",\n" +
+                "\t\"login_name\": \"用户AAA\",\n" +
+                "\t\"phone\": \"13520171111\",\n" +
+                "\t\"group_id\": \"577b055ad5ba4a34bea5ef99693c8888\",\n" +
+                "\t\"gasq_order_id\": \"58c0d50c5ac441a6aa0f2e592a4ba58e\",\n" +
+                "\t\"gasq_order_sn\": [\"20150521193137348111\"],\n" +
+                "\t\"name\": \"用户AAA\",\n" +
+                "\t\"sum_price\": \"23.00\"\n" +
+                "}";
+
+
+        String dd ="{\n" +
+                "    \"area_name\":\"朝阳区\",\n" +
+                "    \"latitude\":\"39.9221\",\n" +
+                "    \"service_info\":[\n" +
+                "        {\n" +
+                "            \"buy_num\":1,\n" +
+                "            \"pay_price\":23,\n" +
+                "            \"cate_goods_id\":\"452f5b2db7e14b3f9765cd332a335bf1_33a4397da6a6426bb1d6a997e3042875\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"city_code\":\"010\",\n" +
+                "    \"remark\":\"\",\n" +
+                "    \"province_code\":\"110000\",\n" +
+                "    \"placename\":\"关东店北街11号楼\",\n" +
+                "    \"login_mobile\":\"13520174926\",\n" +
+                "    \"platform\":\"gasq\",\n" +
+                "    \"store_phone\":\"010-33636634\",\n" +
+                "    \"city_name\":\"北京市\",\n" +
+                "    \"store_name\":\"烧饼门店\",\n" +
+                "    \"eshop_code\":\"E161943692063860498\",\n" +
+                "    \"order_type\":\"group_split_yes\",\n" +
+                "    \"longitude\":\"116.461\",\n" +
+                "    \"store_id\":\"12345678901234567890\",\n" +
+                "    \"service_time\":\"2018-05-22 09:00:00\",\n" +
+                "    \"remark_pic\":[\n" +
+                "\n" +
+                "    ],\n" +
+                "    \"store_addr\":\"北京市朝阳区呼家楼宾馆写字楼\",\n" +
+                "    \"detail_address\":\"恶徒夺目\",\n" +
+                "    \"area_code\":\"110105\",\n" +
+                "    \"gasq_order_status\":\"waitConfirm\",\n" +
+                "    \"province_name\":\"北京市\",\n" +
+                "    \"opt\":\"createOrder\",\n" +
+                "    \"login_name\":\"哈喽去\",\n" +
+                "    \"phone\":\"13520174926\",\n" +
+                "    \"group_id\":\"577b055ad5ba4a34bea5ef99693c5811\",\n" +
+                "    \"gasq_order_id\":\"58c0d50c5ac441a6aa0f2e592a4ba58e\",\n" +
+                "    \"gasq_order_sn\":[\n" +
+                "        \"21170521193137348111\",\n" +
+                "        \"21170521193137348222\",\n" +
+                "        \"21170521193137348333\",\n" +
+                "        \"21170521193137348444\",\n" +
+                "        \"21170521193137348555\"\n" +
+                "    ],\n" +
+                "    \"name\":\"据他\",\n" +
+                "    \"sum_price\":\"23.00\"\n" +
+                "}";
+
+        String xx = "{\"area_name\":\"朝阳区\",\"latitude\":\"39.9214\",\"service_info\":[{\"buy_num\":2,\"pay_price\":750.00,\"cate_goods_id\":\"0abf778fc2e64db785df4f64f3e6d888_f74e1c1698594d36a4a98a0301487e01\"}],\"city_code\":\"010\",\"remark\":\"\",\"province_code\":\"110000\",\"placename\":\"北京国际中心\",\"login_mobile\":\"13520174926\",\"platform\":\"gasq\",\"store_phone\":\"010-33636634\",\"city_name\":\"北京市\",\"store_name\":\"呼家楼门店\",\"eshop_code\":\"E180924095431792460\",\"order_type\":\"group_split_no\",\"longitude\":\"116.463\",\"store_id\":\"00000000000000000000000000000034\",\"service_time\":\"2018-05-30 06:00:00\",\"remark_pic\":[],\"store_addr\":\"北京市朝阳区呼家楼宾馆写字楼\",\"detail_address\":\"了\",\"area_code\":\"110105\",\"is_split\":\"no\",\"gasq_order_status\":\"waitConfirm\",\"province_name\":\"北京市\",\"opt\":\"createOrder\",\"login_name\":\"哈喽去\",\"phone\":\"13520174926\",\"group_id\":\"432073e6f4a6482984bc33a34499b326\",\"gasq_order_id\":\"4cf735f548fc4219b80d6d0117b6f574\",\"gasq_order_sn\":[\"20180528135501498821\"],\"name\":\"了\",\"sum_price\":\"1500.00\"}";
+String yy ="{\"opt\":\"cancelAppoint\",\"group_id\":\"c36caa073b2741758b01016d6aa59681\",\"gasq_order_sn\":\"20180528143249292882\",\"platform\":\"gasq\"}";
+
+
+
+
+    String as = "{\"opt\":\"updateOrderStatus\",\"group_id\":\"840c74c5aaa94eac8bd3dea0a5b95662\",\"gasq_order_id\":\"042c34e0216c42afb60981cd55a73731\",\"gasq_order_sn\":\"20180528155318546185\",\"comment\":\"\",\"platform\":\"gasq\",\"status\":\"cancel\"}";
+
+    String qh2 = "{\"service_time\":\"2018-05-31 06:00:00\",\"opt\":\"appointOrder\",\"remark_pic\":[],\"group_id\":\"df498830300249a4b74712e9255503ad\",\"gasq_order_sn\":[\"20180528201629480276\"],\"service_info\":[{\"pay_price\":32.00,\"cate_goods_id\":\"0abf778fc2e64db785df4f64f3e6d888_8b0f24fd80184f27b48436566f1d5b0e\"}],\"remark\":\"\",\"orderIds\":\"00c38c2f1b894b7886181cff19563656\",\"platform\":\"gasq\"}";
+String qh3 = "{\"service_time\":\"2018-05-29 23:30:00\",\"opt\":\"appointOrder\",\"remark_pic\":[],\"group_id\":\"7bdbb912c7b747b69f1a6243c180d242\",\"gasq_order_sn\":[\"20180529144756779216\",\"20180529144756777226\"],\"service_info\":[{\"pay_price\":326.40,\"cate_goods_id\":\"0abf778fc2e64db785df4f64f3e6d888_8b0f24fd80184f27b48436566f1d5b0e\"}],\"orderIds\":\"1286eeb625184537b393a6b7d7fda7d3,4baa486fc28a49189a90e6ef9e40edc5\",\"platform\":\"gasq\"}";
+
+String qh4 = "{\"opt\":\"updateOrderStatus\",\"group_id\":\"f813014ae7984c6e9c6814ee2971a820\",\"gasq_order_id\":\"16b7d5b3dfde4d719723ffc2f1ecc5cb\",\"gasq_order_sn\":\"20180529191014675815\",\"comment\":\"\",\"platform\":\"gasq\",\"status\":\"cancel\"}";
+String qh5="{\"area_name\":\"朝阳区\",\"latitude\":\"39.9221\",\"service_info\":[{\"buy_num\":1,\"pay_price\":326.40,\"cate_goods_id\":\"0abf778fc2e64db785df4f64f3e6d888_b338c4acbff441439e79a008e0771cc3\"}],\"city_code\":\"010\",\"province_code\":\"\",\"placename\":\"关东店北街\",\"login_mobile\":\"13520174926\",\"store_phone\":\"010-33636634\",\"city_name\":\"北京市\",\"store_name\":\"呼家楼店\",\"eshop_code\":\"E180924095431792460\",\"order_type\":\"group_split_yes\",\"longitude\":\"116.46149\",\"store_id\":\"00000000000000000000000000000034\",\"remark_pic\":[],\"store_addr\":\"北京市朝阳区呼家楼街道向军南里2巷5号呼家楼宾馆一层西侧大厅\",\"detail_address\":\"非常减肥操接触过陈键锋\",\"area_code\":\"110105\",\"is_split\":\"yes\",\"gasq_order_status\":\"waitConfirm\",\"province_name\":\"北京市\",\"opt\":\"createOrder\",\"login_name\":\"哈喽去\",\"phone\":\"13520174926\",\"group_id\":\"4225105311e9417aa1f366cdca453ca3\",\"gasq_order_id\":\"1d6a7edec8f547e9ae1df0f506928c3a\",\"gasq_order_sn\":[\"20180529194815579984\",\"20180529194815581339\",\"20180529194815589767\",\"20180529194815585630\",\"20180529194815583568\",\"20180529194815577078\",\"20180529194815588622\",\"20180529194815586742\"],\"name\":\"春风飞虎陈飞虎\",\"sum_price\":\"326.40\"}";
+
+        String qh6 = "{\"opt\":\"updateOrderStatus\",\"group_id\":\"eae96775645b4796a04f7eb3e8550b49\",\"gasq_order_id\":\"89180f7bc17741d297044da7f728410e\",\"gasq_order_sn\":\"20180530161449235333\",\"comment\":\"\",\"status\":\"cancel\"}";
+String qh7="{\"opt\":\"updateOrderStatus\",\"group_id\":\"cb2feffb10574cdbb179c6889b0a2aaa\",\"gasq_order_id\":\"6c547653315440238f2a017255e7c536\",\"gasq_order_sn\":\"20180530175258390494\",\"service_order_id\":\"201805301755000188363364\",\"platform\":\"gasq\",\"status\":\"cancel\"}";
+
+
+
+
+
+
+
+        String encode = Base64Encoder.encode(qh7).replace("\r", "").replace("\n", "").replace("\t", "");
+
         System.out.println(encode);
         System.out.println(MD5Util.getStringMD5(encode+"7e1c77ac-29c4-40f3-ad2f-1027dc75713c"));
     }
