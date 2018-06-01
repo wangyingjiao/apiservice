@@ -203,6 +203,14 @@ public class Base64Encoder extends FilterOutputStream {
                         "\"gasq_order_id\":\"gasq001\"" +
 
                         "}";
+        //订单状态更新   gasq_order_sn  gasq_order_id"
+        String flag1 =
+                "{\"platform\":\"gasq\"," +
+                        "\"service_order_id\":\"201806011424010172956934\"," +
+                        "\"comment\":\"\"," +
+                        "\"status\":\"signed\"," + //cancel 取消；finish 已签收；success 完成
+                        "\"gasq_order_sn\":\"20180601142251246060\""+
+                        "}";
 
         //更新订单商品信息及门店、商家端、国安侠、用户备注
         String goods =
@@ -266,7 +274,7 @@ String cc = "{\"area_name\":\"朝阳区\",\"latitude\":\"39.9221\",\"service_inf
 
 String aaaa ="{\"opt\":\"cancelAppoint\",\"group_id\":\"6c3f84396b254af4a54e360fa2794134\",\"gasq_order_sn\":\"20180529111417422963\",\"platform\":\"gasq\"}";
 
-String encode = Base64Encoder.encode(aaaa);
+String encode = Base64Encoder.encode(flag1);
         System.out.println(encode);
         System.out.println(MD5Util.getStringMD5(encode+"7e1c77ac-29c4-40f3-ad2f-1027dc75713c"));
     }
