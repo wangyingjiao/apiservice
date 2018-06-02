@@ -223,4 +223,9 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 
 		return orderInfo;
     }
+
+    public OrderCombinationGasqInfo getListByOrderNumber(OrderInfo orderInfo1) {
+    	return orderCombinationGasqDao.getListByOrderNumber(orderInfo1);
+    }
+
 }

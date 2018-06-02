@@ -1321,4 +1321,7 @@ public class OrderInfoService extends CrudService<OrderInfoDao, OrderInfo> {
 		return orderInfo.getOrderNumber();
 	}
 
+    public List<OrderInfo> getOrderListByOrderGroupId(OrderCombinationGasqInfo listByOrderNumber) {
+		return orderInfoDao.getOrderListByOrderGroupId(listByOrderNumber);
+    }
 }
