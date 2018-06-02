@@ -102,10 +102,27 @@ public class CombinationOrderService extends CrudService<CombinationOrderDao, Co
 			   combinationById.setServiceAllHour(multiply.doubleValue());
 		  	 }
         }else if ("group_split_no".equals(combinationById.getOrderType())){
+			OrderCombinationGasqInfo gasqInfo=new OrderCombinationGasqInfo();
+            //根据masterId获取组合订单的订单集合
+            List<OrderCombinationGasqInfo> listbyMasterId = orderCombinationGasqDao.getListbyMasterId(combinationOrderInfo);
+            String hide = "no";
+            for (OrderCombinationGasqInfo orderCombinationGasqInfo:listbyMasterId){
+                List<OrderInfo> orderList = orderCombinationGasqInfo.getOrderList();
+                if (orderList != null && orderList.size() > 0){
+                    for (OrderInfo orderInfo:orderList){
+                        if ("finish".equals(orderInfo.getServiceStatus()) || "cancel".equals(orderInfo.getServiceStatus()) ||
+                                "finish".equals(orderInfo.getOrderStatus()) || "success".equals(orderInfo.getOrderStatus()) ||
+                                "close".equals(orderInfo.getOrderStatus()) || "cancel".equals(orderInfo.getOrderStatus())){
+                            hide="yes";
+                        }
+                    }
+                }
+				gasqInfo.setHide(hide);
+            }
+
 			OrderInfo orderListbyMasterId = orderCombinationGasqDao.getOrderListbyMasterId(combinationOrderInfo);
 			List<OrderInfo> orderInfos=new ArrayList<OrderInfo>();
 			orderInfos.add(orderListbyMasterId);
-			OrderCombinationGasqInfo gasqInfo=new OrderCombinationGasqInfo();
 			gasqInfo.setOrderList(orderInfos);
 			List<OrderCombinationGasqInfo> orderCombinationGasqInfos=new ArrayList<OrderCombinationGasqInfo>();
 			orderCombinationGasqInfos.add(gasqInfo);
