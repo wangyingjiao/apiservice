@@ -332,7 +332,7 @@ public class CombinationOrderController extends BaseController {
                 //判断订单状态
                 boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo2);
                 if (!flag) {
-                    return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+                    return new FailResult("该订单的建议服务完成时间已经到了,不可再更换技师");
                 }
             }
 			boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
