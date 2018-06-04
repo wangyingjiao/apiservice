@@ -325,11 +325,16 @@ public class CombinationOrderController extends BaseController {
 		try {
 			OrderInfo orderInfo = new OrderInfo();
 			orderInfo.setId(combinationOrderInfo.getOrderId());
-			//判断订单状态
-			boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
-			if(!flag){
-				return new FailResult("当前订单状态或服务状态不允许操作此项内容");
-			}
+            OrderInfo orderInfo1 = orderInfoService.get(orderInfo.getId());
+            OrderCombinationGasqInfo listByOrderNumber = combinationOrderService.getListByOrderNumber(orderInfo1);
+            List<OrderInfo> oiList = orderInfoService.getOrderListByOrderGroupId(listByOrderNumber);
+            for (OrderInfo orderInfo2 : oiList) {
+                //判断订单状态
+                boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo2);
+                if (!flag) {
+                    return new FailResult("该订单的建议服务完成时间已经到了,不可再更换技师");
+                }
+            }
 			boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
 			if(!fullFlag){
 				return new FailResult("当前订单只有补单商品,不允许操作此项内容");
@@ -531,11 +536,16 @@ public class CombinationOrderController extends BaseController {
 	@RequestMapping(value = "updateOrderTimeDateList", method = {RequestMethod.POST})
 	@RequiresPermissions("combination_order")
 	public Result updateOrderTimeDateList(@RequestBody OrderInfo orderInfo) {
-		//判断订单状态
-		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
-		if(!flag){
-			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
-		}
+        OrderInfo orderInfo1 = orderInfoService.get(orderInfo.getId());
+        OrderCombinationGasqInfo listByOrderNumber = combinationOrderService.getListByOrderNumber(orderInfo1);
+        List<OrderInfo> oiList = orderInfoService.getOrderListByOrderGroupId(listByOrderNumber);
+        for (OrderInfo orderInfo2 : oiList) {
+            //判断订单状态
+            boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo2);
+            if (!flag) {
+                return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+            }
+        }
 		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
 		if(!fullFlag){
 			return new FailResult("当前订单只有补单商品,不允许操作此项内容");
@@ -545,7 +555,7 @@ public class CombinationOrderController extends BaseController {
 		//当前时间后一个半小时
 		Double serviceNextSecond = (1.5 * 3600);
 		Date finishTime = DateUtils.addSeconds(new Date(), serviceNextSecond.intValue());
-		if (serviceTime.compareTo(finishTime) < 0){
+		if (serviceTime.compareTo(finishTime) > 0){
 			return new FailResult("距离服务开始时间只剩下一个半小时，不可再更换时间!");
 		}
 		try {

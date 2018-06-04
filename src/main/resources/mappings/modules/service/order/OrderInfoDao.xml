@@ -490,7 +490,7 @@ origin_price,
 
 		LEFT JOIN customer_info cust ON a.customer_id = cust.id AND cust.del_flag = #{DEL_FLAG_NORMAL}
 
-		WHERE a.id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.id = #{id}
 	</select>
 
 	<select id="getOrderDispatchList" resultType="OrderDispatch">
@@ -885,7 +885,7 @@ origin_price,
 		<include refid="orderInfoColumns"/>
 		FROM order_info a
 		<include refid="orderInfoJoins"/>
-		WHERE a.master_id = #{masterId}
+		WHERE a.master_id = #{masterId} AND a.order_status != 'cancel'
 	</select>
 	<select id="checkGasqSnOrderSn" resultType="OrderInfo">
 		SELECT
@@ -1132,7 +1132,7 @@ origin_price,
         WHERE
         a.del_flag = '0'
         AND a.master_id = #{masterId}
-        AND a.order_status != 'success'
+        AND a.order_status != #{orderStatus}
     </select>
 	<select id="listOrderByMasterAndDate" resultType="OrderInfo">
 		SELECT

@@ -365,7 +365,9 @@ public class OpenController extends BaseController {
 				orderInfo1.setOrderNumber((String)map.get("orderNumber"));
 				orderInfo1.setTechList(dis);
 				User user = UserUtils.getUser();
+				user.setId("gasq001");
 				orderInfo1.setCreateBy(user);
+				orderInfo1.setUpdateBy(user);
 				messageInfoService.insert(orderInfo1,"orderCancel");//取消
 			}catch (Exception e){
 				logger.error("更换时间保存-推送消息失败-系统异常");

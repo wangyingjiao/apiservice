@@ -5,6 +5,10 @@ package com.thinkgem.jeesite.modules.service.service.order;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.common.result.FailResult;
+import com.thinkgem.jeesite.modules.service.dao.order.OrderCombinationGasqDao;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderCombinationGasqInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,13 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Service
 @Transactional(readOnly = true)
 public class OrderDispatchService extends CrudService<OrderDispatchDao, OrderDispatch> {
+
+	@Autowired
+	OrderInfoDao orderInfoDao;
+    @Autowired
+    OrderCombinationGasqDao orderCombinationGasqDao;
+    @Autowired
+    OrderInfoOperateService orderInfoOperateService;
 
 	public OrderDispatch get(String id) {
 		return super.get(id);

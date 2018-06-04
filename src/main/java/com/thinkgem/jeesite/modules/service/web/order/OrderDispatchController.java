@@ -11,10 +11,9 @@ import com.thinkgem.jeesite.common.result.Result;
 import com.thinkgem.jeesite.common.result.SuccResult;
 import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.modules.service.entity.order.CombinationOrderInfo;
+import com.thinkgem.jeesite.modules.service.entity.order.OrderCombinationGasqInfo;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderInfo;
-import com.thinkgem.jeesite.modules.service.service.order.CombinationSaveOrderTechService;
-import com.thinkgem.jeesite.modules.service.service.order.OrderInfoOperateService;
-import com.thinkgem.jeesite.modules.service.service.order.OrderInfoService;
+import com.thinkgem.jeesite.modules.service.service.order.*;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.MessageInfoService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -30,7 +29,6 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.service.entity.order.OrderDispatch;
-import com.thinkgem.jeesite.modules.service.service.order.OrderDispatchService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +49,8 @@ public class OrderDispatchController extends BaseController {
 	private OrderDispatchService orderDispatchService;
 	@Autowired
 	private MessageInfoService messageInfoService;
+    @Autowired
+	private CombinationOrderService combinationOrderService;
 
 	@Autowired
 	private CombinationSaveOrderTechService combinationSaveOrderTechService;
@@ -94,11 +94,24 @@ public class OrderDispatchController extends BaseController {
 	@ApiOperation("技师改派")
 	@RequiresPermissions("dispatch_insert")
 	public Result dispatchTech(@RequestBody OrderInfo orderInfo) {
-		//判断订单状态
-		boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
-		if(!flag){
-			return new FailResult("当前订单状态或服务状态不允许操作此项内容");
-		}
+        OrderInfo orderInfo1 = orderInfoService.get(orderInfo.getId());
+        if (orderInfo1.getOrderType().equals("common")) {
+            //判断订单状态
+            boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo);
+            if (!flag) {
+                return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+            }
+        }else {
+            OrderCombinationGasqInfo listByOrderNumber = combinationOrderService.getListByOrderNumber(orderInfo1);
+            List<OrderInfo> oiList = orderInfoService.getOrderListByOrderGroupId(listByOrderNumber);
+            for (OrderInfo orderInfo2 : oiList) {
+                //判断订单状态
+                boolean flag = orderInfoOperateService.checkOrderStatus(orderInfo2);
+                if (!flag) {
+                    return new FailResult("当前订单状态或服务状态不允许操作此项内容");
+                }
+            }
+        }
 		boolean fullFlag = orderInfoOperateService.checkOrderFullGoods(orderInfo);
 		if(!fullFlag){
 			return new FailResult("当前订单只有补单商品,不允许操作此项内容");

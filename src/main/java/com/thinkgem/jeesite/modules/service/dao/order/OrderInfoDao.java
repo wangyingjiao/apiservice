@@ -120,7 +120,7 @@ public interface OrderInfoDao extends CrudDao<OrderInfo> {
 
     List<OrderInfo> getOrderInfoByMasterId(String masterId);
 
-    List<OrderInfo> listNotSuccessOrderByMasterId(String masterId);
+    List<OrderInfo> listNotSuccessOrderByMasterId(OrderInfo checkInfoRe);
 
     List<OrderInfo> listOrderByMasterAndDate(OrderInfo fristSerchInfo);
 

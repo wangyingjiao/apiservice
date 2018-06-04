@@ -203,6 +203,14 @@ public class Base64Encoder extends FilterOutputStream {
                         "\"gasq_order_id\":\"gasq001\"" +
 
                         "}";
+        //订单状态更新   gasq_order_sn  gasq_order_id"
+        String flag1 =
+                "{\"platform\":\"gasq\"," +
+                        "\"service_order_id\":\"201806011424010172956934\"," +
+                        "\"comment\":\"\"," +
+                        "\"status\":\"signed\"," + //cancel 取消；finish 已签收；success 完成
+                        "\"gasq_order_sn\":\"20180601142251246060\""+
+                        "}";
 
         //更新订单商品信息及门店、商家端、国安侠、用户备注
         String goods =
@@ -456,7 +464,7 @@ String aa = "{\"store_id\":\"8ac2d18658faf9650158fc95be90001e\",\"eshop_code\":\
 
 String cc = "{\"area_name\":\"朝阳区\",\"latitude\":\"39.9221\",\"service_info\":[{\"buy_num\":1,\"pay_price\":23.00,\"cate_goods_id\":\"452f5b2db7e14b3f9765cd332a335bf1_5d814ab700da48948394f9916c4b7d85\"}],\"city_code\":\"010\",\"remark\":\"\",\"province_code\":\"110000\",\"placename\":\"关东店北街11号楼\",\"login_mobile\":\"13520174926\",\"platform\":\"gasq\",\"store_phone\":\"010-33636634\",\"city_name\":\"北京市\",\"store_name\":\"呼家楼门店\",\"eshop_code\":\"E180924095431792460\",\"order_type\":\"common\",\"longitude\":\"116.461\",\"store_id\":\"00000000000000000000000000000034\",\"service_time\":\"2018-05-22 09:00:00\",\"remark_pic\":[],\"store_addr\":\"北京市朝阳区呼家楼宾馆写字楼\",\"detail_address\":\"恶徒夺目\",\"area_code\":\"110105\",\"gasq_order_status\":\"waitConfirm\",\"province_name\":\"北京市\",\"opt\":\"createOrder\",\"login_name\":\"哈喽去\",\"phone\":\"13520174926\",\"group_id\":\"577b055ad5ba4a34bea5ef99693c5811\",\"gasq_order_id\":\"58c0d50c5ac441a6aa0f2e592a4ba58e\",\"gasq_order_sn\":[\"20180521193137348425\"],\"name\":\"据他\",\"sum_price\":\"23.00\"}";
 
-String aaaa ="{\"opt\":\"cancelAppoint\",\"group_id\":\"6c3f84396b254af4a54e360fa2794134\",\"gasq_order_sn\":\"20180529111417422963\",\"platform\":\"gasq\"}";
+String aaaa ="{\"opt\":\"cancelAppoint\",\"group_id\":\"92d650efdfe94193b8ef6f9708f7b9e4\",\"gasq_order_sn\":\"20180601145140964542\",\"platform\":\"gasq\"}";
 
 String encode = Base64Encoder.encode(aaaa);
         System.out.println(encode);
