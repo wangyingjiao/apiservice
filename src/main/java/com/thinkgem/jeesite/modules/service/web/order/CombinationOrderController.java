@@ -629,35 +629,44 @@ public class CombinationOrderController extends BaseController {
 				List<OrderDispatch> orderDispatchMsgList = (List<OrderDispatch>)map.get("orderDispatchMsgList");
 				// 时间变化
 				List<OrderDispatch> orderServiceTimeMsgList = (List<OrderDispatch>)map.get("orderServiceTimeMsgList");
-				String orderNumber = (String)map.get("orderNumber");
-				String orderId = (String)map.get("orderId");
-
-				OrderInfo orderInfo1 = new OrderInfo();
-				OrderInfo orderInfo2 = new OrderInfo();
-				OrderInfo orderInfo3 = new OrderInfo();
-
-				orderInfo1.setOrderNumber(orderNumber);
-				orderInfo2.setOrderNumber(orderNumber);
-				orderInfo3.setOrderNumber(orderNumber);
-
-				orderInfo1.setId(orderId);
-				orderInfo2.setId(orderId);
-				orderInfo3.setId(orderId);
-
-				orderInfo1.setTechList(orderCreateMsgList);
-				orderInfo2.setTechList(orderDispatchMsgList);
-				orderInfo3.setTechList(orderServiceTimeMsgList);
-				//时间
-				orderInfo3.setServiceTime((Date)map.get("serviceDate"));
-
-				User user = UserUtils.getUser();
-				orderInfo1.setCreateBy(user);
-				orderInfo2.setCreateBy(user);
-				orderInfo3.setCreateBy(user);
-
-				messageInfoService.insert(orderInfo1,"orderCreate");//新增
-				messageInfoService.insert(orderInfo2,"orderDispatch");//改派
-				messageInfoService.insert(orderInfo3,"orderServiceTime");//服务时间变更
+                User user = UserUtils.getUser();
+                if (orderCreateMsgList != null && orderCreateMsgList.size() > 0){
+                    for (OrderDispatch orderDispatch:orderCreateMsgList){
+                        OrderInfo orderInfo1 = new OrderInfo();
+                        orderInfo1.setOrderNumber(orderDispatch.getOrderNumber());
+                        List<OrderDispatch> orderCreatList=new ArrayList<OrderDispatch>();
+                        orderCreatList.add(orderDispatch);
+                        orderInfo1.setTechList(orderCreatList);
+                        orderInfo1.setId(orderDispatch.getOrderId());
+                        orderInfo1.setCreateBy(user);
+                        messageInfoService.insert(orderInfo1,"orderCreate");//新增
+                    }
+                }
+                if (orderDispatchMsgList != null && orderDispatchMsgList.size() > 0){
+                    for (OrderDispatch orderDispatch:orderDispatchMsgList){
+                        OrderInfo orderInfo2 = new OrderInfo();
+                        orderInfo2.setOrderNumber(orderDispatch.getOrderNumber());
+                        List<OrderDispatch> orderCreatList=new ArrayList<OrderDispatch>();
+                        orderCreatList.add(orderDispatch);
+                        orderInfo2.setTechList(orderCreatList);
+                        orderInfo2.setId(orderDispatch.getOrderId());
+                        orderInfo2.setCreateBy(user);
+                        messageInfoService.insert(orderInfo2,"orderDispatch");//改派
+                    }
+                }
+                if (orderServiceTimeMsgList != null && orderServiceTimeMsgList.size() > 0){
+                    for (OrderDispatch orderDispatch:orderServiceTimeMsgList){
+                        OrderInfo orderInfo3 = new OrderInfo();
+                        orderInfo3.setOrderNumber(orderDispatch.getOrderNumber());
+                        List<OrderDispatch> orderCreatList=new ArrayList<OrderDispatch>();
+                        orderCreatList.add(orderDispatch);
+                        orderInfo3.setTechList(orderCreatList);
+                        orderInfo3.setId(orderDispatch.getOrderId());
+                        orderInfo3.setServiceTime(orderDispatch.getServiceTime());
+                        orderInfo3.setCreateBy(user);
+                        messageInfoService.insert(orderInfo3,"orderServiceTime");//服务时间变更
+                    }
+                }
 			}catch (Exception e){
 				logger.error("更换时间保存-推送消息失败-系统异常");
 			}

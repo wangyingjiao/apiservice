@@ -355,26 +355,67 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		Double serviceHour = info.getServiceHour();
 		//建议完成时间（排期表）
 		Date finishTime =null;
-		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
+        // 派单 原来没有，现在有
+        List<OrderDispatch> orderCreateMsgList = new ArrayList<>();
+        // 改派 原来有，现在没有
+        List<OrderDispatch> orderDispatchMsgList = new ArrayList<>();
+        // 时间变化 原来有，现在有
+        List<OrderDispatch> orderServiceTimeMsgList = new ArrayList<>();
 		//根据groupId获取组合订单的订单集合
-        List<OrderCombinationGasqInfo> listByOrderGroupId = orderCombinationGasqDao.getListByOrderGroupId(listByOrderNumber);
-        if (listByOrderGroupId != null && listByOrderGroupId.size() > 0){
-            size = listByOrderGroupId.size();
-            for (OrderCombinationGasqInfo orderCombinationGasqInfo:listByOrderGroupId){
-                //获取同一groupId 的订单
-                OrderInfo orderTem = new OrderInfo();
-                orderTem.setOrderNumber(orderCombinationGasqInfo.getOrderNumber());
-                OrderInfo bySn = orderInfoDao.getBySn(orderTem);
+        List<OrderInfo> orderInfoList = orderInfoDao.getOrderListByOrderGroupId(listByOrderNumber);
+        if (orderInfoList != null && orderInfoList.size() > 0){
+            size = orderInfoList.size();
+            for (OrderInfo bySn:orderInfoList){
                 bySn.setServiceTime(serviceTime);
                 Double serviceSecondTem = (bySn.getServiceHour() * 3600);
                 Date date = DateUtils.addSeconds(serviceTime, serviceSecondTem.intValue());
                 bySn.setSuggestFinishTime(date);
                 bySn.setFinishTime(date);
                 bySn.preUpdate();
-                //先将订单表修改 *******
+            //先将订单表修改 *******
                 orderInfoDao.saveOrderTime(bySn);
-                orderInfoList.add(bySn);
-				serviceTime=date;
+                serviceTime=date;
+            //修改派单表
+                //根据订单id获取之前的派单表 只有一个
+                List<OrderDispatch> byOrderId = orderDispatchDao.getDisByOrderId(bySn);
+                if (byOrderId == null || byOrderId.size() < 1){
+                    throw new ServiceException("该订单尚未派单");
+                }
+                OrderDispatch orderDispatch = byOrderId.get(0);
+                //1.将之前的派单的可用状态置为no
+                if (!orderInfo.getTechId().equals(orderDispatch.getTechId())){
+                    //如果更换技师 是否有orderId
+                    orderDispatch.setOrderNumber(bySn.getOrderNumber());
+                    orderDispatchMsgList.add(orderDispatch);
+                    //换技师 换时间 将之前派单表置为无效
+                    orderDispatch.setStatus("no");
+                    orderDispatch.preUpdate();
+                    int update = orderDispatchDao.update(orderDispatch);
+                    if (update < 1){
+                        throw new ServiceException("删除改派前的派单表失败");
+                    }
+                    //2.将新技师加入派单表中
+                    OrderDispatch dispatch=new OrderDispatch();
+                    dispatch.setStatus("yes");
+                    //根据技师id获取手机
+                    ServiceTechnicianInfo technicianInfo = serviceTechnicianInfoDao.get(orderInfo.getTechId());
+                    dispatch.setTechPhone(technicianInfo.getPhone());
+                    dispatch.setTechId(orderInfo.getTechId());
+                    dispatch.setOrderId(bySn.getId());
+                    dispatch.preInsert();
+                    int insert = orderDispatchDao.insert(dispatch);
+                    if (insert < 1){
+                        throw new ServiceException("新增派单表失败");
+                    }
+                    dispatch.setOrderNumber(bySn.getOrderNumber());
+                    orderCreateMsgList.add(dispatch);
+                }else {
+                    //如果只改变时间 没改技师 派单表不变
+                    orderDispatch.setOrderNumber(bySn.getOrderNumber());
+                    orderDispatch.setServiceTime(bySn.getServiceTime());
+                    orderServiceTimeMsgList.add(orderDispatch);
+                }
+
             }
         }
         //对接接口调用使用
@@ -383,45 +424,6 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 		Double serviceSecond = (serviceHour * size * 3600);
 		finishTime = DateUtils.addSeconds(orderInfo.getServiceTime(), serviceSecond.intValue());
 		int weekNum = DateUtils.getWeekNum(orderInfo.getServiceTime());
-		//修改派单表
-        // 派单 原来没有，现在有
-        List<OrderDispatch> orderCreateMsgList = new ArrayList<>();
-        // 改派 原来有，现在没有
-        List<OrderDispatch> orderDispatchMsgList = new ArrayList<>();
-        // 时间变化 原来有，现在有
-        List<OrderDispatch> orderServiceTimeMsgList = new ArrayList<>();
-
-		//1.将之前的派单的可用状态置为no
-        //根据订单id获取之前的技师集合
-		List<OrderDispatch> byOrderId = orderDispatchDao.getDisByOrderId(orderInfo);
-		if (byOrderId == null || byOrderId.size() < 1){
-            throw new ServiceException("该订单尚未派单");
-		}
-        OrderDispatch orderDispatch = byOrderId.get(0);
-        //如果只改变时间 没改技师 派单表不变
-        if (!orderInfo.getTechId().equals(orderDispatch.getTechId())){
-            orderDispatchMsgList.add(orderDispatch);
-            //换技师 换时间
-            orderDispatch.setStatus("no");
-            orderDispatch.preUpdate();
-            int update = orderDispatchDao.update(orderDispatch);
-            if (update < 1){
-                throw new ServiceException("删除改派前的派单表失败");
-            }
-            //2.将新技师加入派单表中
-            OrderDispatch dispatch=new OrderDispatch();
-            dispatch.setStatus("yes");
-            dispatch.setTechId(orderInfo.getTechId());
-            dispatch.setOrderId(orderInfo.getId());
-            dispatch.preInsert();
-            int insert = orderDispatchDao.insert(dispatch);
-            if (insert < 1){
-                throw new ServiceException("新增派单表失败");
-            }
-            orderCreateMsgList.add(dispatch);
-        }else {
-            orderServiceTimeMsgList.add(orderDispatch);
-        }
 		//修改排期表
 		//根据orderGroupId查询排期表 将之前的删除 新增改派后的
 		TechScheduleInfo techScheduleInfo=new TechScheduleInfo();
@@ -451,18 +453,17 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
         newTechScheduleInfo.setScheduleDate(dateFirstTime);
 		newTechScheduleInfo.preInsert();
 		i = techScheduleDao.insertSchedule(newTechScheduleInfo);
+        if (i < 1){
+            throw new ServiceException("新增排期表失败");
+        }
 		HashMap<String,Object> map = new HashMap<>();
 		map.put("serviceHour",serviceHour);
-		map.put("orderId",orderInfo.getId());
-		map.put("serviceDate",orderInfo.getServiceTime());
 		map.put("orderSource",info.getOrderSource());
 
         map.put("orderServiceTimeMsgList", orderServiceTimeMsgList);
         map.put("orderDispatchMsgList", orderDispatchMsgList);
         map.put("orderCreateMsgList", orderCreateMsgList);
         map.put("combinationByMasterId", combinationByMasterId);
-
-		map.put("orderNumber", info.getOrderNumber());
         return map;
 	}
 
