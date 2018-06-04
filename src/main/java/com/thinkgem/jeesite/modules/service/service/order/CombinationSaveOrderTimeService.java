@@ -220,8 +220,6 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 									//可以接单的时间则为：路上时间+富余时间
 									intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
 								}
-
-
 								if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
 										Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) < 14) {
 									//可以接单的时间则为：40分钟+路上时间+富余时间
@@ -231,9 +229,12 @@ public class CombinationSaveOrderTimeService extends CrudService<CombinationOrde
 									intervalTimeE =  Integer.parseInt(Global.getConfig("order_split_time"));
 								}
 							}
-							List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
+							/*List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
 									DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
-									DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
+									DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));*/
+                            List<String> orders = DateUtils.getHeafHourTimeList(
+                                    DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS),
+                                    DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE));
 							if (orders != null && workTimes!= null) {
 								Iterator<String> it2 = workTimes.iterator();
 								while (it2.hasNext()) {
