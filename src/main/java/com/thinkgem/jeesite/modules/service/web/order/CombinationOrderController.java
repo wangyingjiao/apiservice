@@ -555,7 +555,7 @@ public class CombinationOrderController extends BaseController {
 		//当前时间后一个半小时
 		Double serviceNextSecond = (1.5 * 3600);
 		Date finishTime = DateUtils.addSeconds(new Date(), serviceNextSecond.intValue());
-		if (serviceTime.compareTo(finishTime) > 0){
+		if (serviceTime.compareTo(finishTime) < 0){
 			return new FailResult("距离服务开始时间只剩下一个半小时，不可再更换时间!");
 		}
 		try {
