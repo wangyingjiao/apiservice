@@ -352,14 +352,6 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 
 	private void removeBusyTechByWeekTime(Date serviceTime, List<OrderDispatch> techList, int techDispatchNum, Double serviceSecond) {
 		int week = DateUtils.getWeekNum(serviceTime);
-//		Date selectTime = serviceTime;
-//		Date selectTimeH = null;
-//		String selectTimeStr = DateUtils.formatDate(serviceTime,"HH:mm");
-//		try {
-//			selectTimeH = DateUtils.parseDate(selectTimeStr,"HH:mm");
-//		} catch (ParseException e) {
-//			return;
-//		}
 
 		Date checkStartTime = serviceTime;
 		Date checkEndTime = DateUtils.addSecondsNotDayE(serviceTime,serviceSecond.intValue());
@@ -383,17 +375,6 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			}
 
 			ServiceTechnicianWorkTime workTime = workTimeList.get(0);
-			//List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(workTime.getStartTime(),workTime.getEndTime());
-//			if(!(
-//					(selectTimeH.after(workTime.getStartTime()) || selectTimeH.compareTo(workTime.getStartTime())==0) &&
-//							selectTimeH.before(workTime.getEndTime())
-//			)){
-//				it.remove();
-//				if(techList.size() < techDispatchNum){//技师数量不够
-//					return;
-//				}
-//				continue;//下一位技师
-//			}
 
 			Date techWorkStartTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
 					+ " " + DateUtils.formatDate(workTime.getStartTime(), "HH:mm:ss"));//工作开始时间
@@ -423,20 +404,8 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点 开始---------------------------------------------
 			List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), serviceTime, "holiday");
 			if (techHolidyList != null && techHolidyList.size() != 0) {
+				Boolean forFlag = false;
 				for (TechScheduleInfo holiday : techHolidyList) {
-					//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
-
-//					if(
-//						(selectTime.after(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()))
-//								|| selectTime.compareTo(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()))==0) &&
-//						selectTime.before(holiday.getEndTime())
-//					){
-//						it.remove();
-//						if(techList.size() < techDispatchNum){//技师数量不够
-//							return;
-//						}
-//						continue;//下一位技师
-//					}
 					Date holidayStartTime = DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue());
 					Date holidayEndTime = holiday.getEndTime();
 					if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, holidayStartTime, holidayEndTime)) {
@@ -444,8 +413,12 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 						if(techList.size() < techDispatchNum){//技师数量不够
 							return;
 						}
-						continue;//下一位技师
+						forFlag = true;
+						break;//下一位技师
 					}
+				}
+				if(forFlag){
+					continue;//下一位技师
 				}
 			}
 			//-------------------取得技师 周几休假时间 转成时间点列表 如果和工作时间重复 删除该时间点  结束-------------
@@ -454,6 +427,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			//--- 订单时间段--订单开始时间 减去商品需求时间 减去准备时间；---订单结束时间 加上准备时间 ----------------------
 			List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(tech.getTechId(), serviceTime, "order");
 			if (techOrderList != null && techOrderList.size() != 0) {
+				Boolean forFlag = false;
 				for (TechScheduleInfo order : techOrderList) {
 					int intervalTimeS = 0;//必须间隔时间 秒
 					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
@@ -475,20 +449,6 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 						intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 					}
 
-//					List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-//							DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
-//							DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
-//					if(
-//						(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
-//							|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))==0) &&
-//						selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
-//					){
-//						it.remove();
-//						if(techList.size() < techDispatchNum){//技师数量不够
-//							return;
-//						}
-//						continue;//下一位技师
-//					}
 					Date orderStartTime = DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS);
 					Date orderEndTime = DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE);
 					if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
@@ -496,8 +456,12 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 						if(techList.size() < techDispatchNum){//技师数量不够
 							return;
 						}
-						continue;//下一位技师
+						forFlag = true;
+						break;//下一位技师
 					}
+				}
+				if(forFlag){
+					continue;//下一位技师
 				}
 			}
 		}
@@ -511,24 +475,15 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 	public boolean checkSubscribeTech(CombinationOrderInfo combinationOrderInfo) {
 		String masterId = combinationOrderInfo.getMasterId();
 		int serviceNum = combinationOrderInfo.getServiceNum();//预约个数
-		//List<OrderCombinationFrequencyInfo> freList = combinationOrderInfo.getFreList();//服务时间
 		String techId = combinationOrderInfo.getTechId();
 		Date serviceTime = combinationOrderInfo.getServiceTime();
 
 		CombinationOrderInfo combinationInfo = combinationOrderDao.getCombinationByMasterId(masterId);
-		/*if(serviceNum > combinationInfo.getBespeakTotal()){
-			return true;
-		}*/
+
 		double serviceHour =combinationInfo.getServiceHour();//单次建议服务时长
 		Double serviceSecond = (serviceHour * serviceNum * 3600);
 		int week = DateUtils.getWeekNum(serviceTime);
-//		String selectTimeStr = DateUtils.formatDate(serviceTime,"HH:mm");
-//		Date selectTime = null;
-//		try {
-//			selectTime = DateUtils.parseDate(selectTimeStr,"HH:mm");
-//		} catch (ParseException e) {
-//			return true;
-//		}
+
 
 		Date checkStartTime = serviceTime;
 		Date checkEndTime = DateUtils.addSecondsNotDayE(serviceTime,serviceSecond.intValue());
@@ -544,13 +499,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		}
 
 		ServiceTechnicianWorkTime workTime = workTimeList.get(0);
-		//List<String> workTimes = DateUtils.getHeafHourTimeListLeftBorder(workTime.getStartTime(),workTime.getEndTime());
-//		if (!(
-//				(selectTime.after(workTime.getStartTime()) || selectTime.compareTo(workTime.getStartTime()) == 0) &&
-//						selectTime.before(workTime.getEndTime())
-//		)) {
-//			return true;
-//		}
+
 		Date techWorkStartTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
 				+ " " + DateUtils.formatDate(workTime.getStartTime(), "HH:mm:ss"));//工作开始时间
 		Date techWorkEndTime = DateUtils.parseDate(DateUtils.formatDate(checkStartTime, "yyyy-MM-dd")
@@ -572,15 +521,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		List<TechScheduleInfo> techHolidyList = orderToolsService.listTechScheduleByTechTime(techId, serviceTime, "holiday");
 		if (techHolidyList != null && techHolidyList.size() != 0) {
 			for (TechScheduleInfo holiday : techHolidyList) {
-				//List<String> holidays = DateUtils.getHeafHourTimeListLeftBorder(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()), holiday.getEndTime());
 
-//				if (
-//						(selectTime.after(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue()))
-//								|| selectTime.compareTo(DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue())) == 0) &&
-//								selectTime.before(holiday.getEndTime())
-//						) {
-//					return true;
-//				}
 				Date holidayStartTime = DateUtils.addSecondsNotDayB(holiday.getStartTime(), -serviceSecond.intValue());
 				Date holidayEndTime = holiday.getEndTime();
 				if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, holidayStartTime, holidayEndTime)) {
@@ -615,16 +556,6 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 					intervalTimeE = Integer.parseInt(Global.getConfig("order_split_time"));
 				}
 
-//					List<String> orders = DateUtils.getHeafHourTimeListLeftBorder(
-//							DateUtils.addSecondsNotDayB(frequency.getStartTime(), -intervalTimeS),
-//							DateUtils.addSecondsNotDayE(frequency.getEndTime(), intervalTimeE));
-//				if (
-//						(selectTime.after(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS))
-//								|| selectTime.compareTo(DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS)) == 0) &&
-//								selectTime.before(DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE))
-//						) {
-//					return true;
-//				}
 				Date orderStartTime = DateUtils.addSecondsNotDayB(order.getStartTime(), -intervalTimeS);
 				Date orderEndTime = DateUtils.addSecondsNotDayE(order.getEndTime(), intervalTimeE);
 				if (!DateUtils.checkDatesRepeat(checkStartTime, checkEndTime, orderStartTime, orderEndTime)) {
