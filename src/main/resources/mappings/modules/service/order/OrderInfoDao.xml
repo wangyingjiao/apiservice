@@ -879,6 +879,7 @@ origin_price,
 		FROM order_info a
 		<include refid="orderInfoJoins"/>
 		WHERE a.joint_order_id = #{jointOrderId}
+		AND a.del_flag = '0'
 	</select>
 	<select id="getOrderInfoByMasterId" resultType="OrderInfo">
 		SELECT
