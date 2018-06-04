@@ -344,9 +344,11 @@ public class CombinationSaveRegularDateService extends CrudService<CombinationOr
 				return null;
 			}
 			Date endDate = DateUtils.addSeconds(startDate, serviceSecond.intValue());
-			String timeStr = time + "-" + DateUtils.formatDate(endDate,"HH:mm");
-			info.setServiceTimeStr(timeStr);
-			listRe.add(info);
+			if(DateUtils.formatDate(startDate,"yyyy-MM-dd").equals(DateUtils.formatDate(endDate,"yyyy-MM-dd"))) {
+				String timeStr = time + "-" + DateUtils.formatDate(endDate, "HH:mm");
+				info.setServiceTimeStr(timeStr);
+				listRe.add(info);
+			}
 		}
 
 		return listRe;

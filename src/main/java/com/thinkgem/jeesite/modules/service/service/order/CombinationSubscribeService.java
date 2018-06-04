@@ -429,7 +429,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 			if (techOrderList != null && techOrderList.size() != 0) {
 				Boolean forFlag = false;
 				for (TechScheduleInfo order : techOrderList) {
-					int intervalTimeS = 0;//必须间隔时间 秒
+					/*int intervalTimeS = 0;//必须间隔时间 秒
 					if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
 							Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 						//可以接单的时间则为：40分钟+路上时间+富余时间
@@ -437,7 +437,8 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 					} else {
 						//可以接单的时间则为：路上时间+富余时间
 						intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-					}
+					}*/
+					int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));
 
 					int intervalTimeE = 0;//必须间隔时间 秒
 					if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&
@@ -536,7 +537,7 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 		List<TechScheduleInfo> techOrderList = orderToolsService.listTechScheduleByTechTime(techId, serviceTime, "order");
 		if (techOrderList != null && techOrderList.size() != 0) {
 			for (TechScheduleInfo order : techOrderList) {
-				int intervalTimeS = 0;//必须间隔时间 秒
+				/*int intervalTimeS = 0;//必须间隔时间 秒
 				if (11 <= Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) &&
 						Integer.parseInt(DateUtils.formatDate(DateUtils.addSecondsNotDayB(order.getStartTime(), -(Integer.parseInt(Global.getConfig("order_split_time")))), "HH")) < 14) {
 					//可以接单的时间则为：40分钟+路上时间+富余时间
@@ -544,7 +545,8 @@ public class CombinationSubscribeService extends CrudService<CombinationOrderDao
 				} else {
 					//可以接单的时间则为：路上时间+富余时间
 					intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time")) + serviceSecond.intValue();
-				}
+				}*/
+				int intervalTimeS = Integer.parseInt(Global.getConfig("order_split_time"));
 
 				int intervalTimeE = 0;//必须间隔时间 秒
 				if (11 <= Integer.parseInt(DateUtils.formatDate(order.getEndTime(), "HH")) &&

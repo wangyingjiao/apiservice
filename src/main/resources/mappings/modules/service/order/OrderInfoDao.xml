@@ -886,7 +886,10 @@ origin_price,
 		<include refid="orderInfoColumns"/>
 		FROM order_info a
 		<include refid="orderInfoJoins"/>
-		WHERE a.master_id = #{masterId} AND a.order_status != 'cancel'
+		WHERE a.master_id = #{masterId}
+		AND a.order_status != 'finish'
+		AND a.order_status != 'success'
+		AND a.del_flag = '0'
 	</select>
 	<select id="checkGasqSnOrderSn" resultType="OrderInfo">
 		SELECT
